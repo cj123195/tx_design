@@ -1,39 +1,44 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This is a custom component package, which also includes some theme extension and type extension.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Add this to your Flutter app to:
+1. Use more customized widgets and support global and local theme configurations.
+2. Some custom theme extensions are provided, such as color, spacing, round corner, shadow, etc.
+3. Some type extensions are provided.
 
-## Getting started
+## Installing
+Add this to your package's pubspec.yaml file:
+```yaml
+dependencies:
+  tx_design: ^latest
+```
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+## Import
+```dart
+import 'package:tx_design/tx_design.dart';
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+Use widget and set widget's theme:
 ```dart
-const like = 'sample';
+const TxCellTheme(
+  data: TxCellThemeData(),
+  child: TxCell(labelText: 'labelText', contentText: 'contentText'),
+);
 ```
 
-## Additional information
+Add themeExtension to your themeData:
+```dart
+ThemeData(
+    extensions: [
+      RadiusThemeData(),
+    ]
+);
+```
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+Use type extension:
+```dart
+fianl String formattedTime = DateTime.now().format('yyyy-MM-dd HH:mm');
+```
