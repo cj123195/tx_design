@@ -57,10 +57,10 @@ abstract class TxSearchDelegate<T> extends SearchDelegate<T> {
   final TextEditingController _queryTextController = TextEditingController();
 
   final ProxyAnimation _proxyAnimation =
-  ProxyAnimation(kAlwaysDismissedAnimation);
+      ProxyAnimation(kAlwaysDismissedAnimation);
 
   final ValueNotifier<_SearchBody?> _currentBodyNotifier =
-  ValueNotifier<_SearchBody?>(null);
+      ValueNotifier<_SearchBody?>(null);
 
   _SearchBody? get _currentBody => _currentBodyNotifier.value;
 
@@ -88,9 +88,9 @@ class _SearchPageRoute<T> extends PageRoute<T> {
     required this.delegate,
   }) {
     assert(
-    delegate._route == null,
-    '${delegate.runtimeType} 实例当前被另一个活动搜索使用。 请在使用相同委托实例打开另一个搜索之前，'
-        '通过调用 TxSearchDelegate 上的 close() 来关闭该搜索。',
+      delegate._route == null,
+      '${delegate.runtimeType} 实例当前被另一个活动搜索使用。 请在使用相同委托实例打开另一个搜索之前，'
+      '通过调用 TxSearchDelegate 上的 close() 来关闭该搜索。',
     );
     delegate._route = this;
   }
@@ -111,11 +111,11 @@ class _SearchPageRoute<T> extends PageRoute<T> {
 
   @override
   Widget buildTransitions(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      Widget child,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return FadeTransition(
       opacity: animation,
       child: child,
@@ -131,10 +131,10 @@ class _SearchPageRoute<T> extends PageRoute<T> {
 
   @override
   Widget buildPage(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
     return _SearchPage<T>(
       delegate: delegate,
       animation: animation,
@@ -285,7 +285,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading:
-            widget.delegate.automaticallyImplyLeading,
+                widget.delegate.automaticallyImplyLeading,
             leading: widget.delegate.buildLeading(context),
             title: TextField(
               controller: widget.delegate._queryTextController,

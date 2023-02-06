@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 ///
 /// 配置参考https://m3.material.io/styles/shape/shape-scale-tokens
 class RadiusThemeData extends ThemeExtension<RadiusThemeData> {
-
   const RadiusThemeData({
     this.mini = 4.0,
     this.small = 8.0,
@@ -92,7 +91,7 @@ class RadiusTheme extends InheritedWidget {
   /// 如果它也为null，则返回默认[RadiusThemeData]
   static RadiusThemeData of(BuildContext context) {
     final RadiusTheme? radioTheme =
-    context.dependOnInheritedWidgetOfExactType<RadiusTheme>();
+        context.dependOnInheritedWidgetOfExactType<RadiusTheme>();
     return radioTheme?.data ??
         Theme.of(context).extension<RadiusThemeData>() ??
         const RadiusThemeData();

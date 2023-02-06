@@ -24,7 +24,7 @@ class TxButtonBar extends StatelessWidget {
     this.buttonMinWidth,
     this.layoutBehavior,
     this.buttonAlignedDropdown,
-  })  : super(key: key);
+  }) : super(key: key);
 
   /// 创建一个包含[TxPopupMenuButton]的操作按钮栏，一般用于操作比较多的情况
   TxButtonBar.more({

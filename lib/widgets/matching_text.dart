@@ -118,16 +118,16 @@ class TxMatchingText extends StatelessWidget {
   List<TextSpan> _generateTextSpan(String text, TextStyle style) {
     final Match? match = RegExp(query!).firstMatch(text);
 
-    if(match == null) {
+    if (match == null) {
       return [TextSpan(text: text)];
     }
 
     final List<TextSpan> result = [];
-    if(match.start != 0) {
+    if (match.start != 0) {
       result.add(TextSpan(text: text.substring(0, match.start)));
     }
     result.add(TextSpan(text: query!, style: style));
-    if(match.end != text.length - 1) {
+    if (match.end != text.length - 1) {
       result.addAll(_generateTextSpan(text.substring(match.end), style));
     }
     return result;
@@ -155,7 +155,7 @@ class TxMatchingText extends StatelessWidget {
     }
 
     final TextStyle matchedStyle =
-    (this.matchedStyle ?? style ?? defaultTextStyle.style).copyWith(
+        (this.matchedStyle ?? style ?? defaultTextStyle.style).copyWith(
       color: matchedColor ?? Theme.of(context).colorScheme.primary,
     );
 

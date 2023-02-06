@@ -7,12 +7,12 @@ double _lerpDouble(double a, double b, double t) {
 /// 定义后代小部件的默认elevation
 ///
 /// elevation是两个表面之间沿 z 轴的相对距离。
-/// 
+///
 /// 后代小部件使用 `SpacingTheme.of(context)` 获取当前的 [ElevationThemeData] 对象。
 /// [ElevationThemeData] 的实例可以使用 [ElevationThemeData.copyWith] 进行自定义。
-/// 
+///
 /// 新增属性时需同时更新[ElevationThemeData]默认构造方法、[copyWith]方法、[lerp]方法
-/// 
+///
 /// 配置参考https://m3.material.io/styles/elevation/overview
 class ElevationThemeData extends ThemeExtension<ElevationThemeData> {
   const ElevationThemeData({
@@ -92,7 +92,7 @@ class ElevationTheme extends InheritedWidget {
   /// 如果它也为null，则返回默认[ElevationThemeData]
   static ElevationThemeData of(BuildContext context) {
     final ElevationTheme? radioTheme =
-    context.dependOnInheritedWidgetOfExactType<ElevationTheme>();
+        context.dependOnInheritedWidgetOfExactType<ElevationTheme>();
     return radioTheme?.data ??
         Theme.of(context).extension<ElevationThemeData>() ??
         const ElevationThemeData();

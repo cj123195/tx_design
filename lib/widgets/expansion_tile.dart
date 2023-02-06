@@ -45,11 +45,11 @@ class TxExpansionTile extends StatefulWidget {
     this.borderRadius,
     this.tileShape,
     this.trailingLayoutMode,
-  })  : assert(
-  expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
-  'CrossAxisAlignment.baseline 不受支持，因为展开的子项'
-      '在列中对齐，而不是在行中。尝试使用另一个常量。',
-  );
+  }) : assert(
+          expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
+          'CrossAxisAlignment.baseline 不受支持，因为展开的子项'
+          '在列中对齐，而不是在行中。尝试使用另一个常量。',
+        );
 
   /// 分割线显示的时机
   final DividerDisplayTime dividerDisplayTime;
@@ -180,11 +180,11 @@ class TxExpansionTile extends StatefulWidget {
 class _TxExpansionTileState extends State<TxExpansionTile>
     with SingleTickerProviderStateMixin {
   static final Animatable<double> _easeOutTween =
-  CurveTween(curve: Curves.easeOut);
+      CurveTween(curve: Curves.easeOut);
   static final Animatable<double> _easeInTween =
-  CurveTween(curve: Curves.easeIn);
+      CurveTween(curve: Curves.easeIn);
   static final Animatable<double> _halfTween =
-  Tween<double>(begin: 0.0, end: 0.5);
+      Tween<double>(begin: 0.0, end: 0.5);
 
   final ColorTween _borderColorTween = ColorTween();
   final ColorTween _headerColorTween = ColorTween();
@@ -276,9 +276,9 @@ class _TxExpansionTileState extends State<TxExpansionTile>
     final Border? border = _borderColor.value == Colors.transparent
         ? null
         : Border(
-      top: BorderSide(color: _borderColor.value!),
-      bottom: BorderSide(color: _borderColor.value!),
-    );
+            top: BorderSide(color: _borderColor.value!),
+            bottom: BorderSide(color: _borderColor.value!),
+          );
 
     Widget? subtitle;
     if (widget.subtitle != null) {
@@ -380,7 +380,7 @@ class _TxExpansionTileState extends State<TxExpansionTile>
           padding: widget.childrenPadding ?? EdgeInsets.zero,
           child: Column(
             crossAxisAlignment:
-            widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.center,
+                widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.center,
             children: widget.children,
           ),
         ),

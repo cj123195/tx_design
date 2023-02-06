@@ -109,7 +109,8 @@ class _PickerContentState<T> extends State<_PickerContent<T>> {
 }
 
 /// 单选选择
-Future<T?> showPickerBottomSheet<T, V>(BuildContext context, {
+Future<T?> showPickerBottomSheet<T, V>(
+  BuildContext context, {
   required List<T> sources,
   required ValueMapper<T, String> labelMapper,
   String? title,
