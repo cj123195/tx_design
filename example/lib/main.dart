@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tx_design/theme_extensions/color.dart';
-import 'package:tx_design/theme_extensions/radius.dart';
-import 'package:tx_design/theme_extensions/spacing.dart';
 import 'package:tx_design/tx_design.dart';
 
 void main() {
