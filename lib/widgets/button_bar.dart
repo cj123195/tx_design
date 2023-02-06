@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'button_bar_theme.dart';
 import 'popup_menu.dart';
 
 const double _kButtonHeight = 36.0;
@@ -109,7 +110,7 @@ class TxButtonBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ButtonThemeData parentButtonTheme = ButtonTheme.of(context);
-    final ButtonBarThemeData barTheme = ButtonBarTheme.of(context);
+    final TxButtonBarThemeData barTheme = TxButtonBarTheme.of(context);
 
     final ButtonThemeData buttonTheme = parentButtonTheme.copyWith(
       textTheme: buttonTextTheme ??
@@ -127,7 +128,8 @@ class TxButtonBar extends StatelessWidget {
           ButtonBarLayoutBehavior.padded,
     );
     const OutlinedBorder shape = RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(4)));
+      borderRadius: BorderRadius.all(Radius.circular(4)),
+    );
     // 我们除以 4.0 因为我们想要左右填充平均值的一半。
     final double paddingUnit = buttonTheme.padding.horizontal / 4.0;
 
@@ -142,7 +144,8 @@ class TxButtonBar extends StatelessWidget {
     }
 
     if (secondaryButtonBuilder != null) {
-      final ButtonStyle style = OutlinedButton.styleFrom(shape: shape);
+      final ButtonStyle style = barTheme.secondaryButtonStyle ??
+          OutlinedButton.styleFrom(shape: shape);
       final Widget secondaryBtn = Expanded(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: paddingUnit),
@@ -152,11 +155,12 @@ class TxButtonBar extends StatelessWidget {
       children.add(secondaryBtn);
     }
 
-    final ButtonStyle style = FilledButton.styleFrom(
-      foregroundColor: theme.colorScheme.onPrimary,
-      backgroundColor: theme.colorScheme.primary,
-      shape: shape,
-    );
+    final ButtonStyle style = barTheme.mainButtonStyle ??
+        FilledButton.styleFrom(
+          foregroundColor: theme.colorScheme.onPrimary,
+          backgroundColor: theme.colorScheme.primary,
+          shape: shape,
+        );
     final Widget mainBtn = Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: paddingUnit),
