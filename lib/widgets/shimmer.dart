@@ -1,12 +1,3 @@
-///
-/// * author: hunghd
-/// * email: hunghd.yb@gmail.com
-///
-/// 一个包提供了一种向 Flutter 应用程序添加微光效果的简单方法
-///
-
-library shimmer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -37,6 +28,7 @@ enum ShimmerDirection { ltr, rtl, ttb, btt }
 /// 使用一个 [TxShimmer] 来包装 [Widget] 的列表，而不是许多 [TxShimmer] 的列表
 @immutable
 class TxShimmer extends StatefulWidget {
+  /// 创建一个[TxShimmer]
   const TxShimmer({
     required this.child,
     required this.gradient,

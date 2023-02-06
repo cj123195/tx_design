@@ -93,7 +93,7 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
 ///
 /// 此处指定的值用于未指定显式非空值的 [TxCell] 属性。
 class TxCellTheme extends InheritedWidget {
-  /// 创建一个列表磁贴主题，该主题定义后代 [TxCell] 的颜色和样式参数。
+  /// 创建一个栅格主题，该主题定义后代 [TxCell] 的颜色和样式参数。
   const TxCellTheme({
     required super.child,
     required this.data,

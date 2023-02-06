@@ -13,12 +13,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(colorSchemeSeed: Colors.purple, extensions: [
-        const SpacingThemeData(),
-        const RadiusThemeData(),
-        ColorThemeData.light(),
-        const TxCellThemeData()
-      ]),
+      theme: ThemeData(
+        colorSchemeSeed: Colors.purple,
+        extensions: [
+          const SpacingThemeData(),
+          const RadiusThemeData(),
+          ColorThemeData.light(),
+          const TxCellThemeData()
+        ],
+        useMaterial3: true,
+      ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -70,9 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           // Column is also a layout widget. It takes a list of children and
           // arranges them vertically. By default, it sizes itself to fit its
@@ -88,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // center the children vertically; the main axis here is the vertical
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TxCellTheme(

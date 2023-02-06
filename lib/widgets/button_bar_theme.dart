@@ -80,7 +80,7 @@ class TxButtonBarThemeData extends ThemeExtension<TxButtonBarThemeData> {
 ///
 /// 此处指定的值用于未指定显式非空值的 [TxButtonBar] 属性。
 class TxButtonBarTheme extends InheritedWidget {
-  /// 创建一个列表磁贴主题，该主题定义后代 [TxButtonBar] 的颜色和样式参数。
+  /// 创建一个操作按钮栏主题，该主题定义后代 [TxButtonBar] 的颜色和样式参数。
   const TxButtonBarTheme({
     required super.child,
     required this.data,
