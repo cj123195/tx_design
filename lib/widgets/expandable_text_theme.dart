@@ -102,8 +102,8 @@ class TxExpandableTextThemeData
 /// 后代小部件使用 [TxExpandableTextTheme.of] 获取当前主题的 [TxExpandableTextThemeData] 对象。
 /// 当小部件使用 [TxExpandableTextTheme.of] 时，如果主题稍后更改，它会自动重建。
 ///
-/// 可以使用 [ThemeData.extension<TxRadioTheme>()!] 将单选框主题指定为整个 Material
-/// 主题的一部分。
+/// 可以使用 [ThemeData.extension<TxExpandableTextTheme>()!] 将可展开文字主题指定为
+/// 整个 Material主题的一部分。
 class TxExpandableTextTheme extends InheritedWidget {
   /// 构造一个配置所有后代 [TxExpandableText] 小部件的复选框主题。
   const TxExpandableTextTheme({

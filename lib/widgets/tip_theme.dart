@@ -132,7 +132,7 @@ class TxTipThemeData extends ThemeExtension<TxTipThemeData>
 /// 可以使用 [ThemeData.extension<TxTipTheme>()!] 将单选框主题指定为整个 Material
 /// 主题的一部分。
 class TxTipTheme extends InheritedWidget {
-  /// 构造一个配置所有后代 [TxTip] 小部件的单选按钮主题。
+  /// 构造一个配置所有后代 [TxTip] 小部件的提示主题。
   const TxTipTheme({
     required this.data,
     required super.child,

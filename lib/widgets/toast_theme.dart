@@ -329,7 +329,7 @@ class ToastThemeData extends ThemeExtension<ToastThemeData>
 /// 可以使用 [ThemeData.extension<ToastTheme>()!] 将单选框主题指定为整个 Material
 /// 主题的一部分。
 class ToastTheme extends InheritedWidget {
-  /// 构造一个配置所有后代 [Toast] 小部件的单选按钮主题。
+  /// 构造一个配置所有后代 [Toast] 小部件的Toast主题。
   const ToastTheme({
     required this.data,
     required super.child,
