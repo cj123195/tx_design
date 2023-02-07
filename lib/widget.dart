@@ -31,6 +31,8 @@ export 'widgets/radio_cell.dart';
 export 'widgets/radio_theme.dart';
 export 'widgets/search.dart';
 export 'widgets/shimmer.dart';
+export 'widgets/signature.dart';
+export 'widgets/signature_theme.dart';
 export 'widgets/sliver_header.dart';
 export 'widgets/sliver_sticky_header.dart';
 export 'widgets/text_button.dart';
