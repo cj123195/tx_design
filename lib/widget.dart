@@ -14,6 +14,7 @@ export 'widgets/dropdown.dart';
 export 'widgets/expandable_text.dart';
 export 'widgets/expandable_text_theme.dart';
 export 'widgets/expansion_tile.dart';
+export 'widgets/file_list_tile.dart';
 export 'widgets/flow_menu_button.dart';
 export 'widgets/information_dialog.dart';
 export 'widgets/loading.dart';

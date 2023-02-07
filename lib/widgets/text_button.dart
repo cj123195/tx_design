@@ -80,7 +80,7 @@ class _TextButtonWithIconChild extends StatelessWidget {
     final double scale = MediaQuery.maybeOf(context)?.textScaleFactor ?? 1;
     final double gap = this.gap ??
         (scale <= 1
-            ? (isVerticalAlign ? 0 : 4)
+            ? 4.0
             : ui.lerpDouble(6, 4, math.min(scale - 1, 1))!);
 
     final List<Widget> children = [
