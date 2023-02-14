@@ -8,3 +8,11 @@
 
 ## 0.0.3
 * Add example.
+
+## 0.0.4
+* Add widgets: TxDatePickerButton、showInformationDialog、TxLoading、TxPanel、TxFileListTile、TxSignature、TxImagePickerView、TxImageGalleryViewer、TxVideoPlayerView、TxRefreshListView.
+* Add form series widgets to create Form Forms Efficiently.
+* Add AutoOrientationUtil to quick switch between horizontal and vertical screens.
+* Add DurationExtension、TimeOfDayExtension and IterableExtension.
+* Add linter rules.
+* Update some widgets description and format code.
