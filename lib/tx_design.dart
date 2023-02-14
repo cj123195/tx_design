@@ -1,7 +1,8 @@
 library tx_design;
 
-export 'extension.dart';
-export 'painting.dart';
-export 'theme_extension.dart';
-export 'utils/basic_types.dart';
-export 'widget.dart';
+export 'extensions.dart';
+export 'form.dart';
+export 'paintings.dart';
+export 'theme_extensions.dart';
+export 'utils.dart';
+export 'widgets.dart';

@@ -2,8 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import '../widget.dart';
 import '../widgets/image_picker.dart';
+import '../widgets/signature.dart';
 import 'form_item_container.dart';
 
 /// @title 图标选择Form表单组件
