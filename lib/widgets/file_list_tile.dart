@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import '../constants/svg.dart';
 import '../extensions/int_extension.dart';
 import '../extensions/string_extension.dart';
+import '../utils/basic_types.dart' show VoidCallbackForResult;
 import 'text_button.dart';
 
 const double _kIconSize = 40.0;
@@ -59,7 +60,7 @@ class TxFileListTile extends StatelessWidget {
   final int? size;
 
   /// 删除点击回调
-  final VoidCallback? onDeleteTap;
+  final VoidCallbackForResult? onDeleteTap;
 
   /// 预览点击回调
   final VoidCallback? onPreviewTap;
@@ -216,7 +217,11 @@ class TxFileListTile extends StatelessWidget {
           label: const Text('删除'),
           icon: const Icon(Icons.delete_outline),
           iconPosition: TextButtonIconPosition.top,
-          onPressed: onDeleteTap,
+          onPressed: () {
+            if (onDeleteTap!()) {
+              Navigator.pop(context);
+            }
+          },
         ),
       ...?actions
     ];
@@ -227,10 +232,9 @@ class TxFileListTile extends StatelessWidget {
       builder: (context) {
         return ConstrainedBox(
           constraints: const BoxConstraints(
-            minHeight: 125.0,
-            minWidth: double.infinity,
-            maxWidth: double.infinity
-          ),
+              minHeight: 125.0,
+              minWidth: double.infinity,
+              maxWidth: double.infinity),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: Wrap(
@@ -255,14 +259,18 @@ class TxFileListTile extends StatelessWidget {
         );
     final Widget subtitle = Text(size?.sizeFormat() ?? '未知大小');
     final Widget title = Text(name);
-    const Widget trailing = Icon(Icons.more_horiz);
+    final bool tapEnabled = onDeleteTap != null ||
+        onPreviewTap != null ||
+        onPreviewTap != null ||
+        actions?.isNotEmpty == true;
+    final Widget? trailing = tapEnabled ? const Icon(Icons.more_horiz) : null;
 
     return ListTile(
       leading: leading,
       title: title,
       subtitle: subtitle,
       trailing: trailing,
-      onTap: () => _showActionPane(context),
+      onTap: tapEnabled ? () => _showActionPane(context) : null,
       dense: dense,
       visualDensity: visualDensity,
       shape: shape,
