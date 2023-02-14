@@ -91,6 +91,8 @@ class _TxSignatureState extends State<TxSignature> {
 
   /// 修改点位
   void _refreshPoints(double widthRadio, double heightRadio) {
+    print(widthRadio);
+    print(heightRadio);
     final List<Point> points = _controller!.points;
     _controller!.points = points
         .map((e) => e.copyWith(

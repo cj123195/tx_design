@@ -26,22 +26,22 @@ class TxLoadingThemeData extends ThemeExtension<TxLoadingThemeData> {
     this.period,
     this.direction,
   }) : gradient = LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[
-              baseColor,
-              baseColor,
-              highlightColor,
-              baseColor,
-              baseColor
-            ],
-            stops: const <double>[
-              0.0,
-              0.35,
-              0.5,
-              0.65,
-              1.0
-            ]);
+      begin: Alignment.topLeft,
+      end: Alignment.centerRight,
+      colors: <Color>[
+        baseColor,
+        baseColor,
+        highlightColor,
+        baseColor,
+        baseColor
+      ],
+      stops: const <double>[
+        0.0,
+        0.35,
+        0.5,
+        0.65,
+        1.0
+      ]);
 
   final Widget? child;
   final TextStyle? textStyle;
@@ -82,7 +82,7 @@ class TxLoadingThemeData extends ThemeExtension<TxLoadingThemeData> {
       child: t < 0.5 ? child : other.child,
       textStyle: TextStyle.lerp(textStyle, other.textStyle, t),
       iconTheme: IconThemeData.lerp(iconTheme, other.iconTheme, t),
-      period: t < 0.5 ? period : other.period,
+      period: t < 0.5 ? period: other.period,
       direction: t < 0.5 ? direction : other.direction,
       gradient: Gradient.lerp(gradient, other.gradient, t),
     );
