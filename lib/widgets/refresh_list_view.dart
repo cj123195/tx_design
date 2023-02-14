@@ -2,8 +2,8 @@ import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
 /// 列表刷新组件
-class RefreshListView extends EasyRefresh {
-  const RefreshListView({
+class TxRefreshListView extends EasyRefresh {
+  const TxRefreshListView({
     required super.child,
     super.key,
     super.controller,
@@ -29,7 +29,7 @@ class RefreshListView extends EasyRefresh {
     super.scrollController,
   });
 
-  RefreshListView.builder({
+  TxRefreshListView.builder({
     required int itemCount,
     required NullableIndexedWidgetBuilder itemBuilder,
     EdgeInsetsGeometry? padding,
@@ -63,7 +63,7 @@ class RefreshListView extends EasyRefresh {
           ),
         );
 
-  RefreshListView.separated({
+  TxRefreshListView.separated({
     required int itemCount,
     required NullableIndexedWidgetBuilder itemBuilder,
     IndexedWidgetBuilder? separatorBuilder,

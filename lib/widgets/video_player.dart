@@ -9,8 +9,8 @@ import '../utils/auto_orientation.dart';
 
 export 'package:video_player/video_player.dart' show VideoPlayerController;
 
-class VideoPlayerView extends StatefulWidget {
-  const VideoPlayerView({
+class TxVideoPlayerView extends StatefulWidget {
+  const TxVideoPlayerView({
     Key? key,
     this.path,
     this.title,
@@ -22,10 +22,10 @@ class VideoPlayerView extends StatefulWidget {
   final VideoPlayerController? controller;
 
   @override
-  State<VideoPlayerView> createState() => _VideoPlayerViewState();
+  State<TxVideoPlayerView> createState() => _TxVideoPlayerViewState();
 }
 
-class _VideoPlayerViewState extends State<VideoPlayerView> {
+class _TxVideoPlayerViewState extends State<TxVideoPlayerView> {
   late VideoPlayerController _controller;
 
   Future<void> _initController() async {
@@ -69,7 +69,8 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
       onPressed: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => OrientationVideoPlayer(controller: _controller),
+          builder: (context) =>
+              TxOrientationVideoPlayer(controller: _controller),
         ),
       ),
     );
@@ -103,8 +104,8 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
 }
 
 /// 横屏视频播放器
-class OrientationVideoPlayer extends StatefulWidget {
-  const OrientationVideoPlayer({
+class TxOrientationVideoPlayer extends StatefulWidget {
+  const TxOrientationVideoPlayer({
     Key? key,
     this.path,
     this.title,
@@ -116,10 +117,11 @@ class OrientationVideoPlayer extends StatefulWidget {
   final VideoPlayerController? controller;
 
   @override
-  State<OrientationVideoPlayer> createState() => _OrientationVideoPlayerState();
+  State<TxOrientationVideoPlayer> createState() =>
+      _TxOrientationVideoPlayerState();
 }
 
-class _OrientationVideoPlayerState extends State<OrientationVideoPlayer> {
+class _TxOrientationVideoPlayerState extends State<TxOrientationVideoPlayer> {
   late VideoPlayerController _controller;
 
   Future<void> _initController() async {
