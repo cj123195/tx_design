@@ -5,6 +5,9 @@ import '../utils/basic_types.dart';
 import '../widgets/multi_picker_bottom_sheet.dart';
 import 'form_item_container.dart';
 
+export '../utils/basic_types.dart' show ValueMapper;
+export '../widgets/multi_picker_bottom_sheet.dart' show MultiPickerItemBuilder;
+
 /// 多选Form组件
 class MultiPickerFormField<T, V> extends FormField<Set<T>> {
   MultiPickerFormField({

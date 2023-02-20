@@ -5,6 +5,9 @@ import '../utils/basic_types.dart';
 import '../widgets/picker_bottom_sheet.dart';
 import 'common_picker_form_field.dart';
 
+export '../utils/basic_types.dart' show ValueMapper;
+export '../widgets/picker_bottom_sheet.dart' show PickerItemBuilder;
+
 /// 单选Form组件
 class PickerFormField<T, V> extends CommonPickerFormField<T, V> {
   PickerFormField({
