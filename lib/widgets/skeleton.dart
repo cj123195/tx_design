@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:tx_design/tx_design.dart';
+
+import 'shimmer.dart';
 
 /// 骨架屏组件
 class TxSkeleton extends StatelessWidget {

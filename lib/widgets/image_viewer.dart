@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
+export 'package:photo_view/photo_view.dart' show PhotoViewHeroAttributes;
 export 'package:photo_view/photo_view_gallery.dart'
     show PhotoViewGalleryPageOptions;
 
