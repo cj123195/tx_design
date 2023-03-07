@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:tx_design/tx_design.dart';
 
 /// 骨架屏组件
-class Skeleton extends StatelessWidget {
-  const Skeleton({super.key, this.style = const SkeletonStyle()});
+class TxSkeleton extends StatelessWidget {
+  const TxSkeleton({super.key, this.style = const TxSkeletonStyle()});
 
-  final SkeletonStyle style;
+  final TxSkeletonStyle style;
 
   @override
   Widget build(BuildContext context) {
@@ -49,10 +49,11 @@ class Skeleton extends StatelessWidget {
 }
 
 /// 头像骨架屏
-class AvatarSkeleton extends StatelessWidget {
-  const AvatarSkeleton({super.key, this.style = const SkeletonAvatarStyle()});
+class TxAvatarSkeleton extends StatelessWidget {
+  const TxAvatarSkeleton(
+      {super.key, this.style = const TxSkeletonAvatarStyle()});
 
-  final SkeletonAvatarStyle style;
+  final TxSkeletonAvatarStyle style;
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +90,7 @@ class AvatarSkeleton extends StatelessWidget {
                 color: Theme.of(context).colorScheme.background,
                 shape: style.shape,
                 borderRadius:
-                style.shape != BoxShape.circle ? style.borderRadius : null,
+                    style.shape != BoxShape.circle ? style.borderRadius : null,
               ),
             );
           },
@@ -100,9 +101,9 @@ class AvatarSkeleton extends StatelessWidget {
 }
 
 /// 文章段落骨架屏
-class ParagraphSkeleton extends StatelessWidget {
-  const ParagraphSkeleton({
-    Key? key,
+class TxParagraphSkeleton extends StatelessWidget {
+  const TxParagraphSkeleton({
+    super.key,
     this.lines = 3,
     this.padding = const EdgeInsets.symmetric(vertical: 8, horizontal: 13),
     this.spacing = 12,
@@ -112,13 +113,14 @@ class ParagraphSkeleton extends StatelessWidget {
     this.hasImage = false,
     this.hasRelease = false,
     this.runSpacing,
-  }) : super(key: key);
+  });
+
   final int lines;
   final EdgeInsetsGeometry padding;
   final double spacing;
-  final SkeletonStyle? lineStyle;
-  final SkeletonStyle? imageStyle;
-  final SkeletonStyle? releaseStyle;
+  final TxSkeletonStyle? lineStyle;
+  final TxSkeletonStyle? imageStyle;
+  final TxSkeletonStyle? releaseStyle;
   final double? runSpacing;
   final bool hasImage;
   final bool hasRelease;
@@ -129,13 +131,14 @@ class ParagraphSkeleton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (var i = 1; i <= lines; i++) ...[
-          Skeleton(style: lineStyle ?? const SkeletonStyle(height: 14)),
+          TxSkeleton(style: lineStyle ?? const TxSkeletonStyle(height: 14)),
           if (i != lines) SizedBox(height: spacing)
         ],
         if (hasRelease) ...[
           SizedBox(height: spacing),
-          Skeleton(
-              style: releaseStyle ?? const SkeletonStyle(height: 14, width: 55))
+          TxSkeleton(
+              style:
+                  releaseStyle ?? const TxSkeletonStyle(height: 14, width: 55))
         ],
       ],
     );
@@ -143,26 +146,26 @@ class ParagraphSkeleton extends StatelessWidget {
       padding: padding,
       child: hasImage
           ? Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: child),
-          SizedBox(width: runSpacing ?? 12),
-          Skeleton(
-              style: imageStyle ??
-                  const SkeletonStyle(width: 100, height: 80))
-        ],
-      )
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: child),
+                SizedBox(width: runSpacing ?? 12),
+                TxSkeleton(
+                    style: imageStyle ??
+                        const TxSkeletonStyle(width: 100, height: 80))
+              ],
+            )
           : child,
     );
   }
 }
 
 /// ListTile骨架屏
-class ListTileSkeleton extends StatelessWidget {
-  const ListTileSkeleton({
-    Key? key,
-    this.titleStyle = const SkeletonStyle(),
+class TxListTileSkeleton extends StatelessWidget {
+  const TxListTileSkeleton({
+    super.key,
+    this.titleStyle = const TxSkeletonStyle(),
     this.hasLeading = true,
     this.leadingStyle,
     this.hasSubtitle = true,
@@ -171,12 +174,13 @@ class ListTileSkeleton extends StatelessWidget {
     this.contentSpacing = 5,
     this.verticalSpacing = 4,
     this.trailing,
-  }) : super(key: key);
+  });
+
   final bool hasLeading;
-  final SkeletonAvatarStyle? leadingStyle;
-  final SkeletonStyle titleStyle;
+  final TxSkeletonAvatarStyle? leadingStyle;
+  final TxSkeletonStyle titleStyle;
   final bool hasSubtitle;
-  final SkeletonStyle? subtitleStyle;
+  final TxSkeletonStyle? subtitleStyle;
   final EdgeInsetsGeometry? padding;
   final double? contentSpacing;
   final double? verticalSpacing;
@@ -191,8 +195,8 @@ class ListTileSkeleton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (hasLeading)
-            AvatarSkeleton(
-                style: leadingStyle ?? const SkeletonAvatarStyle(width: 30)),
+            TxAvatarSkeleton(
+                style: leadingStyle ?? const TxSkeletonAvatarStyle(width: 30)),
           SizedBox(width: contentSpacing),
           Expanded(
             child: Column(
@@ -200,12 +204,12 @@ class ListTileSkeleton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Skeleton(style: titleStyle),
+                TxSkeleton(style: titleStyle),
                 if (hasSubtitle) ...[
                   SizedBox(height: verticalSpacing),
-                  Skeleton(
+                  TxSkeleton(
                     style: subtitleStyle ??
-                        const SkeletonStyle(width: 60, height: 14),
+                        const TxSkeletonStyle(width: 60, height: 14),
                   ),
                 ],
               ],
@@ -219,18 +223,18 @@ class ListTileSkeleton extends StatelessWidget {
 }
 
 /// TabBar骨架屏
-class TabBarSkeleton extends StatelessWidget {
-  const TabBarSkeleton(
+class TxTabBarSkeleton extends StatelessWidget {
+  const TxTabBarSkeleton(
       {Key? key,
-        this.tabNum = 3,
-        this.padding = const EdgeInsets.symmetric(vertical: 16, horizontal: 13),
-        this.tabStyle = const SkeletonStyle(
-            width: 50, height: 20, padding: EdgeInsets.symmetric(horizontal: 20)),
-        this.alignment = MainAxisAlignment.spaceBetween})
+      this.tabNum = 3,
+      this.padding = const EdgeInsets.symmetric(vertical: 16, horizontal: 13),
+      this.tabStyle = const TxSkeletonStyle(
+          width: 50, height: 20, padding: EdgeInsets.symmetric(horizontal: 20)),
+      this.alignment = MainAxisAlignment.spaceBetween})
       : super(key: key);
   final int tabNum;
   final EdgeInsetsGeometry padding;
-  final SkeletonStyle tabStyle;
+  final TxSkeletonStyle tabStyle;
   final MainAxisAlignment alignment;
 
   @override
@@ -239,22 +243,23 @@ class TabBarSkeleton extends StatelessWidget {
       padding: padding,
       child: Row(
         mainAxisAlignment: alignment,
-        children: List.generate(tabNum, (index) => Skeleton(style: tabStyle)),
+        children: List.generate(tabNum, (index) => TxSkeleton(style: tabStyle)),
       ),
     );
   }
 }
 
 /// 列表骨架屏
-class ListViewSkeleton extends StatelessWidget {
-  const ListViewSkeleton({
-    Key? key,
+class TxListViewSkeleton extends StatelessWidget {
+  const TxListViewSkeleton({
+    super.key,
     this.padding = const EdgeInsets.symmetric(vertical: 8, horizontal: 13),
     this.item,
     this.itemCount = 5,
     this.scrollable = false,
     this.spacing,
-  }) : super(key: key);
+  });
+
   final Widget? item;
   final int itemCount;
   final bool scrollable;
@@ -269,7 +274,7 @@ class ListViewSkeleton extends StatelessWidget {
         child: Column(
           children: [
             for (var i = 1; i <= itemCount; i++) ...[
-              item ?? const ListTileSkeleton(),
+              item ?? const TxListTileSkeleton(),
               if (i != itemCount) SizedBox(height: spacing)
             ]
           ],
@@ -280,16 +285,16 @@ class ListViewSkeleton extends StatelessWidget {
       padding: padding,
       itemCount: itemCount,
       physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) => item ?? const ListTileSkeleton(),
+      itemBuilder: (context, index) => item ?? const TxListTileSkeleton(),
     );
   }
 }
 
 /// 菜单骨架屏
-class MenuSkeleton extends StatelessWidget {
-  const MenuSkeleton({Key? key, this.style = const SkeletonMenuStyle()})
-      : super(key: key);
-  final SkeletonMenuStyle style;
+class TxMenuSkeleton extends StatelessWidget {
+  const TxMenuSkeleton({super.key, this.style = const TxSkeletonMenuStyle()});
+
+  final TxSkeletonMenuStyle style;
 
   @override
   Widget build(BuildContext context) {
@@ -297,37 +302,39 @@ class MenuSkeleton extends StatelessWidget {
       padding: style.padding,
       child: style.hasLabel
           ? Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          AvatarSkeleton(style: style.iconStyle),
-          SizedBox(height: style.spacing),
-          Skeleton(
-              style: style.labelStyle ?? const SkeletonStyle(width: 45)),
-        ],
-      )
-          : AvatarSkeleton(style: style.iconStyle),
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TxAvatarSkeleton(style: style.iconStyle),
+                SizedBox(height: style.spacing),
+                TxSkeleton(
+                  style: style.labelStyle ?? const TxSkeletonStyle(width: 45),
+                ),
+              ],
+            )
+          : TxAvatarSkeleton(style: style.iconStyle),
     );
   }
 }
 
 /// 菜单组骨架屏
-class MenuGroupSkeleton extends StatelessWidget {
-  const MenuGroupSkeleton({
-    Key? key,
-    this.menuStyle = const SkeletonMenuStyle(),
+class TxMenuGroupSkeleton extends StatelessWidget {
+  const TxMenuGroupSkeleton({
+    super.key,
+    this.menuStyle = const TxSkeletonMenuStyle(),
     this.menuNum = 5,
     this.hasTitle = false,
     this.hasLeading = false,
     this.titleStyle,
     this.leadingStyle,
     this.padding = const EdgeInsets.all(0),
-  }) : super(key: key);
+  });
+
   final bool hasTitle;
   final bool hasLeading;
-  final SkeletonStyle? titleStyle;
-  final SkeletonAvatarStyle? leadingStyle;
-  final SkeletonMenuStyle menuStyle;
+  final TxSkeletonStyle? titleStyle;
+  final TxSkeletonAvatarStyle? leadingStyle;
+  final TxSkeletonMenuStyle menuStyle;
   final int menuNum;
   final EdgeInsetsGeometry padding;
 
@@ -338,33 +345,33 @@ class MenuGroupSkeleton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children:
-      List.generate(menuNum, (index) => MenuSkeleton(style: menuStyle)),
+          List.generate(menuNum, (index) => TxMenuSkeleton(style: menuStyle)),
     );
 
     return Padding(
       padding: padding,
       child: hasTitle
           ? Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTileSkeleton(
-            titleStyle:
-            titleStyle ?? const SkeletonStyle(width: 70, height: 20),
-            leadingStyle: leadingStyle ?? const SkeletonAvatarStyle(),
-            hasSubtitle: false,
-            hasLeading: hasLeading,
-            padding: const EdgeInsets.only(bottom: 13),
-          ),
-          menuRow
-        ],
-      )
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TxListTileSkeleton(
+                  titleStyle: titleStyle ??
+                      const TxSkeletonStyle(width: 70, height: 20),
+                  leadingStyle: leadingStyle ?? const TxSkeletonAvatarStyle(),
+                  hasSubtitle: false,
+                  hasLeading: hasLeading,
+                  padding: const EdgeInsets.only(bottom: 13),
+                ),
+                menuRow
+              ],
+            )
           : menuRow,
     );
   }
 }
 
-class SkeletonStyle {
-  const SkeletonStyle({
+class TxSkeletonStyle {
+  const TxSkeletonStyle({
     this.width = double.infinity,
     this.height = 18,
     this.padding = const EdgeInsets.all(0),
@@ -392,8 +399,8 @@ class SkeletonStyle {
   final Color? highlightColor;
 }
 
-class SkeletonAvatarStyle extends SkeletonStyle {
-  const SkeletonAvatarStyle({
+class TxSkeletonAvatarStyle extends TxSkeletonStyle {
+  const TxSkeletonAvatarStyle({
     double? width = 48,
     double? height = 48,
     EdgeInsetsGeometry padding = const EdgeInsets.all(0),
@@ -407,7 +414,7 @@ class SkeletonAvatarStyle extends SkeletonStyle {
     this.minHeight,
     this.shape = BoxShape.circle,
     BorderRadiusGeometry? borderRadius =
-    const BorderRadius.all(Radius.circular(4)),
+        const BorderRadius.all(Radius.circular(4)),
   })  : randomHeight = randomHeight ?? (minHeight != null || maxHeight != null),
         assert(minWidth == null ||
             (minWidth > 0 && (maxWidth == null || maxWidth > minWidth))),
@@ -418,34 +425,34 @@ class SkeletonAvatarStyle extends SkeletonStyle {
         assert(maxHeight == null ||
             (maxHeight > 0 && (minHeight == null || minHeight < maxHeight))),
         super(
-        randomWidth: randomWidth,
-        width: width,
-        height: height,
-        padding: padding,
-        borderRadius: borderRadius,
-        minWidth: minWidth,
-        maxWidth: maxWidth,
-        highlightColor: highlightColor,
-        baseColor: baseColor,
-      );
+          randomWidth: randomWidth,
+          width: width,
+          height: height,
+          padding: padding,
+          borderRadius: borderRadius,
+          minWidth: minWidth,
+          maxWidth: maxWidth,
+          highlightColor: highlightColor,
+          baseColor: baseColor,
+        );
   final bool randomHeight;
   final double? maxHeight;
   final double? minHeight;
   final BoxShape shape;
 }
 
-class SkeletonMenuStyle {
-  const SkeletonMenuStyle({
+class TxSkeletonMenuStyle {
+  const TxSkeletonMenuStyle({
     Key? key,
     this.labelStyle,
-    this.iconStyle = const SkeletonAvatarStyle(shape: BoxShape.rectangle),
+    this.iconStyle = const TxSkeletonAvatarStyle(shape: BoxShape.rectangle),
     this.spacing = 8,
     this.padding = const EdgeInsets.all(0),
     this.hasLabel = true,
   });
 
-  final SkeletonStyle? labelStyle;
-  final SkeletonAvatarStyle iconStyle;
+  final TxSkeletonStyle? labelStyle;
+  final TxSkeletonAvatarStyle iconStyle;
   final double? spacing;
   final EdgeInsetsGeometry padding;
   final bool hasLabel;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 /// 帮助提示按钮图标
-class HelpTooltipIcon extends Tooltip {
-  HelpTooltipIcon({
+class TxHelpTooltipIcon extends Tooltip {
+  TxHelpTooltipIcon({
     required super.message,
     EdgeInsetsGeometry? iconPadding,
     bool solid = false,

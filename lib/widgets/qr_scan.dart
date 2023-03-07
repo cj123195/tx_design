@@ -6,14 +6,14 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 /// @title 二维码扫描页面
 /// @updateTime 2023/02/17 2:58 下午
 /// @author 曹骏
-class QRScanView extends StatefulWidget {
-  const QRScanView({super.key});
+class TxQrScanView extends StatefulWidget {
+  const TxQrScanView({super.key});
 
   @override
-  State<StatefulWidget> createState() => _QRScanViewState();
+  State<StatefulWidget> createState() => _TxQrScanViewState();
 }
 
-class _QRScanViewState extends State<QRScanView> {
+class _TxQrScanViewState extends State<TxQrScanView> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
