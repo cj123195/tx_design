@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
+export 'package:photo_view/photo_view_gallery.dart'
+    show PhotoViewGalleryPageOptions;
+
 /// 一个查看图片的小部件
 class TxImageViewer extends StatelessWidget {
   /// 创建一个图片查看器

@@ -1,6 +1,8 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
+export 'package:easy_refresh/easy_refresh.dart';
+
 /// 列表刷新组件
 class TxRefreshListView extends EasyRefresh {
   const TxRefreshListView({
