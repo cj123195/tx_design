@@ -16,3 +16,8 @@
 * Add DurationExtension、TimeOfDayExtension and IterableExtension.
 * Add linter rules.
 * Update some widgets description and format code.
+
+## 0.0.5
+* Add widgets: showDialog、TxHelpToolTip、TxQrScanView、TxSkeleton.
+* Add utils Throttle、divideTiles、FileSystem.
+* Update TxImageViewer's exports and TxRefreshListView's exports.
