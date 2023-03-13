@@ -21,3 +21,7 @@
 * Add widgets: showDialog、TxHelpToolTip、TxQrScanView、TxSkeleton.
 * Add utils Throttle、divideTiles、FileSystem.
 * Update TxImageViewer's exports and TxRefreshListView's exports.
+
+## 0.0.6
+* Add new method called 'searchFile' in FileSystem util.
+* Add widget TxLinearGradientProgressIndicator.
