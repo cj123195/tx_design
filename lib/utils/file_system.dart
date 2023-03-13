@@ -58,11 +58,19 @@ class FileSystem {
     return file;
   }
 
+  /// 创建缓存文件
   static Future<File> createCacheFile(String name, {bool force = true}) async {
     return await createFile(
       name,
       force: force,
       path: (await getTemporaryDirectory()).path,
     );
+  }
+
+  /// 查找文件
+  static Future<File?> searchFile(String name, {String? path}) async {
+    path ??= await prepareDownloadDir();
+    final File file = File('$path/$name');
+    return file.existsSync() ? file : null;
   }
 }
