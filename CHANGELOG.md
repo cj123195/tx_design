@@ -25,3 +25,6 @@
 ## 0.0.6
 * Add new method called 'searchFile' in FileSystem util.
 * Add widget TxLinearGradientProgressIndicator.
+
+## 0.0.7
+* Fix that setting the background color of showDefaultDialog does not work due to assignment errors.

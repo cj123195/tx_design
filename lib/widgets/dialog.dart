@@ -119,7 +119,7 @@ Future<T?> showDefaultDialog<T>(
         actionsOverflowDirection: actionsOverflowDirection,
         actionsOverflowButtonSpacing: actionsOverflowButtonSpacing,
         buttonPadding: buttonPadding,
-        backgroundColor: barrierColor,
+        backgroundColor: backgroundColor,
         elevation: elevation,
         shadowColor: shadowColor,
         surfaceTintColor: surfaceTintColor,
