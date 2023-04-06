@@ -6,37 +6,46 @@ import 'package:path_provider/path_provider.dart';
 class FileSystem {
   FileSystem._();
 
-  /// 准备下载目录
-  static Future<String> prepareDownloadDir() async {
-    final String path = (await getDownloadDir())!;
-    final Directory savedDir = Directory(path);
+  /// 创建文件夹
+  static Future<Directory> createDirectory(String name) async {
+    final Directory externalDir = (await getExternalStorageDir())!;
+    final Directory savedDir =
+        Directory(externalDir.path + Platform.pathSeparator + name);
     if (!savedDir.existsSync()) {
       await savedDir.create();
     }
-    return path;
+    return savedDir;
   }
 
   /// 获取下载路径
-  static Future<String?> getDownloadDir() async {
-    String? externalStorageDirPath;
+  static Future<Directory?> getDownloadDir() async {
+    Directory? downloadDir;
 
     if (Platform.isAndroid) {
       try {
         final Directory? directory = await getDownloadsDirectory();
         if (directory == null) {
-          externalStorageDirPath = (await getExternalStorageDirectory())?.path;
+          downloadDir = await getExternalStorageDir();
         } else {
-          externalStorageDirPath = directory.path;
+          downloadDir = directory;
         }
       } on UnsupportedError {
-        final directory = await getExternalStorageDirectory();
-        externalStorageDirPath = directory?.path;
+        downloadDir = await getExternalStorageDir();
       }
     } else if (Platform.isIOS) {
-      externalStorageDirPath =
-          (await getApplicationDocumentsDirectory()).absolute.path;
+      downloadDir = await getExternalStorageDir();
     }
-    return externalStorageDirPath;
+    return downloadDir;
+  }
+
+  /// 获取应用外部存储路径
+  static Future<Directory?> getExternalStorageDir() async {
+    if (Platform.isAndroid) {
+      return (await getExternalStorageDirectory())!;
+    } else if (Platform.isIOS) {
+      return (await getApplicationDocumentsDirectory()).absolute;
+    }
+    return null;
   }
 
   /// 创建一个文件
@@ -49,8 +58,8 @@ class FileSystem {
     String? path,
     bool force = true,
   }) async {
-    path ??= await prepareDownloadDir();
-    File file = File('$path/$name');
+    path ??= (await getDownloadDir())!.path;
+    File file = File('$path${Platform.pathSeparator}$name');
     if (await file.exists() && force) {
       file.delete();
     }
@@ -69,8 +78,8 @@ class FileSystem {
 
   /// 查找文件
   static Future<File?> searchFile(String name, {String? path}) async {
-    path ??= await prepareDownloadDir();
-    final File file = File('$path/$name');
+    path ??= (await getDownloadDir())!.path;
+    final File file = File('$path${Platform.pathSeparator}$name');
     return file.existsSync() ? file : null;
   }
 }
