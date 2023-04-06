@@ -42,7 +42,7 @@ List<Widget> divideTiles({
 
   return List.generate(
     length,
-        (index) {
+    (index) {
       final int itemIndex = index ~/ 2;
       if (index.isEven) {
         return tiles.toList()[itemIndex];

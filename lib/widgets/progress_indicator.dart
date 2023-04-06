@@ -149,15 +149,8 @@ class TxLinearGradientProgressIndicator extends StatefulWidget {
         gradient ??
         LinearGradient(
           colors: [
-            Theme
-                .of(context)
-                .colorScheme
-                .primary,
-            Theme
-                .of(context)
-                .colorScheme
-                .primary
-                .withOpacity(0.5),
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.primary.withOpacity(0.5),
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -220,19 +213,14 @@ class _TxLinearGradientProgressIndicatorState
   Widget _buildIndicator(BuildContext context, double animationValue,
       TextDirection textDirection) {
     final ProgressIndicatorThemeData indicatorTheme =
-    ProgressIndicatorTheme.of(context);
+        ProgressIndicatorTheme.of(context);
     final Color trackColor = widget.backgroundColor ??
         indicatorTheme.linearTrackColor ??
-        Theme
-            .of(context)
-            .colorScheme
-            .background;
+        Theme.of(context).colorScheme.background;
     final double minHeight =
         widget.minHeight ?? indicatorTheme.linearMinHeight ?? 4.0;
-    final TextStyle textStyle = widget.textStyle ?? Theme
-        .of(context)
-        .primaryTextTheme
-        .bodySmall!;
+    final TextStyle textStyle =
+        widget.textStyle ?? Theme.of(context).primaryTextTheme.bodySmall!;
 
     return widget._buildSemanticsWrapper(
       context: context,

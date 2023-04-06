@@ -38,7 +38,7 @@ class Throttle {
     return () {
       final String key = id ?? func.hashCode.toString();
       Timer? timer = _funcDebounce[key];
-      if(timer == null) {
+      if (timer == null) {
         func.call();
         timer = Timer(Duration(milliseconds: timeout), () {
           Timer? t = _funcDebounce.remove(key);

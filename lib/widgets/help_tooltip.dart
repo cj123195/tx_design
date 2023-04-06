@@ -23,9 +23,9 @@ class TxHelpTooltipIcon extends Tooltip {
     super.enableFeedback,
     super.onTriggered,
   }) : super(
-    child: Padding(
-      padding: padding ?? const EdgeInsets.all(12.0),
-      child: Icon(solid ? Icons.help : Icons.help_outline),
-    ),
-  );
+          child: Padding(
+            padding: padding ?? const EdgeInsets.all(12.0),
+            child: Icon(solid ? Icons.help : Icons.help_outline),
+          ),
+        );
 }
