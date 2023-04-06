@@ -28,3 +28,16 @@
 
 ## 0.0.7
 * Fix that setting the background color of showDefaultDialog does not work due to assignment errors.
+
+# 0.0.8
+* Fix bug where datetimeRangePickerBottomSheet cannot scroll.
+* Optimize FileSystemUtil
+ - Delete prepareDownloadDir, please replace it with getDownloadDir;
+ - Add createDirectory method to create a dictionary in the application directory if it doesn't exist；
+ - Modify all directory related operation methods to return a value type of Dictionary.
+* Export Barcode in qr_scan.dart.
+* Update TxRefreshListView
+  - Modify the component name TxRefreshListView to TxRefreshView.
+  - Delete separated constructor.
+  - Add default constructor.
+  - Modify builder constructor parameters.
