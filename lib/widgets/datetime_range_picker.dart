@@ -290,24 +290,22 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
       ),
     );
 
-    return AbsorbPointer(
-      child: Padding(
-        padding: spacingTheme.horizontalMedium,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            customTitle,
-            textFields,
-            SizedBox(height: spacingTheme.medium),
-            if (noticeText != null)
-              Text(
-                noticeText,
-                textAlign: TextAlign.center,
-                style: textTheme.bodySmall?.copyWith(color: Colors.orange),
-              ),
-            Expanded(child: datePicker),
-          ],
-        ),
+    return Padding(
+      padding: spacingTheme.horizontalMedium,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          customTitle,
+          textFields,
+          SizedBox(height: spacingTheme.medium),
+          if (noticeText != null)
+            Text(
+              noticeText,
+              textAlign: TextAlign.center,
+              style: textTheme.bodySmall?.copyWith(color: Colors.orange),
+            ),
+          Expanded(child: datePicker),
+        ],
       ),
     );
   }
