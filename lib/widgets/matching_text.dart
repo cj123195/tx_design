@@ -127,7 +127,7 @@ class TxMatchingText extends StatelessWidget {
       result.add(TextSpan(text: text.substring(0, match.start)));
     }
     result.add(TextSpan(text: query!, style: style));
-    if (match.end != text.length - 1) {
+    if (match.end != text.length) {
       result.addAll(_generateTextSpan(text.substring(match.end), style));
     }
     return result;
