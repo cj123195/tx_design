@@ -41,3 +41,7 @@
   - Delete separated constructor.
   - Add default constructor.
   - Modify builder constructor parameters.
+
+# 0.0.9
+* Fix matching_text some cases where unmatched text cannot be displayed.
+* Add animated_icon_button widget.
