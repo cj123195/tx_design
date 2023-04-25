@@ -68,29 +68,33 @@ Future<T?> showDefaultDialog<T>(
   List<Widget>? effectiveActions;
   if (actions != null) {
     effectiveActions = actions;
-  } else if (showConfirmButton) {
-    final VoidCallback effectiveOnConfirm =
-        onConfirm ?? () => Navigator.pop(context, true);
-    final Widget effectiveConfirm = confirm ?? Text(confirmText ?? '确定');
-    effectiveActions = [
-      FilledButton(
-        onPressed: effectiveOnConfirm,
-        style: confirmButtonStyle,
-        child: effectiveConfirm,
-      ),
-    ];
-  } else if (showCancelButton) {
-    final VoidCallback effectiveOnCancel =
-        onCancel ?? () => Navigator.pop(context, false);
-    final Widget effectiveCancel = cancel ?? Text(cancelText ?? '取消');
-    effectiveActions = [
-      ...?effectiveActions,
-      OutlinedButton(
-        onPressed: effectiveOnCancel,
-        style: cancelButtonStyle,
-        child: effectiveCancel,
-      ),
-    ];
+  } else {
+    if (showConfirmButton) {
+      final VoidCallback effectiveOnConfirm =
+          onConfirm ?? () => Navigator.pop(context, true);
+      final Widget effectiveConfirm = confirm ?? Text(confirmText ?? '确定');
+      effectiveActions = [
+        FilledButton(
+          onPressed: effectiveOnConfirm,
+          style: confirmButtonStyle,
+          child: effectiveConfirm,
+        ),
+      ];
+    }
+
+    if (showCancelButton) {
+      final VoidCallback effectiveOnCancel =
+          onCancel ?? () => Navigator.pop(context, false);
+      final Widget effectiveCancel = cancel ?? Text(cancelText ?? '取消');
+      effectiveActions = [
+        ...?effectiveActions,
+        OutlinedButton(
+          onPressed: effectiveOnCancel,
+          style: cancelButtonStyle,
+          child: effectiveCancel,
+        ),
+      ];
+    }
   }
 
   return showDialog<T>(
