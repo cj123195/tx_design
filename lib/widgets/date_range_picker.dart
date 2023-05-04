@@ -14,19 +14,41 @@ Future<DateTimeRange?> showDateRangeDialog(
   DateTime? firstDate,
   DateTime? lastDate,
   bool showNavigationArrow = true,
+  String? confirmText,
+  String? cancelText,
 }) async {
   return showDialog<DateTimeRange>(
     context: context,
     builder: (context) {
+      DateTimeRange? result = initialDateRange;
       final Widget picker = DateRangePicker(
         initialDateRange: initialDateRange,
         firstDate: firstDate,
         lastDate: lastDate,
-        onChanged: (dateRange) {
-          Navigator.pop(context, dateRange);
-        },
+        onChanged: (dateRange) => result = dateRange,
       );
-      return Center(child: Card(child: SizedBox(height: 400.0, child: picker)));
+      final Widget footer = ButtonBar(
+        children: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(cancelText ?? '取消'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context, result);
+            },
+            child: Text(confirmText ?? '确定'),
+          ),
+        ],
+      );
+      return Center(
+        child: Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [SizedBox(height: 400.0, child: picker), footer],
+          ),
+        ),
+      );
     },
   );
 }
@@ -246,21 +268,19 @@ class _DateRangePickerPickerState extends State<DateRangePicker>
       ),
     );
 
-    return AbsorbPointer(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: _kMediumGap),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            fastChoiceTitle,
-            fastChoices,
-            customTitle,
-            textFields,
-            const SizedBox(height: _kMediumGap),
-            noticeText,
-            Expanded(child: datePicker),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: _kMediumGap),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          fastChoiceTitle,
+          fastChoices,
+          customTitle,
+          textFields,
+          const SizedBox(height: _kMediumGap),
+          noticeText,
+          Expanded(child: datePicker),
+        ],
       ),
     );
   }

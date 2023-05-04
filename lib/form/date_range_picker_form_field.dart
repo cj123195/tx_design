@@ -231,10 +231,13 @@ class _DateRangePickerFormFieldState extends FormFieldState<DateTimeRange> {
       _createLocalStartController();
       _createLocalEndController();
     } else {
-      _createLocalStartController(TextEditingValue(
-          text: widget.initialValue!.start.format(widget.format)));
+      _createLocalStartController(
+        TextEditingValue(
+            text: widget.initialValue!.start.format(widget.format)),
+      );
       _createLocalEndController(
-          TextEditingValue(text: widget.initialValue!.end.format()));
+        TextEditingValue(text: widget.initialValue!.end.format()),
+      );
     }
   }
 
@@ -247,8 +250,10 @@ class _DateRangePickerFormFieldState extends FormFieldState<DateTimeRange> {
         _effectiveStartController.clear();
         _effectiveEndController.clear();
       } else {
-        _effectiveStartController.text = widget.initialValue!.start.format();
-        _effectiveEndController.text = widget.initialValue!.end.format();
+        _effectiveStartController.text =
+            widget.initialValue!.start.format(widget.format);
+        _effectiveEndController.text =
+            widget.initialValue!.end.format(widget.format);
       }
     }
   }
@@ -263,8 +268,8 @@ class _DateRangePickerFormFieldState extends FormFieldState<DateTimeRange> {
   @override
   void didChange(DateTimeRange? value) {
     super.didChange(value);
-    final String? start = widget.initialValue?.start.format();
-    final String? end = widget.initialValue?.end.format();
+    final String? start = value?.start.format(widget.format);
+    final String? end = value?.end.format(widget.format);
     if (_effectiveStartController.text != start) {
       _effectiveStartController.text = start ?? '';
     }
@@ -275,8 +280,8 @@ class _DateRangePickerFormFieldState extends FormFieldState<DateTimeRange> {
 
   @override
   void reset() {
-    final String? start = widget.initialValue?.start.format();
-    final String? end = widget.initialValue?.end.format();
+    final String? start = widget.initialValue?.start.format(widget.format);
+    final String? end = widget.initialValue?.end.format(widget.format);
     _effectiveStartController.text = start ?? '';
     _effectiveEndController.text = end ?? '';
     super.reset();
