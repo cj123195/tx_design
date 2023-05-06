@@ -401,7 +401,7 @@ class _DefaultSheet extends StatelessWidget {
             child: Text(textCancel ?? '取消'),
           ),
         if (showConfirmButton)
-          ElevatedButton(
+          FilledButton(
             onPressed: onConfirm ?? () => Navigator.pop(context, false),
             child: Text(textConfirm ?? '确定'),
           ),
