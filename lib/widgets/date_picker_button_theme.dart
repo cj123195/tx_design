@@ -31,21 +31,19 @@ class TxDatePickerButtonThemeData
     DateTime? firstDate,
     DateTime? lastDate,
     bool? showWeekDay,
-    IconData? leading,
-    IconData? trailing,
-    TextStyle? textStyle,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
     ButtonStyle? buttonStyle,
-    IconThemeData? iconTheme,
     String? format,
   }) {
     return TxDatePickerButtonThemeData(
-      firstDate: firstDate,
-      lastDate: lastDate,
-      showWeekDay: showWeekDay,
-      prefixIcon: prefixIcon,
-      suffixIcon: suffixIcon,
-      buttonStyle: buttonStyle,
-      format: format,
+      firstDate: firstDate ?? this.firstDate,
+      lastDate: lastDate ?? this.lastDate,
+      showWeekDay: showWeekDay ?? this.showWeekDay,
+      prefixIcon: prefixIcon ?? this.prefixIcon,
+      suffixIcon: suffixIcon ?? this.suffixIcon,
+      buttonStyle: buttonStyle ?? this.buttonStyle,
+      format: format ?? this.format,
     );
   }
 
