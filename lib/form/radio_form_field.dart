@@ -16,8 +16,12 @@ class RadioFormField<T, V> extends FormField<T> {
     /// FormItemContainer参数
     Widget? label,
     String? labelText,
-    EdgeInsetsGeometry? labelPadding,
-    Color? background,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    TextStyle? labelStyle,
+    TextStyle? starStyle,
+    double? horizontalGap,
+    double? minLabelWidth,
     Axis? direction,
 
     /// Form参数
@@ -76,9 +80,13 @@ class RadioFormField<T, V> extends FormField<T> {
                 label: label,
                 labelText: labelText,
                 required: required,
-                direction: direction ?? Axis.vertical,
-                background: background,
-                padding: labelPadding,
+                direction: direction,
+                backgroundColor: backgroundColor,
+                labelStyle: labelStyle,
+                starStyle: starStyle,
+                horizontalGap: horizontalGap,
+                minLabelWidth: minLabelWidth,
+                padding: padding,
                 formField: InputDecorator(
                   decoration: effectiveDecoration,
                   child: Column(

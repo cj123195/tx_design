@@ -13,9 +13,13 @@ class CheckboxFormField<T, V> extends FormField<List<T>> {
     /// FormItemContainer参数
     Widget? label,
     String? labelText,
-    EdgeInsetsGeometry? labelPadding,
-    Color? background,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
     Axis? direction,
+    TextStyle? labelStyle,
+    TextStyle? starStyle,
+    double? horizontalGap,
+    double? minLabelWidth,
 
     /// Form参数
     List<V>? initialValue,
@@ -66,7 +70,7 @@ class CheckboxFormField<T, V> extends FormField<List<T>> {
             );
 
             final List<CheckboxListTile> children = sources.map((e) {
-              final bool value = initialValue?.contains(e) == true;
+              final bool value = field.value?.contains(e) == true;
               final bool enable = enabledMapper?.call(e) ??
                   (value ||
                       maximumNumber == null ||
@@ -96,9 +100,13 @@ class CheckboxFormField<T, V> extends FormField<List<T>> {
                 label: label,
                 labelText: labelText,
                 required: minimumNumber != null && minimumNumber > 0,
-                direction: direction ?? Axis.vertical,
-                background: background,
-                padding: labelPadding,
+                direction: direction,
+                backgroundColor: backgroundColor,
+                labelStyle: labelStyle,
+                starStyle: starStyle,
+                horizontalGap: horizontalGap,
+                minLabelWidth: minLabelWidth,
+                padding: padding,
                 formField: InputDecorator(
                   decoration: effectiveDecoration,
                   child: Column(

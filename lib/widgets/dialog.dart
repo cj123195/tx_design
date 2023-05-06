@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../localizations.dart';
+
 const EdgeInsets _defaultInsetPadding =
     EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0);
 
 Future<T?> showDefaultDialog<T>(
   BuildContext context, {
-  String? titleText = '操作提示',
+  bool showTitle = true,
+  String? titleText,
   Widget? title,
   EdgeInsetsGeometry? titlePadding,
   TextStyle? titleTextStyle,
-  String? contentText = '确认执行此操作吗?',
+  String? contentText,
   Widget? content,
   EdgeInsetsGeometry? contentPadding,
   TextStyle? contentTextStyle,
@@ -51,47 +54,54 @@ Future<T?> showDefaultDialog<T>(
   AlignmentGeometry? alignment,
   bool scrollable = false,
 }) async {
+  final MaterialLocalizations localizations = MaterialLocalizations.of(context);
+  final TxLocalizations txLocalizations = TxLocalizations.of(context);
+
   Widget? effectiveTitle;
-  if (title != null) {
-    effectiveTitle = title;
-  } else if (titleText != null) {
-    effectiveTitle = Text(titleText);
+  if (showTitle) {
+    if (title != null) {
+      effectiveTitle = title;
+    } else {
+      effectiveTitle = Text(titleText ?? txLocalizations.dialogTitle);
+    }
   }
 
   Widget? effectiveContent;
   if (content != null) {
     effectiveContent = content;
-  } else if (contentText != null) {
-    effectiveContent = Text(contentText);
+  } else {
+    effectiveContent = Text(contentText ?? txLocalizations.dialogContent);
   }
 
   List<Widget>? effectiveActions;
   if (actions != null) {
     effectiveActions = actions;
   } else {
-    if (showConfirmButton) {
-      final VoidCallback effectiveOnConfirm =
-          onConfirm ?? () => Navigator.pop(context, true);
-      final Widget effectiveConfirm = confirm ?? Text(confirmText ?? '确定');
+    if (showCancelButton) {
+      final VoidCallback effectiveOnCancel =
+          onCancel ?? () => Navigator.pop(context, false);
+      final Widget effectiveCancel =
+          cancel ?? Text(cancelText ?? localizations.cancelButtonLabel);
       effectiveActions = [
-        FilledButton(
-          onPressed: effectiveOnConfirm,
-          style: confirmButtonStyle,
-          child: effectiveConfirm,
+        TextButton(
+          onPressed: effectiveOnCancel,
+          style: cancelButtonStyle,
+          child: effectiveCancel,
         ),
       ];
     }
 
-    if (showCancelButton) {
-      final VoidCallback effectiveOnCancel =
-          onCancel ?? () => Navigator.pop(context, false);
-      final Widget effectiveCancel = cancel ?? Text(cancelText ?? '取消');
+    if (showConfirmButton) {
+      final VoidCallback effectiveOnConfirm =
+          onConfirm ?? () => Navigator.pop(context, true);
+      final Widget effectiveConfirm =
+          confirm ?? Text(confirmText ?? localizations.okButtonLabel);
       effectiveActions = [
         ...?effectiveActions,
-        OutlinedButton(
-          onPressed: effectiveOnCancel,
-          style: cancelButtonStyle,
-          child: effectiveCancel,
+        FilledButton(
+          onPressed: effectiveOnConfirm,
+          style: confirmButtonStyle,
+          child: effectiveConfirm,
         ),
       ];
     }

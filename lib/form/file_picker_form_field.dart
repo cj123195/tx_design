@@ -35,8 +35,12 @@ class FilePickerFormField extends FormField<List<PlatformFile>> {
     // FormItemContainer参数
     Widget? label,
     String? labelText,
-    EdgeInsetsGeometry? labelPadding,
-    Color? background,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    TextStyle? labelStyle,
+    TextStyle? starStyle,
+    double? horizontalGap,
+    double? minLabelWidth,
     Axis? direction,
   })  : assert(maxPickNumber == null || maxPickNumber > 0),
         super(
@@ -156,9 +160,13 @@ class FilePickerFormField extends FormField<List<PlatformFile>> {
                 label: label,
                 labelText: labelText,
                 required: required,
-                direction: direction ?? Axis.vertical,
-                background: background,
-                padding: labelPadding,
+                direction: direction,
+                backgroundColor: backgroundColor,
+                labelStyle: labelStyle,
+                starStyle: starStyle,
+                horizontalGap: horizontalGap,
+                minLabelWidth: minLabelWidth,
+                padding: padding,
                 formField: InputDecorator(
                   decoration: decoration.copyWith(
                     errorText: field.errorText,

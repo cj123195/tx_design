@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tx_design/form/form_item_theme.dart';
+import 'package:tx_design/localizations.dart';
 import 'package:tx_design/tx_design.dart';
 
 void main() {
@@ -26,7 +29,19 @@ class _MyAppState extends State<MyApp> {
           const SpacingThemeData(),
           const RadiusThemeData(),
           ColorThemeData.light(),
-          const TxCellThemeData()
+          const TxCellThemeData(),
+          const FormItemThemeData(
+            padding: EdgeInsets.all(8.0),
+            direction: Axis.horizontal,
+            inputDecorationTheme: InputDecorationTheme(
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+            ),
+          )
         ],
         useMaterial3: true,
       ),
@@ -42,6 +57,14 @@ class _MyAppState extends State<MyApp> {
         ],
         useMaterial3: true,
       ),
+      locale: const Locale('en', 'US'),
+      supportedLocales: const [Locale('en', 'US'), Locale('zh', 'CN')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        TxLocalizations.delegate,
+      ],
       home: MyHomePage(
           title: 'HomePage',
           changeTheme: () {
@@ -71,19 +94,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  int _counter = 0;
-
-  void _incrementCounter() {
-    _formKey.currentState!.validate();
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  static const List<String> sources = ['选项1', '选项2', '选项3'];
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(12.0),
         child: Form(
           key: _formKey,
@@ -115,27 +126,25 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TxCellTheme(
-                data: const TxCellThemeData(),
-                child: TxCell(
-                  labelText: 'current count is',
-                  contentText: '$_counter',
-                ),
+              InputFormField(
+                labelText: '输入框',
+                maxLines: 5,
               ),
-              Text(
-                'Current datetime: ${DateTime.now().millisecondsSinceEpoch}',
-                style: Theme.of(context).textTheme.headlineMedium,
+              CheckboxFormField(
+                sources: sources,
+                labelMapper: (data) => data,
+                labelText: 'CheckBox多选',
+              ),
+              DatePickerFormField(
+                labelText: '日期选择',
               ),
               PhotoPickerFormField(),
+              DateRangePickerFormField(),
+              DatetimePickerFormField(labelText: '日期时间选择框')
             ],
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

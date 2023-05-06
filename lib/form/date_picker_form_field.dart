@@ -24,8 +24,10 @@ class DatePickerFormField extends CommonPickerFormField<DateTime, DateTime> {
     /// FormItemContainer参数
     super.label,
     super.labelText,
-    super.labelPadding,
-    super.background,
+    super.padding,
+    super.backgroundColor,
+    super.labelStyle,
+    super.starStyle,
     super.direction,
 
     /// TextField参数

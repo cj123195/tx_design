@@ -24,8 +24,12 @@ class SignatureFormField extends FormField<List<Point>> {
     // FormItemContainer参数
     Widget? label,
     String? labelText,
-    EdgeInsetsGeometry? labelPadding,
-    Color? background,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    TextStyle? labelStyle,
+    TextStyle? starStyle,
+    double? horizontalGap,
+    double? minLabelWidth,
     Axis? direction,
   }) : super(
           initialValue: initialValue,
@@ -69,9 +73,13 @@ class SignatureFormField extends FormField<List<Point>> {
                 label: label,
                 labelText: labelText,
                 required: required,
-                direction: direction ?? Axis.vertical,
-                background: background,
-                padding: labelPadding,
+                direction: direction,
+                backgroundColor: backgroundColor,
+                labelStyle: labelStyle,
+                starStyle: starStyle,
+                horizontalGap: horizontalGap,
+                minLabelWidth: minLabelWidth,
+                padding: padding,
                 formField: InputDecorator(
                   decoration: decoration.copyWith(
                     errorText: state.errorText,

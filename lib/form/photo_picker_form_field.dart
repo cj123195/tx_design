@@ -32,7 +32,11 @@ class PhotoPickerFormField extends FormField<List<ByteData>> {
     Widget? label,
     String? labelText,
     EdgeInsetsGeometry? padding,
-    Color? background,
+    Color? backgroundColor,
+    TextStyle? labelStyle,
+    TextStyle? starStyle,
+    double? horizontalGap,
+    double? minLabelWidth,
     Axis? direction,
   })  : assert(maxPickNumber == null || maxPickNumber > 0),
         super(
@@ -92,8 +96,12 @@ class PhotoPickerFormField extends FormField<List<ByteData>> {
                 label: label,
                 labelText: labelText,
                 required: required,
-                direction: direction ?? Axis.vertical,
-                background: background,
+                direction: direction,
+                backgroundColor: backgroundColor,
+                labelStyle: labelStyle,
+                starStyle: starStyle,
+                horizontalGap: horizontalGap,
+                minLabelWidth: minLabelWidth,
                 padding: padding,
                 formField: InputDecorator(
                   decoration: decoration.copyWith(

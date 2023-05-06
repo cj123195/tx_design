@@ -30,8 +30,12 @@ class DateRangePickerFormField extends FormField<DateTimeRange> {
     // FormItemContainer参数
     Widget? label,
     String? labelText,
-    EdgeInsetsGeometry? labelPadding,
-    Color? background,
+    EdgeInsetsGeometry? padding,
+    Color? backgroundColor,
+    TextStyle? labelStyle,
+    TextStyle? starStyle,
+    double? horizontalGap,
+    double? minLabelWidth,
     Axis? direction,
 
     /// TextField参数
@@ -152,9 +156,13 @@ class DateRangePickerFormField extends FormField<DateTimeRange> {
                 label: label,
                 labelText: labelText,
                 required: required,
-                direction: direction ?? Axis.vertical,
-                background: background,
-                padding: labelPadding,
+                direction: direction,
+                backgroundColor: backgroundColor,
+                labelStyle: labelStyle,
+                starStyle: starStyle,
+                horizontalGap: horizontalGap,
+                minLabelWidth: minLabelWidth,
+                padding: padding,
                 formField: formField,
               ),
             );

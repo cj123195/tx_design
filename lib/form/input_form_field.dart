@@ -18,7 +18,11 @@ class InputFormField extends FormField<String> {
     Widget? label,
     String? labelText,
     EdgeInsetsGeometry? padding,
-    Color? background,
+    Color? backgroundColor,
+    TextStyle? labelStyle,
+    TextStyle? starStyle,
+    double? horizontalGap,
+    double? minLabelWidth,
     Axis? direction,
     // TextField参数
     super.key,
@@ -30,7 +34,7 @@ class InputFormField extends FormField<String> {
     TextStyle? style,
     StrutStyle? strutStyle,
     TextDirection? textDirection,
-    TextAlign textAlign = TextAlign.start,
+    TextAlign? textAlign,
     TextAlignVertical? textAlignVertical,
     bool autofocus = false,
     bool readonly = false,
@@ -89,6 +93,11 @@ class InputFormField extends FormField<String> {
               errorText: state.errorText,
               suffixIcon: suffixIcon,
             );
+            final TextAlign effectiveTextAlign = FormItemContainer.getTextAlign(
+              state.context,
+              textAlign,
+              direction,
+            );
 
             return UnmanagedRestorationScope(
               bucket: field.bucket,
@@ -96,8 +105,12 @@ class InputFormField extends FormField<String> {
                 label: label,
                 labelText: labelText,
                 required: required,
-                direction: direction ?? Axis.vertical,
-                background: background,
+                direction: direction,
+                backgroundColor: backgroundColor,
+                labelStyle: labelStyle,
+                starStyle: starStyle,
+                horizontalGap: horizontalGap,
+                minLabelWidth: minLabelWidth,
                 padding: padding,
                 formField: TextField(
                   restorationId: restorationId,
@@ -109,7 +122,7 @@ class InputFormField extends FormField<String> {
                   textInputAction: textInputAction,
                   style: style,
                   strutStyle: strutStyle,
-                  textAlign: textAlign,
+                  textAlign: effectiveTextAlign,
                   textAlignVertical: textAlignVertical,
                   textDirection: textDirection,
                   textCapitalization: textCapitalization,
