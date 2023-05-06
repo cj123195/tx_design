@@ -1,80 +1,137 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
+import '../localizations.dart';
+import '../tx_design.dart';
 import 'date_picker.dart';
 
 const String _format = 'yyyy-MM-dd';
 const double _kMediumGap = 12.0;
+const Duration _dialogSizeAnimationDuration = Duration(milliseconds: 200);
+const Size _inputPortraitDialogSize = Size(330.0, 400.0);
 
 /// 时间段选择
 Future<DateTimeRange?> showDateRangeDialog(
   BuildContext context, {
-  Color? backgroundColor,
   DateTimeRange? initialDateRange,
   DateTime? firstDate,
   DateTime? lastDate,
-  bool showNavigationArrow = true,
+  String? helpText,
+  String? fieldStartHintText,
+  String? fieldEndHintText,
+  List<DateRangeQuickChoice>? quickChoices = const [
+    DateRangeMonthQuickChoice(),
+    DateRangeMonthQuickChoice(value: 6),
+    DateRangeYearQuickChoice(),
+  ],
+  EdgeInsetsGeometry? buttonPadding,
   String? confirmText,
+  ButtonStyle? confirmButtonStyle,
   String? cancelText,
+  ButtonStyle? cancelButtonStyle,
+  Color? backgroundColor,
+  double? elevation,
+  EdgeInsets insetPadding = const EdgeInsets.symmetric(horizontal: 12.0),
 }) async {
-  return showDialog<DateTimeRange>(
+  final MaterialLocalizations localizations = MaterialLocalizations.of(context);
+
+  DateTimeRange? result = initialDateRange;
+  final Widget picker = TxDateRangePickerDialog(
+    initialDateRange: initialDateRange,
+    firstDate: firstDate,
+    lastDate: lastDate,
+    onChanged: (dateRange) => result = dateRange,
+    helpText: helpText,
+    fieldEndHintText: fieldEndHintText,
+    fieldStartHintText: fieldStartHintText,
+    quickChoices: quickChoices,
+  );
+  return showDialog(
     context: context,
     builder: (context) {
-      DateTimeRange? result = initialDateRange;
-      final Widget picker = DateRangePicker(
-        initialDateRange: initialDateRange,
-        firstDate: firstDate,
-        lastDate: lastDate,
-        onChanged: (dateRange) => result = dateRange,
-      );
-      final Widget footer = ButtonBar(
-        children: [
+      return AlertDialog(
+        buttonPadding: buttonPadding,
+        backgroundColor: backgroundColor,
+        elevation: elevation,
+        insetPadding: insetPadding,
+        content: picker,
+        actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(cancelText ?? '取消'),
+            style: cancelButtonStyle,
+            child: Text(cancelText ?? localizations.cancelButtonLabel),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context, result);
-            },
-            child: Text(confirmText ?? '确定'),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, result),
+            style: confirmButtonStyle,
+            child: Text(confirmText ?? localizations.okButtonLabel),
           ),
         ],
-      );
-      return Center(
-        child: Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [SizedBox(height: 400.0, child: picker), footer],
-          ),
-        ),
       );
     },
   );
 }
 
-/// @title 时间段选择器
-/// @updateTime 2022/11/01 3:56 下午
-/// @author 曹骏
-class DateRangePicker extends StatefulWidget {
-  const DateRangePicker({
-    Key? key,
+/// 带快捷选择的时间范围选择器
+class TxDateRangePickerDialog extends StatefulWidget {
+  const TxDateRangePickerDialog({
+    required this.firstDate,
+    required this.lastDate,
+    super.key,
     this.initialDateRange,
+    this.helpText,
+    this.fieldStartHintText,
+    this.fieldEndHintText,
     this.onChanged,
-    this.firstDate,
-    this.lastDate,
-  }) : super(key: key);
+    this.quickChoices = const [
+      DateRangeMonthQuickChoice(),
+      DateRangeMonthQuickChoice(value: 6),
+      DateRangeYearQuickChoice(),
+    ],
+  });
 
+  /// 日期范围选择器打开时开始的日期范围。
+  ///
+  /// 如果提供了初始日期范围，则“initialDateRange.start”和“initialDateRange.end”必须
+  /// 介于 [firstDate] 和 [lastDate] 之间或之间。对于所有这些 [DateTime] 值，仅考虑其日期。
+  /// 它们的时间字段将被忽略。
+  ///
+  /// 如果 [initialDateRange] 为非空，则它将用作初始选择的日期范围。如果提供，
+  /// 则“initialDateRange.start”必须在“initialDateRange.end”之前或之后。
   final DateTimeRange? initialDateRange;
-  final ValueChanged<DateTimeRange?>? onChanged;
+
+  /// 日期范围内允许的最早日期。
   final DateTime? firstDate;
+
+  /// 日期范围内允许的最晚日期。
   final DateTime? lastDate;
 
+  /// 显示在输入框日期显示输入框底部的帮助文字。
+  final String? helpText;
+
+  /// 用于在开始字段中未输入任何文本时提示用户的文本。
+  ///
+  /// 如果为 null，则使用 [MaterialLocalizations.dateRangeStartLabel] 的本地化值。
+  final String? fieldStartHintText;
+
+  /// 用于在结束字段中未输入任何文本时提示用户的文本。
+  ///
+  /// 如果为 null，则使用 [MaterialLocalizations.dateRangeStartLabel] 的本地化值。
+  final String? fieldEndHintText;
+
+  /// 选择器值变动回调
+  final ValueChanged<DateTimeRange?>? onChanged;
+
+  /// 快捷选择项
+  final List<DateRangeQuickChoice>? quickChoices;
+
   @override
-  State<DateRangePicker> createState() => _DateRangePickerPickerState();
+  State<TxDateRangePickerDialog> createState() =>
+      _TxDateRangePickerDialogState();
 }
 
-class _DateRangePickerPickerState extends State<DateRangePicker>
+class _TxDateRangePickerDialogState extends State<TxDateRangePickerDialog>
     with SingleTickerProviderStateMixin {
   /// 输入控制器
   late TextEditingController _startController;
@@ -116,19 +173,6 @@ class _DateRangePickerPickerState extends State<DateRangePicker>
       return oneYear.isBefore(widget.lastDate!) ? oneYear : widget.lastDate;
     }
     return widget.lastDate;
-  }
-
-  /// 计算快捷选择的开始时间
-  DateTime _compareStartDate(int month) {
-    final DateTime now = DateTime.now();
-    final int currentMonth = now.month;
-    int startMonth = currentMonth - month;
-    if (startMonth > 0) {
-      return DateTime(now.year, startMonth, now.day + 1);
-    } else {
-      startMonth = 12 + startMonth;
-      return DateTime(now.year - 1, startMonth, now.day + 1);
-    }
   }
 
   /// 时间改变
@@ -189,6 +233,13 @@ class _DateRangePickerPickerState extends State<DateRangePicker>
 
   @override
   Widget build(BuildContext context) {
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final Orientation orientation = mediaQuery.orientation;
+    final double textScaleFactor = math.min(mediaQuery.textScaleFactor, 1.3);
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
+    final TxLocalizations txLocalizations = TxLocalizations.of(context);
+
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
     const VisualDensity visualDensity = VisualDensity(
@@ -196,136 +247,165 @@ class _DateRangePickerPickerState extends State<DateRangePicker>
       horizontal: VisualDensity.minimumDensity,
     );
 
+    final List<Widget> contents = [];
+
+    // 快捷选择
+    if (widget.quickChoices?.isNotEmpty == true) {
+      final Widget quickPickTitle = ListTile(
+        visualDensity: visualDensity,
+        contentPadding: EdgeInsets.zero,
+        title: Text(
+          txLocalizations.quickChoiceTitle,
+          style: textTheme.bodySmall,
+        ),
+      );
+      final Widget quickPicker = SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(widget.quickChoices!.length, (index) {
+            final DateRangeQuickChoice choice = widget.quickChoices![index];
+            final DateTimeRange range = choice.datetimeRange;
+            return Container(
+              margin: const EdgeInsets.only(right: _kMediumGap),
+              child: _QuickChoiceChip(
+                item: choice,
+                onSelect: (range) => _onDateChanged(range.start, range.end),
+                selected: _startDate == range.start && _endDate == range.end,
+              ),
+            );
+          }),
+        ),
+      );
+      contents.addAll([quickPickTitle, quickPicker]);
+    }
+
     // 自定义
     final Widget customTitle = ListTile(
       visualDensity: visualDensity,
       contentPadding: EdgeInsets.zero,
-      title: Text('自定义', style: textTheme.bodySmall),
+      title: Text(txLocalizations.customTitle, style: textTheme.bodySmall),
       trailing: IconButton(
         visualDensity: visualDensity,
         onPressed: (_startDate == null && _endDate == null)
             ? null
             : () => _onDateChanged(null, null),
         icon: const Icon(Icons.delete_forever_outlined, size: 20),
-        tooltip: '清空',
+        tooltip: localizations.deleteButtonTooltip,
       ),
+    );
+    contents.add(customTitle);
+
+    final String fieldStartHintText =
+        widget.fieldStartHintText ?? localizations.dateRangeStartLabel;
+    final Widget fieldStart = _DateTextField(
+      hintText: fieldStartHintText,
+      controller: _startController,
+      focusNode: _startNode,
+      autofocus: true,
+    );
+
+    final String fieldEndHintText =
+        widget.fieldEndHintText ?? localizations.dateRangeEndLabel;
+    final Widget fieldEnd = _DateTextField(
+      hintText: fieldEndHintText,
+      controller: _endController,
+      focusNode: _endNode,
     );
     final Widget textFields = Row(
       mainAxisSize: MainAxisSize.max,
       children: [
-        Expanded(
-          child: _buildTextField(_startController, _startNode, '开始时间', true),
-        ),
+        Expanded(child: fieldStart),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: _kMediumGap),
-          child: Text('至', style: textTheme.bodyMedium),
+          child: Text('-', style: textTheme.bodyMedium),
         ),
-        Expanded(
-          child: _buildTextField(_endController, _endNode, '结束时间'),
-        ),
+        Expanded(child: fieldEnd),
       ],
     );
+    contents.add(textFields);
 
-    // 快捷选择
-    final Widget fastChoiceTitle = ListTile(
-      visualDensity: visualDensity,
-      contentPadding: EdgeInsets.zero,
-      title: Text('快捷选择', style: textTheme.bodySmall),
-    );
-    final Widget fastChoices = Row(
-      children: [
-        _buildFastChoiceChip('近三月', 3),
-        const SizedBox(width: _kMediumGap),
-        _buildFastChoiceChip('近半年', 6),
-        const SizedBox(width: _kMediumGap),
-        _buildFastChoiceChip('近一年', 12),
-      ],
-    );
-
-    /// 提示文字
-    final Widget noticeText = Text(
-      '最长可查询时间跨度一年的数据',
-      textAlign: TextAlign.center,
-      style: textTheme.bodySmall?.copyWith(color: Colors.orange),
-    );
-
-    // 时间选择器
-    final Widget datePicker = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: _kMediumGap * 2),
-      child: DatePicker(
-        onChanged: (date) {
-          if (_startNode.hasFocus) {
-            _onDateChanged(date, _endDate);
-          } else if (_endNode.hasFocus) {
-            _onDateChanged(_startDate, date);
-          }
-        },
-        maximumDate: _maximumDate,
-        minimumDate: _minimumDate,
-        maximumYear: _maximumDate?.year,
-        minimumYear: _minimumDate?.year,
-        initialDateTime: _startNode.hasFocus ? _startDate : _endDate,
-      ),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: _kMediumGap),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          fastChoiceTitle,
-          fastChoices,
-          customTitle,
-          textFields,
-          const SizedBox(height: _kMediumGap),
-          noticeText,
-          Expanded(child: datePicker),
-        ],
-      ),
-    );
-  }
-
-  /// 快捷选择Chip
-  Widget _buildFastChoiceChip(String label, int month) {
-    final DateTime start = _compareStartDate(month);
-    final DateTime now = DateTime.now();
-    final DateTime end = DateTime(now.year, now.month, now.day);
-    final bool selected = _startDate == start && _endDate == end;
-
-    Color background;
-    Color? foreground;
-    BorderSide borderSide;
-    if (selected) {
-      background = Theme.of(context).colorScheme.primary;
-      borderSide = BorderSide.none;
-      foreground = Theme.of(context).colorScheme.onPrimary;
-    } else {
-      background = Theme.of(context).colorScheme.background;
-      borderSide = Divider.createBorderSide(context);
+    // 帮助文字
+    if (widget.helpText != null) {
+      final Widget helpText = Text(
+        widget.helpText!,
+        textAlign: TextAlign.center,
+        style: textTheme.bodySmall?.copyWith(color: Colors.orange),
+      );
+      contents.addAll([const SizedBox(height: _kMediumGap), helpText]);
     }
 
-    return RawChip(
-      label: Text(label),
-      labelStyle:
-          Theme.of(context).textTheme.bodySmall?.copyWith(color: foreground),
-      backgroundColor: background,
-      shape: RoundedRectangleBorder(
-        side: borderSide,
-        borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-      ),
-      onSelected: (val) {
-        _onDateChanged(start, end);
+    // 时间选择器
+    final Widget datePicker = DatePicker(
+      onChanged: (date) {
+        if (_startNode.hasFocus) {
+          _onDateChanged(date, _endDate);
+        } else if (_endNode.hasFocus) {
+          _onDateChanged(_startDate, date);
+        }
       },
+      maximumDate: _maximumDate,
+      minimumDate: _minimumDate,
+      maximumYear: _maximumDate?.year,
+      minimumYear: _minimumDate?.year,
+      initialDateTime: _startNode.hasFocus ? _startDate : _endDate,
+    );
+
+    Size size;
+    Widget content;
+    if (orientation == Orientation.portrait) {
+      size = _inputPortraitDialogSize;
+      content = Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ...contents,
+          Expanded(child: datePicker),
+        ],
+      );
+    } else {
+      size = mediaQuery.size;
+      content = Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: contents,
+            ),
+          ),
+          Expanded(child: datePicker),
+        ],
+      );
+    }
+
+    return AnimatedContainer(
+      width: size.width,
+      height: size.height,
+      duration: _dialogSizeAnimationDuration,
+      curve: Curves.easeIn,
+      child: MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaleFactor: textScaleFactor),
+        child: Builder(builder: (BuildContext context) {
+          return content;
+        }),
+      ),
     );
   }
+}
 
-  /// 输入框
-  Widget _buildTextField(
-    TextEditingController controller,
-    FocusNode focusNode,
-    String hintText, [
-    bool autofocus = false,
-  ]) {
+class _DateTextField extends StatelessWidget {
+  const _DateTextField({
+    required this.hintText,
+    required this.controller,
+    required this.focusNode,
+    this.autofocus = false,
+  });
+
+  final String hintText;
+  final bool autofocus;
+  final TextEditingController controller;
+  final FocusNode focusNode;
+
+  @override
+  Widget build(BuildContext context) {
     final Color activeColor = Theme.of(context).colorScheme.primary;
     final UnderlineInputBorder border = UnderlineInputBorder(
         borderSide: Divider.createBorderSide(context, width: 2.0));
@@ -347,5 +427,139 @@ class _DateRangePickerPickerState extends State<DateRangePicker>
       textAlign: TextAlign.center,
       decoration: decoration,
     );
+  }
+}
+
+class _QuickChoiceChip extends StatelessWidget {
+  const _QuickChoiceChip({
+    required this.item,
+    this.onSelect,
+    this.selected = false,
+  });
+
+  final DateRangeQuickChoice item;
+  final ValueChanged<DateTimeRange>? onSelect;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final TextTheme textTheme = theme.textTheme;
+
+    Color background;
+    Color? foreground;
+    BorderSide borderSide;
+    if (selected) {
+      background = theme.colorScheme.primary;
+      borderSide = BorderSide.none;
+      foreground = theme.colorScheme.onPrimary;
+    } else {
+      background = theme.colorScheme.surface;
+      borderSide = Divider.createBorderSide(context);
+    }
+
+    return RawChip(
+      label: Text(item.getLabelText(context)),
+      labelStyle: textTheme.bodySmall?.copyWith(color: foreground),
+      backgroundColor: background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+      ),
+      selectedColor: background,
+      side: borderSide,
+      onSelected: selected ? null : (val) => onSelect?.call(item.datetimeRange),
+    );
+  }
+}
+
+abstract class DateRangeQuickChoice {
+  const DateRangeQuickChoice({required this.value});
+
+  final int value;
+
+  DateTimeRange get datetimeRange;
+
+  String getLabelText(BuildContext context);
+
+  DateTime get now {
+    final DateTime timeNow = DateTime.now();
+    return DateTime(timeNow.year, timeNow.month, timeNow.day);
+  }
+}
+
+class DateRangeYearQuickChoice extends DateRangeQuickChoice {
+  const DateRangeYearQuickChoice({super.value = 1});
+
+  @override
+  String getLabelText(BuildContext context) {
+    final TxLocalizations localizations = TxLocalizations.of(context);
+    return localizations.recentYearsLabel(value);
+  }
+
+  @override
+  DateTimeRange get datetimeRange {
+    final DateTime end = now;
+    final DateTime start = DateTime(end.year - 1, end.month, end.day + 1);
+    return DateTimeRange(start: start, end: end);
+  }
+}
+
+class DateRangeMonthQuickChoice extends DateRangeQuickChoice {
+  const DateRangeMonthQuickChoice({super.value = 1});
+
+  @override
+  String getLabelText(BuildContext context) {
+    final TxLocalizations localizations = TxLocalizations.of(context);
+    return localizations.recentMonthsLabel(value);
+  }
+
+  @override
+  DateTimeRange get datetimeRange {
+    final DateTime end = now;
+    final int endMonth = end.month;
+
+    int startMonth = endMonth - value;
+    DateTime start;
+    if (startMonth > 0) {
+      start = DateTime(end.year, startMonth, end.day + 1);
+    } else {
+      startMonth = 12 + startMonth;
+      start = DateTime(end.year - 1, startMonth, end.day + 1);
+    }
+    return DateTimeRange(start: start, end: end);
+  }
+}
+
+class DateRangeWeekQuickChoice extends DateRangeQuickChoice {
+  const DateRangeWeekQuickChoice({super.value = 1});
+
+  @override
+  String getLabelText(BuildContext context) {
+    final TxLocalizations localizations = TxLocalizations.of(context);
+    return localizations.recentWeeksLabel(value);
+  }
+
+  @override
+  DateTimeRange get datetimeRange {
+    final DateTime end = now;
+    final DateTime start = end.subtract(Duration(days: value * 7));
+    return DateTimeRange(start: start, end: end);
+  }
+}
+
+class DateRangeDayQuickChoice extends DateRangeQuickChoice {
+  const DateRangeDayQuickChoice({super.value = 10});
+
+  @override
+  String getLabelText(BuildContext context) {
+    final TxLocalizations localizations = TxLocalizations.of(context);
+    return localizations.recentYearsLabel(value);
+  }
+
+  @override
+  DateTimeRange get datetimeRange {
+    final DateTime end = now;
+    final DateTime start = end.subtract(Duration(days: value));
+    return DateTimeRange(start: start, end: end);
   }
 }
