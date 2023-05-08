@@ -116,12 +116,13 @@ class FormItemContainer extends StatelessWidget {
 
     return decoration
         .copyWith(
-          suffixIcon: suffixIcon,
-          prefixIcon: prefixIcon,
-          errorText: errorText,
-          hintText: decoration.hintText ?? hintText,
-          suffixIconConstraints: const BoxConstraints(),
-        )
+            suffixIcon: suffixIcon,
+            prefixIcon: prefixIcon,
+            errorText: errorText,
+            hintText: decoration.hintText ?? hintText,
+            suffixIconConstraints: const BoxConstraints(),
+            suffixIconColor:
+                decoration.suffixIconColor ?? decorationTheme.suffixIconColor)
         .applyDefaults(decorationTheme);
   }
 
