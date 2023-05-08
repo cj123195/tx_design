@@ -45,3 +45,12 @@
 # 0.0.9
 * Fix matching_text some cases where unmatched text cannot be displayed.
 * Add animated_icon_button widget.
+
+# 0.0.10
+* Fix bug that showDefaultDialog's showCancelButton parameter do not work.
+* Fix bug that DateRangePickerFormField cannot pick date.
+* Modify the confirmation button widget of the DefaultBottomSheet.
+* Add TxLocalizations.
+* Update DateRangePicker widget.
+* Fixed issue with TxDatePickerButtonThemeData copyWith method not working.
+* Update Form series widgets.
