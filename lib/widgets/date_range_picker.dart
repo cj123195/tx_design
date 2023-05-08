@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
 import '../localizations.dart';
-import '../tx_design.dart';
 import 'date_picker.dart';
 
 const String _format = 'yyyy-MM-dd';
