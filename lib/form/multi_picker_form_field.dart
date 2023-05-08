@@ -56,7 +56,7 @@ class MultiPickerFormField<T, V> extends FormField<Set<T>> {
     TextInputAction? textInputAction,
     StrutStyle? strutStyle,
     TextDirection? textDirection,
-    TextAlign textAlign = TextAlign.start,
+    TextAlign? textAlign,
     TextAlignVertical? textAlignVertical,
     bool? autofocus = false,
     EditableTextContextMenuBuilder? contextMenuBuilder,
@@ -207,6 +207,11 @@ class MultiPickerFormField<T, V> extends FormField<Set<T>> {
                 errorText: state.errorText,
                 suffixIcon: suffixIcon,
               );
+              final TextAlign effectiveTextAlign = FormItemContainer.getTextAlign(
+                state.context,
+                textAlign,
+                direction,
+              );
 
               child = TextField(
                 restorationId: restorationId,
@@ -217,7 +222,7 @@ class MultiPickerFormField<T, V> extends FormField<Set<T>> {
                 textInputAction: textInputAction,
                 style: style,
                 strutStyle: strutStyle,
-                textAlign: textAlign,
+                textAlign: effectiveTextAlign,
                 textAlignVertical: textAlignVertical,
                 textDirection: textDirection,
                 textCapitalization: textCapitalization,

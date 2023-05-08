@@ -38,7 +38,7 @@ class DatetimeRangePickerFormField extends DateRangePickerFormField {
     super.style,
     super.strutStyle,
     super.textDirection,
-    super.textAlign = TextAlign.center,
+    super.textAlign,
     super.textAlignVertical,
     super.contextMenuBuilder,
     PickerFuture<DateTimeRange?>? onTap,

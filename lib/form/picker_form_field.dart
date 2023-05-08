@@ -50,7 +50,7 @@ class PickerFormField<T, V> extends CommonPickerFormField<T, V> {
     super.textInputAction,
     super.strutStyle,
     super.textDirection,
-    super.textAlign = TextAlign.start,
+    super.textAlign,
     super.textAlignVertical,
     super.autofocus = false,
     super.contextMenuBuilder,

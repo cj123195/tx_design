@@ -31,8 +31,6 @@ class _MyAppState extends State<MyApp> {
           ColorThemeData.light(),
           const TxCellThemeData(),
           const FormItemThemeData(
-            padding: EdgeInsets.all(8.0),
-            direction: Axis.horizontal,
             inputDecorationTheme: InputDecorationTheme(
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -53,7 +51,7 @@ class _MyAppState extends State<MyApp> {
           const SpacingThemeData(),
           const RadiusThemeData(),
           ColorThemeData.light(),
-          const TxCellThemeData()
+          const TxCellThemeData(),
         ],
         useMaterial3: true,
       ),
@@ -130,17 +128,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 labelText: '输入框',
                 maxLines: 5,
               ),
+              const SizedBox(height: 8.0),
+              InputFormField(
+                labelText: '输入框',
+                required: true,
+                maxLines: 5,
+              ),
+              const SizedBox(height: 8.0),
               CheckboxFormField(
                 sources: sources,
                 labelMapper: (data) => data,
                 labelText: 'CheckBox多选',
               ),
+              const SizedBox(height: 8.0),
               DatePickerFormField(
                 labelText: '日期选择',
               ),
+              const SizedBox(height: 8.0),
               PhotoPickerFormField(),
-              DateRangePickerFormField(),
-              DatetimePickerFormField(labelText: '日期时间选择框')
+              const SizedBox(height: 8.0),
+              DateRangePickerFormField(labelText: '时间区间选择',),
+              const SizedBox(height: 8.0),
+              DatetimePickerFormField(labelText: '日期时间选择框'),
             ],
           ),
         ),

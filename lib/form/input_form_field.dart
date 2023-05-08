@@ -81,7 +81,6 @@ class InputFormField extends FormField<String> {
             if (!readonly && state.value?.isNotEmpty == true) {
               suffixIcon = IconButton(
                 onPressed: () => onChangedHandler(''),
-                color: Colors.grey.withOpacity(0.5),
                 icon: const Icon(Icons.cancel, size: 20.0),
               );
             }

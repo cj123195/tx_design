@@ -39,7 +39,7 @@ class DatePickerFormField extends CommonPickerFormField<DateTime, DateTime> {
     super.style,
     super.strutStyle,
     super.textDirection,
-    super.textAlign = TextAlign.start,
+    super.textAlign,
     super.textAlignVertical,
     super.autofocus = false,
     super.contextMenuBuilder,

@@ -120,6 +120,7 @@ class FormItemContainer extends StatelessWidget {
           prefixIcon: prefixIcon,
           errorText: errorText,
           hintText: decoration.hintText ?? hintText,
+          suffixIconConstraints: const BoxConstraints(),
         )
         .applyDefaults(decorationTheme);
   }
@@ -148,9 +149,9 @@ class FormItemContainer extends StatelessWidget {
 
     final TextStyle effectiveStarStyle = starStyle ??
         formItemTheme.starStyle ??
-        textTheme.labelSmall!.copyWith(color: theme.colorScheme.error);
+        textTheme.titleMedium!.copyWith(color: theme.colorScheme.error);
     final TextStyle effectiveLabelStyle =
-        labelStyle ?? formItemTheme.labelStyle ?? textTheme.labelLarge!;
+        labelStyle ?? formItemTheme.labelStyle ?? textTheme.titleMedium!;
     final Color? effectiveBackgroundColor =
         backgroundColor ?? formItemTheme.backgroundColor;
     final EdgeInsetsGeometry? effectivePadding =

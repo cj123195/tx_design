@@ -40,7 +40,7 @@ class CommonPickerFormField<T, V> extends FormField<T> {
     TextInputAction? textInputAction,
     StrutStyle? strutStyle,
     TextDirection? textDirection,
-    TextAlign textAlign = TextAlign.start,
+    TextAlign? textAlign,
     TextAlignVertical? textAlignVertical,
     bool autofocus = false,
     EditableTextContextMenuBuilder? contextMenuBuilder,
@@ -105,7 +105,7 @@ class CommonPickerFormField<T, V> extends FormField<T> {
                 children: [
                   IconButton(
                     onPressed: () => onChangedHandler(null),
-                    color: Colors.grey.withOpacity(0.5),
+                    
                     icon: const Icon(Icons.cancel, size: 20.0),
                   ),
                   suffixIcon
@@ -119,6 +119,12 @@ class CommonPickerFormField<T, V> extends FormField<T> {
               hintText: '请选择',
               errorText: state.errorText,
               suffixIcon: suffixIcon,
+            );
+
+            final TextAlign effectiveTextAlign = FormItemContainer.getTextAlign(
+              state.context,
+              textAlign,
+              direction,
             );
 
             return UnmanagedRestorationScope(
@@ -144,7 +150,7 @@ class CommonPickerFormField<T, V> extends FormField<T> {
                   textInputAction: textInputAction,
                   style: style,
                   strutStyle: strutStyle,
-                  textAlign: textAlign,
+                  textAlign: effectiveTextAlign,
                   textAlignVertical: textAlignVertical,
                   textDirection: textDirection,
                   textCapitalization: textCapitalization,

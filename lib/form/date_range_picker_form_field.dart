@@ -100,6 +100,7 @@ class DateRangePickerFormField extends FormField<DateTimeRange> {
               hintText: '开始时间',
               errorText: field.errorText,
             );
+
             final Widget startField = TextField(
               restorationId: restorationId,
               controller: state._effectiveStartController,

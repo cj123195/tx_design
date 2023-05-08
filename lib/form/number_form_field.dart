@@ -116,6 +116,12 @@ class NumberFormField extends FormField<num> {
               suffixIcon: suffixIcon,
               prefixIcon: prefixIcon,
             );
+            final TextAlign effectiveTextAlign = FormItemContainer.getTextAlign(
+              state.context,
+              textAlign,
+              direction,
+            );
+
             return UnmanagedRestorationScope(
               bucket: field.bucket,
               child: FormItemContainer(
@@ -141,7 +147,9 @@ class NumberFormField extends FormField<num> {
                   style: style,
                   strutStyle: strutStyle,
                   textAlign: textAlign ??
-                      (showOperateButton ? TextAlign.center : TextAlign.start),
+                      (showOperateButton
+                          ? TextAlign.center
+                          : effectiveTextAlign),
                   textAlignVertical: textAlignVertical,
                   textDirection: textDirection,
                   textCapitalization: textCapitalization,

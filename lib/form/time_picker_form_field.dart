@@ -38,7 +38,7 @@ class TimePickerFormField extends CommonPickerFormField<TimeOfDay, TimeOfDay> {
     super.style,
     super.strutStyle,
     super.textDirection,
-    super.textAlign = TextAlign.start,
+    super.textAlign,
     super.textAlignVertical,
     super.autofocus = false,
     super.contextMenuBuilder,
