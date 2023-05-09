@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
-export 'package:qr_code_scanner/qr_code_scanner.dart' show Barcode;
+export 'package:qr_code_scanner/qr_code_scanner.dart'
+    show Barcode, BarcodeFormat;
 
 /// @title 二维码扫描页面
 /// @updateTime 2023/02/17 2:58 下午
