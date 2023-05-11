@@ -105,7 +105,6 @@ class CommonPickerFormField<T, V> extends FormField<T> {
                 children: [
                   IconButton(
                     onPressed: () => onChangedHandler(null),
-                    
                     icon: const Icon(Icons.cancel, size: 20.0),
                   ),
                   suffixIcon

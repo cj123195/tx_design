@@ -207,7 +207,8 @@ class MultiPickerFormField<T, V> extends FormField<Set<T>> {
                 errorText: state.errorText,
                 suffixIcon: suffixIcon,
               );
-              final TextAlign effectiveTextAlign = FormItemContainer.getTextAlign(
+              final TextAlign effectiveTextAlign =
+                  FormItemContainer.getTextAlign(
                 state.context,
                 textAlign,
                 direction,

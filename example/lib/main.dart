@@ -147,7 +147,9 @@ class _MyHomePageState extends State<MyHomePage> {
               const SizedBox(height: 8.0),
               PhotoPickerFormField(),
               const SizedBox(height: 8.0),
-              DateRangePickerFormField(labelText: '时间区间选择',),
+              DateRangePickerFormField(
+                labelText: '时间区间选择',
+              ),
               const SizedBox(height: 8.0),
               DatetimePickerFormField(labelText: '日期时间选择框'),
             ],
