@@ -345,7 +345,7 @@ class TxPanel extends StatelessWidget {
         textStyle = theme.textTheme.titleLarge!;
         break;
       case PanelStyle.list:
-        textStyle = theme.textTheme.titleSmall!;
+        textStyle = theme.textTheme.titleMedium!;
         break;
     }
     final Color? color = _textColor(theme, panelTheme, textStyle.color);
