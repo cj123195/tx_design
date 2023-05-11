@@ -152,6 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               const SizedBox(height: 8.0),
               DatetimePickerFormField(labelText: '日期时间选择框'),
+              const SizedBox(height: 8.0),
+              FilePickerFormField(labelText: '文件选择', drawEnabled: true),
             ],
           ),
         ),

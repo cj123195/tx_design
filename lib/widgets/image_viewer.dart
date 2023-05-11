@@ -17,6 +17,7 @@ class TxImageViewer extends StatelessWidget {
     this.image, {
     super.key,
     this.tag,
+    this.backgroundColor,
   });
 
   /// 通过asset路径创建一个图片查看器
@@ -26,6 +27,7 @@ class TxImageViewer extends StatelessWidget {
     String path, {
     super.key,
     this.tag,
+    this.backgroundColor,
   }) : image = AssetImage(path);
 
   /// 通过网络地址路径创建一个图片查看器
@@ -35,6 +37,7 @@ class TxImageViewer extends StatelessWidget {
     String path, {
     super.key,
     this.tag,
+    this.backgroundColor,
   }) : image = NetworkImage(path);
 
   /// 通过文件创建一个图片查看器
@@ -44,15 +47,29 @@ class TxImageViewer extends StatelessWidget {
     File file, {
     super.key,
     this.tag,
+    this.backgroundColor,
   }) : image = FileImage(file);
 
-  factory TxImageViewer.unknown(String path, {String? tag}) {
+  factory TxImageViewer.unknown(String path,
+      {String? tag, Color? backgroundColor}) {
     if (path.startsWith('http') || path.startsWith('https')) {
-      return TxImageViewer.network(path, tag: tag);
+      return TxImageViewer.network(
+        path,
+        tag: tag,
+        backgroundColor: backgroundColor,
+      );
     } else if (path.startsWith('assets')) {
-      return TxImageViewer.asset(path, tag: tag);
+      return TxImageViewer.asset(
+        path,
+        tag: tag,
+        backgroundColor: backgroundColor,
+      );
     } else {
-      return TxImageViewer.file(File(path), tag: tag);
+      return TxImageViewer.file(
+        File(path),
+        tag: tag,
+        backgroundColor: backgroundColor,
+      );
     }
   }
 
@@ -64,10 +81,16 @@ class TxImageViewer extends StatelessWidget {
   /// 图片
   final ImageProvider image;
 
+  /// 背景颜色
+  final Color? backgroundColor;
+
   @override
   Widget build(BuildContext context) {
+    final Color effectiveBackgroundColor = backgroundColor ?? Colors.black87;
+
     Widget child = PhotoView(
       imageProvider: image,
+      backgroundDecoration: BoxDecoration(color: effectiveBackgroundColor),
       loadingBuilder: (context, event) {
         return Center(
           child: CircularProgressIndicator(
@@ -89,7 +112,10 @@ class TxImageViewer extends StatelessWidget {
       child = Hero(tag: tag!, child: child);
     }
 
-    return Material(color: Colors.black87, child: SafeArea(child: child));
+    return Material(
+      color: effectiveBackgroundColor,
+      child: SafeArea(child: child),
+    );
   }
 }
 

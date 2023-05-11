@@ -4,6 +4,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../widgets/file_list_tile.dart';
+import '../widgets/image_viewer.dart';
 import '../widgets/signature.dart';
 import 'form_item_container.dart';
 
@@ -94,12 +95,32 @@ class FilePickerFormField extends FormField<List<PlatformFile>> {
                             bytes: data,
                           );
                           onChangedHandler([...?field.value, file]);
+                          Navigator.pop(context);
                         }
                       },
                     );
                   },
                 ),
               );
+            }
+
+            /// 预览
+            void onPreviewTap(PlatformFile file) {
+              if (file.path != null) {
+                OpenFilex.open(file.path);
+              } else {
+                Navigator.push(
+                  field.context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return TxImageViewer(
+                        MemoryImage(file.bytes!),
+                        backgroundColor: Colors.white,
+                      );
+                    },
+                  ),
+                );
+              }
             }
 
             List<Widget>? actions;
@@ -138,7 +159,7 @@ class FilePickerFormField extends FormField<List<PlatformFile>> {
                         Share.shareXFiles(
                             [XFile(e.path!, name: e.name, length: e.size)]);
                       },
-                      onPreviewTap: () => OpenFilex.open(e.path),
+                      onPreviewTap: () => onPreviewTap(e),
                       onDeleteTap: readonly
                           ? null
                           : () {

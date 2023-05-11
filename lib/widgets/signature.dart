@@ -8,7 +8,7 @@ export 'package:signature/signature.dart' show SignatureController;
 
 const Color _kPenColor = Colors.black;
 const Color _kBackgroundColor = Colors.white;
-const Color _kExportBackgroundColor = Colors.transparent;
+const Color _kExportBackgroundColor = Colors.white;
 const double _kStrokeWidth = 3.0;
 
 /// 一个用于签名的画板小部件。
