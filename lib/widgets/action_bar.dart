@@ -92,7 +92,7 @@ class TxActionBar extends StatelessWidget {
     final TextStyle effectiveLeadingTextStyle = leadingTextStyle ??
         actionTheme.leadingTextStyle ??
         theme.textTheme.bodySmall!;
-    final double effectiveActionGap = actionGap ?? actionTheme.actionGap ?? 4.0;
+    final double effectiveActionGap = actionGap ?? actionTheme.actionGap ?? 8.0;
     final double effectiveLeadingGap =
         leadingGap ?? actionTheme.leadingGap ?? 12.0;
     final double? effectiveMinLeadingWidth =

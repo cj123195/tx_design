@@ -38,13 +38,13 @@ class TxActionBarThemeData extends ThemeExtension<TxActionBarThemeData> {
     double? leadingGap,
   }) {
     return TxActionBarThemeData(
-      buttonStyle: buttonStyle,
-      iconButtonStyle: iconButtonStyle,
-      iconTheme: iconTheme,
-      leadingTextStyle: leadingTextStyle,
-      actionGap: actionGap,
-      minLeadingWidth: minLeadingWidth,
-      leadingGap: leadingGap,
+      buttonStyle: buttonStyle ?? this.buttonStyle,
+      iconButtonStyle: iconButtonStyle ?? this.iconButtonStyle,
+      iconTheme: iconTheme ?? this.iconTheme,
+      leadingTextStyle: leadingTextStyle ?? this.leadingTextStyle,
+      actionGap: actionGap ?? this.actionGap,
+      minLeadingWidth: minLeadingWidth ?? this.minLeadingWidth,
+      leadingGap: leadingGap ?? this.leadingGap,
     );
   }
 
