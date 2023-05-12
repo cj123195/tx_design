@@ -27,7 +27,7 @@ class FilePickerFormField extends FormField<List<PlatformFile>> {
     super.onSaved,
     List<PlatformFile>? initialData,
     List<TxFileListTile>? otherFiles,
-    bool required = true,
+    bool required = false,
     bool? enabled,
     super.restorationId,
     AutovalidateMode? autovalidateMode,
@@ -51,7 +51,7 @@ class FilePickerFormField extends FormField<List<PlatformFile>> {
                 final int length =
                     (value?.length ?? 0) + (otherFiles?.length ?? 0);
                 if (required && length == 0) {
-                  return '请选择$label';
+                  return '请选择${labelText ?? ''}';
                 } else if (maxPickNumber != null && length > maxPickNumber) {
                   return '最多可选择$maxPickNumber个文件';
                 }

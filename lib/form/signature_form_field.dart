@@ -15,7 +15,7 @@ class SignatureFormField extends FormField<List<Point>> {
     super.key,
     super.onSaved,
     List<Point>? initialValue,
-    bool required = true,
+    bool required = false,
     bool? enabled,
     super.restorationId,
     AutovalidateMode? autovalidateMode,

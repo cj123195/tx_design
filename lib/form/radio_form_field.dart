@@ -42,7 +42,7 @@ class RadioFormField<T, V> extends FormField<T> {
           validator: validator ??
               (required
                   ? (T? value) {
-                      return value == null ? '${label ?? ''}不能为空' : null;
+                      return value == null ? '${labelText ?? ''}不能为空' : null;
                     }
                   : null),
           builder: (FormFieldState<T> field) {
