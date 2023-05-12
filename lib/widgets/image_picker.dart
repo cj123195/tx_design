@@ -9,6 +9,7 @@ import 'package:multi_image_picker_plus/multi_image_picker_plus.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
+import '../localizations.dart';
 import 'image_picker_theme.dart';
 import 'image_viewer.dart' show TxImageGalleryViewer;
 
@@ -18,19 +19,31 @@ const double _kPickIconSize = 32.0;
 const double _kDeleteButtonSize = 16.0;
 const BorderRadius _kBorderRadius = BorderRadius.all(Radius.circular(8.0));
 const int _kColumnNum = 3;
-const String _kEmptyButtonTitle = '选择图片';
 const String _tag = 'tx_image_picker';
 
 enum PickerMode {
-  video('拍摄', ImageSource.camera),
-  image('拍照', ImageSource.camera),
-  galleryVideo('选择视频', ImageSource.gallery),
-  galleryImage('选择图片', ImageSource.gallery);
+  video(ImageSource.camera),
+  image(ImageSource.camera),
+  galleryVideo(ImageSource.gallery),
+  galleryImage(ImageSource.gallery);
 
-  const PickerMode(this.label, this.source);
+  const PickerMode(this.source);
 
-  final String label;
   final ImageSource source;
+
+  String getLabel(BuildContext context) {
+    final TxLocalizations localizations = TxLocalizations.of(context);
+    switch (this) {
+      case PickerMode.video:
+        return localizations.captureTileLabel;
+      case PickerMode.image:
+        return localizations.photographTileLabel;
+      case PickerMode.galleryVideo:
+        return localizations.selectVideoTileLabel;
+      case PickerMode.galleryImage:
+        return localizations.selectPhotoTileLabel;
+    }
+  }
 
   static const List<PickerMode> videoModes = [
     PickerMode.video,
@@ -456,8 +469,9 @@ class _EmptyContainer extends StatelessWidget {
         foregroundColor ?? galleryTheme.pickButtonForeground;
     final Color? background =
         backgroundColor ?? galleryTheme.pickButtonBackground;
-    final String title =
-        this.title ?? galleryTheme.emptyButtonTitle ?? _kEmptyButtonTitle;
+    final String title = this.title ??
+        galleryTheme.emptyButtonTitle ??
+        TxLocalizations.of(context).selectPhotoButtonLabel;
 
     return SizedBox(
       height: 160,

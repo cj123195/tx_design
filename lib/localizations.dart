@@ -39,8 +39,26 @@ abstract class TxLocalizations {
   /// Title for default dialog.
   String get dialogTitle;
 
-  /// Content text for default dialog;
+  /// Title for information dialog.
+  String get informationDialogTitle;
+
+  /// Title for picker.
+  String get pickerTitle;
+
+  /// Title text for default dialog;
   String get dialogContent;
+
+  /// Title for datetime picker bottom sheet;
+  String get datetimePickerTitle;
+
+  /// Title for month picker bottom sheet;
+  String get monthPickerTitle;
+
+  /// Title for year picker bottom sheet;
+  String get yearPickerTitle;
+
+  /// Title for datetime range picker bottom sheet;
+  String get datetimeRangePickerTitle;
 
   /// Label for recent days choice on quick choices.
   String recentDaysLabel(int count);
@@ -53,6 +71,73 @@ abstract class TxLocalizations {
 
   /// Label for recent years choice on quick choices.
   String recentYearsLabel(int count);
+
+  /// Label for Clear buttons and menu items.
+  String get clearButtonLabel;
+
+  /// Label for Collapsed buttons.
+  String get collapsedButtonLabel;
+
+  /// Label for More buttons.
+  String get moreButtonLabel;
+
+  /// Label for Preview buttons and menu items.
+  String get previewButtonLabel;
+
+  /// Label for Share buttons and menu items.
+  String get shareButtonLabel;
+
+  /// Label for select photo buttons.
+  String get selectPhotoButtonLabel;
+
+  /// Label for undo buttons.
+  String get undoButtonTooltip;
+
+  /// Label for redo buttons.
+  String get redoButtonTooltip;
+
+  /// Label for full screen buttons.
+  String get fullScreenButtonTooltip;
+
+  /// Label for exit full screen buttons.
+  String get fullScreenExitButtonTooltip;
+
+  /// Label for unknown file size on file list tile.
+  String get unknownFileSizeLabel;
+
+  /// Formats the time of the given [Duration].
+  String formatDuration(Duration duration);
+
+  /// The label used for the minimum time limit in the date range picker.
+  String dateRangeMinimumDateLimitLabel(Duration duration);
+
+  /// The label used for the maximum time limit in the date range picker.
+  String dateRangeMaximumDateLimitLabel(Duration duration);
+
+  /// The character string used to separate the start time and end time of
+  /// datetime range picker.
+  String get dateRangeDateSeparator;
+
+  /// Label for take photo choice on image picker.
+  String get photographTileLabel;
+
+  /// Label for make video choice on image picker.
+  String get captureTileLabel;
+
+  /// Label for select photo choice on image picker.
+  String get selectPhotoTileLabel;
+
+  /// Label for select video choice on image picker.
+  String get selectVideoTileLabel;
+
+  /// Label for loading to describe a state of loading.
+  String get loadingLabel;
+
+  /// Message for shown when no camera permission.
+  String get noCameraPermissionMessage;
+
+  /// Label for video speed.
+  String get videoSpeedLabel;
 
   static TxLocalizations of(BuildContext context) {
     assert(() {
@@ -149,6 +234,105 @@ class DefaultTxLocalizations implements TxLocalizations {
 
   @override
   String get dialogTitle => 'Operating Tips';
+
+  @override
+  String get informationDialogTitle => 'Information';
+
+  @override
+  String get pickerTitle => 'Select';
+
+  @override
+  String get datetimePickerTitle => 'Select Datetime';
+
+  @override
+  String get monthPickerTitle => 'Select Month';
+
+  @override
+  String get yearPickerTitle => 'Select Year';
+
+  @override
+  String get clearButtonLabel => 'Clear';
+
+  @override
+  String get collapsedButtonLabel => 'Collapsed';
+
+  @override
+  String get moreButtonLabel => 'More';
+
+  @override
+  String get previewButtonLabel => 'Preview';
+
+  @override
+  String get shareButtonLabel => 'Share';
+
+  @override
+  String get selectPhotoButtonLabel => 'Select Photo';
+
+  @override
+  String get fullScreenButtonTooltip => 'Full screen';
+
+  @override
+  String get fullScreenExitButtonTooltip => 'Exit full screen';
+
+  @override
+  String get redoButtonTooltip => 'Redo';
+
+  @override
+  String get undoButtonTooltip => 'Undo';
+
+  @override
+  String get unknownFileSizeLabel => 'Unknown size';
+
+  @override
+  String dateRangeMaximumDateLimitLabel(Duration duration) {
+    final String time = formatDuration(duration);
+    return 'The difference between the start time and end time must be less '
+        'than $time';
+  }
+
+  @override
+  String dateRangeMinimumDateLimitLabel(Duration duration) {
+    final String time = formatDuration(duration);
+    return 'The difference between the start time and end time must be greater '
+        'than $time';
+  }
+
+  @override
+  String get datetimeRangePickerTitle => 'Select Time Range';
+
+  @override
+  String formatDuration(Duration duration) {
+    if (duration.inDays >= 1) {
+      return '${duration.inDays} days';
+    } else if (duration.inHours >= 1) {
+      return '${duration.inHours} hours';
+    }
+    return '${duration.inMinutes} minutes';
+  }
+
+  @override
+  String get dateRangeDateSeparator => '-';
+
+  @override
+  String get captureTileLabel => 'Capture';
+
+  @override
+  String get photographTileLabel => 'Photograph';
+
+  @override
+  String get selectPhotoTileLabel => 'Select Photo';
+
+  @override
+  String get selectVideoTileLabel => 'Select Video';
+
+  @override
+  String get loadingLabel => 'Loading';
+
+  @override
+  String get noCameraPermissionMessage => 'No camera permission';
+
+  @override
+  String get videoSpeedLabel => 'Speed';
 }
 
 class ZhTxLocalizations implements TxLocalizations {
@@ -189,4 +373,101 @@ class ZhTxLocalizations implements TxLocalizations {
 
   @override
   String get dialogTitle => '操作提示';
+
+  @override
+  String get informationDialogTitle => '信息';
+
+  @override
+  String get pickerTitle => '请选择';
+
+  @override
+  String get datetimePickerTitle => '选择时间';
+
+  @override
+  String get monthPickerTitle => '选择月份';
+
+  @override
+  String get yearPickerTitle => '选择年份';
+
+  @override
+  String get clearButtonLabel => '清除';
+
+  @override
+  String get collapsedButtonLabel => '收起';
+
+  @override
+  String get moreButtonLabel => '更多';
+
+  @override
+  String get previewButtonLabel => '预览';
+
+  @override
+  String get shareButtonLabel => '分享';
+
+  @override
+  String get selectPhotoButtonLabel => '选择照片';
+
+  @override
+  String get fullScreenButtonTooltip => '全屏';
+
+  @override
+  String get fullScreenExitButtonTooltip => '退出全屏';
+
+  @override
+  String get redoButtonTooltip => '还原';
+
+  @override
+  String get undoButtonTooltip => '撤销';
+
+  @override
+  String get unknownFileSizeLabel => '未知大小';
+
+  @override
+  String dateRangeMaximumDateLimitLabel(Duration duration) {
+    final String time = formatDuration(duration);
+    return '开始时间与结束时间时间差应小于$time';
+  }
+
+  @override
+  String dateRangeMinimumDateLimitLabel(Duration duration) {
+    final String time = formatDuration(duration);
+    return '开始时间与结束时间时间差应大于$time';
+  }
+
+  @override
+  String get datetimeRangePickerTitle => '选择时间范围';
+
+  @override
+  String formatDuration(Duration duration) {
+    if (duration.inDays >= 1) {
+      return '${duration.inDays}日';
+    } else if (duration.inHours >= 1) {
+      return '${duration.inHours}小时';
+    }
+    return '${duration.inMinutes}分钟';
+  }
+
+  @override
+  String get dateRangeDateSeparator => '至';
+
+  @override
+  String get captureTileLabel => '拍摄';
+
+  @override
+  String get photographTileLabel => '拍照';
+
+  @override
+  String get selectPhotoTileLabel => '选择照片';
+
+  @override
+  String get selectVideoTileLabel => '选择视频';
+
+  @override
+  String get loadingLabel => '正在加载';
+
+  @override
+  String get noCameraPermissionMessage => '未开启摄像头权限';
+
+  @override
+  String get videoSpeedLabel => '播放速度';
 }

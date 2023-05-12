@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
+import '../localizations.dart';
 import '../theme_extensions/spacing.dart';
 import 'bottom_sheet.dart';
 
@@ -152,32 +153,23 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
   }
 
   /// 提示文字
-  String? get _noticeText {
+  String? _noticeText(BuildContext context) {
     if (widget.noticeText != null) {
       return widget.noticeText;
     }
+
     if (widget.minimumTimeDifference == null &&
         widget.maximumTimeDifference == null) {
       return null;
     }
-    String notice = '开始时间与结束时间差需';
-    if (widget.minimumTimeDifference != null) {
-      notice = '$notice大于${_durationText(widget.minimumTimeDifference!)}';
-    }
-    if (widget.maximumTimeDifference != null) {
-      notice = '$notice小于${_durationText(widget.maximumTimeDifference!)}';
-    }
-    return notice;
-  }
 
-  /// 生成时间差对应的文字
-  String _durationText(Duration duration) {
-    if (duration.inDays >= 1) {
-      return '${duration.inDays}日';
-    } else if (duration.inHours >= 1) {
-      return '${duration.inHours}小时';
+    final TxLocalizations txLocalizations = TxLocalizations.of(context);
+    if (widget.minimumTimeDifference != null) {
+      return txLocalizations
+          .dateRangeMinimumDateLimitLabel(widget.minimumTimeDifference!);
     }
-    return '${duration.inHours}分钟';
+    return txLocalizations
+        .dateRangeMinimumDateLimitLabel(widget.maximumTimeDifference!);
   }
 
   @override
@@ -224,38 +216,47 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
       horizontal: VisualDensity.minimumDensity,
     );
 
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
+    final TxLocalizations txLocalizations = TxLocalizations.of(context);
+
     // 自定义
     final Widget customTitle = ListTile(
       visualDensity: visualDensity,
       contentPadding: EdgeInsets.zero,
-      title: Text('自定义', style: textTheme.bodySmall),
+      title: Text(txLocalizations.customTitle, style: textTheme.bodySmall),
       trailing: IconButton(
         visualDensity: visualDensity,
         onPressed: (_startDate == null && _endDate == null)
             ? null
             : () => _onDateChanged(null, null),
         icon: const Icon(Icons.delete_forever_outlined, size: 20),
-        tooltip: '清空',
+        tooltip: txLocalizations.clearButtonLabel,
       ),
     );
     final Widget textFields = Row(
       mainAxisSize: MainAxisSize.max,
       children: [
         Expanded(
-          child: _buildTextField(_startController, _startNode, '开始时间', true),
+          child: _buildTextField(_startController, _startNode,
+              localizations.dateRangeStartLabel, true),
         ),
         Padding(
           padding: spacingTheme.horizontalMedium,
-          child: Text('至', style: textTheme.bodyMedium),
+          child: Text(
+            txLocalizations.dateRangeDateSeparator,
+            style: textTheme.bodyMedium,
+          ),
         ),
         Expanded(
-          child: _buildTextField(_endController, _endNode, '结束时间'),
+          child: _buildTextField(
+              _endController, _endNode, localizations.dateRangeEndLabel),
         ),
       ],
     );
 
     /// 提示文字
-    final String? noticeText = _noticeText;
+    final String? noticeText = _noticeText(context);
 
     /// 时间选择器
     DateTime? minimum;
@@ -351,6 +352,9 @@ Future<DateTimeRange?> showDatetimeRangePicker(
   String? noticeText,
   String? title,
 }) async {
+  final MaterialLocalizations localizations = MaterialLocalizations.of(context);
+  final TxLocalizations txLocalizations = TxLocalizations.of(context);
+
   return await Navigator.of(context).push(
     TxModalBottomSheetRoute(
       context,
@@ -360,7 +364,7 @@ Future<DateTimeRange?> showDatetimeRangePicker(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ListTile(
-              title: Text(title ?? '时间段选择'),
+              title: Text(title ?? txLocalizations.datetimeRangePickerTitle),
               trailing: const CloseButton(),
               contentPadding: const EdgeInsets.only(left: 12.0),
             ),
@@ -381,7 +385,7 @@ Future<DateTimeRange?> showDatetimeRangePicker(
                   .edgeInsetsMedium,
               child: FilledButton(
                 onPressed: () => Navigator.pop(context, result),
-                child: const Text('确定'),
+                child: Text(localizations.okButtonLabel),
               ),
             )
           ],

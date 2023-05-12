@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 import '../extensions/duration_extension.dart';
+import '../localizations.dart';
 import '../utils/auto_orientation.dart';
 
 export 'package:video_player/video_player.dart' show VideoPlayerController;
@@ -464,7 +465,7 @@ class _PlaySpeedState extends State<_PlaySpeed> {
   Widget build(BuildContext context) {
     return PopupMenuButton<double>(
       initialValue: widget.controller.value.playbackSpeed,
-      tooltip: '播放速度',
+      tooltip: TxLocalizations.of(context).videoSpeedLabel,
       onSelected: (speed) async {
         await widget.controller.setPlaybackSpeed(speed);
         setState(() {});

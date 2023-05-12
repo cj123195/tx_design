@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localizations.dart';
 import '../utils/basic_types.dart';
 import 'bottom_sheet.dart';
 
@@ -93,9 +94,9 @@ class _PickerContentState<T> extends State<_PickerContent<T>> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: TextFormField(
-              decoration: const InputDecoration(
-                hintText: '搜索',
-                prefixIcon: Icon(Icons.search),
+              decoration: InputDecoration(
+                hintText: MaterialLocalizations.of(context).searchFieldLabel,
+                prefixIcon: const Icon(Icons.search),
               ),
               onChanged: (val) => setState(() => query = val),
             ),
@@ -138,7 +139,7 @@ Future<T?> showPickerBottomSheet<T, V>(
   );
   return await showDefaultBottomSheet<T>(
     context,
-    title: title ?? '请选择',
+    title: title ?? TxLocalizations.of(context).pickerTitle,
     content: content,
     onConfirm: () => Navigator.pop(context, data),
     isScrollControlled: isScrollControlled,

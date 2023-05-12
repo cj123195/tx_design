@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import '../constants/svg.dart';
 import '../extensions/int_extension.dart';
 import '../extensions/string_extension.dart';
+import '../localizations.dart';
 import '../utils/basic_types.dart' show VoidCallbackForResult;
 import 'text_button.dart';
 
@@ -197,24 +198,28 @@ class TxFileListTile extends StatelessWidget {
 
   /// 显示操作栏
   void _showActionPane(BuildContext context) {
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
+    final TxLocalizations txLocalizations = TxLocalizations.of(context);
+
     final List<Widget> buttons = [
       if (onPreviewTap != null)
         TxTextButton.icon(
-          label: const Text('预览'),
+          label: Text(txLocalizations.previewButtonLabel),
           icon: const Icon(Icons.preview),
           iconPosition: TextButtonIconPosition.top,
           onPressed: onPreviewTap,
         ),
       if (onShareTap != null)
         TxTextButton.icon(
-          label: const Text('分享'),
+          label: Text(txLocalizations.shareButtonLabel),
           icon: const Icon(Icons.share),
           iconPosition: TextButtonIconPosition.top,
           onPressed: onShareTap,
         ),
       if (onDeleteTap != null)
         TxTextButton.icon(
-          label: const Text('删除'),
+          label: Text(localizations.deleteButtonTooltip),
           icon: const Icon(Icons.delete_outline),
           iconPosition: TextButtonIconPosition.top,
           onPressed: () {
@@ -257,7 +262,9 @@ class TxFileListTile extends StatelessWidget {
           width: _kIconSize,
           height: _kIconSize,
         );
-    final Widget subtitle = Text(size?.sizeFormat() ?? '未知大小');
+    final Widget subtitle = Text(
+      size?.sizeFormat() ?? TxLocalizations.of(context).unknownFileSizeLabel,
+    );
     final Widget title = Text(name);
     final bool tapEnabled = onDeleteTap != null ||
         onPreviewTap != null ||

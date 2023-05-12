@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+import '../localizations.dart';
+
 export 'package:qr_code_scanner/qr_code_scanner.dart'
     show Barcode, BarcodeFormat;
 
@@ -113,8 +115,8 @@ class _TxQrScanViewState extends State<TxQrScanView> {
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('无权限，请开启摄像头权限后重试。'),
+        SnackBar(
+          content: Text(TxLocalizations.of(context).noCameraPermissionMessage),
         ),
       );
     }

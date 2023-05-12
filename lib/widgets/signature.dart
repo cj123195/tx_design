@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:signature/signature.dart';
 
+import '../localizations.dart';
 import 'signature_theme.dart';
 
 export 'package:signature/signature.dart' show SignatureController;
@@ -146,6 +147,10 @@ class _TxSignatureState extends State<TxSignature> {
     final IconThemeData iconTheme =
         widget.iconTheme ?? signatureTheme.iconTheme ?? const IconThemeData();
 
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
+    final TxLocalizations txLocalizations = TxLocalizations.of(context);
+
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -170,17 +175,17 @@ class _TxSignatureState extends State<TxSignature> {
                     IconButton(
                       onPressed: _controller!.clear,
                       icon: const Icon(Icons.cleaning_services_rounded),
-                      tooltip: '清空',
+                      tooltip: txLocalizations.clearButtonLabel,
                     ),
                     IconButton(
                       onPressed: _controller!.undo,
                       icon: const Icon(Icons.undo),
-                      tooltip: '撤销',
+                      tooltip: txLocalizations.undoButtonTooltip,
                     ),
                     IconButton(
                       onPressed: _controller!.redo,
                       icon: const Icon(Icons.redo),
-                      tooltip: '还原',
+                      tooltip: txLocalizations.redoButtonTooltip,
                     ),
                     IconButton(
                       onPressed: widget.onSave == null
@@ -188,12 +193,12 @@ class _TxSignatureState extends State<TxSignature> {
                           : () async =>
                               widget.onSave!(await _controller!.toPngBytes()),
                       icon: const Icon(Icons.save_outlined),
-                      tooltip: '保存',
+                      tooltip: localizations.saveButtonLabel,
                     ),
                     IconButton(
                       onPressed: () => _enterFullScreen(height, width),
                       icon: const Icon(Icons.fullscreen),
-                      tooltip: '全屏',
+                      tooltip: txLocalizations.fullScreenButtonTooltip,
                     ),
                   ],
                 ),
@@ -305,6 +310,10 @@ class _TxSignatureFullScreenState extends State<TxSignatureFullScreen> {
     final IconThemeData iconTheme =
         widget.iconTheme ?? signatureTheme.iconTheme ?? const IconThemeData();
 
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
+    final TxLocalizations txLocalizations = TxLocalizations.of(context);
+
     return SafeArea(
       child: Stack(
         alignment: Alignment.topRight,
@@ -317,17 +326,17 @@ class _TxSignatureFullScreenState extends State<TxSignatureFullScreen> {
                 IconButton(
                   onPressed: _controller!.clear,
                   icon: const Icon(Icons.cleaning_services_rounded),
-                  tooltip: '清空',
+                  tooltip: txLocalizations.clearButtonLabel,
                 ),
                 IconButton(
                   onPressed: _controller!.undo,
                   icon: const Icon(Icons.undo),
-                  tooltip: '撤销',
+                  tooltip: txLocalizations.undoButtonTooltip,
                 ),
                 IconButton(
                   onPressed: _controller!.redo,
                   icon: const Icon(Icons.redo),
-                  tooltip: '还原',
+                  tooltip: txLocalizations.redoButtonTooltip,
                 ),
                 IconButton(
                   onPressed: widget.onSave == null
@@ -335,12 +344,12 @@ class _TxSignatureFullScreenState extends State<TxSignatureFullScreen> {
                       : () async =>
                           widget.onSave!(await _controller!.toPngBytes()),
                   icon: const Icon(Icons.save_outlined),
-                  tooltip: '保存',
+                  tooltip: localizations.saveButtonLabel,
                 ),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.fullscreen_exit),
-                  tooltip: '退出',
+                  tooltip: txLocalizations.fullScreenExitButtonTooltip,
                 ),
               ],
             ),

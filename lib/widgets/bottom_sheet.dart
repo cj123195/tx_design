@@ -390,6 +390,9 @@ class _DefaultSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
+
     Widget? footer;
     if (this.footer != null) {
       footer = this.footer;
@@ -398,12 +401,12 @@ class _DefaultSheet extends StatelessWidget {
         if (showCancelButton)
           OutlinedButton(
             onPressed: onCancel ?? () => Navigator.pop(context, false),
-            child: Text(textCancel ?? '取消'),
+            child: Text(textCancel ?? localizations.cancelButtonLabel),
           ),
         if (showConfirmButton)
           FilledButton(
             onPressed: onConfirm ?? () => Navigator.pop(context, false),
-            child: Text(textConfirm ?? '确定'),
+            child: Text(textConfirm ?? localizations.okButtonLabel),
           ),
       ];
       if (buttons.isNotEmpty) {

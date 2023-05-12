@@ -1,8 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+import '../localizations.dart';
 import 'bottom_sheet.dart';
 
 const double _kItemExtent = 48.0;
@@ -194,9 +196,6 @@ abstract class _CommonPickerState extends State<_CommonPicker> {
       textDirection: Directionality.of(context),
     );
 
-    // This operation is expensive and should be avoided. It is called here only
-    // because there's no other way to get the information we want without
-    // laying out the text.
     painter.layout();
 
     return painter.maxIntrinsicWidth;
@@ -1179,6 +1178,7 @@ class _YearPickerState extends _CommonPickerState {
 /// 显示月份选择器
 Future<DateTime?> showMonthPicker(
   BuildContext context, {
+  String? titleText,
   DateTime? initialDateTime,
   DateTime? minimumDate,
   DateTime? maximumDate,
@@ -1190,7 +1190,7 @@ Future<DateTime?> showMonthPicker(
   DateTime? result;
   return await showDefaultBottomSheet(
     context,
-    title: '选择时间',
+    title: titleText ?? TxLocalizations.of(context).monthPickerTitle,
     content: MonthPicker(
       onChanged: (month) => result = month,
       initialDateTime: initialDateTime,
@@ -1208,6 +1208,7 @@ Future<DateTime?> showMonthPicker(
 /// 显示年份选择器
 Future<DateTime?> showYearPicker(
   BuildContext context, {
+  String? titleText,
   DateTime? initialDateTime,
   int minimumYear = 1970,
   int? maximumYear,
@@ -1216,7 +1217,7 @@ Future<DateTime?> showYearPicker(
   DateTime? result;
   return await showDefaultBottomSheet(
     context,
-    title: '选择年份',
+    title: titleText ?? TxLocalizations.of(context).yearPickerTitle,
     content: YearPicker(
       onChanged: (month) => result = month,
       initialDateTime: initialDateTime,
@@ -1231,6 +1232,7 @@ Future<DateTime?> showYearPicker(
 /// 显示时间选择器
 Future<DateTime?> showDatetimePicker(
   BuildContext context, {
+  String? titleText,
   DateTime? initialDateTime,
   DateTime? minimumDate,
   DateTime? maximumDate,
@@ -1242,7 +1244,7 @@ Future<DateTime?> showDatetimePicker(
   DateTime? result;
   return await showDefaultBottomSheet(
     context,
-    title: '选择时间',
+    title: titleText ?? TxLocalizations.of(context).datetimePickerTitle,
     content: CupertinoDatePicker(
       mode: CupertinoDatePickerMode.dateAndTime,
       initialDateTime: initialDateTime,

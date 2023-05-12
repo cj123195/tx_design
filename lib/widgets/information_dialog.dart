@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localizations.dart';
 import 'cell.dart';
 
 /// @title 信息弹框
@@ -15,7 +16,8 @@ Future<void> showInformationDialog(
   BuildContext context, {
   required Map<String, dynamic> data,
   Map<int?, TxCell>? slots,
-  String? title = '详情',
+  String? title,
+  bool showTitle = true,
   Widget? icon,
 }) {
   final List<TxCell> cells = List.generate(data.length, (index) {
@@ -40,12 +42,12 @@ Future<void> showInformationDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: title == null
-              ? null
-              : Text(
-                  title,
+          title: showTitle
+              ? Text(
+                  title ?? TxLocalizations.of(context).informationDialogTitle,
                   textAlign: TextAlign.center,
-                ),
+                )
+              : null,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,

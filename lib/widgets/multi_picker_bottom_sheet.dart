@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../localizations.dart';
 import '../utils/basic_types.dart';
 import 'bottom_sheet.dart';
 
@@ -144,7 +145,7 @@ class _MultiSelectContentState<T, V> extends State<_MultiSelectContent<T, V>> {
     });
     if (widget.max == null || source.length < widget.max!) {
       final Widget all = CheckboxListTile(
-        title: const Text('全选'),
+        title: Text(MaterialLocalizations.of(context).selectAllButtonLabel),
         value: source.every((e) => initialData.contains(widget.valueMapper(e))),
         onChanged: (val) {
           if (val == true) {
@@ -201,7 +202,7 @@ Future<List<V>?> showMultiPickerBottomSheet<T, V>(
   );
   return await showDefaultBottomSheet<List<V>>(
     context,
-    title: title ?? '请选择',
+    title: title ?? TxLocalizations.of(context).pickerTitle,
     content: content,
     onConfirm: () => Navigator.pop(context, data),
     isScrollControlled: isScrollControlled,

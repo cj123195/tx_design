@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../localizations.dart';
 import 'expandable_text_theme.dart';
 
 /// 一组具有单一样式的可展开文本。
@@ -194,12 +195,17 @@ class _TxExpandableTextState extends State<TxExpandableText> {
         final Size textSize = textPainter.size;
 
         if (textPainter.didExceedMaxLines) {
+          final TxLocalizations localizations = TxLocalizations.of(context);
+
           if (_expanded) {
             final WidgetSpan collapsedSpan = WidgetSpan(
               alignment: PlaceholderAlignment.middle,
               child: InkWell(
                 onTap: () => setState(() => _expanded = false),
-                child: Text('收起', style: buttonStyle),
+                child: Text(
+                  localizations.collapsedButtonLabel,
+                  style: buttonStyle,
+                ),
               ),
             );
             textSpan = TextSpan(children: [textSpan, collapsedSpan]);
@@ -211,7 +217,7 @@ class _TxExpandableTextState extends State<TxExpandableText> {
               alignment: PlaceholderAlignment.middle,
               child: InkWell(
                 onTap: () => setState(() => _expanded = true),
-                child: Text('更多', style: buttonStyle),
+                child: Text(localizations.moreButtonLabel, style: buttonStyle),
               ),
             );
 
@@ -222,7 +228,10 @@ class _TxExpandableTextState extends State<TxExpandableText> {
             );
 
             /// 按钮尺寸
-            textPainter.text = TextSpan(text: ' 更多 ', style: buttonStyle);
+            textPainter.text = TextSpan(
+              text: ' ${localizations.moreButtonLabel} ',
+              style: buttonStyle,
+            );
             textPainter.layout(
               minWidth: 0,
               maxWidth: constraints.maxWidth,
@@ -237,7 +246,8 @@ class _TxExpandableTextState extends State<TxExpandableText> {
             );
             final Size ellipsizeSize = textPainter.size;
 
-            textPainter.text = TextSpan(text: '${widget.data} 更多');
+            textPainter.text = TextSpan(
+                text: '${widget.data} ${localizations.moreButtonLabel}');
             textPainter.layout(
               minWidth: 0,
               maxWidth: constraints.maxWidth,

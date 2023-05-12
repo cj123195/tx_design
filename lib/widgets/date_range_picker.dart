@@ -316,7 +316,10 @@ class _TxDateRangePickerDialogState extends State<TxDateRangePickerDialog>
         Expanded(child: fieldStart),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: _kMediumGap),
-          child: Text('-', style: textTheme.bodyMedium),
+          child: Text(
+            txLocalizations.dateRangeDateSeparator,
+            style: textTheme.bodyMedium,
+          ),
         ),
         Expanded(child: fieldEnd),
       ],

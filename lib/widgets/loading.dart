@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../localizations.dart';
 import 'loading_theme.dart';
 import 'shimmer.dart';
 
-const Widget _kLoadingWidget = Text('正在加载');
 const IconThemeData _kIconTheme = IconThemeData(size: 36.0, weight: 500);
 const Duration _kPeriod = Duration(milliseconds: 1500);
 const ShimmerDirection _kDirection = ShimmerDirection.ltr;
@@ -100,7 +100,9 @@ class TxLoading extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final TxLoadingThemeData loadingTheme = TxLoadingTheme.of(context);
 
-    final Widget child = this.child ?? loadingTheme.child ?? _kLoadingWidget;
+    final Widget child = this.child ??
+        loadingTheme.child ??
+        Text(TxLocalizations.of(context).loadingLabel);
     final TextStyle textStyle =
         this.textStyle ?? loadingTheme.textStyle ?? theme.textTheme.titleLarge!;
     final IconThemeData iconTheme =
