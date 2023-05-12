@@ -6,8 +6,6 @@ import 'popup_menu.dart';
 const double _kButtonHeight = 36.0;
 const double _kMinButtonWidth = 64.0;
 
-typedef ButtonBuilder = Widget Function(ButtonStyle buttonStyle);
-
 /// 一排横置排列的操作按钮
 ///
 /// 提供了主按钮与辅按钮的构造方法，主按钮一般为[ElevatedButton]，辅按钮一般为
@@ -15,9 +13,9 @@ typedef ButtonBuilder = Widget Function(ButtonStyle buttonStyle);
 class TxButtonBar extends StatelessWidget {
   /// 创建一个操作按钮栏。
   const TxButtonBar({
-    required this.mainButtonBuilder,
-    Key? key,
-    this.secondaryButtonBuilder,
+    required this.mainButton,
+    super.key,
+    this.secondaryButton,
     this.actions,
     this.buttonPadding,
     this.buttonTextTheme,
@@ -25,14 +23,14 @@ class TxButtonBar extends StatelessWidget {
     this.buttonMinWidth,
     this.layoutBehavior,
     this.buttonAlignedDropdown,
-  }) : super(key: key);
+  });
 
   /// 创建一个包含[TxPopupMenuButton]的操作按钮栏，一般用于操作比较多的情况
   TxButtonBar.more({
-    required this.mainButtonBuilder,
+    required this.mainButton,
     required List<PopupMenuEntry> menus,
     super.key,
-    this.secondaryButtonBuilder,
+    this.secondaryButton,
     List<Widget>? actions,
     this.buttonPadding,
     this.buttonTextTheme,
@@ -59,12 +57,12 @@ class TxButtonBar extends StatelessWidget {
   /// 主按钮
   ///
   /// 一般为[ElevatedButton]
-  final ButtonBuilder mainButtonBuilder;
+  final Widget mainButton;
 
   /// 辅按钮
   ///
   /// /// 一般为[OutlinedButton]
-  final ButtonBuilder? secondaryButtonBuilder;
+  final Widget? secondaryButton;
 
   /// icon按钮的集合
   final List<Widget>? actions;
@@ -108,7 +106,6 @@ class TxButtonBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
     final ButtonThemeData parentButtonTheme = ButtonTheme.of(context);
     final TxButtonBarThemeData barTheme = TxButtonBarTheme.of(context);
 
@@ -127,9 +124,6 @@ class TxButtonBar extends StatelessWidget {
           barTheme.layoutBehavior ??
           ButtonBarLayoutBehavior.padded,
     );
-    const OutlinedBorder shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(4)),
-    );
     // 我们除以 4.0 因为我们想要左右填充平均值的一半。
     final double paddingUnit = buttonTheme.padding.horizontal / 4.0;
 
@@ -143,28 +137,20 @@ class TxButtonBar extends StatelessWidget {
       ));
     }
 
-    if (secondaryButtonBuilder != null) {
-      final ButtonStyle style = barTheme.secondaryButtonStyle ??
-          OutlinedButton.styleFrom(shape: shape);
+    if (secondaryButton != null) {
       final Widget secondaryBtn = Expanded(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: paddingUnit),
-          child: secondaryButtonBuilder!(style),
+          child: secondaryButton,
         ),
       );
       children.add(secondaryBtn);
     }
 
-    final ButtonStyle style = barTheme.mainButtonStyle ??
-        FilledButton.styleFrom(
-          foregroundColor: theme.colorScheme.onPrimary,
-          backgroundColor: theme.colorScheme.primary,
-          shape: shape,
-        );
     final Widget mainBtn = Expanded(
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: paddingUnit),
-        child: mainButtonBuilder(style),
+        child: mainButton,
       ),
     );
     children.add(mainBtn);
@@ -191,33 +177,4 @@ class TxButtonBar extends StatelessWidget {
         );
     }
   }
-}
-
-/// 包含一个确定按钮与重置按钮的[TxButtonBar]
-class TxFilterButtonBar extends TxButtonBar {
-  TxFilterButtonBar({
-    super.key,
-    ButtonBuilder? confirmButtonBuilder,
-    ButtonBuilder? resetButtonBuilder,
-    VoidCallback? onConfirm,
-    VoidCallback? onReset,
-    super.actions,
-  }) : super(
-          mainButtonBuilder: confirmButtonBuilder ??
-              (style) {
-                return ElevatedButton(
-                  onPressed: onConfirm,
-                  style: style,
-                  child: const Text('确定'),
-                );
-              },
-          secondaryButtonBuilder: resetButtonBuilder ??
-              (style) {
-                return OutlinedButton(
-                  onPressed: onReset,
-                  style: style,
-                  child: const Text('重置'),
-                );
-              },
-        );
 }
