@@ -405,7 +405,7 @@ class _DefaultSheet extends StatelessWidget {
           ),
         if (showConfirmButton)
           FilledButton(
-            onPressed: onConfirm ?? () => Navigator.pop(context, false),
+            onPressed: onConfirm ?? () => Navigator.pop(context, true),
             child: Text(textConfirm ?? localizations.okButtonLabel),
           ),
       ];
