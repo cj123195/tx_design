@@ -101,10 +101,10 @@ packages:
     dependency: transitive
     description:
       name: easy_refresh
-      sha256: "924316c44ff5c0506c7690c98189adb7956dbd36905aeb050370335857144215"
+      sha256: "77b025ea49f27b5ebc5eef40a6678be52564c293bd97ce91a4088d6646478329"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.3.0+1"
+    version: "3.3.2+1"
   equatable:
     dependency: transitive
     description:
