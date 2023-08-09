@@ -102,6 +102,18 @@ abstract class TxLocalizations {
   /// Label for exit full screen buttons.
   String get fullScreenExitButtonTooltip;
 
+  /// Label for edit buttons.
+  String get editButtonTooltip;
+
+  /// Label for done buttons.
+  String get doneButtonTooltip;
+
+  /// Label for draw buttons.
+  String get drawButtonTooltip;
+
+  /// Label for select file buttons.
+  String get selectFileButtonTooltip;
+
   /// Label for unknown file size on file list tile.
   String get unknownFileSizeLabel;
 
@@ -138,6 +150,39 @@ abstract class TxLocalizations {
 
   /// Label for video speed.
   String get videoSpeedLabel;
+
+  /// The default hint for the input form fields.
+  String get textFormFieldHint;
+
+  /// The default hint for the picker form fields.
+  String get pickerFormFieldHint;
+
+  /// The default hint for the signature form fields.
+  String get signatureFormFieldHint;
+
+  /// The label used for the minimum quantity limit in the multi pickers.
+  String minimumSelectableQuantityLimitLabel(int number);
+
+  /// The label used for the maximum quantity limit in the multi pickers.
+  String maximumSelectableQuantityLimitLabel(int number);
+
+  /// The label used for the minimum quantity limit in the file pickers.
+  String minimumFileLimitLabel(int number);
+
+  /// The label used for the maximum quantity limit in the file pickers.
+  String maximumFileLimitLabel(int number);
+
+  /// The label used for the minimum quantity limit in the photo pickers.
+  String maximumPhotoLimitLabel(int number);
+
+  /// The label used for the maximum quantity limit in the photo pickers.
+  String minimumPhotoLimitLabel(int number);
+
+  /// The label used to limit the maximum value of digital input.
+  String maximumNumberLimitLabel(num number);
+
+  /// The label used to limit the minimum value of digital input.
+  String minimumNumberLimitLabel(num number);
 
   static TxLocalizations of(BuildContext context) {
     assert(() {
@@ -281,6 +326,18 @@ class DefaultTxLocalizations implements TxLocalizations {
   String get undoButtonTooltip => 'Undo';
 
   @override
+  String get doneButtonTooltip => 'Edit';
+
+  @override
+  String get editButtonTooltip => 'Done';
+
+  @override
+  String get drawButtonTooltip => 'Draw';
+
+  @override
+  String get selectFileButtonTooltip => 'Select file';
+
+  @override
   String get unknownFileSizeLabel => 'Unknown size';
 
   @override
@@ -333,6 +390,51 @@ class DefaultTxLocalizations implements TxLocalizations {
 
   @override
   String get videoSpeedLabel => 'Speed';
+
+  String _formatUnit(int number, String unit) {
+    return '$number ${number > 1 ? '${unit}s' : unit}';
+  }
+
+  @override
+  String maximumSelectableQuantityLimitLabel(int number) =>
+      'Select up to ${_formatUnit(number, 'item')}';
+
+  @override
+  String minimumSelectableQuantityLimitLabel(int number) =>
+      'Select at least ${_formatUnit(number, 'item')}';
+
+  @override
+  String get pickerFormFieldHint => 'Please select';
+
+  @override
+  String get textFormFieldHint => 'Please enter';
+
+  @override
+  String get signatureFormFieldHint => 'Please sign your name';
+
+  @override
+  String maximumFileLimitLabel(int number) =>
+      'Select up to ${_formatUnit(number, 'file')}';
+
+  @override
+  String minimumFileLimitLabel(int number) =>
+      'Select at least ${_formatUnit(number, 'file')}';
+
+  @override
+  String maximumPhotoLimitLabel(int number) =>
+      'Select up to ${_formatUnit(number, 'photo')}';
+
+  @override
+  String minimumPhotoLimitLabel(int number) =>
+      'Select at least ${_formatUnit(number, 'photo')}';
+
+  @override
+  String maximumNumberLimitLabel(num number) =>
+      'The input value should be less than $number';
+
+  @override
+  String minimumNumberLimitLabel(num number) =>
+      'The input value should be greater than $number';
 }
 
 class ZhTxLocalizations implements TxLocalizations {
@@ -420,6 +522,18 @@ class ZhTxLocalizations implements TxLocalizations {
   String get undoButtonTooltip => '撤销';
 
   @override
+  String get doneButtonTooltip => '编辑';
+
+  @override
+  String get editButtonTooltip => '完成';
+
+  @override
+  String get drawButtonTooltip => '绘制';
+
+  @override
+  String get selectFileButtonTooltip => '选择文件';
+
+  @override
   String get unknownFileSizeLabel => '未知大小';
 
   @override
@@ -470,4 +584,37 @@ class ZhTxLocalizations implements TxLocalizations {
 
   @override
   String get videoSpeedLabel => '播放速度';
+
+  @override
+  String maximumSelectableQuantityLimitLabel(int number) => '最多可选择$number项';
+
+  @override
+  String minimumSelectableQuantityLimitLabel(int number) => '请至少选择$number项';
+
+  @override
+  String get pickerFormFieldHint => '请选择';
+
+  @override
+  String get textFormFieldHint => '请输入';
+
+  @override
+  String get signatureFormFieldHint => '请签名';
+
+  @override
+  String maximumFileLimitLabel(int number) => '最多可选择$number个文件';
+
+  @override
+  String minimumFileLimitLabel(int number) => '请至少选择$number个文件';
+
+  @override
+  String maximumPhotoLimitLabel(int number) => '最多可选择$number张图片';
+
+  @override
+  String minimumPhotoLimitLabel(int number) => '请至少选择$number张图片';
+
+  @override
+  String maximumNumberLimitLabel(num number) => '输入值应小于$number';
+
+  @override
+  String minimumNumberLimitLabel(num number) => '输入值应大于$number';
 }

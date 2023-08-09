@@ -3,80 +3,101 @@ import 'package:flutter/material.dart';
 import '../extensions/iterable_extension.dart';
 import '../utils/basic_types.dart';
 import '../widgets/picker_bottom_sheet.dart';
-import 'common_picker_form_field.dart';
+import 'form_field.dart';
 
 export '../utils/basic_types.dart' show ValueMapper;
 export '../widgets/picker_bottom_sheet.dart' show PickerItemBuilder;
 
 /// 单选Form组件
-class PickerFormField<T, V> extends CommonPickerFormField<T, V> {
+class PickerFormField<T, V> extends TxPickerTextFormField<T, V> {
   PickerFormField({
-    required List<T> sources,
-    required super.labelMapper,
-    ValueMapper<T, V>? valueMapper,
+    required List<T>? sources,
+    required ValueMapper<T, String> labelMapper,
+    super.valueMapper,
     ValueMapper<T, String>? subtitleMapper,
-
-    /// FormItemContainer参数
-    super.label,
-    super.labelText,
-    super.padding,
-    super.backgroundColor,
-    super.labelStyle,
-    super.starStyle,
-    super.direction,
-
-    /// Form参数
     V? initialValue,
     T? initialData,
+    PickerItemBuilder<T>? pickerItemBuilder,
+    PickerFuture<T>? onPickTap,
     super.key,
     super.onSaved,
-    super.restorationId,
-    super.enabled,
-    super.autovalidateMode = AutovalidateMode.disabled,
-    super.textCapitalization = TextCapitalization.none,
-
-    /// TextField参数
-    super.focusNode,
-    super.decoration = const InputDecoration(),
     super.validator,
-    PickerItemBuilder<T>? pickerItemBuilder,
-    super.onChanged,
-    super.required = false,
-    super.readonly = false,
-    // bool inputEnabled = false,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    super.required,
+    super.label,
+    super.labelText,
+    super.backgroundColor,
+    super.direction,
+    super.padding,
+    List<Widget>? actions,
+    super.labelStyle,
+    super.starStyle,
+    super.horizontalGap,
+    super.minLabelWidth,
+    super.controller,
+    super.prefixIconMergeMode,
+    super.suffixIconMergeMode,
+    super.focusNode,
+    super.decoration,
     super.keyboardType,
-    PickerFuture<T>? onPickTap,
-    super.style,
+    super.textCapitalization,
     super.textInputAction,
+    super.style,
     super.strutStyle,
     super.textDirection,
     super.textAlign,
     super.textAlignVertical,
-    super.autofocus = false,
-    super.contextMenuBuilder,
-    super.maxLines = 1,
+    super.autofocus,
+    super.readonly,
+    super.maxLines,
     super.minLines,
     super.maxLength,
+    super.onChanged,
     super.onTap,
     super.onEditingComplete,
     super.inputFormatters,
-    super.enableSpeech = true,
+    super.showCursor,
+    super.obscuringCharacter,
+    super.obscureText,
+    super.autocorrect,
+    super.smartDashesType,
+    super.smartQuotesType,
+    super.enableSuggestions,
+    super.maxLengthEnforcement,
+    super.expands,
+    super.onTapOutside,
+    super.onFieldSubmitted,
+    super.cursorWidth,
+    super.cursorHeight,
+    super.cursorRadius,
+    super.cursorColor,
+    super.keyboardAppearance,
+    super.scrollPadding,
+    super.enableInteractiveSelection,
+    super.selectionControls,
+    super.buildCounter,
+    super.scrollPhysics,
+    super.autofillHints,
+    super.scrollController,
+    super.enableIMEPersonalizedLearning,
+    super.mouseCursor,
+    super.contextMenuBuilder,
   }) : super(
-          valueMapper: valueMapper ?? labelMapper as ValueMapper<T, V>,
-          onPickTap: onPickTap ??
-              (BuildContext context, T? initialValue) =>
-                  showPickerBottomSheet<T, V>(
-                    context,
-                    title: labelText,
-                    labelMapper: labelMapper,
-                    valueMapper: valueMapper,
-                    sources: sources,
-                    subtitleMapper: subtitleMapper,
-                    pickerItemBuilder: pickerItemBuilder,
-                    initialData: initialValue,
-                  ),
+          labelMapper: (T data) => labelMapper(data),
           initialValue: initialData ??
-              sources.tryFind((e) =>
+              sources?.tryFind((e) =>
                   (valueMapper?.call(e) ?? labelMapper(e)) == initialValue),
+          onPickTap: (context, data) => showPickerBottomSheet<T, V>(
+            context,
+            labelMapper: labelMapper,
+            valueMapper: valueMapper,
+            sources: sources ?? [],
+            subtitleMapper: subtitleMapper,
+            pickerItemBuilder: pickerItemBuilder,
+            initialData: data,
+          ),
+          actionsBuilder: (field) => actions,
         );
 }

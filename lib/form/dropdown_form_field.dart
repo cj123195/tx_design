@@ -1,103 +1,115 @@
 import 'package:flutter/material.dart';
 
+import '../extensions/iterable_extension.dart';
+import '../localizations.dart';
 import '../utils/basic_types.dart';
 import '../widgets/dropdown.dart';
-import 'form_item_container.dart';
+import 'form_field.dart';
 
 /// 下拉选择Form组件
-class DropdownFormField<T, V> extends StatelessWidget {
-  const DropdownFormField({
-    required this.sources,
-    required this.labelMapper,
-    this.valueMapper,
-    this.decoration,
-
-    /// Form参数
+class DropdownFormField<T, V> extends TxFormFieldItem {
+  DropdownFormField({
+    required ValueMapper<T, String> labelMapper,
+    required List<T>? sources,
+    ValueMapper<T, V>? valueMapper,
+    ValueMapper<T, bool>? enabledMapper,
     super.key,
-    this.initialValue,
-    this.initialData,
-    this.onSaved,
-    this.validator,
-    this.enabled,
-    this.autovalidateMode = AutovalidateMode.disabled,
-    this.onChanged,
+    V? initialValue,
+    T? initialData,
+    ValueChanged<T?>? onChanged,
+    super.onSaved,
+    super.validator,
+    super.enabled,
+    super.autovalidateMode = AutovalidateMode.disabled,
+    super.labelText,
+    super.label,
+    super.required,
+    super.backgroundColor,
+    super.labelStyle,
+    super.starStyle,
+    super.direction,
+    super.padding,
+    super.horizontalGap,
+    super.minLabelWidth,
+    TxDropdownButtonBuilder? selectedItemBuilder,
+    T? value,
+    Widget? hint,
+    Widget? disabledHint,
+    VoidCallback? onTap,
+    int elevation = 8,
+    TextStyle? style,
+    Widget? icon,
+    Color? iconDisabledColor,
+    Color? iconEnabledColor,
+    double iconSize = 24.0,
+    bool isDense = true,
+    bool isExpanded = false,
+    double? itemHeight,
+    Color? focusColor,
+    FocusNode? focusNode,
+    bool autofocus = false,
+    Color? dropdownColor,
+    InputDecoration? decoration,
+    double? menuMaxHeight,
+    AlignmentGeometry alignment = AlignmentDirectional.centerStart,
+    BorderRadius? borderRadius = const BorderRadius.all(Radius.circular(8.0)),
+    EdgeInsetsGeometry? fieldPadding = EdgeInsets.zero,
+  }) : super(
+          builder: (field) {
+            final FormFieldValidator<T>? effectiveValidator = validator ??
+                (required
+                    ? (value) => value == null
+                        ? TxLocalizations.of(field.context).pickerFormFieldHint
+                        : null
+                    : null);
+            final List<TxDropdownMenuItem<T>>? items = sources
+                ?.map((e) => TxDropdownMenuItem<T>(
+                      value: e,
+                      child: Text(labelMapper(e)),
+                    ))
+                .toList();
+            final InputDecoration effectiveDecoration =
+                TxFormFieldItem.mergeDecoration(
+              field.context,
+              decoration,
+              InputDecoration(
+                hintText: TxLocalizations.of(field.context).pickerFormFieldHint,
+              ),
+            );
 
-    /// FormItemContainer参数
-    this.labelText,
-    this.label,
-    this.required = false,
-    this.backgroundColor,
-    this.labelStyle,
-    this.starStyle,
-    this.direction,
-    this.padding,
-    this.horizontalGap,
-    this.minLabelWidth,
-  });
-
-  final List<T> sources;
-  final ValueMapper<T, String> labelMapper;
-  final InputDecoration? decoration;
-  final V? initialValue;
-  final T? initialData;
-  final ValueChanged<V?>? onSaved;
-  final FormFieldValidator<V>? validator;
-  final bool? enabled;
-  final AutovalidateMode autovalidateMode;
-  final ValueMapper<T, V>? valueMapper;
-  final ValueChanged<V?>? onChanged;
-  final String? labelText;
-  final Widget? label;
-  final bool required;
-  final Color? backgroundColor;
-  final Axis? direction;
-  final EdgeInsetsGeometry? padding;
-  final TextStyle? labelStyle;
-  final TextStyle? starStyle;
-  final double? horizontalGap;
-  final double? minLabelWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    final InputDecoration decoration = FormItemContainer.createDecoration(
-      context,
-      this.decoration ?? const InputDecoration(),
-      hintText: '请选择',
-    );
-
-    return FormItemContainer(
-      labelText: labelText,
-      label: label,
-      required: required,
-      backgroundColor: backgroundColor,
-      labelStyle: labelStyle,
-      starStyle: starStyle,
-      horizontalGap: horizontalGap,
-      minLabelWidth: minLabelWidth,
-      direction: direction,
-      padding: padding,
-      formField: TxDropdownButtonFormField<V>(
-        items: sources
-            .map((e) => TxDropdownMenuItem<V>(
-                  value: valueMapper?.call(e) ?? e as V,
-                  child: Text(labelMapper(e)),
-                ))
-            .toList(),
-        value: initialValue,
-        onChanged: onChanged,
-        autovalidateMode: autovalidateMode,
-        enableFeedback: enabled,
-        onSaved: onSaved,
-        decoration: decoration,
-        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-        padding: EdgeInsets.zero,
-        validator: validator ??
-            (required
-                ? (V? value) {
-                    return value == null ? '请选择${labelText ?? ''}' : null;
-                  }
-                : null),
-      ),
-    );
-  }
+            return TxDropdownButtonFormField<T>(
+              items: items,
+              selectedItemBuilder: selectedItemBuilder,
+              hint: hint,
+              disabledHint: disabledHint,
+              onTap: onTap,
+              elevation: elevation,
+              style: style,
+              icon: icon,
+              iconDisabledColor: iconDisabledColor,
+              iconEnabledColor: iconEnabledColor,
+              iconSize: iconSize,
+              isDense: isDense,
+              isExpanded: isExpanded,
+              itemHeight: itemHeight,
+              focusNode: focusNode,
+              focusColor: focusColor,
+              autofocus: autofocus,
+              dropdownColor: dropdownColor,
+              menuMaxHeight: menuMaxHeight,
+              alignment: alignment,
+              value: initialData ??
+                  sources?.tryFind((e) =>
+                      (valueMapper?.call(e) ?? labelMapper(e)) == initialValue),
+              onChanged: onChanged,
+              autovalidateMode: autovalidateMode,
+              enableFeedback: enabled,
+              onSaved: onSaved,
+              decoration: effectiveDecoration,
+              borderRadius: borderRadius,
+              padding: fieldPadding,
+              validator: effectiveValidator,
+            );
+          },
+        );
 }

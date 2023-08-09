@@ -1,8 +1,8 @@
 name: tx_design
 description: A custom component library that contains some basic UI components and provides theme configuration.
-version: 0.0.10
+version: 0.1.0
 homepage: https://github.com/cj123195/tx_design.git
-repository: https://github.com/cj123195/tx_design.git
+repository: https://github.com/cj123195/tx_design
 
 environment:
   sdk: '>=2.19.0 <3.0.0'
@@ -12,7 +12,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  easy_refresh: ^3.3.2+1
   file_picker: ^5.2.5
   flutter_reorderable_grid_view: ^4.0.0
   flutter_svg: ^2.0.0+1

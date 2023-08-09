@@ -1,67 +1,65 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
+import '../localizations.dart';
 import '../utils/basic_types.dart';
 import '../widgets/date_range_picker.dart';
+import 'form_field.dart';
 import 'form_item_container.dart';
 
 const EdgeInsetsGeometry _kFieldsPadding =
     EdgeInsets.symmetric(horizontal: 12.0);
 
 /// 日期范围选择组件
-class DateRangePickerFormField extends FormField<DateTimeRange> {
+class DateRangePickerFormField extends TxFormFieldItem<DateTimeRange> {
   DateRangePickerFormField({
     this.format = 'yyyy-MM-dd',
-    ValueChanged<DateTimeRange?>? onChanged,
-    InputDecoration decoration = const InputDecoration(),
     DateTime? firstDate,
     DateTime? lastDate,
-
-    /// Form 参数
-    FormFieldValidator<DateTimeRange>? validator,
+    String? helpText,
+    String? fieldStartHintText,
+    String? fieldEndHintText,
+    List<DateRangeQuickChoice>? quickChoices = const [
+      DateRangeMonthQuickChoice(),
+      DateRangeMonthQuickChoice(value: 6),
+      DateRangeYearQuickChoice(),
+    ],
     super.key,
     super.onSaved,
-    DateTimeRange? initialDateRange,
-    bool required = false,
-    bool? enabled,
+    super.validator,
+    super.initialValue,
+    super.enabled,
+    super.autovalidateMode,
     super.restorationId,
-    AutovalidateMode? autovalidateMode,
-
-    // FormItemContainer参数
-    Widget? label,
-    String? labelText,
-    EdgeInsetsGeometry? padding,
-    Color? backgroundColor,
-    TextStyle? labelStyle,
-    TextStyle? starStyle,
-    double? horizontalGap,
-    double? minLabelWidth,
-    Axis? direction,
-
-    /// TextField参数
+    super.defaultValidator,
+    super.required,
+    super.label,
+    super.labelText,
+    super.backgroundColor,
+    super.direction,
+    super.padding,
+    List<Widget>? actions,
+    super.labelStyle,
+    super.starStyle,
+    super.horizontalGap,
+    super.minLabelWidth,
+    InputDecoration decoration = const InputDecoration(),
     TextStyle? style,
     StrutStyle? strutStyle,
     TextDirection? textDirection,
     TextAlign textAlign = TextAlign.center,
     TextAlignVertical? textAlignVertical,
     EditableTextContextMenuBuilder? contextMenuBuilder,
+    ValueChanged<DateTimeRange?>? onChanged,
     PickerFuture<DateTimeRange?>? onTap,
   }) : super(
-          initialValue: initialDateRange,
-          validator: validator ??
-              (required
-                  ? (DateTimeRange? value) {
-                      if (value == null) {
-                        return '请选择${labelText ?? ''}';
-                      }
-                      return null;
-                    }
-                  : null),
-          enabled: enabled ?? decoration.enabled,
-          autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
           builder: (FormFieldState<DateTimeRange> field) {
             final _DateRangePickerFormFieldState state =
                 field as _DateRangePickerFormFieldState;
+            final MaterialLocalizations localizations =
+                MaterialLocalizations.of(field.context);
+            final TxLocalizations txLocalizations =
+                TxLocalizations.of(field.context);
 
             void onChangedHandler(DateTimeRange? value) {
               field.didChange(value);
@@ -85,6 +83,10 @@ class DateRangePickerFormField extends FormField<DateTimeRange> {
                   firstDate: firstDate,
                   lastDate: lastDate,
                   initialDateRange: state.value,
+                  helpText: helpText,
+                  quickChoices: quickChoices,
+                  fieldEndHintText: fieldEndHintText,
+                  fieldStartHintText: fieldStartHintText,
                 );
               }
               if (range == null || range == state.value) {
@@ -97,7 +99,7 @@ class DateRangePickerFormField extends FormField<DateTimeRange> {
                 FormItemContainer.createDecoration(
               field.context,
               decoration,
-              hintText: '开始时间',
+              hintText: fieldStartHintText ?? localizations.dateRangeStartLabel,
               errorText: field.errorText,
             );
 
@@ -113,14 +115,14 @@ class DateRangePickerFormField extends FormField<DateTimeRange> {
               contextMenuBuilder: contextMenuBuilder,
               readOnly: true,
               onTap: onPick,
-              enabled: enabled ?? decoration.enabled,
+              enabled: enabled,
             );
 
             final InputDecoration effectiveEndDecoration =
                 FormItemContainer.createDecoration(
               field.context,
               decoration,
-              hintText: '结束时间',
+              hintText: fieldEndHintText ?? localizations.dateRangeEndLabel,
             );
             final Widget endField = TextField(
               restorationId: restorationId,
@@ -134,7 +136,7 @@ class DateRangePickerFormField extends FormField<DateTimeRange> {
               contextMenuBuilder: contextMenuBuilder,
               readOnly: true,
               onTap: onPick,
-              enabled: enabled ?? effectiveEndDecoration.enabled,
+              enabled: enabled,
             );
 
             final Widget formField = Row(
@@ -145,39 +147,25 @@ class DateRangePickerFormField extends FormField<DateTimeRange> {
                 Padding(
                   padding:
                       effectiveEndDecoration.contentPadding ?? _kFieldsPadding,
-                  child: const Text('至'),
+                  child: Text(txLocalizations.dateRangeDateSeparator),
                 ),
                 Expanded(child: endField),
               ],
             );
 
-            return UnmanagedRestorationScope(
-              bucket: field.bucket,
-              child: FormItemContainer(
-                label: label,
-                labelText: labelText,
-                required: required,
-                direction: direction,
-                backgroundColor: backgroundColor,
-                labelStyle: labelStyle,
-                starStyle: starStyle,
-                horizontalGap: horizontalGap,
-                minLabelWidth: minLabelWidth,
-                padding: padding,
-                formField: formField,
-              ),
-            );
+            return formField;
           },
+          actionsBuilder: (field) => actions,
         );
 
   final String? format;
 
   @override
-  FormFieldState<DateTimeRange> createState() =>
+  TxFormFieldState<DateTimeRange> createState() =>
       _DateRangePickerFormFieldState();
 }
 
-class _DateRangePickerFormFieldState extends FormFieldState<DateTimeRange> {
+class _DateRangePickerFormFieldState extends TxFormFieldState<DateTimeRange> {
   RestorableTextEditingController? _startController;
   RestorableTextEditingController? _endController;
 
@@ -233,38 +221,42 @@ class _DateRangePickerFormFieldState extends FormFieldState<DateTimeRange> {
     }
   }
 
+  String _formatDate(DateTime? dateTime) {
+    if (dateTime == null) {
+      return '';
+    }
+    return dateTime.format(widget.format);
+  }
+
   @override
   void initState() {
     super.initState();
-    if (widget.initialValue == null) {
-      _createLocalStartController();
-      _createLocalEndController();
-    } else {
+    if (widget.initialValue != null) {
       _createLocalStartController(
-        TextEditingValue(
-            text: widget.initialValue!.start.format(widget.format)),
+        TextEditingValue(text: _formatDate(widget.initialValue!.start)),
       );
       _createLocalEndController(
-        TextEditingValue(text: widget.initialValue!.end.format()),
+        TextEditingValue(text: _formatDate(widget.initialValue!.end)),
       );
+    } else {
+      _createLocalStartController();
+      _createLocalEndController();
     }
   }
 
   @override
   void didUpdateWidget(DateRangePickerFormField oldWidget) {
-    super.didUpdateWidget(oldWidget);
     if (widget.initialValue != value) {
-      setValue(widget.initialValue);
       if (widget.initialValue == null) {
         _effectiveStartController.clear();
         _effectiveEndController.clear();
       } else {
         _effectiveStartController.text =
-            widget.initialValue!.start.format(widget.format);
-        _effectiveEndController.text =
-            widget.initialValue!.end.format(widget.format);
+            _formatDate(widget.initialValue!.start);
+        _effectiveEndController.text = _formatDate(widget.initialValue!.end);
       }
     }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -277,22 +269,22 @@ class _DateRangePickerFormFieldState extends FormFieldState<DateTimeRange> {
   @override
   void didChange(DateTimeRange? value) {
     super.didChange(value);
-    final String? start = value?.start.format(widget.format);
-    final String? end = value?.end.format(widget.format);
+    final String start = _formatDate(value?.start);
+    final String end = _formatDate(value?.end);
     if (_effectiveStartController.text != start) {
-      _effectiveStartController.text = start ?? '';
+      _effectiveStartController.text = start;
     }
     if (_effectiveEndController.text != end) {
-      _effectiveEndController.text = end ?? '';
+      _effectiveEndController.text = end;
     }
   }
 
   @override
   void reset() {
-    final String? start = widget.initialValue?.start.format(widget.format);
-    final String? end = widget.initialValue?.end.format(widget.format);
-    _effectiveStartController.text = start ?? '';
-    _effectiveEndController.text = end ?? '';
+    final String start = _formatDate(widget.initialValue?.start);
+    final String end = _formatDate(widget.initialValue?.end);
+    _effectiveStartController.text = start;
+    _effectiveEndController.text = end;
     super.reset();
   }
 }

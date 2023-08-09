@@ -3,53 +3,55 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
 
-import 'form_item_container.dart';
+import '../localizations.dart';
+import 'form_field.dart';
 
 /// 签名Form组件
-class SignatureFormField extends FormField<List<Point>> {
+class SignatureFormField extends TxFormFieldItem<List<Point>> {
   SignatureFormField({
-    InputDecoration decoration = const InputDecoration(),
     this.onChanged,
-
-    // Form参数
     super.key,
     super.onSaved,
-    List<Point>? initialValue,
-    bool required = false,
-    bool? enabled,
+    super.validator,
+    super.initialValue,
+    super.enabled,
+    super.autovalidateMode,
     super.restorationId,
-    AutovalidateMode? autovalidateMode,
-    FormFieldValidator<List<Point>?>? validator,
-
-    // FormItemContainer参数
-    Widget? label,
-    String? labelText,
-    EdgeInsetsGeometry? padding,
-    Color? backgroundColor,
-    TextStyle? labelStyle,
-    TextStyle? starStyle,
-    double? horizontalGap,
-    double? minLabelWidth,
-    Axis? direction,
+    super.required,
+    super.label,
+    super.labelText,
+    super.backgroundColor,
+    super.direction,
+    super.padding,
+    List<Widget>? actions,
+    super.labelStyle,
+    super.starStyle,
+    super.horizontalGap,
+    super.minLabelWidth,
+    InputDecoration? decoration,
   }) : super(
-          initialValue: initialValue,
-          validator: validator ??
-              (required
-                  ? (List<Point>? value) {
-                      return value?.isNotEmpty != true ? '请签名' : null;
-                    }
-                  : null),
-          autovalidateMode: autovalidateMode ?? AutovalidateMode.disabled,
-          enabled: enabled ?? decoration.enabled,
+          defaultValidator: required
+              ? (context, value) {
+                  return value?.isNotEmpty != true
+                      ? TxLocalizations.of(context).signatureFormFieldHint
+                      : null;
+                }
+              : null,
           builder: (FormFieldState<List<Point>> field) {
             final _SignatureFormFieldState state =
                 field as _SignatureFormFieldState;
+
+            final TxLocalizations localizations =
+                TxLocalizations.of(field.context);
 
             final List<Widget> actions = [
               IconButton(
                 onPressed: state._switchEditMode,
                 icon: Icon(state.editable ? Icons.done : Icons.edit),
                 visualDensity: VisualDensity.compact,
+                tooltip: state.editable
+                    ? localizations.doneButtonTooltip
+                    : localizations.editButtonTooltip,
               ),
               if (state.editable)
                 IconButton(
@@ -62,41 +64,35 @@ class SignatureFormField extends FormField<List<Point>> {
                     }
                   },
                   icon: const Icon(Icons.cleaning_services_rounded),
-                  tooltip: '清空',
+                  tooltip: localizations.clearButtonLabel,
                 )
             ];
+            final InputDecoration defaultDecoration = InputDecoration(
+              hintText: localizations.signatureFormFieldHint,
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: actions,
+              ),
+            );
 
             return UnmanagedRestorationScope(
               bucket: field.bucket,
-              child: FormItemContainer(
-                actions: actions,
-                label: label,
-                labelText: labelText,
-                required: required,
-                direction: direction,
-                backgroundColor: backgroundColor,
-                labelStyle: labelStyle,
-                starStyle: starStyle,
-                horizontalGap: horizontalGap,
-                minLabelWidth: minLabelWidth,
-                padding: padding,
-                formField: InputDecorator(
-                  decoration: decoration.copyWith(
-                    errorText: state.errorText,
-                    hintText: '请签名',
-                    fillColor: Colors.white,
-                  ),
-                  isEmpty: field.value?.isNotEmpty != true,
-                  child: SizedBox(
-                    height: 250,
-                    child: IgnorePointer(
-                      ignoring: !field.editable,
-                      child: Signature(
-                        width:
-                            MediaQuery.of(state.context).size.width - 16.0 * 4,
-                        controller: state.signatureController,
-                        backgroundColor: Colors.transparent,
-                      ),
+              child: InputDecorator(
+                decoration: TxFormFieldItem.mergeDecoration(
+                  field.context,
+                  decoration,
+                  defaultDecoration,
+                ),
+                isEmpty: field.value?.isNotEmpty != true,
+                child: SizedBox(
+                  height: 250,
+                  child: IgnorePointer(
+                    ignoring: !field.editable,
+                    child: Signature(
+                      width: MediaQuery.of(state.context).size.width - 16.0 * 4,
+                      controller: state.signatureController,
+                      backgroundColor: Colors.transparent,
                     ),
                   ),
                 ),
@@ -107,10 +103,10 @@ class SignatureFormField extends FormField<List<Point>> {
   final ValueChanged<String?>? onChanged;
 
   @override
-  FormFieldState<List<Point>> createState() => _SignatureFormFieldState();
+  TxFormFieldState<List<Point>> createState() => _SignatureFormFieldState();
 }
 
-class _SignatureFormFieldState extends FormFieldState<List<Point>> {
+class _SignatureFormFieldState extends TxFormFieldState<List<Point>> {
   late SignatureController signatureController;
   bool editable = false;
 
@@ -148,7 +144,6 @@ class _SignatureFormFieldState extends FormFieldState<List<Point>> {
   void didUpdateWidget(covariant SignatureFormField oldWidget) {
     if (widget.initialValue != value) {
       signatureController.points = widget.initialValue ?? [];
-      setValue(widget.initialValue);
     }
     super.didUpdateWidget(oldWidget);
   }

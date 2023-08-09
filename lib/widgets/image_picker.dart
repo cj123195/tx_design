@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_mixin
 
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -10,8 +11,11 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 import '../localizations.dart';
+import '../models/tx_file.dart';
 import 'image_picker_theme.dart';
 import 'image_viewer.dart' show TxImageGalleryViewer;
+
+export '../models/tx_file.dart';
 
 const int _kMaxImages = 9;
 const double _kGap = 8.0;
@@ -63,7 +67,7 @@ class TxImagePickerController with ChangeNotifier {
     required this.maxImages,
     this.cupertinoOptions,
     this.materialOptions,
-    List<ByteData>? images,
+    List<TxFile>? images,
   })  : assert(maxImages < 300 && maxImages > 0),
         _images = images ?? [];
 
@@ -78,10 +82,10 @@ class TxImagePickerController with ChangeNotifier {
   /// 值不能小于0且不能大于300。
   final int maxImages;
 
-  final List<ByteData> _images;
+  final List<TxFile> _images;
 
   /// 所有图片列表，包含初始图片与已选择的图片
-  List<ByteData> get images => _images;
+  List<TxFile> get images => _images;
 
   /// 已选图片列表是否为空
   bool get hasNoImage => _images.isEmpty;
@@ -103,10 +107,8 @@ class TxImagePickerController with ChangeNotifier {
         materialOptions: materialOptions ?? MaterialOptions(maxImages: max),
       );
       if (result.isNotEmpty) {
-        final List<ByteData> data = await Future.wait([
-          for (Asset asset in result)
-            asset.getThumbByteData(size.toInt(), size.toInt())
-        ]);
+        final List<TxFile> data = await Future.wait(
+            [for (Asset asset in result) _transform(asset, size)]);
         _images.addAll(data);
         notifyListeners();
         return true;
@@ -117,15 +119,21 @@ class TxImagePickerController with ChangeNotifier {
     }
   }
 
+  Future<TxFile> _transform(Asset asset, double size) async {
+    final ByteData byteData =
+        await asset.getThumbByteData(size.toInt(), size.toInt());
+    return TxMemoryFile(byteData.buffer.asUint8List(), name: asset.name);
+  }
+
   /// 手动重新排序图像，即将图像从一个位置移动到另一个位置。
   void reorderImage(int oldIndex, int newIndex) {
-    final ByteData bytes = _images.removeAt(oldIndex);
+    final TxFile bytes = _images.removeAt(oldIndex);
     _images.insert(newIndex, bytes);
     notifyListeners();
   }
 
   /// 手动从列表中删除图像
-  void removeImage(ByteData bytes) {
+  void removeImage(TxFile bytes) {
     _images.remove(bytes);
     notifyListeners();
   }
@@ -177,13 +185,13 @@ class TxImagePickerView extends StatefulWidget {
   final int? maxItems;
 
   /// 初始图片
-  final List<ByteData>? initialImages;
+  final List<TxFile>? initialImages;
 
   /// 是否可用
   final bool enabled;
 
   /// 选择回调
-  final ValueChanged<List<ByteData>>? onChanged;
+  final ValueChanged<List<TxFile>>? onChanged;
 
   /// 提示文字
   final TipMapper? tipMapper;
@@ -204,8 +212,7 @@ class TxImagePickerView extends StatefulWidget {
   final double? deleteButtonSize;
 
   /// 删除按钮构造方法
-  final Widget Function(
-          BuildContext context, Function(ByteData) deleteCallback)?
+  final Widget Function(BuildContext context, Function(TxFile) deleteCallback)?
       deleteButtonBuilder;
 
   /// 图片列表为空时选择按钮的文字
@@ -222,8 +229,9 @@ class TxImagePickerView extends StatefulWidget {
       emptyBuilder;
 
   /// 图片构造方法
-  final Widget Function(BuildContext context, ByteData bytes,
-      Function(ByteData) deleteCallback)? itemBuilder;
+  final Widget Function(
+          BuildContext context, TxFile file, Function(TxFile) deleteCallback)?
+      itemBuilder;
 
   /// 选择更多构造方法
   final Widget Function(BuildContext context, Function() pickerCallback)?
@@ -258,21 +266,32 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
   final GlobalKey _gridViewKey = GlobalKey();
   late final TxImagePickerController _controller;
 
-  void _previewImage(int index) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return TxImageGalleryViewer.builder(
-        itemCount: _controller.images.length,
-        builder: (context, index) {
-          return PhotoViewGalleryPageOptions(
-            heroAttributes: PhotoViewHeroAttributes(tag: '$_tag$index'),
-            imageProvider:
-                MemoryImage(_controller.images[index].buffer.asUint8List()),
-          );
-        },
-        initialIndex: index,
-        wantKeepAlive: true,
-      );
-    }));
+  ImageProvider _getImage(TxFile file) {
+    if (file is TxNetworkFile) {
+      return NetworkImage(file.url);
+    } else if (file is TxMemoryFile) {
+      return MemoryImage(file.bytes!);
+    } else {
+      return FileImage(File(file.path));
+    }
+  }
+
+  Future<void> _previewImage(int index, ImageProvider image) async {
+    if (context.mounted) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return TxImageGalleryViewer.builder(
+          itemCount: _controller.images.length,
+          builder: (context, index) {
+            return PhotoViewGalleryPageOptions(
+              heroAttributes: PhotoViewHeroAttributes(tag: '$_tag$index'),
+              imageProvider: image,
+            );
+          },
+          initialIndex: index,
+          wantKeepAlive: true,
+        );
+      }));
+    }
   }
 
   void _pickImages() async {
@@ -285,7 +304,7 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
     }
   }
 
-  void _deleteImage(ByteData bytes) {
+  void _deleteImage(TxFile bytes) {
     _controller.removeImage(bytes);
     if (widget.onChanged != null) {
       widget.onChanged!(_controller.images);
@@ -366,20 +385,26 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
           ? List.generate(
               _controller.images.length,
               (index) => widget.itemBuilder!(
-                  context, _controller.images[index], _deleteImage))
+                context,
+                _controller.images[index],
+                _deleteImage,
+              ),
+            )
           : List.generate(_controller.images.length, (index) {
-              final ByteData bytes = _controller.images[index];
+              final ImageProvider image = _getImage(_controller.images[index]);
               return TxImagePickerItem(
-                bytes: bytes,
+                image: image,
                 size: width,
                 tag: '$_tag$index',
                 key: ValueKey('image$index'),
-                onDeleteTap: widget.enabled ? () => _deleteImage(bytes) : null,
+                onDeleteTap: widget.enabled
+                    ? () => _deleteImage(_controller.images[index])
+                    : null,
                 padding: widget.itemPadding,
                 deleteButtonColor: widget.deleteButtonColor,
                 deleteButtonSize: widget.deleteButtonSize,
                 borderRadius: widget.borderRadius,
-                onTap: () => _previewImage(index),
+                onTap: () => _previewImage(index, image),
               );
             });
 
@@ -534,7 +559,7 @@ class _PickButton extends StatelessWidget {
 /// 选择器图片
 class TxImagePickerItem extends StatelessWidget {
   const TxImagePickerItem({
-    required this.bytes,
+    required this.image,
     required this.size,
     required this.tag,
     super.key,
@@ -546,7 +571,7 @@ class TxImagePickerItem extends StatelessWidget {
     this.onTap,
   });
 
-  final ByteData bytes;
+  final ImageProvider image;
   final double size;
   final dynamic tag;
   final VoidCallback? onDeleteTap;
@@ -568,10 +593,13 @@ class TxImagePickerItem extends StatelessWidget {
       onTap: onTap,
       child: Hero(
         tag: tag,
-        child: Image.memory(
-          bytes.buffer.asUint8List(),
-          fit: BoxFit.cover,
-          gaplessPlayback: true,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: image,
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
       ),
     );

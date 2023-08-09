@@ -2,53 +2,86 @@ import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
 import '../extensions/string_extension.dart';
-import 'common_picker_form_field.dart';
+import 'form_field.dart';
 
 /// 日期选择Form组件
-class DatePickerFormField extends CommonPickerFormField<DateTime, DateTime> {
+class DatePickerFormField extends TxPickerTextFormField<DateTime, DateTime> {
   DatePickerFormField({
-    super.key,
-    String? initialValue,
-    DateTime? initialDate,
     String? format = 'yyyy-MM-dd',
     DateTime? firstDate,
     DateTime? lastDate,
-    ValueChanged<String?>? onChanged,
-
-    /// Form 参数
+    String? initialDateStr,
+    DateTime? initialDate,
+    super.key,
     super.onSaved,
-    super.restorationId,
+    super.validator,
     super.enabled,
-    super.autovalidateMode = AutovalidateMode.disabled,
-
-    /// FormItemContainer参数
+    super.autovalidateMode,
+    super.restorationId,
+    super.required,
     super.label,
     super.labelText,
-    super.padding,
     super.backgroundColor,
+    super.direction,
+    super.padding,
+    List<Widget>? actions,
     super.labelStyle,
     super.starStyle,
-    super.direction,
-
-    /// TextField参数
+    super.horizontalGap,
+    super.minLabelWidth,
+    super.controller,
+    super.prefixIconMergeMode,
+    super.suffixIconMergeMode,
     super.focusNode,
-    super.decoration = const InputDecoration(),
-    super.validator,
-    super.required = false,
-    super.readonly = false,
+    super.decoration,
+    super.keyboardType,
+    super.textCapitalization,
+    super.textInputAction,
     super.style,
     super.strutStyle,
     super.textDirection,
     super.textAlign,
     super.textAlignVertical,
-    super.autofocus = false,
-    super.contextMenuBuilder,
+    super.autofocus,
+    super.readonly,
+    super.maxLines,
+    super.minLines,
+    super.maxLength,
+    super.onChanged,
     super.onTap,
-    super.enableSpeech = true,
+    super.onEditingComplete,
+    super.inputFormatters,
+    super.showCursor,
+    super.obscuringCharacter,
+    super.obscureText,
+    super.autocorrect,
+    super.smartDashesType,
+    super.smartQuotesType,
+    super.enableSuggestions,
+    super.maxLengthEnforcement,
+    super.expands,
+    super.onTapOutside,
+    super.onFieldSubmitted,
+    super.cursorWidth,
+    super.cursorHeight,
+    super.cursorRadius,
+    super.cursorColor,
+    super.keyboardAppearance,
+    super.scrollPadding,
+    super.enableInteractiveSelection,
+    super.selectionControls,
+    super.buildCounter,
+    super.scrollPhysics,
+    super.autofillHints,
+    super.scrollController,
+    super.enableIMEPersonalizedLearning,
+    super.mouseCursor,
+    super.contextMenuBuilder,
   }) : super(
-          labelMapper: (DateTime? date) => date?.format(format) ?? '',
-          valueMapper: (DateTime? date) => date,
-          initialValue: initialDate ?? initialValue?.toDatetime(),
+          labelMapper: (DateTime date) => date.format(format),
+          valueMapper: (DateTime date) => date,
+          initialValue: initialDate ?? initialDateStr?.toDatetime(),
+          dataMapper: (String? value) => value?.toDatetime(),
           onPickTap: (context, initialDate) => showDatePicker(
             context: context,
             initialDate: initialDate ?? DateTime.now(),
@@ -60,8 +93,6 @@ class DatePickerFormField extends CommonPickerFormField<DateTime, DateTime> {
                   DateTime.now().day,
                 ),
           ),
-          onChanged: (DateTime? date) {
-            onChanged?.call(date?.format(format));
-          },
+          actionsBuilder: (field) => actions,
         );
 }

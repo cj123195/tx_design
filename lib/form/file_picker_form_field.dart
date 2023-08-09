@@ -1,222 +1,243 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 
+import '../extensions/datetime_extension.dart';
+import '../extensions/string_extension.dart';
+import '../localizations.dart';
+import '../models/tx_file.dart';
 import '../widgets/file_list_tile.dart';
 import '../widgets/image_viewer.dart';
 import '../widgets/signature.dart';
-import 'form_item_container.dart';
+import 'form_field.dart';
 
-export 'package:file_picker/file_picker.dart' show PlatformFile;
+export '../models/tx_file.dart';
+
+const String _drawingPrefix = 'Drawing';
 
 /// 文件选择Form表单组件
-///
-/// otherFiles用于传入其他非选择选择组件，如服务器文件等
-class FilePickerFormField extends FormField<List<PlatformFile>> {
+class FilePickerFormField extends TxFormFieldItem<List<TxFile>> {
   FilePickerFormField({
-    InputDecoration decoration = const InputDecoration(),
-    ValueChanged<List<PlatformFile>?>? onChanged,
     List<String>? allowedExtensions,
+    int? minPickNumber,
     int? maxPickNumber,
     bool drawEnabled = false,
     bool readonly = false,
-
-    // Form参数
     super.key,
     super.onSaved,
-    List<PlatformFile>? initialData,
-    List<TxFileListTile>? otherFiles,
-    bool required = false,
-    bool? enabled,
+    super.required,
+    super.enabled,
     super.restorationId,
-    AutovalidateMode? autovalidateMode,
-    FormFieldValidator<List<PlatformFile>?>? validator,
-
-    // FormItemContainer参数
-    Widget? label,
-    String? labelText,
-    EdgeInsetsGeometry? padding,
-    Color? backgroundColor,
-    TextStyle? labelStyle,
-    TextStyle? starStyle,
-    double? horizontalGap,
-    double? minLabelWidth,
-    Axis? direction,
-  })  : assert(maxPickNumber == null || maxPickNumber > 0),
+    super.autovalidateMode,
+    super.validator,
+    super.label,
+    super.labelText,
+    super.backgroundColor,
+    super.direction,
+    super.padding,
+    List<Widget>? actions,
+    super.labelStyle,
+    super.starStyle,
+    super.horizontalGap,
+    super.minLabelWidth,
+    super.initialValue,
+    InputDecoration? decoration,
+    ValueChanged<List<TxFile>?>? onChanged,
+  })  : assert(
+          minPickNumber == null || minPickNumber > 0,
+          'minPickNumber must be null or greater than 0',
+        ),
+        assert(
+          maxPickNumber == null || maxPickNumber > 0,
+          'maxPickNumber must be null or greater than 0',
+        ),
+        assert(
+          maxPickNumber == null ||
+              minPickNumber == null ||
+              maxPickNumber > minPickNumber,
+          'maxPickNumber must be  greater than minPickNumber',
+        ),
         super(
-          initialValue: initialData,
-          validator: validator ??
-              (List<PlatformFile>? value) {
-                final int length =
-                    (value?.length ?? 0) + (otherFiles?.length ?? 0);
-                if (required && length == 0) {
-                  return '请选择${labelText ?? ''}';
-                } else if (maxPickNumber != null && length > maxPickNumber) {
-                  return '最多可选择$maxPickNumber个文件';
-                }
-                return null;
-              },
-          builder: (FormFieldState<List<PlatformFile>> field) {
-            void onChangedHandler(List<PlatformFile>? value) {
+          builder: (field) {
+            final InputDecoration defaultDecoration = InputDecoration(
+              hintText: TxLocalizations.of(field.context).pickerFormFieldHint,
+              filled: false,
+              border: InputBorder.none,
+            );
+            final InputDecoration effectiveDecoration =
+                TxFormFieldItem.mergeDecoration(
+                    field.context, decoration, defaultDecoration);
+
+            Widget? child;
+            if (field.value?.isNotEmpty == true) {
+              child = Column(
+                mainAxisSize: MainAxisSize.min,
+                children: field.value!.map((e) {
+                  return _FileTile(
+                    e,
+                    readonly
+                        ? null
+                        : (file) {
+                            final List<TxFile> list = [...field.value!];
+                            list.remove(file);
+                            field.didChange(list);
+                            if (onChanged != null) {
+                              onChanged(list);
+                            }
+                            return true;
+                          },
+                  );
+                }).toList(),
+              );
+            }
+
+            return InputDecorator(
+              decoration:
+                  effectiveDecoration.copyWith(errorText: field.errorText),
+              isEmpty: field.value?.isNotEmpty != true,
+              child: child,
+            );
+          },
+          actionsBuilder: (field) {
+            if (readonly) {
+              return actions;
+            }
+            final TxLocalizations localizations =
+                TxLocalizations.of(field.context);
+            void onChangedHandler(List<TxFile>? value) {
               field.didChange(value);
               if (onChanged != null) {
                 onChanged(value);
               }
             }
 
-            /// 选择文件
+            // 选择文件
             Future<void> pickFile() async {
-              final FilePickerResult? result = await FilePicker.platform
-                  .pickFiles(
-                      allowedExtensions: allowedExtensions,
-                      type: allowedExtensions == null
-                          ? FileType.any
-                          : FileType.custom);
+              final FilePickerResult? result =
+                  await FilePicker.platform.pickFiles(
+                allowedExtensions: allowedExtensions,
+                type:
+                    allowedExtensions == null ? FileType.any : FileType.custom,
+              );
 
               if (result != null) {
-                onChangedHandler([...?field.value, ...result.files]);
+                onChangedHandler([
+                  ...?field.value,
+                  ...result.files.map((e) => e.toTxFile()),
+                ]);
               }
             }
 
-            /// 绘制
-            Future<void> draw() async {
-              Navigator.push(
-                field.context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return TxSignatureFullScreen(
-                      onSave: (data) {
-                        if (data != null) {
-                          final int size = data.length;
-                          final PlatformFile file = PlatformFile(
-                            name: 'signature_${DateTime.now().millisecond}.png',
-                            size: size,
-                            bytes: data,
-                          );
-                          onChangedHandler([...?field.value, file]);
-                          Navigator.pop(context);
-                        }
-                      },
-                    );
-                  },
-                ),
-              );
-            }
-
-            /// 预览
-            void onPreviewTap(PlatformFile file) {
-              if (file.path != null) {
-                OpenFilex.open(file.path);
-              } else {
-                Navigator.push(
-                  field.context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return TxImageViewer(
-                        MemoryImage(file.bytes!),
-                        backgroundColor: Colors.white,
-                      );
-                    },
-                  ),
-                );
-              }
-            }
-
-            List<Widget>? actions;
-            final int length =
-                (field.value?.length ?? 0) + (otherFiles?.length ?? 0);
-            if ((maxPickNumber == null || length < maxPickNumber) &&
-                !readonly) {
-              final Widget attachButton = IconButton(
-                onPressed: pickFile,
-                icon: const Icon(Icons.attachment),
-                tooltip: '选择文件',
-                visualDensity:
-                    const VisualDensity(horizontal: -4.0, vertical: -4.0),
-              );
-              final Widget drawButton = IconButton(
-                onPressed: draw,
-                icon: const Icon(Icons.draw_outlined),
-                tooltip: '绘制',
-                visualDensity:
-                    const VisualDensity(horizontal: -4.0, vertical: -4.0),
-              );
-              actions = [attachButton, if (drawEnabled) drawButton];
-            }
-
-            Widget? child;
-            if (length != 0) {
-              child = Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ...?otherFiles,
-                  ...?field.value?.map((e) {
-                    return TxFileListTile(
-                      name: e.name,
-                      size: e.size,
-                      onShareTap: () {
-                        Share.shareXFiles(
-                            [XFile(e.path!, name: e.name, length: e.size)]);
-                      },
-                      onPreviewTap: () => onPreviewTap(e),
-                      onDeleteTap: readonly
-                          ? null
-                          : () {
-                              final List<PlatformFile> list = [...field.value!];
-                              list.remove(e);
-                              onChangedHandler(list);
-                              return true;
-                            },
-                    );
-                  }).toList(),
-                ],
-              );
-            }
-
-            return UnmanagedRestorationScope(
-              bucket: field.bucket,
-              child: FormItemContainer(
-                actions: actions,
-                label: label,
-                labelText: labelText,
-                required: required,
-                direction: direction,
-                backgroundColor: backgroundColor,
-                labelStyle: labelStyle,
-                starStyle: starStyle,
-                horizontalGap: horizontalGap,
-                minLabelWidth: minLabelWidth,
-                padding: padding,
-                formField: InputDecorator(
-                  decoration: decoration.copyWith(
-                    errorText: field.errorText,
-                    hintText: length == 0 ? '请选择文件' : null,
-                    filled: false,
-                    border: InputBorder.none,
-                  ),
-                  isEmpty: field.value?.isNotEmpty != true,
-                  child: child,
-                ),
-              ),
+            final Widget attachButton = IconButton(
+              onPressed: pickFile,
+              icon: const Icon(Icons.attachment),
+              tooltip: localizations.selectFileButtonTooltip,
+              visualDensity: VisualDensity.compact,
             );
+
+            // 绘制
+            Future<void> draw() async {
+              final MaterialPageRoute route = MaterialPageRoute(
+                builder: (context) {
+                  return TxSignatureFullScreen(
+                    onSave: (data) {
+                      final String dateTime =
+                          DateTime.now().format('yyyyMMdd_HHmmss');
+                      if (data != null) {
+                        final TxFile file = TxMemoryFile(
+                          data,
+                          name: '${_drawingPrefix}_$dateTime.png',
+                        );
+                        onChangedHandler([...?field.value, file]);
+                        Navigator.pop(context);
+                      }
+                    },
+                  );
+                },
+              );
+              Navigator.push(field.context, route);
+            }
+
+            final Widget drawButton = IconButton(
+              onPressed: draw,
+              icon: const Icon(Icons.draw_outlined),
+              tooltip: localizations.drawButtonTooltip,
+              visualDensity: VisualDensity.compact,
+            );
+            return [...?actions, attachButton, if (drawEnabled) drawButton];
+          },
+          defaultValidator: (context, files) {
+            final TxLocalizations localizations = TxLocalizations.of(context);
+            final int length = files?.length ?? 0;
+            if (required && length == 0) {
+              return localizations.pickerFormFieldHint;
+            }
+            if (minPickNumber != null && minPickNumber > length) {
+              return localizations.minimumFileLimitLabel(minPickNumber);
+            }
+            if (maxPickNumber != null && maxPickNumber < length) {
+              return localizations.maximumFileLimitLabel(maxPickNumber);
+            }
+            return null;
           },
         );
-
-  @override
-  FormFieldState<List<PlatformFile>> createState() =>
-      _FilePickerFormFieldState();
 }
 
-class _FilePickerFormFieldState extends FormFieldState<List<PlatformFile>> {
-  @override
-  FilePickerFormField get widget => super.widget as FilePickerFormField;
+class _FileTile extends StatelessWidget {
+  const _FileTile(this.file, this.onDeleteTap);
+
+  final TxFile file;
+  final bool Function(TxFile file)? onDeleteTap;
+
+  Future<void> onPreviewTap(BuildContext context, TxFile file) async {
+    if (file.name.isImageFileName) {
+      ImageProvider image;
+      if (file is TxNetworkFile) {
+        image = NetworkImage(file.url);
+      } else if (file is TxMemoryFile) {
+        final Uint8List bytes = file.bytes!;
+        image = MemoryImage(bytes);
+      } else {
+        image = FileImage(File(file.path));
+      }
+      if (context.mounted) {
+        final Color? background =
+            file.name.startsWith(_drawingPrefix) ? Colors.white : null;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return TxImageViewer(image, backgroundColor: background);
+            },
+          ),
+        );
+      }
+    } else {
+      if (file.path.isEmpty) {
+        final Directory dic = await getTemporaryDirectory();
+        await file.saveTo(dic.path + Platform.pathSeparator + file.name);
+      }
+      OpenFilex.open(file.path);
+    }
+  }
 
   @override
-  void didUpdateWidget(covariant FilePickerFormField oldWidget) {
-    if (widget.initialValue != value) {
-      setValue(widget.initialValue);
-    }
-    super.didUpdateWidget(oldWidget);
+  Widget build(BuildContext context) {
+    return FutureBuilder<int>(
+      builder: (context, snapshot) {
+        return TxFileListTile(
+          name: file.name,
+          size: snapshot.data,
+          onShareTap: file.share,
+          onPreviewTap: () => onPreviewTap(context, file),
+          onDeleteTap: () => onDeleteTap?.call(file) ?? false,
+        );
+      },
+      future: file.length(),
+    );
   }
 }

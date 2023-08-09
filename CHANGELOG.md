@@ -54,3 +54,7 @@
 * Update DateRangePicker widget.
 * Fixed issue with TxDatePickerButtonThemeData copyWith method not working.
 * Update Form series widgets.
+
+# 0.1.0
+* Complete localization of all widgets.
+* Refactoring Form series widgets.
