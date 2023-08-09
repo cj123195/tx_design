@@ -281,13 +281,19 @@ Future<T?> showTxModalBottomSheet<T>(
   ));
 }
 
+const EdgeInsetsGeometry _contentPadding = EdgeInsets.all(12.0);
+
 /// 默认底部弹框
 Future<T?> showDefaultBottomSheet<T>(
   BuildContext context, {
   required Widget content,
   Widget? header,
   String? title,
+  bool? centerTitle,
+  double? titleSpacing,
   Widget? leading,
+  double? leadingWidth,
+  bool automaticallyImplyLeading = true,
   List<Widget>? actions,
   Widget? footer,
   VoidCallback? onConfirm,
@@ -308,19 +314,20 @@ Future<T?> showDefaultBottomSheet<T>(
   bool isDismissible = true,
   bool enableDrag = true,
   EdgeInsetsGeometry? padding,
-  EdgeInsetsGeometry? contentPadding,
+  EdgeInsetsGeometry? contentPadding = _contentPadding,
   bool persistent = false,
   bool? ignoreSafeArea,
   RouteSettings? settings,
   Duration? enterBottomSheetDuration,
   Duration? exitBottomSheetDuration,
 }) async {
-  assert(header != null || title != null);
   return showTxModalBottomSheet<T>(
     context,
     builder: (_) => _DefaultSheet(
       content: content,
       title: title,
+      titleSpacing: titleSpacing,
+      centerTitle: centerTitle,
       header: header,
       actions: actions,
       onConfirm: onConfirm,
@@ -333,6 +340,8 @@ Future<T?> showDefaultBottomSheet<T>(
       padding: padding,
       contentPadding: contentPadding,
       leading: leading,
+      leadingWidth: leadingWidth,
+      automaticallyImplyLeading: automaticallyImplyLeading,
       footer: footer,
     ),
     persistent: persistent,
@@ -356,10 +365,13 @@ Future<T?> showDefaultBottomSheet<T>(
 class _DefaultSheet extends StatelessWidget {
   const _DefaultSheet({
     required this.content,
-    Key? key,
     this.header,
     this.title,
+    this.titleSpacing,
+    this.centerTitle,
     this.leading,
+    this.leadingWidth,
+    this.automaticallyImplyLeading = true,
     this.actions,
     this.onConfirm,
     this.onClose,
@@ -369,12 +381,17 @@ class _DefaultSheet extends StatelessWidget {
     this.showConfirmButton = true,
     this.showCancelButton = true,
     this.padding,
-    this.contentPadding = const EdgeInsets.all(16),
+    this.contentPadding = _contentPadding,
     this.footer,
-  }) : super(key: key);
+  });
+
   final Widget? header;
   final Widget? leading;
+  final double? leadingWidth;
+  final bool automaticallyImplyLeading;
   final String? title;
+  final double? titleSpacing;
+  final bool? centerTitle;
   final Widget content;
   final Widget? footer;
   final List<Widget>? actions;
@@ -388,10 +405,51 @@ class _DefaultSheet extends StatelessWidget {
   final EdgeInsetsGeometry? contentPadding;
   final EdgeInsetsGeometry? padding;
 
+  bool _getEffectiveCenterTitle(ThemeData theme) {
+    bool platformCenter() {
+      switch (theme.platform) {
+        case TargetPlatform.android:
+        case TargetPlatform.fuchsia:
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+          return false;
+        case TargetPlatform.iOS:
+        case TargetPlatform.macOS:
+          return actions == null || actions!.length < 2;
+      }
+    }
+
+    return centerTitle ?? theme.appBarTheme.centerTitle ?? platformCenter();
+  }
+
+  Widget? _getLeading(ThemeData theme) {
+    Widget? leading = this.leading;
+    if (leading == null && automaticallyImplyLeading) {
+      leading = CloseButton(onPressed: onCancel);
+    }
+    if (leading != null) {
+      final BoxConstraints constraints =
+          BoxConstraints.tightFor(width: leadingWidth ?? kToolbarHeight);
+      if (theme.useMaterial3) {
+        leading = ConstrainedBox(
+          constraints: constraints,
+          child: leading is IconButton ? Center(child: leading) : leading,
+        );
+      } else {
+        leading = ConstrainedBox(
+          constraints: constraints,
+          child: leading,
+        );
+      }
+    }
+    return leading;
+  }
+
   @override
   Widget build(BuildContext context) {
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
+    final ThemeData theme = Theme.of(context);
 
     Widget? footer;
     if (this.footer != null) {
@@ -416,7 +474,7 @@ class _DefaultSheet extends StatelessWidget {
           children: [
             for (int i = 0; i < buttons.length; i++) ...[
               Expanded(child: buttons[i]),
-              if (i != buttons.length - 1) const SizedBox(width: 16),
+              if (i != buttons.length - 1) const SizedBox(width: 12.0),
             ]
           ],
         );
@@ -431,30 +489,33 @@ class _DefaultSheet extends StatelessWidget {
             children: actions!,
           );
 
-    final Widget header = SizedBox(
-      height: kToolbarHeight,
-      child: this.header ??
-          NavigationToolbar(
-            leading: leading ??
-                IconButton(
-                  onPressed: onCancel ?? () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-            middle:
-                Text(title!, style: Theme.of(context).textTheme.titleMedium),
-            trailing: action,
-            centerMiddle: true,
-          ),
-    );
+    Widget? header = this.header;
+    if (header == null && title != null) {
+      header = SizedBox(
+        height: kToolbarHeight,
+        child: NavigationToolbar(
+          leading: _getLeading(theme),
+          middle: Text(title!, style: theme.textTheme.titleMedium),
+          trailing: action,
+          centerMiddle: _getEffectiveCenterTitle(theme),
+          middleSpacing: titleSpacing ?? NavigationToolbar.kMiddleSpacing,
+        ),
+      );
+    }
+
+    Widget content = this.content;
+    if (contentPadding != null) {
+      content = Padding(padding: contentPadding!, child: content);
+    }
 
     Widget result = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        header,
+        if (header != null) header,
         Expanded(child: content),
         if (footer != null)
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12.0),
             child: footer,
           ),
       ],
