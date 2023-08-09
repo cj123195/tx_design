@@ -58,3 +58,15 @@
 # 0.1.0
 * Complete localization of all widgets.
 * Refactoring Form series widgets.
+
+# 0.1.1
+* Fix some bug of form widgets.
+* Update default style of DefaultBottomSheet.
+* Update default row and column spacing of TxDataGrid.
+* Update some parameters name of TxPanel and remove default background color of Panel.
+* Add TxDetailView, TxDetailViewThemeData, TxDetailTheme.
+* Add DateRangePickerButton, DateRangePickerButtonThemeData, DateRangePickerButtonTheme.
+* Update TxSkeleton, Add TxSkeletonThemeData, TxSkeletonTheme.
+* Add TxWrapGridView.
+* Update TxSearchDelegate.
+* Add TxStatusIndicator, TxStatusIndicatorThemeData, TxStatusIndicatorTheme.
