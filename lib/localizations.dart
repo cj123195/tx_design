@@ -39,8 +39,8 @@ abstract class TxLocalizations {
   /// Title for default dialog.
   String get dialogTitle;
 
-  /// Title for information dialog.
-  String get informationDialogTitle;
+  /// Title for detail dialog.
+  String get detailDialogTitle;
 
   /// Title for picker.
   String get pickerTitle;
@@ -281,7 +281,7 @@ class DefaultTxLocalizations implements TxLocalizations {
   String get dialogTitle => 'Operating Tips';
 
   @override
-  String get informationDialogTitle => 'Information';
+  String get detailDialogTitle => 'Detail';
 
   @override
   String get pickerTitle => 'Select';
@@ -477,7 +477,7 @@ class ZhTxLocalizations implements TxLocalizations {
   String get dialogTitle => '操作提示';
 
   @override
-  String get informationDialogTitle => '信息';
+  String get detailDialogTitle => '详情';
 
   @override
   String get pickerTitle => '请选择';
