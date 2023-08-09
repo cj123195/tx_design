@@ -1,460 +1,230 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
-import 'shimmer.dart';
+import '../theme_extensions/radius.dart';
+import '../theme_extensions/spacing.dart';
+import 'panel.dart';
+import 'skeleton_theme.dart';
 
-/// 骨架屏组件
+/// 骨架屏
 class TxSkeleton extends StatelessWidget {
-  const TxSkeleton({super.key, this.style = const TxSkeletonStyle()});
-
-  final TxSkeletonStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isLightMode =
-        Theme.of(context).colorScheme.brightness == Brightness.light;
-
-    final baseColor = style.baseColor ??
-        (isLightMode ? const Color(0xFFEBEBF4) : const Color(0xFF222222));
-    final highlightColor = style.highlightColor ??
-        (isLightMode ? const Color(0xFFD1D1DF) : const Color(0xFF2B2B2B));
-
-    return TxShimmer.fromColors(
-      highlightColor: highlightColor,
-      baseColor: baseColor,
-      child: Padding(
-        padding: style.padding,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            double? width = style.width;
-            if (style.randomWidth) {
-              final double max = style.maxWidth ?? constraints.maxWidth;
-              final double min = style.minWidth ?? max / 3;
-              width = Random().nextDouble() * (max - min) + min;
-            }
-            return Container(
-              width: width,
-              height: style.height,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
-                borderRadius: style.borderRadius,
-              ),
-            );
-          },
-        ),
-      ),
-      // gradient: gradient,
-    );
-  }
-}
-
-/// 头像骨架屏
-class TxAvatarSkeleton extends StatelessWidget {
-  const TxAvatarSkeleton(
-      {super.key, this.style = const TxSkeletonAvatarStyle()});
-
-  final TxSkeletonAvatarStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isLightMode = Theme.of(context).brightness == Brightness.light;
-
-    final baseColor = style.baseColor ??
-        (isLightMode ? const Color(0xFFEBEBF4) : const Color(0xFF222222));
-    final highlightColor = style.highlightColor ??
-        (isLightMode ? const Color(0xFFD1D1DF) : const Color(0xFF2B2B2B));
-
-    return TxShimmer.fromColors(
-      baseColor: baseColor,
-      highlightColor: highlightColor,
-      child: Padding(
-        padding: style.padding,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            double? width = style.width;
-            double? height = style.height;
-            if (style.randomWidth) {
-              final double max = style.maxWidth ?? constraints.maxWidth;
-              final double min = style.minWidth ?? max / 3;
-              width = Random().nextDouble() * (max - min) + min;
-            }
-            if (style.randomHeight) {
-              final double max = style.maxHeight ?? constraints.maxWidth;
-              final double min = style.minHeight ?? max / 3;
-              height = Random().nextDouble() * (max - min) + min;
-            }
-            return Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
-                shape: style.shape,
-                borderRadius:
-                    style.shape != BoxShape.circle ? style.borderRadius : null,
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-/// 文章段落骨架屏
-class TxParagraphSkeleton extends StatelessWidget {
-  const TxParagraphSkeleton({
+  const TxSkeleton({
     super.key,
-    this.lines = 3,
-    this.padding = const EdgeInsets.symmetric(vertical: 8, horizontal: 13),
-    this.spacing = 12,
-    this.lineStyle,
-    this.imageStyle,
-    this.releaseStyle,
-    this.hasImage = false,
-    this.hasRelease = false,
-    this.runSpacing,
+    this.color,
+    this.width,
+    this.height,
+    this.borderRadius,
+    this.alignment,
+    this.widthFactor,
+    this.heightFactor,
   });
 
-  final int lines;
-  final EdgeInsetsGeometry padding;
-  final double spacing;
-  final TxSkeletonStyle? lineStyle;
-  final TxSkeletonStyle? imageStyle;
-  final TxSkeletonStyle? releaseStyle;
-  final double? runSpacing;
-  final bool hasImage;
-  final bool hasRelease;
+  TxSkeleton.text({
+    required TextStyle style,
+    super.key,
+    this.color,
+    this.width = 84.0,
+    this.borderRadius,
+    this.alignment,
+    this.widthFactor,
+    this.heightFactor,
+  }) : height = style.fontSize;
+
+  const TxSkeleton.square({
+    required double dimension,
+    super.key,
+    this.color,
+    this.borderRadius,
+    this.alignment,
+    this.widthFactor,
+    this.heightFactor,
+  })  : width = dimension,
+        height = dimension;
+
+  /// 骨架屏颜色
+  final Color? color;
+
+  /// 骨架屏宽度
+  final double? width;
+
+  /// 骨架屏高度
+  final double? height;
+
+  /// 骨架屏圆角
+  final BorderRadius? borderRadius;
+
+  /// 骨架屏对齐方式
+  final AlignmentGeometry? alignment;
+
+  /// 相对于父组件宽度比例
+  final double? widthFactor;
+
+  /// 相对于父组件的高度比例
+  final double? heightFactor;
 
   @override
   Widget build(BuildContext context) {
-    final child = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (var i = 1; i <= lines; i++) ...[
-          TxSkeleton(style: lineStyle ?? const TxSkeletonStyle(height: 14)),
-          if (i != lines) SizedBox(height: spacing)
-        ],
-        if (hasRelease) ...[
-          SizedBox(height: spacing),
-          TxSkeleton(
-              style:
-                  releaseStyle ?? const TxSkeletonStyle(height: 14, width: 55))
-        ],
-      ],
+    final TxSkeletonThemeData skeletonTheme = TxSkeletonTheme.of(context);
+
+    final Color effectiveColor = color ??
+        skeletonTheme.color ??
+        Theme.of(context).colorScheme.outline.withOpacity(0.1);
+    final BorderRadius effectiveBorderRaius = borderRadius ??
+        skeletonTheme.borderRadius ??
+        RadiusTheme.of(context).miniRadius;
+
+    Widget result = DecoratedBox(
+      decoration: BoxDecoration(
+        color: effectiveColor,
+        borderRadius: effectiveBorderRaius,
+      ),
     );
-    return Padding(
-      padding: padding,
-      child: hasImage
-          ? Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: child),
-                SizedBox(width: runSpacing ?? 12),
-                TxSkeleton(
-                    style: imageStyle ??
-                        const TxSkeletonStyle(width: 100, height: 80))
-              ],
-            )
-          : child,
+
+    if (width != null || height != null) {
+      result = SizedBox(height: height, width: width, child: result);
+    }
+
+    return FractionallySizedBox(
+      widthFactor: widthFactor,
+      heightFactor: heightFactor,
+      alignment: alignment ?? Alignment.centerLeft,
+      child: result,
     );
   }
 }
 
 /// ListTile骨架屏
-class TxListTileSkeleton extends StatelessWidget {
-  const TxListTileSkeleton({
+class ListTileTxSkeleton extends StatelessWidget {
+  const ListTileTxSkeleton({
     super.key,
-    this.titleStyle = const TxSkeletonStyle(),
-    this.hasLeading = true,
-    this.leadingStyle,
-    this.hasSubtitle = true,
-    this.subtitleStyle,
-    this.padding,
-    this.contentSpacing = 5,
-    this.verticalSpacing = 4,
-    this.trailing,
+    this.showLeading = false,
+    this.showTrailing = true,
+    this.circleLeading = false,
+    this.squareTrailing = true,
+    this.longSubtitle = false,
   });
 
-  final bool hasLeading;
-  final TxSkeletonAvatarStyle? leadingStyle;
-  final TxSkeletonStyle titleStyle;
-  final bool hasSubtitle;
-  final TxSkeletonStyle? subtitleStyle;
-  final EdgeInsetsGeometry? padding;
-  final double? contentSpacing;
-  final double? verticalSpacing;
-  final Widget? trailing;
+  final bool showLeading;
+  final bool showTrailing;
+  final bool circleLeading;
+  final bool squareTrailing;
+  final bool longSubtitle;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding ?? EdgeInsets.zero,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (hasLeading)
-            TxAvatarSkeleton(
-                style: leadingStyle ?? const TxSkeletonAvatarStyle(width: 30)),
-          SizedBox(width: contentSpacing),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TxSkeleton(style: titleStyle),
-                if (hasSubtitle) ...[
-                  SizedBox(height: verticalSpacing),
-                  TxSkeleton(
-                    style: subtitleStyle ??
-                        const TxSkeletonStyle(width: 60, height: 14),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          if (trailing != null) trailing!
-        ],
-      ),
-    );
-  }
-}
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
-/// TabBar骨架屏
-class TxTabBarSkeleton extends StatelessWidget {
-  const TxTabBarSkeleton(
-      {Key? key,
-      this.tabNum = 3,
-      this.padding = const EdgeInsets.symmetric(vertical: 16, horizontal: 13),
-      this.tabStyle = const TxSkeletonStyle(
-          width: 50, height: 20, padding: EdgeInsets.symmetric(horizontal: 20)),
-      this.alignment = MainAxisAlignment.spaceBetween})
-      : super(key: key);
-  final int tabNum;
-  final EdgeInsetsGeometry padding;
-  final TxSkeletonStyle tabStyle;
-  final MainAxisAlignment alignment;
+    Widget? trailing;
+    if (showTrailing) {
+      trailing = squareTrailing
+          ? const TxSkeleton.square(dimension: 24.0)
+          : TxSkeleton.text(width: 60.0, style: textTheme.bodySmall!);
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: Row(
-        mainAxisAlignment: alignment,
-        children: List.generate(tabNum, (index) => TxSkeleton(style: tabStyle)),
-      ),
-    );
-  }
-}
-
-/// 列表骨架屏
-class TxListViewSkeleton extends StatelessWidget {
-  const TxListViewSkeleton({
-    super.key,
-    this.padding = const EdgeInsets.symmetric(vertical: 8, horizontal: 13),
-    this.item,
-    this.itemCount = 5,
-    this.scrollable = false,
-    this.spacing,
-  });
-
-  final Widget? item;
-  final int itemCount;
-  final bool scrollable;
-  final EdgeInsets? padding;
-  final double? spacing;
-
-  @override
-  Widget build(BuildContext context) {
-    if (!scrollable) {
-      return Padding(
-        padding: padding ?? EdgeInsets.zero,
-        child: Column(
-          children: [
-            for (var i = 1; i <= itemCount; i++) ...[
-              item ?? const TxListTileSkeleton(),
-              if (i != itemCount) SizedBox(height: spacing)
-            ]
-          ],
-        ),
+    Widget? leading;
+    if (showLeading) {
+      leading = TxSkeleton.square(
+        dimension: 40.0,
+        borderRadius: circleLeading ? BorderRadius.circular(40.0) : null,
       );
     }
-    return ListView.builder(
-      padding: padding,
-      itemCount: itemCount,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) => item ?? const TxListTileSkeleton(),
+
+    return ListTile(
+      title: RichText(
+        text: WidgetSpan(
+          child:
+              TxSkeleton.text(style: textTheme.titleMedium!, widthFactor: 0.3),
+          style: textTheme.bodyMedium,
+        ),
+      ),
+      subtitle: RichText(
+        text: WidgetSpan(
+          child:
+              TxSkeleton.text(style: textTheme.bodyMedium!, widthFactor: 0.7),
+          style: textTheme.bodyMedium,
+        ),
+      ),
+      trailing: trailing,
+      leading: leading,
     );
   }
 }
 
-/// 菜单骨架屏
-class TxMenuSkeleton extends StatelessWidget {
-  const TxMenuSkeleton({super.key, this.style = const TxSkeletonMenuStyle()});
-
-  final TxSkeletonMenuStyle style;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: style.padding,
-      child: style.hasLabel
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TxAvatarSkeleton(style: style.iconStyle),
-                SizedBox(height: style.spacing),
-                TxSkeleton(
-                  style: style.labelStyle ?? const TxSkeletonStyle(width: 45),
-                ),
-              ],
-            )
-          : TxAvatarSkeleton(style: style.iconStyle),
-    );
-  }
-}
-
-/// 菜单组骨架屏
-class TxMenuGroupSkeleton extends StatelessWidget {
-  const TxMenuGroupSkeleton({
+/// Panel骨架屏
+class PanelTxSkeleton extends StatelessWidget {
+  const PanelTxSkeleton({
     super.key,
-    this.menuStyle = const TxSkeletonMenuStyle(),
-    this.menuNum = 5,
-    this.hasTitle = false,
-    this.hasLeading = false,
-    this.titleStyle,
-    this.leadingStyle,
-    this.padding = const EdgeInsets.all(0),
+    this.titleWidthFactor = 0.3,
+    this.hasSubtitle = false,
+    this.subtitleWidthFactor = 0.5,
+    this.hasTrailing = true,
+    this.trailingWidth = 48.0,
+    this.contentColumnNumber = 2,
   });
 
-  final bool hasTitle;
-  final bool hasLeading;
-  final TxSkeletonStyle? titleStyle;
-  final TxSkeletonAvatarStyle? leadingStyle;
-  final TxSkeletonMenuStyle menuStyle;
-  final int menuNum;
-  final EdgeInsetsGeometry padding;
+  final bool hasSubtitle;
+  final bool hasTrailing;
+  final int contentColumnNumber;
+  final double trailingWidth;
+  final double subtitleWidthFactor;
+  final double titleWidthFactor;
 
   @override
   Widget build(BuildContext context) {
-    final Widget menuRow = Row(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children:
-          List.generate(menuNum, (index) => TxMenuSkeleton(style: menuStyle)),
+    final TextTheme textTheme = Theme.of(context).textTheme;
+
+    Widget? subtitle;
+    if (hasSubtitle) {
+      subtitle = TxSkeleton.text(
+        style: textTheme.bodyMedium!,
+        widthFactor: subtitleWidthFactor,
+      );
+    }
+
+    Widget? trailing;
+    if (hasTrailing) {
+      trailing = TxSkeleton.text(
+        style: textTheme.bodyMedium!,
+        width: trailingWidth,
+      );
+    }
+
+    final Widget content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (int i = 0; i < contentColumnNumber; i++) ...[
+          TxSkeleton.text(style: textTheme.labelMedium!),
+          if (i != contentColumnNumber - 1)
+            SizedBox(height: SpacingTheme.of(context).small),
+        ]
+      ],
     );
 
-    return Padding(
-      padding: padding,
-      child: hasTitle
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TxListTileSkeleton(
-                  titleStyle: titleStyle ??
-                      const TxSkeletonStyle(width: 70, height: 20),
-                  leadingStyle: leadingStyle ?? const TxSkeletonAvatarStyle(),
-                  hasSubtitle: false,
-                  hasLeading: hasLeading,
-                  padding: const EdgeInsets.only(bottom: 13),
-                ),
-                menuRow
-              ],
-            )
-          : menuRow,
+    return TxPanel(
+      title: TxSkeleton.text(
+        style: textTheme.titleMedium!,
+        widthFactor: titleWidthFactor,
+      ),
+      subtitle: subtitle,
+      trailing: trailing,
+      content: content,
     );
   }
 }
 
-class TxSkeletonStyle {
-  const TxSkeletonStyle({
-    this.width = double.infinity,
-    this.height = 18,
-    this.padding = const EdgeInsets.all(0),
-    bool? randomWidth,
-    this.minWidth,
-    this.maxWidth,
-    this.alignment = AlignmentDirectional.centerStart,
-    this.borderRadius = const BorderRadius.all(Radius.circular(2)),
-    this.baseColor,
-    this.highlightColor,
-  })  : randomWidth = randomWidth ?? (minWidth != null || maxWidth != null),
-        assert(minWidth == null ||
-            (minWidth > 0 && (maxWidth == null || maxWidth > minWidth))),
-        assert(maxWidth == null ||
-            (maxWidth > 0 && (minWidth == null || minWidth < maxWidth)));
-  final double? width;
-  final double? height;
-  final EdgeInsetsGeometry padding;
-  final bool randomWidth;
-  final double? minWidth;
-  final double? maxWidth;
-  final AlignmentGeometry alignment;
-  final BorderRadiusGeometry? borderRadius;
-  final Color? baseColor;
-  final Color? highlightColor;
-}
+/// TabBar 骨架屏
+class TabBarTxSkeleton extends StatelessWidget {
+  const TabBarTxSkeleton({super.key, this.length = 2});
 
-class TxSkeletonAvatarStyle extends TxSkeletonStyle {
-  const TxSkeletonAvatarStyle({
-    double? width = 48,
-    double? height = 48,
-    EdgeInsetsGeometry padding = const EdgeInsets.all(0),
-    bool? randomWidth,
-    double? minWidth,
-    double? maxWidth,
-    bool? randomHeight,
-    Color? baseColor,
-    Color? highlightColor,
-    this.maxHeight,
-    this.minHeight,
-    this.shape = BoxShape.circle,
-    BorderRadiusGeometry? borderRadius =
-        const BorderRadius.all(Radius.circular(4)),
-  })  : randomHeight = randomHeight ?? (minHeight != null || maxHeight != null),
-        assert(minWidth == null ||
-            (minWidth > 0 && (maxWidth == null || maxWidth > minWidth))),
-        assert(maxWidth == null ||
-            (maxWidth > 0 && (minWidth == null || minWidth < maxWidth))),
-        assert(minHeight == null ||
-            (minHeight > 0 && (maxHeight == null || maxHeight > minHeight))),
-        assert(maxHeight == null ||
-            (maxHeight > 0 && (minHeight == null || minHeight < maxHeight))),
-        super(
-          randomWidth: randomWidth,
-          width: width,
-          height: height,
-          padding: padding,
-          borderRadius: borderRadius,
-          minWidth: minWidth,
-          maxWidth: maxWidth,
-          highlightColor: highlightColor,
-          baseColor: baseColor,
-        );
-  final bool randomHeight;
-  final double? maxHeight;
-  final double? minHeight;
-  final BoxShape shape;
-}
+  final int length;
 
-class TxSkeletonMenuStyle {
-  const TxSkeletonMenuStyle({
-    Key? key,
-    this.labelStyle,
-    this.iconStyle = const TxSkeletonAvatarStyle(shape: BoxShape.rectangle),
-    this.spacing = 8,
-    this.padding = const EdgeInsets.all(0),
-    this.hasLabel = true,
-  });
-
-  final TxSkeletonStyle? labelStyle;
-  final TxSkeletonAvatarStyle iconStyle;
-  final double? spacing;
-  final EdgeInsetsGeometry padding;
-  final bool hasLabel;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: List.generate(
+        length,
+        (index) => const TxSkeleton(height: 24.0, width: 80.0),
+      ),
+    );
+  }
 }
