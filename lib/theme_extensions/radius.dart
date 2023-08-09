@@ -24,14 +24,19 @@ class RadiusThemeData extends ThemeExtension<RadiusThemeData> {
   final double large;
   final double largest;
 
+  /// 最小号四角圆角
   BorderRadius get miniRadius => BorderRadius.circular(mini);
 
+  /// 小号四角圆角
   BorderRadius get smallRadius => BorderRadius.circular(small);
 
+  /// 中号四角圆角
   BorderRadius get mediumRadius => BorderRadius.circular(medium);
 
+  /// 大号四角圆角
   BorderRadius get largeRadius => BorderRadius.circular(large);
 
+  /// 最大号四角圆角
   BorderRadius get largestRadius => BorderRadius.circular(largest);
 
   @override
