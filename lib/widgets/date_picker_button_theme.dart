@@ -12,8 +12,6 @@ class TxDatePickerButtonThemeData
     this.firstDate,
     this.lastDate,
     this.showWeekDay,
-    this.prefixIcon,
-    this.suffixIcon,
     this.buttonStyle,
     this.format,
   });
@@ -21,8 +19,6 @@ class TxDatePickerButtonThemeData
   final DateTime? firstDate;
   final DateTime? lastDate;
   final bool? showWeekDay;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
   final ButtonStyle? buttonStyle;
   final String? format;
 
@@ -31,8 +27,6 @@ class TxDatePickerButtonThemeData
     DateTime? firstDate,
     DateTime? lastDate,
     bool? showWeekDay,
-    Widget? prefixIcon,
-    Widget? suffixIcon,
     ButtonStyle? buttonStyle,
     String? format,
   }) {
@@ -40,8 +34,6 @@ class TxDatePickerButtonThemeData
       firstDate: firstDate ?? this.firstDate,
       lastDate: lastDate ?? this.lastDate,
       showWeekDay: showWeekDay ?? this.showWeekDay,
-      prefixIcon: prefixIcon ?? this.prefixIcon,
-      suffixIcon: suffixIcon ?? this.suffixIcon,
       buttonStyle: buttonStyle ?? this.buttonStyle,
       format: format ?? this.format,
     );

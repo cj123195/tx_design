@@ -114,8 +114,8 @@ class _TxDatePickerButtonState extends State<TxDatePickerButton> {
         );
     final bool showWeekday =
         widget.showWeekday ?? buttonTheme.showWeekDay ?? _kShowWeekday;
-    final Widget? prefix = widget.prefixIcon ?? buttonTheme.prefixIcon;
-    final Widget? suffix = widget.suffixIcon ?? buttonTheme.suffixIcon;
+    final Widget? prefix = widget.prefixIcon;
+    final Widget? suffix = widget.suffixIcon;
 
     final String date = _selectDate.format(format);
     final String weekday = _selectDate.formattedWeekday(short: true);
