@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'data_grid_theme.dart';
 
-const double _rowSpacing = 8.0;
-const double _columnSpacing = 12.0;
+const double _rowSpacing = 4.0;
+const double _columnSpacing = 8.0;
 
 /// 数据展示栅格组件
 class TxDataGrid extends StatelessWidget {
