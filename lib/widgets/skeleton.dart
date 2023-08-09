@@ -93,8 +93,8 @@ class TxSkeleton extends StatelessWidget {
 }
 
 /// ListTile骨架屏
-class ListTileTxSkeleton extends StatelessWidget {
-  const ListTileTxSkeleton({
+class TxListTileTxSkeleton extends StatelessWidget {
+  const TxListTileTxSkeleton({
     super.key,
     this.showLeading = false,
     this.showTrailing = true,
@@ -150,8 +150,8 @@ class ListTileTxSkeleton extends StatelessWidget {
 }
 
 /// Panel骨架屏
-class PanelTxSkeleton extends StatelessWidget {
-  const PanelTxSkeleton({
+class TxPanelTxSkeleton extends StatelessWidget {
+  const TxPanelTxSkeleton({
     super.key,
     this.titleWidthFactor = 0.3,
     this.hasSubtitle = false,
@@ -212,8 +212,8 @@ class PanelTxSkeleton extends StatelessWidget {
 }
 
 /// TabBar 骨架屏
-class TabBarTxSkeleton extends StatelessWidget {
-  const TabBarTxSkeleton({super.key, this.length = 2});
+class TxTabBarTxSkeleton extends StatelessWidget {
+  const TxTabBarTxSkeleton({super.key, this.length = 2});
 
   final int length;
 
