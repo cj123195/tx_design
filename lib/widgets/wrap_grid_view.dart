@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 /// 在多个水平或垂直运行中显示其固定大小子级的小部件。
-class WrapGridView extends StatelessWidget {
-  const WrapGridView({
+class TxWrapGridView extends StatelessWidget {
+  const TxWrapGridView({
     required List<Widget> this.children,
     required this.crossAxisCount,
     super.key,
@@ -18,7 +18,7 @@ class WrapGridView extends StatelessWidget {
   })  : itemCount = children.length,
         itemBuilder = null;
 
-  const WrapGridView.builder({
+  const TxWrapGridView.builder({
     required this.itemCount,
     required IndexedWidgetBuilder this.itemBuilder,
     required this.crossAxisCount,
