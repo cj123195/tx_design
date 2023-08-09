@@ -18,8 +18,8 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
     this.textColor,
     this.padding,
     this.margin,
-    this.background,
-    this.selectedBackground,
+    this.panelColor,
+    this.selectedPanelColor,
     this.horizontalTitleGap,
     this.verticalGap,
     this.minLeadingWidth,
@@ -37,8 +37,8 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
   final Color? textColor;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
-  final Color? background;
-  final Color? selectedBackground;
+  final Color? panelColor;
+  final Color? selectedPanelColor;
   final double? horizontalTitleGap;
   final double? verticalGap;
   final double? minLeadingWidth;
@@ -57,8 +57,8 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
     Color? textColor,
     EdgeInsetsGeometry? padding,
     EdgeInsetsGeometry? margin,
-    Color? background,
-    Color? selectedBackground,
+    Color? panelColor,
+    Color? selectedPanelColor,
     double? horizontalTitleGap,
     double? minLeadingWidth,
     double? verticalGap,
@@ -76,8 +76,8 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
       textColor: textColor ?? this.textColor,
       padding: padding ?? this.padding,
       margin: margin ?? this.margin,
-      background: background ?? this.background,
-      selectedBackground: selectedBackground ?? this.selectedBackground,
+      panelColor: panelColor ?? this.panelColor,
+      selectedPanelColor: selectedPanelColor ?? this.selectedPanelColor,
       horizontalTitleGap: horizontalTitleGap ?? this.horizontalTitleGap,
       verticalGap: verticalGap ?? this.verticalGap,
       minLeadingWidth: minLeadingWidth ?? this.minLeadingWidth,
@@ -105,9 +105,9 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
       textColor: Color.lerp(textColor, other.textColor, t),
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t),
       margin: EdgeInsetsGeometry.lerp(padding, other.padding, t),
-      background: Color.lerp(background, other.background, t),
-      selectedBackground:
-          Color.lerp(selectedBackground, other.selectedBackground, t),
+      panelColor: Color.lerp(panelColor, other.panelColor, t),
+      selectedPanelColor:
+          Color.lerp(selectedPanelColor, other.selectedPanelColor, t),
       horizontalTitleGap:
           lerpDouble(horizontalTitleGap, other.horizontalTitleGap, t),
       verticalGap: lerpDouble(verticalGap, other.verticalGap, t),

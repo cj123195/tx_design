@@ -39,7 +39,7 @@ class TxPanel extends StatelessWidget {
     this.padding,
     this.margin,
     this.dense = false,
-    this.background,
+    this.panelColor,
     this.leadingControlAffinity,
     this.verticalGap,
     this.horizontalTitleGap,
@@ -56,7 +56,7 @@ class TxPanel extends StatelessWidget {
     this.hoverColor,
     this.focusNode,
     this.autofocus = false,
-    this.selectedBackground,
+    this.selectedPanelColor,
     this.enableFeedback,
     this.minLeadingWidth,
     this.style,
@@ -198,14 +198,14 @@ class TxPanel extends StatelessWidget {
 
   /// 当 [selected] 为 false 时，定义 `Panel` 的背景颜色。
   ///
-  /// 当值为 null 时，[background] 设置为 [CardTheme.color]如果它不为空，
+  /// 当值为 null 时，[panelColor] 设置为 [CardTheme.color]如果它不为空，
   /// 如果它为空则为[ColorScheme.background]。
-  final Color? background;
+  final Color? panelColor;
 
   /// 定义当 [selected] 为true时面板的背景颜色
   ///
   /// 当值为 null 时，`selectedBackground` 设置为[ColorScheme.primaryContainer]。
-  final Color? selectedBackground;
+  final Color? selectedPanelColor;
 
   /// 检测到的手势是否应提供声音和/或触觉反馈。
   ///
@@ -383,16 +383,12 @@ class TxPanel extends StatelessWidget {
     return textStyle.copyWith(color: color);
   }
 
-  Color _backgroundColor(ThemeData theme, TxPanelThemeData panelTheme) {
+  Color? _backgroundColor(ThemeData theme, TxPanelThemeData panelTheme) {
     return selected
-        ? selectedBackground ??
-            panelTheme.selectedBackground ??
-            theme.listTileTheme.selectedTileColor ??
-            theme.colorScheme.primaryContainer
-        : background ??
-            panelTheme.background ??
-            theme.listTileTheme.tileColor ??
-            theme.colorScheme.background;
+        ? selectedPanelColor ??
+            panelTheme.selectedPanelColor ??
+            theme.listTileTheme.selectedTileColor
+        : panelColor ?? panelTheme.panelColor ?? theme.listTileTheme.tileColor;
   }
 
   @override
@@ -534,7 +530,7 @@ class TxPanel extends StatelessWidget {
                       horizontalTitleGap ?? panelTheme.horizontalTitleGap ?? 16,
                   minLeadingWidth:
                       minLeadingWidth ?? panelTheme.minLeadingWidth ?? 40,
-                  verticalGap: verticalGap ?? 12.0,
+                  verticalGap: verticalGap ?? 8.0,
                 ),
               ),
             ),
