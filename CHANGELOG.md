@@ -70,3 +70,17 @@
 * Add TxWrapGridView.
 * Update TxSearchDelegate.
 * Add TxStatusIndicator, TxStatusIndicatorThemeData, TxStatusIndicatorTheme.
+
+# 0.1.2
+* Add methods for adding, deleting, and deleting all status listener in Toast widget.
+* Modify the UI of ImagePicker when images is empty.
+* Remove ColorExtension.
+* Optimize the UI of TxSearch.
+* Update TxImagePicker, ImagePickerFormField.
+* Add showSimplePickerBottomSheet.
+* Add SquareAvatar.
+* Update extensions and localizations.
+* Add TxDatePickerBar.
+* Delete TxExpansionTile.
+* Add AnchorScrollMixin and AnchorTabMixin.
+* Add showFilterBottomSheet.

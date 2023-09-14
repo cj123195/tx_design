@@ -23,7 +23,7 @@ class TxSquareAvatar extends StatelessWidget {
 
   /// 树中此小部件下方的小组件
   ///
-  /// 通常是 [Text] 小部件。如果[SquareAvatar]要有图像，请使用[backgroundImage]。
+  /// 通常是 [Text] 小部件。如果[TxSquareAvatar]要有图像，请使用[backgroundImage]。
   final Widget? child;
 
   /// 用于填充圆圈的颜色。更改背景颜色将导致头像动画化为新颜色。
@@ -46,7 +46,7 @@ class TxSquareAvatar extends StatelessWidget {
   ///
   /// 通常用作 [foregroundImage] 的回退图像。
   ///
-  /// 如果 [SquareAvatar] 要使用用户的首字母缩写，请改用 [child]。
+  /// 如果 [TxSquareAvatar] 要使用用户的首字母缩写，请改用 [child]。
   final ImageProvider? backgroundImage;
 
   /// 圆的前景图像。
@@ -78,9 +78,9 @@ class TxSquareAvatar extends StatelessWidget {
   ///
   /// 默认值为零。
   ///
-  /// 约束更改是动画的，但不会因环境本身更改而导致的大小更改。例如，当 [SquareAvatar] 处于
+  /// 约束更改是动画的，但不会因环境本身更改而导致的大小更改。例如，当 [TxSquareAvatar] 处于
   /// 不受约束的环境中时，将 [minRadius] 从 10 更改为 20 将导致头像从 20 像素直径动画化到
-  /// 40 像素直径。但是，如果 [minRadius] 为 40，并且 [SquareAvatar] 有一个父级
+  /// 40 像素直径。但是，如果 [minRadius] 为 40，并且 [TxSquareAvatar] 有一个父级
   /// [SizedBox]，其大小会立即从 20 像素更改为 40 像素，则大小将立即捕捉到 40 像素。
   final double? minRadius;
 
@@ -90,9 +90,9 @@ class TxSquareAvatar extends StatelessWidget {
   ///
   /// 默认为 [double.infinity]。
   ///
-  /// 约束更改是动画的，但不会因环境本身更改而导致的大小更改。例如，当 [SquareAvatar] 处于
+  /// 约束更改是动画的，但不会因环境本身更改而导致的大小更改。例如，当 [TxSquareAvatar] 处于
   /// 不受约束的环境中时，将 [maxRadius] 从 10 更改为 20 将导致头像从 20 像素直径动画化为
-  /// 40 像素直径。但是，如果 [maxRadius] 为 40，并且 [SquareAvatar] 有一个父级
+  /// 40 像素直径。但是，如果 [maxRadius] 为 40，并且 [TxSquareAvatar] 有一个父级
   /// [SizedBox]，其大小会立即从 20 像素更改为 40 像素，则大小将立即捕捉到 40 像素。
   final double? maxRadius;
 
@@ -138,7 +138,7 @@ class TxSquareAvatar extends StatelessWidget {
         ? theme.textTheme.titleMedium!
         : theme.primaryTextTheme.titleMedium!;
     TextStyle textStyle =
-    effectiveTextStyle.copyWith(color: effectiveForegroundColor);
+        effectiveTextStyle.copyWith(color: effectiveForegroundColor);
     Color? effectiveBackgroundColor = backgroundColor ??
         (theme.useMaterial3 ? theme.colorScheme.primaryContainer : null);
     if (effectiveBackgroundColor == null) {
@@ -174,38 +174,38 @@ class TxSquareAvatar extends StatelessWidget {
         color: effectiveBackgroundColor,
         image: backgroundImage != null
             ? DecorationImage(
-          image: backgroundImage!,
-          onError: onBackgroundImageError,
-          fit: BoxFit.cover,
-        )
+                image: backgroundImage!,
+                onError: onBackgroundImageError,
+                fit: BoxFit.cover,
+              )
             : null,
         borderRadius: effectiveBorderRadius,
       ),
       foregroundDecoration: foregroundImage != null
           ? BoxDecoration(
-        image: DecorationImage(
-          image: foregroundImage!,
-          onError: onForegroundImageError,
-          fit: BoxFit.cover,
-        ),
-        shape: BoxShape.circle,
-      )
+              image: DecorationImage(
+                image: foregroundImage!,
+                onError: onForegroundImageError,
+                fit: BoxFit.cover,
+              ),
+              shape: BoxShape.circle,
+            )
           : null,
       child: child == null
           ? null
           : Center(
-        child: MediaQuery(
-          // 需要忽略此处的环境文本比例因子，以便在文本比例因子较大时文本不会转义头像。
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-          child: IconTheme(
-            data: theme.iconTheme.copyWith(color: textStyle.color),
-            child: DefaultTextStyle(
-              style: textStyle,
-              child: child!,
+              child: MediaQuery(
+                // 需要忽略此处的环境文本比例因子，以便在文本比例因子较大时文本不会转义头像。
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                child: IconTheme(
+                  data: theme.iconTheme.copyWith(color: textStyle.color),
+                  child: DefaultTextStyle(
+                    style: textStyle,
+                    child: child!,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

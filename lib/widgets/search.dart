@@ -154,7 +154,6 @@ abstract class TxSearchDelegate<T> {
         iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
         titleSpacing: 0.0,
         elevation: 0,
-
       ),
       inputDecorationTheme: searchFieldDecorationTheme ??
           InputDecorationTheme(
