@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const double _defaultPadding = 16.0;
+
 /// 显示全屏搜索页面，并在页面关闭时返回用户选择的搜索结果。
 ///
 /// 详情参考[showSearch]
@@ -12,9 +14,7 @@ Future<T?> showTxSearch<T>({
   delegate.query = query ?? delegate.query;
   delegate._currentBody = _SearchBody.suggestions;
   return Navigator.of(context, rootNavigator: useRootNavigator)
-      .push(_SearchPageRoute<T>(
-    delegate: delegate,
-  ));
+      .push(_SearchPageRoute<T>(delegate: delegate));
 }
 
 /// 委托 [showTxSearch] 来定义搜索页面的内容。
@@ -27,7 +27,7 @@ abstract class TxSearchDelegate<T> {
     this.searchFieldDecorationTheme,
     this.keyboardType,
     this.textInputAction = TextInputAction.search,
-    this.automaticallyImplyLeading = true,
+    this.automaticallyImplyLeading = false,
   });
 
   /// 页面初始化时调用
@@ -116,7 +116,13 @@ abstract class TxSearchDelegate<T> {
   /// 另请参阅：
   ///
   ///  * [AppBar.actions]，此方法的返回值的预期用途。
-  List<Widget>? buildActions(BuildContext context) => null;
+  List<Widget>? buildActions(BuildContext context) => [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(minimumSize: Size.zero),
+          child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+        )
+      ];
 
   /// 要在 [AppBar] 底部显示的小部件
   ///
@@ -144,15 +150,27 @@ abstract class TxSearchDelegate<T> {
     final ColorScheme colorScheme = theme.colorScheme;
     return theme.copyWith(
       appBarTheme: AppBarTheme(
-        backgroundColor: colorScheme.brightness == Brightness.dark
-            ? Colors.grey[900]
-            : Colors.white,
+        backgroundColor: colorScheme.surface,
         iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
+        titleSpacing: 0.0,
+        elevation: 0,
+
       ),
       inputDecorationTheme: searchFieldDecorationTheme ??
           InputDecorationTheme(
+            prefixIconColor: colorScheme.outline,
+            suffixIconColor: colorScheme.outline,
+            contentPadding: EdgeInsets.zero,
             hintStyle: searchFieldStyle ?? theme.inputDecorationTheme.hintStyle,
-            border: InputBorder.none,
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            filled: true,
           ),
     );
   }
@@ -461,6 +479,13 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
     final TextStyle effectiveStyle =
         widget.delegate.searchFieldStyle ?? theme.textTheme.bodyMedium!;
 
+    EdgeInsetsGeometry? padding;
+    final bool showBackButton = widget.delegate.automaticallyImplyLeading;
+    final Widget? leading = widget.delegate.buildLeading(context);
+    if (!showBackButton && leading == null) {
+      padding = const EdgeInsets.only(left: _defaultPadding);
+    }
+
     return Semantics(
       explicitChildNodes: true,
       scopesRoute: true,
@@ -470,11 +495,11 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
         data: theme,
         child: Scaffold(
           appBar: AppBar(
-            automaticallyImplyLeading:
-                widget.delegate.automaticallyImplyLeading,
-            leading: widget.delegate.buildLeading(context),
-            title: SizedBox(
+            automaticallyImplyLeading: showBackButton,
+            leading: leading,
+            title: Container(
               height: _searchFieldHeight,
+              padding: padding,
               child: TextField(
                 controller: widget.delegate._queryTextController,
                 focusNode: focusNode,
@@ -485,13 +510,9 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
                   widget.delegate.showResults(context);
                 },
                 decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
                   hintText: searchFieldLabel,
                   prefixIcon: widget.delegate.buildPrefixIcon(context),
-                  prefixIconColor: theme.hintColor,
-                  suffixIconColor: theme.hintColor,
                   suffixIcon: suffixIcon,
-                  border: const OutlineInputBorder(),
                 ),
               ),
             ),
