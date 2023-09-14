@@ -25,12 +25,11 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         colorSchemeSeed: Colors.purple,
         brightness: Brightness.light,
-        extensions: [
-          const SpacingThemeData(),
-          const RadiusThemeData(),
-          ColorThemeData.light(),
-          const TxCellThemeData(),
-          const FormItemThemeData(
+        extensions: const [
+          SpacingThemeData(),
+          RadiusThemeData(),
+          TxCellThemeData(),
+          FormItemThemeData(
             inputDecorationTheme: InputDecorationTheme(
               border: InputBorder.none,
               focusedBorder: InputBorder.none,
@@ -47,11 +46,10 @@ class _MyAppState extends State<MyApp> {
       darkTheme: ThemeData(
         colorSchemeSeed: Colors.purple,
         brightness: Brightness.dark,
-        extensions: [
-          const SpacingThemeData(),
-          const RadiusThemeData(),
-          ColorThemeData.light(),
-          const TxCellThemeData(),
+        extensions: const [
+          SpacingThemeData(),
+          RadiusThemeData(),
+          TxCellThemeData(),
         ],
         useMaterial3: true,
       ),
