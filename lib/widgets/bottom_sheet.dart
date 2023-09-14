@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../form/form_item_theme.dart';
 import '../localizations.dart';
 import '../theme_extensions/spacing.dart';
 
@@ -676,4 +677,87 @@ class SimplePickerItem<T> extends StatelessWidget {
           : null,
     );
   }
+}
+
+/// 显示筛选弹框
+Future<T?> showFilterBottomSheet<T>(
+  BuildContext context, {
+  required Widget content,
+  Widget? header,
+  String? title,
+  bool? centerTitle,
+  double? titleSpacing,
+  Widget? leading,
+  double? leadingWidth,
+  bool automaticallyImplyLeading = true,
+  List<Widget>? actions,
+  Widget? footer,
+  VoidCallback? onConfirm,
+  VoidCallback? onClose,
+  VoidCallback? onReset,
+  String? textConfirm,
+  String? textCancel,
+  bool showConfirmButton = true,
+  bool showCancelButton = true,
+  bool? showCloseButton,
+  Color? backgroundColor,
+  double? elevation,
+  ShapeBorder? shape,
+  Clip? clipBehavior,
+  Color? barrierColor,
+  bool isScrollControlled = true,
+  bool useRootNavigator = false,
+  bool isDismissible = true,
+  bool enableDrag = true,
+  EdgeInsetsGeometry? padding,
+  EdgeInsetsGeometry? contentPadding = _contentPadding,
+  bool persistent = false,
+  bool? ignoreSafeArea,
+  RouteSettings? settings,
+  Duration? enterBottomSheetDuration,
+  Duration? exitBottomSheetDuration,
+}) async {
+  final TxLocalizations localizations = TxLocalizations.of(context);
+
+  return showDefaultBottomSheet<T>(
+    context,
+    content: FormItemTheme(
+      data: const FormItemThemeData(
+        backgroundColor: Colors.transparent,
+        padding: EdgeInsets.zero,
+      ),
+      child: content,
+    ),
+    title: title ?? localizations.filterSheetLabel,
+    titleSpacing: titleSpacing,
+    centerTitle: centerTitle,
+    header: header,
+    actions: actions,
+    onConfirm: onConfirm,
+    onCancel: onReset,
+    onClose: onClose,
+    textConfirm: textConfirm,
+    textCancel: textCancel ?? localizations.resetButtonLabel,
+    showConfirmButton: showConfirmButton,
+    showCancelButton: showCancelButton,
+    padding: padding,
+    contentPadding: contentPadding,
+    leading: leading ?? const Icon(Icons.filter_alt_outlined),
+    leadingWidth: leadingWidth,
+    automaticallyImplyLeading: automaticallyImplyLeading,
+    footer: footer,
+    persistent: persistent,
+    isScrollControlled: isScrollControlled,
+    backgroundColor: backgroundColor,
+    elevation: elevation,
+    shape: shape,
+    ignoreSafeArea: ignoreSafeArea,
+    clipBehavior: clipBehavior,
+    isDismissible: isDismissible,
+    barrierColor: barrierColor,
+    settings: settings,
+    enableDrag: enableDrag,
+    enterBottomSheetDuration: enterBottomSheetDuration,
+    exitBottomSheetDuration: exitBottomSheetDuration,
+  );
 }

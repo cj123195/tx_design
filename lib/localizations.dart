@@ -96,6 +96,12 @@ abstract class TxLocalizations {
   /// Label for select the next day.
   String get theNextDayLabel;
 
+  /// Label for reset button.
+  String get resetButtonLabel;
+
+  /// Label for filter sheet.
+  String get filterSheetLabel;
+
   /// Label for undo buttons.
   String get undoButtonTooltip;
 
@@ -332,6 +338,18 @@ class DefaultTxLocalizations implements TxLocalizations {
   String get selectPhotoButtonLabel => 'Select Photo';
 
   @override
+  String get theDayBeforeLabel => 'Before';
+
+  @override
+  String get theNextDayLabel => 'Next';
+
+  @override
+  String get resetButtonLabel => 'Reset';
+
+  @override
+  String get filterSheetLabel => 'Filter';
+
+  @override
   String get fullScreenButtonTooltip => 'Full screen';
 
   @override
@@ -455,12 +473,6 @@ class DefaultTxLocalizations implements TxLocalizations {
       'The input value should be greater than $number';
 
   @override
-  String get theDayBeforeLabel => 'Before';
-
-  @override
-  String get theNextDayLabel => 'Next';
-
-  @override
   String daysLabel(int number) => _formatUnit(number, 'day');
 
   @override
@@ -544,6 +556,18 @@ class ZhTxLocalizations implements TxLocalizations {
 
   @override
   String get selectPhotoButtonLabel => '选择照片';
+
+  @override
+  String get theDayBeforeLabel => '前一天';
+
+  @override
+  String get theNextDayLabel => '后一天';
+
+  @override
+  String get resetButtonLabel => '重置';
+
+  @override
+  String get filterSheetLabel => '筛选';
 
   @override
   String get fullScreenButtonTooltip => '全屏';
@@ -653,12 +677,6 @@ class ZhTxLocalizations implements TxLocalizations {
 
   @override
   String minimumNumberLimitLabel(num number) => '输入值应大于$number';
-
-  @override
-  String get theDayBeforeLabel => '前一天';
-
-  @override
-  String get theNextDayLabel => '后一天';
 
   @override
   String daysLabel(int number) => '$number日';
