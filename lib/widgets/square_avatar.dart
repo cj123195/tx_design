@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 /// 展示图标或用户名称的方形框。
 ///
 /// 参数说明请参考[CircleAvatar]
-class SquareAvatar extends StatelessWidget {
-  const SquareAvatar({
+class TxSquareAvatar extends StatelessWidget {
+  const TxSquareAvatar({
     super.key,
     this.child,
     this.backgroundColor,
