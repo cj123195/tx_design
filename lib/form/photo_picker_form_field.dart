@@ -43,8 +43,7 @@ class PhotoPickerFormField extends TxFormFieldItem<List<TxFile>> {
   })  : assert(maxPickNumber == null || maxPickNumber > 0),
         super(
           builder: (field) {
-            final InputDecoration defaultDecoration = InputDecoration(
-              hintText: TxLocalizations.of(field.context).pickerFormFieldHint,
+            const InputDecoration defaultDecoration = InputDecoration(
               filled: false,
               border: InputBorder.none,
             );

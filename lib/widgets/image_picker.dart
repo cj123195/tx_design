@@ -490,27 +490,25 @@ class _EmptyContainer extends StatelessWidget {
     final TxImagePickerViewThemeData galleryTheme =
         TxImagePickerViewTheme.of(context);
 
-    final Color? foreground =
-        foregroundColor ?? galleryTheme.pickButtonForeground;
+    final Color foreground = foregroundColor ??
+        galleryTheme.pickButtonForeground ??
+        Theme.of(context).colorScheme.outline;
     final Color? background =
         backgroundColor ?? galleryTheme.pickButtonBackground;
     final String title = this.title ??
         galleryTheme.emptyButtonTitle ??
         TxLocalizations.of(context).selectPhotoButtonLabel;
 
-    return SizedBox(
-      height: 160,
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-            foregroundColor: foreground,
-            backgroundColor: background,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0))),
-        onPressed: onTap,
-        icon: const Icon(Icons.image),
-        label: Text(title),
+    return OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: foreground,
+        backgroundColor: background,
+        shape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       ),
+      onPressed: onTap,
+      icon: const Icon(Icons.image),
+      label: Text(title),
     );
   }
 }
