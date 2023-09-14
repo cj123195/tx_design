@@ -26,6 +26,8 @@ typedef ToastAnimationBuilder = Widget Function(
   AlignmentGeometry alignment,
 );
 
+typedef ToastStatusCallback = void Function(ToastStatus status);
+
 /// Toast状态
 enum ToastStatus {
   show, // 显示
@@ -181,6 +183,9 @@ class Toast {
   /// 监听器列表
   final List<ValueChanged<ToastStatus>> _statusCallbacks =
       <ValueChanged<ToastStatus>>[];
+
+  /// 当前Toast是否正在显示
+  static bool get isShow => _instance._container != null;
 
   /// 当前显示的容器
   Widget? _container;
@@ -375,8 +380,8 @@ class Toast {
     ToastPosition? position,
     Duration? animationDuration,
     ToastAnimationBuilder? animationBuilder,
-    bool? dismissOnTap,
-    bool? isInteractive,
+    bool? dismissOnTap = true,
+    bool? isInteractive = false,
     bool updateOnly = true,
   }) async {
     final ToastThemeData theme =
@@ -421,7 +426,8 @@ class Toast {
         verticalGap: verticalGap,
         visualDensity: visualDensity,
       );
-      _instance._show(
+      instance._loadingMessageKey = loadingKey;
+      return _instance._show(
         theme,
         dismissOnTap: dismissOnTap,
         child: effectiveIndicator,
@@ -434,7 +440,6 @@ class Toast {
         animationBuilder: animationBuilder,
         borderRadius: borderRadius,
       );
-      instance._loadingMessageKey = loadingKey;
     } else {
       // 更新消息
       _instance.loadingMessageKey?.currentState?.updateMessage(message);
@@ -793,6 +798,25 @@ class Toast {
     return _instance._dismiss(animation);
   }
 
+  /// 添加加载状态回调
+  static void addStatusCallback(ToastStatusCallback callback) {
+    if (!_instance._statusCallbacks.contains(callback)) {
+      _instance._statusCallbacks.add(callback);
+    }
+  }
+
+  /// 删除单个加载状态回调
+  static void removeCallback(ToastStatusCallback callback) {
+    if (_instance._statusCallbacks.contains(callback)) {
+      _instance._statusCallbacks.remove(callback);
+    }
+  }
+
+  /// 删除所有加载状态回调
+  static void removeAllCallbacks() {
+    _instance._statusCallbacks.clear();
+  }
+
   /// 关闭
   Future<void> _dismiss(bool animation) async {
     if (key != null && key?.currentState == null) {
@@ -970,16 +994,6 @@ class ToastContainerState extends State<ToastContainer>
       return _animationController.reverse(from: animation ? 1 : 0);
     }
   }
-
-  //
-  // void updateStatus(String status) {
-  //   if (_status == status) {
-  //     return;
-  //   }
-  //   setState(() {
-  //     _status = status;
-  //   });
-  // }
 
   void _onTap() async {
     if (_dismissOnTap) {
@@ -1203,10 +1217,10 @@ class _CircleProgress extends ProgressIndicator {
   final double width;
 
   @override
-  __CircleProgressState createState() => __CircleProgressState();
+  _CircleProgressState createState() => _CircleProgressState();
 }
 
-class __CircleProgressState extends State<_CircleProgress> {
+class _CircleProgressState extends State<_CircleProgress> {
   @override
   void initState() {
     super.initState();
