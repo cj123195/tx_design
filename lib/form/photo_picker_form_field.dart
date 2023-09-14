@@ -7,6 +7,7 @@ import '../widgets/signature.dart';
 import 'form_field.dart';
 
 export '../models/tx_file.dart';
+export '../widgets/image_picker.dart' show PickerMode;
 
 const String _drawingPrefix = 'Drawing';
 
@@ -58,21 +59,17 @@ class PhotoPickerFormField extends TxFormFieldItem<List<TxFile>> {
               }
             }
 
-            Widget child;
-            if (field.value?.isNotEmpty == true) {
-              child = TxImagePickerView(
-                initialImages: field.value,
-                onChanged: onChangedHandler,
-              );
-            } else {
-              child = TxImagePickerView(onChanged: onChangedHandler);
-            }
-
             return InputDecorator(
-              decoration:
-                  effectiveDecoration.copyWith(errorText: field.errorText),
+              decoration: effectiveDecoration.copyWith(
+                errorText: field.errorText,
+              ),
               isEmpty: field.value?.isNotEmpty != true,
-              child: child,
+              child: TxImagePickerView(
+                onChanged: onChangedHandler,
+                initialImages: field.value ?? [],
+                enableModes: pickerModes,
+                maxItems: maxPickNumber,
+              ),
             );
           },
           actionsBuilder: (field) {

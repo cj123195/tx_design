@@ -1,19 +1,19 @@
 // ignore_for_file: prefer_mixin
 
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:multi_image_picker_plus/multi_image_picker_plus.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 import '../localizations.dart';
 import '../models/tx_file.dart';
+import '../theme_extensions/spacing.dart';
 import 'image_picker_theme.dart';
 import 'image_viewer.dart' show TxImageGalleryViewer;
+import 'toast.dart';
 
 export '../models/tx_file.dart';
 
@@ -25,15 +25,12 @@ const BorderRadius _kBorderRadius = BorderRadius.all(Radius.circular(8.0));
 const int _kColumnNum = 3;
 const String _tag = 'tx_image_picker';
 
+/// 图片选择模式
 enum PickerMode {
-  video(ImageSource.camera),
-  image(ImageSource.camera),
-  galleryVideo(ImageSource.gallery),
-  galleryImage(ImageSource.gallery);
-
-  const PickerMode(this.source);
-
-  final ImageSource source;
+  video,
+  image,
+  galleryVideo,
+  galleryImage;
 
   String getLabel(BuildContext context) {
     final TxLocalizations localizations = TxLocalizations.of(context);
@@ -60,27 +57,94 @@ enum PickerMode {
   ];
 }
 
+/// 选择图片选择模式
+Future<PickerMode?> showImagePickerModePicker(
+  BuildContext context, {
+  List<PickerMode>? enableModes,
+}) async {
+  assert(enableModes == null || enableModes.length > 1);
+
+  enableModes ??= PickerMode.values;
+
+  return await showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      final ColorScheme colorScheme = Theme.of(context).colorScheme;
+      final SpacingThemeData spacingTheme = SpacingTheme.of(context);
+      final BorderRadius borderRadius = BorderRadius.vertical(
+        top: Radius.circular(Theme.of(context).useMaterial3 ? 12.0 : 4.0),
+      );
+
+      final List<Widget> choices = List.generate(enableModes!.length, (index) {
+        final PickerMode mode = enableModes![index];
+        return ListTile(
+          title: Text(mode.getLabel(context), textAlign: TextAlign.center),
+          onTap: () => Navigator.pop(context, mode),
+        );
+      });
+
+      return Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: borderRadius,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ...choices,
+            Divider(
+              thickness: spacingTheme.medium,
+              color: colorScheme.outline.withOpacity(0.05),
+            ),
+            ListTile(
+              title: Text(
+                MaterialLocalizations.of(context).cancelButtonLabel,
+                textAlign: TextAlign.center,
+              ),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
 typedef TipMapper = String Function(int maxItems);
 
 class TxImagePickerController with ChangeNotifier {
   TxImagePickerController({
     required this.maxImages,
-    this.cupertinoOptions,
-    this.materialOptions,
     List<TxFile>? images,
+    this.enableModes,
+    this.maxDuration,
+    this.maxWidth,
+    this.maxHeight,
+    this.imageQuality,
   })  : assert(maxImages < 300 && maxImages > 0),
         _images = images ?? [];
-
-  /// IOS配置
-  final CupertinoOptions? cupertinoOptions;
-
-  /// Android配置
-  final MaterialOptions? materialOptions;
 
   /// 最大可选数量，
   ///
   /// 值不能小于0且不能大于300。
   final int maxImages;
+
+  /// 允许选择的模式
+  final List<PickerMode>? enableModes;
+
+  /// 视频最大时长
+  final Duration? maxDuration;
+
+  /// 图片最大宽度
+  final double? maxWidth;
+
+  /// 图片最大高度
+  final double? maxHeight;
+
+  /// 图片质量
+  final int? imageQuality;
 
   final List<TxFile> _images;
 
@@ -94,35 +158,77 @@ class TxImagePickerController with ChangeNotifier {
   ///
   /// 此方法打开图像选择窗口。
   /// 如果用户已选择图像则返回true。
-  Future<bool> pickImages([double size = 50.0]) async {
-    final int max = maxImages - images.length;
-    try {
-      final List<Asset> result = await MultiImagePicker.pickImages(
-        cupertinoOptions: cupertinoOptions ??
-            CupertinoOptions(
-              settings: CupertinoSettings(
-                selection: SelectionSetting(max: max),
-              ),
-            ),
-        materialOptions: materialOptions ?? MaterialOptions(maxImages: max),
+  Future<bool> pickImages(BuildContext context) async {
+    final PickerMode? mode = await showImagePickerModePicker(
+      context,
+      enableModes: enableModes,
+    );
+    if (mode == null) {
+      return false;
+    }
+
+    final ImagePicker imagePicker = ImagePicker();
+    List<XFile> images = [];
+    if (mode == PickerMode.galleryImage) {
+      images = await imagePicker.pickMultiImage(
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+        imageQuality: imageQuality,
       );
-      if (result.isNotEmpty) {
-        final List<TxFile> data = await Future.wait(
-            [for (Asset asset in result) _transform(asset, size)]);
-        _images.addAll(data);
-        notifyListeners();
-        return true;
+    } else {
+      final XFile? image = await _pickByMode(mode, imagePicker);
+      if (image != null) {
+        images.add(image);
       }
+    }
+
+    if (images.isEmpty) {
       return false;
-    } catch (e) {
-      return false;
+    }
+
+    if (context.mounted && images.length + _images.length > maxImages) {
+      Toast.show(TxLocalizations.of(context).maximumPhotoLimitLabel(maxImages));
+    }
+
+    final List<TxFile> data =
+        await Future.wait([for (XFile image in images) _transform(image)]);
+    _images.addAll(data);
+    notifyListeners();
+    return true;
+  }
+
+  /// 根据模式选择
+  Future<XFile?> _pickByMode(PickerMode mode, ImagePicker picker) {
+    switch (mode) {
+      case PickerMode.video:
+        return picker.pickVideo(
+          source: ImageSource.camera,
+          maxDuration: maxDuration,
+        );
+      case PickerMode.image:
+        return picker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+        );
+      case PickerMode.galleryVideo:
+        return picker.pickVideo(
+          source: ImageSource.gallery,
+          maxDuration: maxDuration,
+        );
+      default:
+        return Future.value(null);
     }
   }
 
-  Future<TxFile> _transform(Asset asset, double size) async {
-    final ByteData byteData =
-        await asset.getThumbByteData(size.toInt(), size.toInt());
-    return TxMemoryFile(byteData.buffer.asUint8List(), name: asset.name);
+  Future<TxFile> _transform(XFile image) async {
+    return TxFile(
+      image.path,
+      length: await image.length(),
+      mimeType: image.mimeType,
+      lastModified: await image.lastModified(),
+    );
   }
 
   /// 手动重新排序图像，即将图像从一个位置移动到另一个位置。
@@ -173,6 +279,7 @@ class TxImagePickerView extends StatefulWidget {
     this.addButtonBuilder,
     this.disabledEmptyTitle,
     this.emptyContainerDecoration,
+    this.enableModes,
   });
 
   /// 图片选择控制器
@@ -257,6 +364,9 @@ class TxImagePickerView extends StatefulWidget {
   /// 列数
   final int? columnNumber;
 
+  /// 选择模式
+  final List<PickerMode>? enableModes;
+
   @override
   State<TxImagePickerView> createState() => _TxImagePickerViewState();
 }
@@ -295,7 +405,7 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
   }
 
   void _pickImages() async {
-    final bool result = await _controller.pickImages();
+    final bool result = await _controller.pickImages(context);
     if (!result) {
       return;
     }
@@ -320,6 +430,7 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
         TxImagePickerController(
           maxImages: widget.maxItems ?? _kMaxImages,
           images: widget.initialImages,
+          enableModes: widget.enableModes,
         );
     _controller.addListener(_listener);
   }
@@ -503,8 +614,7 @@ class _EmptyContainer extends StatelessWidget {
       style: OutlinedButton.styleFrom(
         foregroundColor: foreground,
         backgroundColor: background,
-        shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       ),
       onPressed: onTap,
       icon: const Icon(Icons.image),
