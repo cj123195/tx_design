@@ -532,7 +532,8 @@ class _DefaultSheet extends StatelessWidget {
   }
 }
 
-typedef SimplePickerItemsBuilder<T> = List<SimplePickerItem<T>> Function(BuildContext context);
+typedef SimplePickerItemsBuilder<T> = List<SimplePickerItem<T>> Function(
+    BuildContext context);
 
 /// 显示简易选择弹框
 Future<T?> showSimplePickerBottomSheet<T>({

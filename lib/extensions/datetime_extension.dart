@@ -140,15 +140,45 @@ extension DatetimeExtension on DateTime {
     return isBefore(morning) || isAfter(night);
   }
 
-  String optimizedFormat() {
-    if (isToday) {
-      return format('HH:mm');
-    } else if (isYesterday()) {
-      return '昨天';
-    } else if (isThisYear) {
-      return format('MM-dd');
-    } else {
-      return format('yyyy-MM-dd');
+  /// 减去年份
+  DateTime subtractYears(int yearDifference) {
+    final int year = this.year - yearDifference;
+    final int day = this.day + 1;
+    return DateTime(year, month, day);
+  }
+
+  /// 增加年份
+  DateTime addYears(int yearDifference) {
+    final int year = this.year + yearDifference;
+    final int day = this.day - 1;
+    return DateTime(year, month, day);
+  }
+
+  /// 减去月份
+  DateTime subtractMonths(int monthDifference) {
+    int yearDiff = monthDifference ~/ 12;
+    final int monthDiff = monthDifference % 12;
+    int month = this.month - monthDiff;
+    if (month < 1) {
+      yearDiff = yearDiff - 1;
+      month = 12 + month;
     }
+    final int year = this.year - yearDiff;
+    final int day = this.day + 1;
+    return DateTime(year, month, day);
+  }
+
+  /// 增加月份
+  DateTime addMonths(int monthDifference) {
+    int yearDiff = monthDifference ~/ 12;
+    final int monthDiff = monthDifference % 12;
+    int month = this.month + monthDiff;
+    if (month > 12) {
+      yearDiff = yearDiff + 1;
+      month = month - 12;
+    }
+    final int year = this.year + yearDiff;
+    final int day = this.day - 1;
+    return DateTime(year, month, day);
   }
 }

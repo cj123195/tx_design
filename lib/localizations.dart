@@ -90,6 +90,12 @@ abstract class TxLocalizations {
   /// Label for select photo buttons.
   String get selectPhotoButtonLabel;
 
+  /// Label for select the day before.
+  String get theDayBeforeLabel;
+
+  /// Label for select the next day.
+  String get theNextDayLabel;
+
   /// Label for undo buttons.
   String get undoButtonTooltip;
 
@@ -183,6 +189,18 @@ abstract class TxLocalizations {
 
   /// The label used to limit the minimum value of digital input.
   String minimumNumberLimitLabel(num number);
+
+  /// The label for day(s).
+  String daysLabel(int number);
+
+  /// The label for hour(s).
+  String hoursLabel(int number);
+
+  /// The label for minute(s).
+  String minutesLabel(int number);
+
+  /// The label for second(s).
+  String secondsLabel(int number);
 
   static TxLocalizations of(BuildContext context) {
     assert(() {
@@ -435,6 +453,24 @@ class DefaultTxLocalizations implements TxLocalizations {
   @override
   String minimumNumberLimitLabel(num number) =>
       'The input value should be greater than $number';
+
+  @override
+  String get theDayBeforeLabel => 'Before';
+
+  @override
+  String get theNextDayLabel => 'Next';
+
+  @override
+  String daysLabel(int number) => _formatUnit(number, 'day');
+
+  @override
+  String hoursLabel(int number) => _formatUnit(number, 'hour');
+
+  @override
+  String minutesLabel(int number) => _formatUnit(number, 'minute');
+
+  @override
+  String secondsLabel(int number) => _formatUnit(number, 'second');
 }
 
 class ZhTxLocalizations implements TxLocalizations {
@@ -617,4 +653,22 @@ class ZhTxLocalizations implements TxLocalizations {
 
   @override
   String minimumNumberLimitLabel(num number) => '输入值应大于$number';
+
+  @override
+  String get theDayBeforeLabel => '前一天';
+
+  @override
+  String get theNextDayLabel => '后一天';
+
+  @override
+  String daysLabel(int number) => '$number日';
+
+  @override
+  String hoursLabel(int number) => '$number时';
+
+  @override
+  String minutesLabel(int number) => '$number分';
+
+  @override
+  String secondsLabel(int number) => '$number秒';
 }

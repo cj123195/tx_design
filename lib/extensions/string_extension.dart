@@ -63,10 +63,6 @@ extension StringExtension on String {
     return toDatetime()?.equalsDay(DateTime.now()) ?? false;
   }
 
-  String? optimizedFormat() {
-    return toDatetime()?.optimizedFormat();
-  }
-
   /// 检查字符串是否为视频文件名。
   bool get isVideoFileName {
     final String path = toLowerCase();
@@ -210,8 +206,19 @@ extension StringExtension on String {
         path.endsWith('.json');
   }
 
-  /// 检查是否为网络地址
-  bool get isURL => RegExp(
-          r"^((((H|h)(T|t)|(F|f))(T|t)(P|p)((S|s)?))\://)?(www.|[a-zA-Z0-9].)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(\:[0-9]{1,5})*(/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*$")
-      .hasMatch(this);
+  /// 针对 Dart 字符串优化的 64 位哈希算法 FNV-1a
+  int get fastHash {
+    var hash = 0xcbf29ce484222325;
+
+    var i = 0;
+    while (i < length) {
+      final codeUnit = codeUnitAt(i++);
+      hash ^= codeUnit >> 8;
+      hash *= 0x100000001b3;
+      hash ^= codeUnit & 0xFF;
+      hash *= 0x100000001b3;
+    }
+
+    return hash;
+  }
 }
