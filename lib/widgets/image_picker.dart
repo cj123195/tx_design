@@ -10,7 +10,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 
 import '../localizations.dart';
 import '../models/tx_file.dart';
-import '../theme_extensions/spacing.dart';
+import 'bottom_sheet.dart';
 import 'image_picker_theme.dart';
 import 'image_viewer.dart' show TxImageGalleryViewer;
 import 'toast.dart';
@@ -66,49 +66,18 @@ Future<PickerMode?> showImagePickerModePicker(
 
   enableModes ??= PickerMode.values;
 
-  return await showModalBottomSheet(
+  return await showSimplePickerBottomSheet<PickerMode>(
     context: context,
-    backgroundColor: Colors.transparent,
-    builder: (context) {
-      final ColorScheme colorScheme = Theme.of(context).colorScheme;
-      final SpacingThemeData spacingTheme = SpacingTheme.of(context);
-      final BorderRadius borderRadius = BorderRadius.vertical(
-        top: Radius.circular(Theme.of(context).useMaterial3 ? 12.0 : 4.0),
-      );
-
-      final List<Widget> choices = List.generate(enableModes!.length, (index) {
+    itemsBuilder: (BuildContext context) => List.generate(
+      enableModes!.length,
+      (index) {
         final PickerMode mode = enableModes![index];
-        return ListTile(
-          title: Text(mode.getLabel(context), textAlign: TextAlign.center),
-          onTap: () => Navigator.pop(context, mode),
+        return SimplePickerItem(
+          title: Text(mode.getLabel(context)),
+          value: mode,
         );
-      });
-
-      return Container(
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: borderRadius,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            ...choices,
-            Divider(
-              thickness: spacingTheme.medium,
-              color: colorScheme.outline.withOpacity(0.05),
-            ),
-            ListTile(
-              title: Text(
-                MaterialLocalizations.of(context).cancelButtonLabel,
-                textAlign: TextAlign.center,
-              ),
-              onTap: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    },
+      },
+    ),
   );
 }
 

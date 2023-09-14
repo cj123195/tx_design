@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../localizations.dart';
+import '../theme_extensions/spacing.dart';
+
 class TxModalBottomSheetRoute<T> extends PopupRoute<T> {
   TxModalBottomSheetRoute(
     BuildContext context, {
@@ -526,5 +529,150 @@ class _DefaultSheet extends StatelessWidget {
     }
 
     return result;
+  }
+}
+
+typedef SimplePickerItemsBuilder<T> = List<SimplePickerItem<T>> Function(BuildContext context);
+
+/// 显示简易选择弹框
+Future<T?> showSimplePickerBottomSheet<T>({
+  required BuildContext context,
+  required SimplePickerItemsBuilder<T> itemsBuilder,
+  Widget? title,
+}) async {
+  return showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      final List<Widget> items = itemsBuilder(context);
+      return _SimplePickerBottomSheet(pickerItems: items, title: title);
+    },
+  );
+}
+
+class _SimplePickerBottomSheet<T> extends StatelessWidget {
+  const _SimplePickerBottomSheet({
+    required this.pickerItems,
+    super.key,
+    this.title,
+  });
+
+  /// 标题
+  final Widget? title;
+
+  /// 选择项
+  final List<Widget> pickerItems;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final BorderRadius borderRadius = BorderRadius.vertical(
+      top: Radius.circular(Theme.of(context).useMaterial3 ? 12.0 : 4.0),
+    );
+
+    final Iterable<Widget> children = ListTile.divideTiles(
+      color: colorScheme.outlineVariant,
+      tiles: [
+        if (title != null)
+          ListTile(
+            title: DefaultTextStyle(
+              style:
+                  theme.textTheme.labelMedium!.copyWith(color: theme.hintColor),
+              textAlign: TextAlign.center,
+              child: title ??
+                  Text(TxLocalizations.of(context).pickerFormFieldHint),
+            ),
+          ),
+        ...pickerItems
+      ],
+    );
+    final Widget cancelTile = ListTile(
+      title: Text(
+        MaterialLocalizations.of(context).cancelButtonLabel,
+        textAlign: TextAlign.center,
+      ),
+      onTap: () => Navigator.pop(context),
+    );
+
+    return Material(
+      shape: RoundedRectangleBorder(borderRadius: borderRadius),
+      surfaceTintColor: theme.colorScheme.surfaceTint,
+      color: theme.colorScheme.surface,
+      elevation: 1,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ...children,
+          Divider(
+            thickness: SpacingTheme.of(context).medium,
+            color: colorScheme.outline.withOpacity(0.05),
+          ),
+          cancelTile,
+        ],
+      ),
+    );
+  }
+}
+
+/// 简易选择项
+class SimplePickerItem<T> extends StatelessWidget {
+  const SimplePickerItem({
+    required this.title,
+    this.value,
+    this.onTap,
+    this.enabled = true,
+    this.subtitle,
+    super.key,
+  });
+
+  /// 如果选择此项，[showSimplePickerBottomSheet] 将返回的值。
+  final T? value;
+
+  /// 点击选择项时调用
+  final VoidCallback? onTap;
+
+  /// 是否允许用户选择此项。
+  ///
+  /// 参考[ListTile.enabled]
+  final bool enabled;
+
+  /// 参考[ListTile.title]
+  final Widget title;
+
+  /// 参考[ListTile.subtitle]
+  final Widget? subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    final Widget effectiveTitle = DefaultTextStyle(
+      style: theme.textTheme.titleMedium!,
+      textAlign: TextAlign.center,
+      child: title,
+    );
+
+    Widget? effectiveSubtitle;
+    if (subtitle != null) {
+      effectiveSubtitle = DefaultTextStyle(
+        style: theme.textTheme.bodySmall!.copyWith(color: theme.hintColor),
+        textAlign: TextAlign.center,
+        child: subtitle!,
+      );
+    }
+
+    return ListTile(
+      enabled: enabled,
+      title: effectiveTitle,
+      subtitle: effectiveSubtitle,
+      onTap: enabled
+          ? () {
+              Navigator.pop<T>(context, value);
+              onTap?.call();
+            }
+          : null,
+    );
   }
 }
