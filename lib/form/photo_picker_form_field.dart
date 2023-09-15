@@ -11,15 +11,13 @@ export '../widgets/image_picker.dart' show PickerMode;
 
 const String _drawingPrefix = 'Drawing';
 
-/// @title 图标选择Form表单组件
-/// @updateTime 2023/01/11 9:10 上午
-/// @author 曹骏
+/// 图片选择Form表单组件
 class PhotoPickerFormField extends TxFormFieldItem<List<TxFile>> {
   PhotoPickerFormField({
     bool drawEnabled = false,
     int? minPickNumber,
     int? maxPickNumber,
-    List<PickerMode>? pickerModes,
+    List<PickerMode> pickerModes = PickerMode.photoModes,
     bool readonly = false,
     super.key,
     super.onSaved,
@@ -64,7 +62,7 @@ class PhotoPickerFormField extends TxFormFieldItem<List<TxFile>> {
                 errorText: field.errorText,
               ),
               isEmpty: field.value?.isNotEmpty != true,
-              child: TxImagePickerView(
+              child: TxPhotoPickerView(
                 onChanged: onChangedHandler,
                 initialImages: field.value ?? [],
                 enableModes: pickerModes,
@@ -119,6 +117,82 @@ class PhotoPickerFormField extends TxFormFieldItem<List<TxFile>> {
             );
             return [...?actions, if (drawEnabled) drawButton];
           },
+          defaultValidator: (context, files) {
+            final TxLocalizations localizations = TxLocalizations.of(context);
+            final int length = files?.length ?? 0;
+            if (required && length == 0) {
+              return localizations.pickerFormFieldHint;
+            }
+            if (minPickNumber != null && minPickNumber > length) {
+              return localizations.minimumPhotoLimitLabel(minPickNumber);
+            }
+            if (maxPickNumber != null && maxPickNumber < length) {
+              return localizations.maximumPhotoLimitLabel(maxPickNumber);
+            }
+            return null;
+          },
+        );
+}
+
+/// 视频选择Form表单组件
+class VideoPickerFormField extends TxFormFieldItem<List<TxFile>> {
+  VideoPickerFormField({
+    int? minPickNumber,
+    int? maxPickNumber,
+    List<PickerMode> pickerModes = PickerMode.videoModes,
+    bool readonly = false,
+    super.key,
+    super.onSaved,
+    super.required,
+    super.enabled,
+    super.restorationId,
+    super.autovalidateMode,
+    super.validator,
+    super.label,
+    super.labelText,
+    super.backgroundColor,
+    super.direction,
+    super.padding,
+    List<Widget>? actions,
+    super.labelStyle,
+    super.starStyle,
+    super.horizontalGap,
+    super.minLabelWidth,
+    super.initialValue,
+    InputDecoration? decoration,
+    ValueChanged<List<TxFile>?>? onChanged,
+  })  : assert(maxPickNumber == null || maxPickNumber > 0),
+        super(
+          builder: (field) {
+            const InputDecoration defaultDecoration = InputDecoration(
+              filled: false,
+              border: InputBorder.none,
+            );
+            final InputDecoration effectiveDecoration =
+                TxFormFieldItem.mergeDecoration(
+                    field.context, decoration, defaultDecoration);
+
+            void onChangedHandler(List<TxFile>? value) {
+              field.didChange(value);
+              if (onChanged != null) {
+                onChanged(value);
+              }
+            }
+
+            return InputDecorator(
+              decoration: effectiveDecoration.copyWith(
+                errorText: field.errorText,
+              ),
+              isEmpty: field.value?.isNotEmpty != true,
+              child: TxVideoPickerView(
+                onChanged: onChangedHandler,
+                initialImages: field.value ?? [],
+                enableModes: pickerModes,
+                maxItems: maxPickNumber,
+              ),
+            );
+          },
+          actionsBuilder: (field) => actions,
           defaultValidator: (context, files) {
             final TxLocalizations localizations = TxLocalizations.of(context);
             final int length = files?.length ?? 0;

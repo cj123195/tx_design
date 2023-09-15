@@ -84,3 +84,6 @@
 * Delete TxExpansionTile.
 * Add AnchorScrollMixin and AnchorTabMixin.
 * Add showFilterBottomSheet.
+
+# 0.1.3
+* Split TxImagePickerView to TxPhotoPickerView and TxVideoPickerView.

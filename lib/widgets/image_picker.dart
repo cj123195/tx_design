@@ -7,6 +7,7 @@ import 'package:flutter_reorderable_grid_view/widgets/reorderable_builder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:video_player/video_player.dart';
 
 import '../localizations.dart';
 import '../models/tx_file.dart';
@@ -14,10 +15,10 @@ import 'bottom_sheet.dart';
 import 'image_picker_theme.dart';
 import 'image_viewer.dart' show TxImageGalleryViewer;
 import 'toast.dart';
+import 'video_player.dart';
 
 export '../models/tx_file.dart';
 
-const int _kMaxImages = 9;
 const double _kGap = 8.0;
 const double _kPickIconSize = 32.0;
 const double _kDeleteButtonSize = 16.0;
@@ -28,20 +29,20 @@ const String _tag = 'tx_image_picker';
 /// 图片选择模式
 enum PickerMode {
   video,
-  image,
+  photo,
   galleryVideo,
-  galleryImage;
+  galleryPhoto;
 
   String getLabel(BuildContext context) {
     final TxLocalizations localizations = TxLocalizations.of(context);
     switch (this) {
       case PickerMode.video:
         return localizations.captureTileLabel;
-      case PickerMode.image:
+      case PickerMode.photo:
         return localizations.photographTileLabel;
       case PickerMode.galleryVideo:
         return localizations.selectVideoTileLabel;
-      case PickerMode.galleryImage:
+      case PickerMode.galleryPhoto:
         return localizations.selectPhotoTileLabel;
     }
   }
@@ -51,9 +52,9 @@ enum PickerMode {
     PickerMode.galleryVideo,
   ];
 
-  static const List<PickerMode> imageModes = [
-    PickerMode.image,
-    PickerMode.galleryImage,
+  static const List<PickerMode> photoModes = [
+    PickerMode.photo,
+    PickerMode.galleryPhoto,
   ];
 }
 
@@ -83,16 +84,12 @@ Future<PickerMode?> showImagePickerModePicker(
 
 typedef TipMapper = String Function(int maxItems);
 
-class TxImagePickerController with ChangeNotifier {
+abstract class TxImagePickerController with ChangeNotifier {
   TxImagePickerController({
     required this.maxImages,
     List<TxFile>? images,
     this.enableModes,
-    this.maxDuration,
-    this.maxWidth,
-    this.maxHeight,
-    this.imageQuality,
-  })  : assert(maxImages < 300 && maxImages > 0),
+  })  : assert(enableModes == null || enableModes.isNotEmpty),
         _images = images ?? [];
 
   /// 最大可选数量，
@@ -102,18 +99,6 @@ class TxImagePickerController with ChangeNotifier {
 
   /// 允许选择的模式
   final List<PickerMode>? enableModes;
-
-  /// 视频最大时长
-  final Duration? maxDuration;
-
-  /// 图片最大宽度
-  final double? maxWidth;
-
-  /// 图片最大高度
-  final double? maxHeight;
-
-  /// 图片质量
-  final int? imageQuality;
 
   final List<TxFile> _images;
 
@@ -128,29 +113,20 @@ class TxImagePickerController with ChangeNotifier {
   /// 此方法打开图像选择窗口。
   /// 如果用户已选择图像则返回true。
   Future<bool> pickImages(BuildContext context) async {
-    final PickerMode? mode = await showImagePickerModePicker(
-      context,
-      enableModes: enableModes,
-    );
+    final PickerMode? mode;
+    if (enableModes != null && enableModes!.length == 1) {
+      mode = enableModes!.first;
+    } else {
+      mode = await showImagePickerModePicker(
+        context,
+        enableModes: enableModes,
+      );
+    }
     if (mode == null) {
       return false;
     }
 
-    final ImagePicker imagePicker = ImagePicker();
-    List<XFile> images = [];
-    if (mode == PickerMode.galleryImage) {
-      images = await imagePicker.pickMultiImage(
-        maxWidth: maxWidth,
-        maxHeight: maxHeight,
-        imageQuality: imageQuality,
-      );
-    } else {
-      final XFile? image = await _pickByMode(mode, imagePicker);
-      if (image != null) {
-        images.add(image);
-      }
-    }
-
+    final List<XFile> images = await _pick(mode);
     if (images.isEmpty) {
       return false;
     }
@@ -166,30 +142,8 @@ class TxImagePickerController with ChangeNotifier {
     return true;
   }
 
-  /// 根据模式选择
-  Future<XFile?> _pickByMode(PickerMode mode, ImagePicker picker) {
-    switch (mode) {
-      case PickerMode.video:
-        return picker.pickVideo(
-          source: ImageSource.camera,
-          maxDuration: maxDuration,
-        );
-      case PickerMode.image:
-        return picker.pickImage(
-          source: ImageSource.camera,
-          maxWidth: maxWidth,
-          maxHeight: maxHeight,
-          imageQuality: imageQuality,
-        );
-      case PickerMode.galleryVideo:
-        return picker.pickVideo(
-          source: ImageSource.gallery,
-          maxDuration: maxDuration,
-        );
-      default:
-        return Future.value(null);
-    }
-  }
+  /// 选择图片
+  Future<List<XFile>> _pick(PickerMode mode);
 
   Future<TxFile> _transform(XFile image) async {
     return TxFile(
@@ -220,12 +174,77 @@ class TxImagePickerController with ChangeNotifier {
   }
 }
 
-class TxImagePickerView extends StatefulWidget {
+class TxPhotoPickerController extends TxImagePickerController {
+  TxPhotoPickerController({
+    super.maxImages = 9,
+    super.images,
+    super.enableModes = PickerMode.photoModes,
+    this.maxWidth,
+    this.maxHeight,
+    this.imageQuality,
+  }) : assert(
+          enableModes!.every((mode) => PickerMode.photoModes.contains(mode)),
+        );
+
+  /// 图片最大宽度
+  final double? maxWidth;
+
+  /// 图片最大高度
+  final double? maxHeight;
+
+  /// 图片质量
+  final int? imageQuality;
+
+  @override
+  Future<List<XFile>> _pick(PickerMode mode) async {
+    final ImagePicker picker = ImagePicker();
+    if (mode == PickerMode.photo) {
+      final XFile? result = await picker.pickImage(
+        source: ImageSource.camera,
+        maxHeight: maxHeight,
+        maxWidth: maxWidth,
+        imageQuality: imageQuality,
+      );
+      return [if (result != null) result];
+    } else {
+      return picker.pickMultiImage(
+        maxHeight: maxHeight,
+        maxWidth: maxWidth,
+        imageQuality: imageQuality,
+      );
+    }
+  }
+}
+
+class TxVideoPickerController extends TxImagePickerController {
+  TxVideoPickerController({
+    super.maxImages = 1,
+    List<TxFile>? images,
+    super.enableModes = PickerMode.videoModes,
+    this.maxDuration,
+  });
+
+  /// 视频最大时长
+  final Duration? maxDuration;
+
+  @override
+  Future<List<XFile>> _pick(PickerMode mode) async {
+    final ImageSource source =
+        mode == PickerMode.video ? ImageSource.camera : ImageSource.gallery;
+    final XFile? video =
+        await ImagePicker().pickVideo(source: source, maxDuration: maxDuration);
+    return [if (video != null) video];
+  }
+}
+
+/// 抽象选择组件
+abstract class TxImagePickerView extends StatefulWidget {
   /// 创建一个图片集
   const TxImagePickerView({
+    this.controller,
     super.key,
     this.enabled = true,
-    this.maxItems = 9,
+    this.maxItems,
     this.initialImages,
     this.onChanged,
     this.tipMapper,
@@ -240,7 +259,6 @@ class TxImagePickerView extends StatefulWidget {
     this.borderRadius,
     this.itemPadding,
     this.columnNumber,
-    this.controller,
     this.draggable,
     this.emptyBuilder,
     this.emptyButtonTitle,
@@ -337,42 +355,19 @@ class TxImagePickerView extends StatefulWidget {
   final List<PickerMode>? enableModes;
 
   @override
-  State<TxImagePickerView> createState() => _TxImagePickerViewState();
+  TxImagePickerViewState createState();
 }
 
-class _TxImagePickerViewState extends State<TxImagePickerView> {
+abstract class TxImagePickerViewState extends State<TxImagePickerView> {
   late ScrollController _scrollController;
   final GlobalKey _gridViewKey = GlobalKey();
   late final TxImagePickerController _controller;
 
-  ImageProvider _getImage(TxFile file) {
-    if (file is TxNetworkFile) {
-      return NetworkImage(file.url);
-    } else if (file is TxMemoryFile) {
-      return MemoryImage(file.bytes!);
-    } else {
-      return FileImage(File(file.path));
-    }
-  }
+  String get defaultEmptyButtonTitle;
 
-  Future<void> _previewImage(int index, ImageProvider image) async {
-    if (context.mounted) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return TxImageGalleryViewer.builder(
-          itemCount: _controller.images.length,
-          builder: (context, index) {
-            return PhotoViewGalleryPageOptions(
-              heroAttributes: PhotoViewHeroAttributes(tag: '$_tag$index'),
-              imageProvider: image,
-            );
-          },
-          initialIndex: index,
-          wantKeepAlive: true,
-        );
-      }));
-    }
-  }
+  TxImagePickerController get _defaultController;
 
+  /// 选择图片
   void _pickImages() async {
     final bool result = await _controller.pickImages(context);
     if (!result) {
@@ -383,8 +378,9 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
     }
   }
 
-  void _deleteImage(TxFile bytes) {
-    _controller.removeImage(bytes);
+  /// 删除图片
+  void _deleteImage(TxFile image) {
+    _controller.removeImage(image);
     if (widget.onChanged != null) {
       widget.onChanged!(_controller.images);
     }
@@ -394,13 +390,9 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
     setState(() {});
   }
 
+  /// 创建控制器
   void _createController() {
-    _controller = widget.controller ??
-        TxImagePickerController(
-          maxImages: widget.maxItems ?? _kMaxImages,
-          images: widget.initialImages,
-          enableModes: widget.enableModes,
-        );
+    _controller = widget.controller ?? _defaultController;
     _controller.addListener(_listener);
   }
 
@@ -443,13 +435,20 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
       if (widget.emptyBuilder != null) {
         return widget.emptyBuilder!(context, _pickImages);
       } else {
+        String title;
+        if (widget.enabled) {
+          title = widget.emptyButtonTitle ??
+              galleryTheme.emptyButtonTitle ??
+              defaultEmptyButtonTitle;
+        } else {
+          title = widget.disabledEmptyTitle ?? '';
+        }
+
         return _EmptyContainer(
           decoration: widget.emptyContainerDecoration,
           backgroundColor: widget.pickButtonBackground,
           foregroundColor: widget.pickButtonForeground,
-          title: widget.enabled
-              ? widget.emptyButtonTitle
-              : widget.disabledEmptyTitle,
+          title: title,
           onTap: widget.enabled ? _pickImages : null,
         );
       }
@@ -471,21 +470,19 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
               ),
             )
           : List.generate(_controller.images.length, (index) {
-              final ImageProvider image = _getImage(_controller.images[index]);
-              return TxImagePickerItem(
-                image: image,
-                size: width,
-                tag: '$_tag$index',
-                key: ValueKey('image$index'),
-                onDeleteTap: widget.enabled
-                    ? () => _deleteImage(_controller.images[index])
-                    : null,
-                padding: widget.itemPadding,
-                deleteButtonColor: widget.deleteButtonColor,
-                deleteButtonSize: widget.deleteButtonSize,
-                borderRadius: widget.borderRadius,
-                onTap: () => _previewImage(index, image),
-              );
+              final TxFile file = _controller.images[index];
+              final Widget child = _buildItem(file, index);
+              if (widget.enabled) {
+                return _GalleryItem(
+                  onDeleteTap: widget.enabled
+                      ? () => _deleteImage(_controller.images[index])
+                      : null,
+                  deleteButtonColor: widget.deleteButtonColor,
+                  deleteButtonSize: widget.deleteButtonSize,
+                  child: child,
+                );
+              }
+              return child;
             });
 
       if (widget.enabled && _controller.maxImages > _controller.images.length) {
@@ -548,13 +545,162 @@ class _TxImagePickerViewState extends State<TxImagePickerView> {
       );
     });
   }
+
+  /// 构建子项
+  Widget _buildItem(TxFile file, int index);
 }
 
+/// 图片选择视图
+class TxPhotoPickerView extends TxImagePickerView {
+  /// 创建一个图片集
+  const TxPhotoPickerView({
+    super.key,
+    super.enabled,
+    super.maxItems = 9,
+    super.initialImages,
+    super.onChanged,
+    super.tipMapper,
+    super.gap,
+    super.contentPadding,
+    super.deleteButtonBuilder,
+    super.deleteButtonColor,
+    super.deleteButtonSize,
+    super.pickButtonBackground,
+    super.pickButtonForeground,
+    super.pickIconSize,
+    super.borderRadius,
+    super.itemPadding,
+    super.columnNumber,
+    super.controller,
+    super.draggable,
+    super.emptyBuilder,
+    super.emptyButtonTitle,
+    super.itemBuilder,
+    super.addButtonBuilder,
+    super.disabledEmptyTitle,
+    super.emptyContainerDecoration,
+    super.enableModes = PickerMode.photoModes,
+  });
+
+  @override
+  TxImagePickerViewState createState() => _TxPhotoPickerViewState();
+}
+
+class _TxPhotoPickerViewState extends TxImagePickerViewState {
+  ImageProvider _getImage(TxFile file) {
+    if (file is TxNetworkFile) {
+      return NetworkImage(file.url);
+    } else if (file is TxMemoryFile) {
+      return MemoryImage(file.bytes!);
+    } else {
+      return FileImage(File(file.path));
+    }
+  }
+
+  Future<void> _previewImage(int index) async {
+    if (context.mounted) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return TxImageGalleryViewer.builder(
+          itemCount: _controller.images.length,
+          builder: (context, index) {
+            return PhotoViewGalleryPageOptions(
+              heroAttributes: PhotoViewHeroAttributes(tag: '$_tag$index'),
+              imageProvider: _getImage(_controller.images[index]),
+            );
+          },
+          initialIndex: index,
+          wantKeepAlive: true,
+        );
+      }));
+    }
+  }
+
+  @override
+  Widget _buildItem(TxFile file, int index) {
+    final ImageProvider image = _getImage(file);
+    return _ImageItem(
+      image: image,
+      tag: '$_tag$index',
+      key: ValueKey('image$index'),
+      padding: widget.itemPadding,
+      borderRadius: widget.borderRadius,
+      onTap: () => _previewImage(index),
+    );
+  }
+
+  @override
+  TxImagePickerController get _defaultController => TxPhotoPickerController(
+        maxImages: widget.maxItems ?? 9,
+        enableModes: widget.enableModes,
+        images: widget.initialImages,
+      );
+
+  @override
+  String get defaultEmptyButtonTitle =>
+      TxLocalizations.of(context).selectPhotoTileLabel;
+}
+
+/// 视频选择视图
+class TxVideoPickerView extends TxImagePickerView {
+  /// 创建一个视频集
+  const TxVideoPickerView({
+    super.key,
+    super.enabled,
+    super.maxItems = 9,
+    super.initialImages,
+    super.onChanged,
+    super.tipMapper,
+    super.gap,
+    super.contentPadding,
+    super.deleteButtonBuilder,
+    super.deleteButtonColor,
+    super.deleteButtonSize,
+    super.pickButtonBackground,
+    super.pickButtonForeground,
+    super.pickIconSize,
+    super.borderRadius,
+    super.itemPadding,
+    super.columnNumber,
+    super.controller,
+    super.draggable,
+    super.emptyBuilder,
+    super.emptyButtonTitle,
+    super.itemBuilder,
+    super.addButtonBuilder,
+    super.disabledEmptyTitle,
+    super.emptyContainerDecoration,
+    super.enableModes = PickerMode.videoModes,
+  });
+
+  @override
+  TxImagePickerViewState createState() => _TxVideoPickerViewState();
+}
+
+class _TxVideoPickerViewState extends TxImagePickerViewState {
+  @override
+  Widget _buildItem(TxFile file, int index) => _VideoItem(
+        video: file,
+        key: ValueKey('video-$index'),
+      );
+
+  @override
+  TxImagePickerController get _defaultController => TxVideoPickerController(
+        maxImages: widget.maxItems ?? 9,
+        enableModes: widget.enableModes,
+        images: widget.initialImages,
+      );
+
+  @override
+  String get defaultEmptyButtonTitle =>
+      TxLocalizations.of(context).selectVideoTileLabel;
+}
+
+/// 空视图
 class _EmptyContainer extends StatelessWidget {
   const _EmptyContainer({
+    required this.title,
     this.foregroundColor,
     this.backgroundColor,
-    this.title,
     this.onTap,
     this.decoration,
   });
@@ -562,7 +708,7 @@ class _EmptyContainer extends StatelessWidget {
   final Color? foregroundColor;
   final Color? backgroundColor;
   final BoxDecoration? decoration;
-  final String? title;
+  final String title;
   final VoidCallback? onTap;
 
   @override
@@ -575,9 +721,7 @@ class _EmptyContainer extends StatelessWidget {
         Theme.of(context).colorScheme.outline;
     final Color? background =
         backgroundColor ?? galleryTheme.pickButtonBackground;
-    final String title = this.title ??
-        galleryTheme.emptyButtonTitle ??
-        TxLocalizations.of(context).selectPhotoButtonLabel;
+    final String title = this.title;
 
     return OutlinedButton.icon(
       style: OutlinedButton.styleFrom(
@@ -592,6 +736,7 @@ class _EmptyContainer extends StatelessWidget {
   }
 }
 
+/// 选择按钮
 class _PickButton extends StatelessWidget {
   const _PickButton({
     super.key,
@@ -610,52 +755,109 @@ class _PickButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     final TxImagePickerViewThemeData pickerTheme =
         TxImagePickerViewTheme.of(context);
 
     final BorderRadius borderRadius =
         this.borderRadius ?? pickerTheme.borderRadius ?? _kBorderRadius;
-    final Color? background = color ?? pickerTheme.pickButtonBackground;
-    final Color? foreground =
-        foregroundColor ?? pickerTheme.pickButtonForeground;
+    final Color background = color ??
+        pickerTheme.pickButtonBackground ??
+        theme.colorScheme.outline.withOpacity(0.05);
+    final Color foreground = foregroundColor ??
+        pickerTheme.pickButtonForeground ??
+        theme.colorScheme.outline;
     final double iconSize =
         this.iconSize ?? pickerTheme.pickIconSize ?? _kPickIconSize;
+    final ShapeBorder shape =
+        RoundedRectangleBorder(borderRadius: borderRadius);
 
-    return ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: background,
-        foregroundColor: foreground,
-        shape: RoundedRectangleBorder(borderRadius: borderRadius),
+    return Material(
+      shape: shape,
+      color: background,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: shape,
+        child: Icon(Icons.add, size: iconSize, color: foreground),
       ),
-      child: Icon(Icons.add, size: iconSize, color: foreground),
     );
   }
 }
 
-/// 选择器图片
-class TxImagePickerItem extends StatelessWidget {
-  const TxImagePickerItem({
-    required this.image,
-    required this.size,
-    required this.tag,
-    super.key,
-    this.onDeleteTap,
-    this.padding,
+/// 图片项
+class _GalleryItem extends StatelessWidget {
+  const _GalleryItem({
+    required this.child,
     this.deleteButtonColor,
     this.deleteButtonSize,
+    this.onDeleteTap,
+  });
+
+  /// 图片或视频
+  final Widget child;
+
+  /// 删除按钮颜色
+  final Color? deleteButtonColor;
+
+  /// 删除按钮大小
+  final double? deleteButtonSize;
+
+  /// 删除按钮点击事件
+  final VoidCallback? onDeleteTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final TxImagePickerViewThemeData galleryTheme =
+        TxImagePickerViewTheme.of(context);
+
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final double deleteButtonSize = this.deleteButtonSize ??
+        galleryTheme.deleteButtonSize ??
+        _kDeleteButtonSize;
+    final Color deleteButtonColor = this.deleteButtonColor ??
+        galleryTheme.deleteButtonColor ??
+        Colors.black54;
+    const ShapeBorder shape = CircleBorder();
+
+    final Widget button = Material(
+      shape: shape,
+      color: deleteButtonColor,
+      child: InkWell(
+        customBorder: shape,
+        onTap: onDeleteTap,
+        child: Icon(
+          Icons.close,
+          size: deleteButtonSize,
+          color: scheme.onError,
+        ),
+      ),
+    );
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Padding(padding: const EdgeInsets.all(6.0), child: child),
+        Align(alignment: Alignment.topRight, child: button)
+      ],
+    );
+  }
+}
+
+/// 图片项
+class _ImageItem extends StatelessWidget {
+  const _ImageItem({
+    required this.image,
+    required this.tag,
+    super.key,
+    this.padding,
     this.borderRadius,
     this.onTap,
   });
 
   final ImageProvider image;
-  final double size;
   final dynamic tag;
-  final VoidCallback? onDeleteTap;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
-  final Color? deleteButtonColor;
-  final double? deleteButtonSize;
   final BorderRadius? borderRadius;
 
   @override
@@ -672,6 +874,7 @@ class TxImagePickerItem extends StatelessWidget {
         tag: tag,
         child: DecoratedBox(
           decoration: BoxDecoration(
+            borderRadius: borderRadius,
             image: DecorationImage(
               image: image,
               fit: BoxFit.cover,
@@ -685,42 +888,74 @@ class TxImagePickerItem extends StatelessWidget {
       child = Padding(padding: padding, child: child);
     }
 
-    if (onDeleteTap != null) {
-      final ColorScheme scheme = Theme.of(context).colorScheme;
-      final double deleteButtonSize = this.deleteButtonSize ??
-          galleryTheme.deleteButtonSize ??
-          _kDeleteButtonSize;
-      final Color deleteButtonColor = this.deleteButtonColor ??
-          galleryTheme.deleteButtonColor ??
-          scheme.error;
-      const ShapeBorder shape = CircleBorder();
+    return child;
+  }
+}
 
-      final Widget button = Material(
-        shape: shape,
-        color: deleteButtonColor,
-        child: InkWell(
-          customBorder: shape,
-          onTap: onDeleteTap,
-          child: Icon(
-            Icons.close,
-            size: deleteButtonSize,
-            color: scheme.onError,
-          ),
-        ),
+/// 视频项
+class _VideoItem extends StatefulWidget {
+  const _VideoItem({required this.video, super.key});
+
+  final TxFile video;
+
+  @override
+  State<_VideoItem> createState() => _VideoItemState();
+}
+
+class _VideoItemState extends State<_VideoItem> {
+  late final VideoPlayerController _controller;
+  bool _initialized = false;
+
+  void _initController() {
+    if (widget.video is TxNetworkFile) {
+      _controller = VideoPlayerController.network(widget.video.name);
+    } else if (widget.video is TxMemoryFile) {
+      _controller = VideoPlayerController.file(
+        File.fromRawPath((widget.video as TxMemoryFile).bytes!),
       );
-      child = OverflowBox(
-        maxHeight: size + 12,
-        maxWidth: size + 12,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Padding(padding: const EdgeInsets.all(6.0), child: child),
-            Align(alignment: Alignment.topRight, child: button)
-          ],
-        ),
-      );
+    } else {
+      _controller = VideoPlayerController.file(File(widget.video.path));
+    }
+    _controller
+        .initialize()
+        .then((value) => setState(() => _initialized = true));
+  }
+
+  @override
+  void initState() {
+    _initController();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_initialized) {
+      return const Center(child: CircularProgressIndicator());
     }
 
-    return child;
+    const ShapeBorder shape = CircleBorder();
+
+    final Widget button = Material(
+      shape: shape,
+      color: Colors.black26,
+      child: InkWell(
+        customBorder: shape,
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TxVideoPlayerView(controller: _controller),
+          ),
+        ),
+        child: const Icon(
+          Icons.play_arrow,
+          size: 40,
+          color: Colors.white,
+        ),
+      ),
+    );
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [VideoPlayer(_controller), button],
+    );
   }
 }
