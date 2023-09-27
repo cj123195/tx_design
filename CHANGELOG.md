@@ -87,3 +87,8 @@
 
 # 0.1.3
 * Split TxImagePickerView to TxPhotoPickerView and TxVideoPickerView.
+
+# 0.2.0
+* Update Flutter SDK version to 3.13.3.
+* Update Dart SDK version to 3.0.
+* Remove DropdownButton and PopupMenu.

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../extensions/iterable_extension.dart';
 import '../localizations.dart';
 import '../utils/basic_types.dart';
-import '../widgets/dropdown.dart';
 import 'form_field.dart';
+import 'form_item_container.dart';
 
 /// 下拉选择Form组件
 class DropdownFormField<T, V> extends TxFormFieldItem {
@@ -31,7 +31,7 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
     super.padding,
     super.horizontalGap,
     super.minLabelWidth,
-    TxDropdownButtonBuilder? selectedItemBuilder,
+    DropdownButtonBuilder? selectedItemBuilder,
     T? value,
     Widget? hint,
     Widget? disabledHint,
@@ -51,7 +51,7 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
     Color? dropdownColor,
     InputDecoration? decoration,
     double? menuMaxHeight,
-    AlignmentGeometry alignment = AlignmentDirectional.centerStart,
+    AlignmentGeometry alignment = AlignmentDirectional.centerEnd,
     BorderRadius? borderRadius = const BorderRadius.all(Radius.circular(8.0)),
     EdgeInsetsGeometry? fieldPadding = EdgeInsets.zero,
   }) : super(
@@ -62,12 +62,6 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
                         ? TxLocalizations.of(field.context).pickerFormFieldHint
                         : null
                     : null);
-            final List<TxDropdownMenuItem<T>>? items = sources
-                ?.map((e) => TxDropdownMenuItem<T>(
-                      value: e,
-                      child: Text(labelMapper(e)),
-                    ))
-                .toList();
             final InputDecoration effectiveDecoration =
                 TxFormFieldItem.mergeDecoration(
               field.context,
@@ -76,11 +70,27 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
                 hintText: TxLocalizations.of(field.context).pickerFormFieldHint,
               ),
             );
+            final TextAlign textAlign = FormItemContainer.getTextAlign(
+              field.context,
+              null,
+              direction,
+            );
+            final List<DropdownMenuItem<T>>? items = sources
+                ?.map((e) => DropdownMenuItem<T>(
+                      value: e,
+                      alignment: FormItemContainer.getAlignment(
+                        field.context,
+                        direction,
+                      ),
+                      child: Text(labelMapper(e)),
+                    ))
+                .toList();
 
-            return TxDropdownButtonFormField<T>(
+            return DropdownButtonFormField<T>(
               items: items,
               selectedItemBuilder: selectedItemBuilder,
-              hint: hint,
+              hint: Text(TxLocalizations.of(field.context).pickerFormFieldHint,
+                  textAlign: textAlign),
               disabledHint: disabledHint,
               onTap: onTap,
               elevation: elevation,

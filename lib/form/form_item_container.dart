@@ -142,6 +142,17 @@ class FormItemContainer extends StatelessWidget {
         : TextAlign.end;
   }
 
+  static AlignmentGeometry getAlignment(
+    BuildContext context,
+    Axis? direction,
+  ) {
+    final Axis effectiveDirection =
+        direction ?? FormItemTheme.of(context).direction ?? Axis.vertical;
+    return effectiveDirection == Axis.vertical
+        ? AlignmentDirectional.centerStart
+        : AlignmentDirectional.centerEnd;
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -230,8 +241,8 @@ enum _FormItemSlot {
   formField,
 }
 
-class _FormItem extends RenderObjectWidget
-    with SlottedMultiChildRenderObjectWidgetMixin<_FormItemSlot> {
+class _FormItem
+    extends SlottedMultiChildRenderObjectWidget<_FormItemSlot, RenderBox> {
   const _FormItem({
     required this.formField,
     required this.horizontalGap,
@@ -274,7 +285,7 @@ class _FormItem extends RenderObjectWidget
 }
 
 class _RenderFormItem extends RenderBox
-    with SlottedContainerRenderObjectMixin<_FormItemSlot> {
+    with SlottedContainerRenderObjectMixin<_FormItemSlot, RenderBox> {
   _RenderFormItem({
     required double horizontalGap,
     required double minLabelWidth,

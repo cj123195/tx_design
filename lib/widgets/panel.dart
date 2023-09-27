@@ -661,8 +661,8 @@ enum _PanelSlot {
   footer,
 }
 
-class _Panel extends RenderObjectWidget
-    with SlottedMultiChildRenderObjectWidgetMixin<_PanelSlot> {
+class _Panel
+    extends SlottedMultiChildRenderObjectWidget<_PanelSlot, RenderBox> {
   const _Panel({
     required this.title,
     required this.isDense,
@@ -737,7 +737,7 @@ class _Panel extends RenderObjectWidget
 }
 
 class _RenderPanel extends RenderBox
-    with SlottedContainerRenderObjectMixin<_PanelSlot> {
+    with SlottedContainerRenderObjectMixin<_PanelSlot, RenderBox> {
   _RenderPanel({
     required bool dense,
     required VisualDensity visualDensity,

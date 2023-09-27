@@ -199,6 +199,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 initialValue: form['field7'],
                 required: true,
                 direction: Axis.horizontal,
+                isDense: true,
+                isExpanded: true,
               ),
               PickerFormField(
                 sources: sources,
@@ -237,11 +239,18 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
-      bottomNavigationBar: ElevatedButton(
-        onPressed: () {
-          _formKey.currentState?.validate();
-        },
-        child: const Text('验证'),
+      bottomNavigationBar: TxButtonBar.more(
+        mainButton: ElevatedButton(
+          onPressed: () {
+            _formKey.currentState?.validate();
+          },
+          child: const Text('验证'),
+        ),
+        menus: const [
+          PopupMenuItem(child: Text('选项一')),
+          PopupMenuItem(child: Text('选项二')),
+          PopupMenuItem(child: Text('选项三'))
+        ],
       ),
     );
   }

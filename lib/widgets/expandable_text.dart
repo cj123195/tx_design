@@ -144,7 +144,7 @@ class _TxExpandableTextState extends State<TxExpandableText> {
     if (widget.style == null || widget.style!.inherit) {
       effectiveTextStyle = defaultTextStyle.style.merge(widget.style);
     }
-    if (MediaQuery.boldTextOverride(context)) {
+    if (MediaQuery.boldTextOf(context)) {
       effectiveTextStyle = effectiveTextStyle!
           .merge(const TextStyle(fontWeight: FontWeight.bold));
     }

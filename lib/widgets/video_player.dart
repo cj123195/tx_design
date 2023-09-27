@@ -34,7 +34,7 @@ class _TxVideoPlayerViewState extends State<TxVideoPlayerView> {
       _controller = widget.controller!;
     } else {
       if (widget.path!.startsWith('http')) {
-        _controller = VideoPlayerController.network(widget.path!);
+        _controller = VideoPlayerController.networkUrl(Uri.parse(widget.path!));
       } else if (widget.path!.startsWith('assets')) {
         _controller = VideoPlayerController.asset(widget.path!);
       } else {
@@ -130,7 +130,7 @@ class _TxOrientationVideoPlayerState extends State<TxOrientationVideoPlayer> {
       _controller = widget.controller!;
     } else {
       if (widget.path!.startsWith('http')) {
-        _controller = VideoPlayerController.network(widget.path!);
+        _controller = VideoPlayerController.networkUrl(Uri.parse(widget.path!));
       } else if (widget.path!.startsWith('assets')) {
         _controller = VideoPlayerController.asset(widget.path!);
       } else {

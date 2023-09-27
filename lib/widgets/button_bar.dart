@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'button_bar_theme.dart';
-import 'popup_menu.dart';
 
 const double _kButtonHeight = 36.0;
 const double _kMinButtonWidth = 64.0;
@@ -25,7 +24,7 @@ class TxButtonBar extends StatelessWidget {
     this.buttonAlignedDropdown,
   });
 
-  /// 创建一个包含[TxPopupMenuButton]的操作按钮栏，一般用于操作比较多的情况
+  /// 创建一个包含[PopupMenuButton]的操作按钮栏，一般用于操作比较多的情况
   TxButtonBar.more({
     required this.mainButton,
     required List<PopupMenuEntry> menus,
@@ -40,7 +39,7 @@ class TxButtonBar extends StatelessWidget {
     this.buttonAlignedDropdown,
   })  : assert(menus.isNotEmpty),
         actions = [
-          TxPopupMenuButton(
+          PopupMenuButton(
             itemBuilder: (context) {
               return <PopupMenuEntry>[
                 for (int i = 0; i < menus.length; i++) ...[

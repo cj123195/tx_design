@@ -908,7 +908,9 @@ class _VideoItemState extends State<_VideoItem> {
 
   void _initController() {
     if (widget.video is TxNetworkFile) {
-      _controller = VideoPlayerController.network(widget.video.name);
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.video.path),
+      );
     } else if (widget.video is TxMemoryFile) {
       _controller = VideoPlayerController.file(
         File.fromRawPath((widget.video as TxMemoryFile).bytes!),
