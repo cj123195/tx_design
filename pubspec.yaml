@@ -1,6 +1,6 @@
 name: tx_design
 description: A custom component library that contains some basic UI components and provides theme configuration.
-version: 0.2.0
+version: 0.2.1
 homepage: https://github.com/cj123195/tx_design.git
 repository: https://github.com/cj123195/tx_design
 
@@ -11,19 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  file_picker: ^5.2.5
-  flutter_reorderable_grid_view: ^4.0.0
-  flutter_svg: ^2.0.0+1
-  image_picker: ^0.8.6+1
-  open_filex: ^4.3.2
-  path_provider: ^2.0.12
-  photo_view: ^0.14.0
-  qr_code_scanner: ^1.0.1
-  share_plus: ^6.3.0
-  signature: ^5.3.1
-  value_layout_builder: ^0.3.1
-  video_player: ^2.5.1
 
 dev_dependencies:
   flutter_test:

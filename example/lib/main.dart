@@ -163,19 +163,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 initialTime: form['field9'],
                 required: true,
               ),
-              PhotoPickerFormField(
-                labelText: '图片选择',
-                onChanged: (val) => form['field8'] = val,
-                initialValue: form['field8'],
-                required: true,
-                drawEnabled: true,
-              ),
-              VideoPickerFormField(
-                labelText: '视频选择',
-                onChanged: (val) => form['field12'] = val,
-                initialValue: form['field12'],
-                required: true,
-              ),
               // const SizedBox(height: 8.0),
               DateRangePickerFormField(
                 labelText: '时间区间选择',
@@ -218,13 +205,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 initialValue: form['field7'],
                 required: true,
                 direction: Axis.horizontal,
-              ),
-              FilePickerFormField(
-                labelText: '文件选择',
-                onChanged: (val) => form['field8'] = val,
-                initialValue: form['field8'],
-                required: true,
-                drawEnabled: true,
               ),
               MultiPickerFormField(
                 sources: sources,
