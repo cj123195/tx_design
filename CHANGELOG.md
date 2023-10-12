@@ -1,3 +1,6 @@
+# 0.2.2
+* Fix the shape mismatch between the foreground image and the background image of the square avatar.
+
 # 0.2.1
 * Remove all third-party dependencies and related widgets.
 

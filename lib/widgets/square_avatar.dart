@@ -188,7 +188,7 @@ class TxSquareAvatar extends StatelessWidget {
                 onError: onForegroundImageError,
                 fit: BoxFit.cover,
               ),
-              shape: BoxShape.circle,
+              borderRadius: effectiveBorderRadius,
             )
           : null,
       child: child == null
