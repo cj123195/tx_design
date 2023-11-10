@@ -225,7 +225,7 @@ class TxMultiPickerFormFieldItem<T, V> extends TxFormFieldItem<Set<T>> {
     ValueMapper<T, V>? valueMapper,
     ValueMapper<T, bool>? enabledMapper,
     ValueMapper<T, bool>? inputEnabledMapper,
-    ValueMapper<T, bool>? dataMapper,
+    ValueMapper<String, T>? dataMapper,
     int? minPickNumber,
     int? maxPickNumber,
     ValueChanged<Set<T>?>? onChanged,
