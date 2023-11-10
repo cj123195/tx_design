@@ -17,7 +17,6 @@ class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
     PickerFuture<Set<T>?>? onPickTap,
     ValueMapper<T, String>? subtitleMapper,
     super.dataMapper, // 根据输入文字生成对应实体
-    bool inputEnabled = false,
     ValueMapper<T, V>? valueMapper,
     ValueMapper<T, bool>? enabledMapper,
     ValueMapper<T, bool>? inputEnabledMapper,
@@ -90,7 +89,7 @@ class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
     super.mouseCursor,
     super.contextMenuBuilder,
   })  : assert(minPickNumber == null || minPickNumber > 0),
-        assert(!inputEnabled || dataMapper != null),
+        assert(inputEnabledMapper == null || dataMapper != null),
         assert(maxPickNumber == null || maxPickNumber > (minPickNumber ?? 0)),
         assert(maxLines == null || maxLines > 0),
         assert(minLines == null || minLines > 0),
@@ -102,7 +101,7 @@ class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
             maxLength == TextField.noMaxLength ||
             maxLength > 0),
         super(
-            readonly: !inputEnabled,
+            readonly: true,
             labelMapper: (value) => value.map((e) => labelMapper(e)).join(''),
             initialValue: initialData ??
                 sources.where((e) {
