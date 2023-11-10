@@ -19,13 +19,20 @@ class _PickerContent<T> extends StatefulWidget {
     required this.onChanged,
     required this.sources,
     super.key,
+    this.enabledMapper,
+    this.inputEnabledMapper,
+    this.dataMapper,
     this.subtitleMapper,
     this.pickerItemBuilder,
     this.initialData,
     bool? showSearchField,
   }) : showSearchField = showSearchField ?? sources.length > 30;
+
   final ValueMapper<T, String> labelMapper;
   final ValueMapper<T, String>? subtitleMapper;
+  final ValueMapper<T, bool>? enabledMapper;
+  final ValueMapper<T, bool>? inputEnabledMapper;
+  final ValueMapper<T, bool>? dataMapper;
   final List<T> sources;
   final PickerItemBuilder<T>? pickerItemBuilder;
   final ValueChanged<T> onChanged;
@@ -77,17 +84,20 @@ class _PickerContentState<T> extends State<_PickerContent<T>> {
         ),
         itemCount: _filterSource.length,
       );
+    } else {
+      result = ListView.separated(
+        itemBuilder: (context, index) => RadioListTile<T>(
+          title: Text(widget.labelMapper(_filterSource[index])),
+          value: _filterSource[index],
+          groupValue: initialData,
+          onChanged: widget.enabledMapper?.call(_filterSource[index]) == false
+              ? null
+              : (val) => _onChanged(_filterSource[index]),
+        ),
+        separatorBuilder: (context, index) => const Divider(height: 0),
+        itemCount: _filterSource.length,
+      );
     }
-    result = ListView.separated(
-      itemBuilder: (context, index) => RadioListTile<T>(
-        title: Text(widget.labelMapper(_filterSource[index])),
-        value: _filterSource[index],
-        groupValue: initialData,
-        onChanged: (val) => _onChanged(_filterSource[index]),
-      ),
-      separatorBuilder: (context, index) => const Divider(height: 0),
-      itemCount: _filterSource.length,
-    );
     if (widget.showSearchField == true) {
       result = Column(
         children: [
@@ -119,6 +129,9 @@ Future<T?> showPickerBottomSheet<T, V>(
   V? initialValue,
   ValueMapper<T, V>? valueMapper,
   ValueMapper<T, String>? subtitleMapper,
+  ValueMapper<T, bool>? enabledMapper,
+  ValueMapper<T, bool>? inputEnabledMapper,
+  ValueMapper<T, bool>? dataMapper,
   PickerItemBuilder<T>? pickerItemBuilder,
   bool? isScrollControlled,
   bool? showSearchField,
@@ -136,6 +149,9 @@ Future<T?> showPickerBottomSheet<T, V>(
     subtitleMapper: subtitleMapper,
     pickerItemBuilder: pickerItemBuilder,
     initialData: data,
+    enabledMapper: enabledMapper,
+    dataMapper: dataMapper,
+    inputEnabledMapper: inputEnabledMapper,
   );
   return await showDefaultBottomSheet<T>(
     context,
