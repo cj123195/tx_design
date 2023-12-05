@@ -135,7 +135,7 @@ class TxPanel extends StatelessWidget {
 
   /// 定义[title]和[subtitle]的默认颜色。
   ///
-  /// 如果此属性为空，则使用[ColorScheme.primary]。
+  /// 如果此属性为空，则使用[ColorScheme.onSurface]。
   final Color? textColor;
 
   /// 面板的内边距
@@ -169,7 +169,6 @@ class TxPanel extends StatelessWidget {
   ///
   ///  * [MaterialState.selected].
   ///  * [MaterialState.disabled].
-  /// {@endtemplate}
   ///
   /// 如果为 null，则使用 [MaterialStateMouseCursor.clickable]。
   ///
@@ -212,7 +211,6 @@ class TxPanel extends StatelessWidget {
   /// 例如，在 Android 上点击会产生咔嗒声和启用反馈后，长按会产生短暂的振动。
   ///
   /// 当为null时，默认值为true。
-  /// {@endtemplate}
   ///
   /// 参考:
   ///
@@ -232,9 +230,9 @@ class TxPanel extends StatelessWidget {
   /// 默认值为12.0
   final double? verticalGap;
 
-  /// 分配给 [ListTile.leading] 小部件的最小宽度。
+  /// 分配给 [leading] 小部件的最小宽度。
   ///
-  /// 如果为 null，则使用 [ListTileTheme.minLeadingWidth] 的值。
+  /// 如果为 null，则使用 [TxPanelThemeData.minLeadingWidth] 的值。
   /// 如果这也是 null，则使用默认值 40。
   final double? minLeadingWidth;
 

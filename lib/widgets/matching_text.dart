@@ -17,7 +17,7 @@ class TxMatchingText extends StatelessWidget {
     this.locale,
     this.softWrap,
     this.overflow,
-    this.textScaleFactor,
+    this.textScaler,
     this.maxLines,
     this.semanticsLabel,
     this.textWidthBasis,
@@ -83,10 +83,10 @@ class TxMatchingText extends StatelessWidget {
   ///
   /// 例如，如果文本比例因子为 1.5，则文本将大于指定的字体大小50%。
   ///
-  /// 给构造函数的值作为 textScaleFactor。 如果为空，将
-  /// 使用从环境获得的 [MediaQueryData.textScaleFactor]
+  /// 给构造函数的值作为 textScaler。 如果为空，将
+  /// 使用从环境获得的 [MediaQueryData.textScaler]
   /// [MediaQuery]，如果范围内没有 [MediaQuery]，则为 1.0。
-  final double? textScaleFactor;
+  final TextScaler? textScaler;
 
   /// 文本跨越的可选最大行数，必要时换行。如果文本超过给定的行数，将根据给定的行数截断
   /// 到 [overflow]。
@@ -147,7 +147,7 @@ class TxMatchingText extends StatelessWidget {
         locale: locale,
         softWrap: softWrap,
         overflow: overflow,
-        textScaleFactor: textScaleFactor,
+        textScaler: textScaler,
         maxLines: maxLines,
         semanticsLabel: semanticsLabel,
         textWidthBasis: textWidthBasis,
@@ -171,7 +171,7 @@ class TxMatchingText extends StatelessWidget {
       locale: locale,
       softWrap: softWrap ?? defaultTextStyle.softWrap,
       overflow: overflow ?? defaultTextStyle.overflow,
-      textScaleFactor: textScaleFactor ?? MediaQuery.textScaleFactorOf(context),
+      textScaler: textScaler ?? MediaQuery.textScalerOf(context),
       maxLines: maxLines ?? defaultTextStyle.maxLines,
       strutStyle: strutStyle,
       textWidthBasis: textWidthBasis ?? defaultTextStyle.textWidthBasis,

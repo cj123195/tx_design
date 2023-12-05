@@ -210,7 +210,7 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final TextTheme textTheme = theme.textTheme;
-    final SpacingThemeData spacingTheme = theme.extension<SpacingThemeData>()!;
+    final SpacingThemeData? spacingTheme = theme.extension<SpacingThemeData>();
     const VisualDensity visualDensity = VisualDensity(
       vertical: VisualDensity.minimumDensity,
       horizontal: VisualDensity.minimumDensity,
@@ -242,7 +242,8 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
               localizations.dateRangeStartLabel, true),
         ),
         Padding(
-          padding: spacingTheme.horizontalMedium,
+          padding: spacingTheme?.horizontalMedium ??
+              const EdgeInsets.symmetric(horizontal: 12.0),
           child: Text(
             txLocalizations.dateRangeDateSeparator,
             style: textTheme.bodyMedium,
@@ -272,7 +273,8 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
       initialDatetime = _startDate ?? maximum ?? minimum;
     }
     final Widget datePicker = Padding(
-      padding: spacingTheme.verticalLargest,
+      padding: spacingTheme?.verticalLargest ??
+          const EdgeInsets.symmetric(vertical: 24.0),
       child: CupertinoDatePicker(
         onDateTimeChanged: (date) {
           if (_startNode.hasFocus) {
@@ -292,13 +294,14 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
     );
 
     return Padding(
-      padding: spacingTheme.horizontalMedium,
+      padding: spacingTheme?.horizontalMedium ??
+          const EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           customTitle,
           textFields,
-          SizedBox(height: spacingTheme.medium),
+          SizedBox(height: spacingTheme?.medium ?? 12.0),
           if (noticeText != null)
             Text(
               noticeText,
@@ -381,8 +384,9 @@ Future<DateTimeRange?> showDatetimeRangePicker(
             ),
             Padding(
               padding: Theme.of(context)
-                  .extension<SpacingThemeData>()!
-                  .edgeInsetsMedium,
+                      .extension<SpacingThemeData>()
+                      ?.edgeInsetsMedium ??
+                  const EdgeInsets.all(12.0),
               child: FilledButton(
                 onPressed: () => Navigator.pop(context, result),
                 child: Text(localizations.okButtonLabel),

@@ -81,7 +81,7 @@ class TxDivider extends Divider {
   Widget build(BuildContext context) {
     final DividerThemeData dividerTheme = DividerTheme.of(context);
     final double height = this.height ?? dividerTheme.space ?? 16.0;
-    final double thickness = this.thickness ?? dividerTheme.thickness ?? 0.0;
+    final double thickness = this.thickness ?? dividerTheme.thickness ?? 0.5;
     final double indent = this.indent ?? dividerTheme.indent ?? 0.0;
     final double endIndent = this.endIndent ?? dividerTheme.endIndent ?? 0.0;
 
@@ -142,7 +142,7 @@ class TxVerticalDivider extends VerticalDivider {
   Widget build(BuildContext context) {
     final DividerThemeData dividerTheme = DividerTheme.of(context);
     final double width = this.width ?? dividerTheme.space ?? 16.0;
-    final double thickness = this.thickness ?? dividerTheme.thickness ?? 0.0;
+    final double thickness = this.thickness ?? dividerTheme.thickness ?? 0.5;
     final double indent = this.indent ?? dividerTheme.indent ?? 0.0;
     final double endIndent = this.endIndent ?? dividerTheme.endIndent ?? 0.0;
 

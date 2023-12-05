@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'data_grid_theme.dart';
 
-const double _rowSpacing = 4.0;
 const double _columnSpacing = 8.0;
+const int _dataMaxLines = 2;
 
 /// 数据展示栅格组件
 class TxDataGrid extends StatelessWidget {
@@ -20,6 +20,7 @@ class TxDataGrid extends StatelessWidget {
     this.columnSpacing,
     this.dataTextStyle,
     this.dataRowPadding,
+    this.crossAxisAlignment,
   });
 
   /// 创建由[data]参数派生出的描述数据表的小组件。
@@ -27,10 +28,12 @@ class TxDataGrid extends StatelessWidget {
   /// [data] 参数不能为空。
   TxDataGrid.fromData({
     required Map<String, dynamic> data,
+    Map<int, TxDataCell>? slots,
     int columnNumber = 1,
     TextStyle? dataLabelTextStyle,
     double? minLabelWidth,
     Color? labelTextColor,
+    int? dataMaxLines,
     super.key,
     this.decoration,
     this.padding,
@@ -39,25 +42,18 @@ class TxDataGrid extends StatelessWidget {
     this.columnSpacing,
     this.dataTextStyle,
     this.dataRowPadding,
-  }) : rows = [
-          for (int i = 0; i < data.length; i += columnNumber)
-            TxDataRow(
-              cells: List.generate(
-                  data.length - i > columnNumber
-                      ? columnNumber
-                      : data.length - i, (index) {
-                final String key = data.keys.toList()[i + index];
-                return TxDataCell.rich(
-                  labelText: key,
-                  contentText: '${data[key] ?? ''}',
-                  labelTextStyle: dataLabelTextStyle,
-                  contentTextStyle: dataTextStyle,
-                  minLabelWidth: minLabelWidth,
-                );
-              }),
-              decoration: dataRowDecoration,
-            )
-        ];
+    this.crossAxisAlignment,
+  }) : rows = _getRowsByDataSource(
+          data,
+          slots,
+          columnNumber,
+          dataTextStyle,
+          dataLabelTextStyle,
+          minLabelWidth,
+          labelTextColor,
+          dataMaxLines,
+          dataRowDecoration,
+        );
 
   /// 栅格的背景和边框装饰
   ///
@@ -101,6 +97,59 @@ class TxDataGrid extends StatelessWidget {
   /// 必须为非null，但可以为空。
   final List<TxDataRow> rows;
 
+  /// 交叉轴对其方式
+  final CrossAxisAlignment? crossAxisAlignment;
+
+  static const double defaultRowSpacing = 8.0;
+
+  static List<TxDataRow> _getRowsByDataSource(
+    Map<String, dynamic> data,
+    Map<int, TxDataCell>? slots,
+    int columnNumber,
+    TextStyle? dataTextStyle,
+    TextStyle? dataLabelTextStyle,
+    double? minLabelWidth,
+    Color? labelTextColor,
+    int? dataMaxLines,
+    Decoration? dataRowDecoration,
+  ) {
+    final List<TxDataCell> cells = List.generate(
+      data.length,
+      (index) {
+        final String key = data.keys.toList()[index];
+        return TxDataCell.rich(
+          labelText: key,
+          contentText: '${data[key] ?? ''}',
+          labelTextStyle: dataLabelTextStyle,
+          contentTextStyle: dataTextStyle,
+          minLabelWidth: minLabelWidth,
+          dataMaxLines: dataMaxLines,
+        );
+      },
+    );
+    if (slots?.isNotEmpty == true) {
+      for (int i = 0; i < slots!.length; i++) {
+        final int index = slots.keys.toList()[i];
+        assert(
+          index >= 0 && index <= cells.length,
+          '插入位置需大于等于0且小于cell的长度',
+        );
+        cells.insert(index, slots[index]!);
+      }
+    }
+
+    return [
+      for (int i = 0; i < cells.length; i += columnNumber)
+        TxDataRow(
+          cells: cells.sublist(
+            i,
+            cells.length - i > columnNumber ? i + columnNumber : null,
+          ),
+          decoration: dataRowDecoration,
+        )
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final TxDataGridThemeData dataGridTheme = TxDataGridTheme.of(context);
@@ -108,7 +157,7 @@ class TxDataGrid extends StatelessWidget {
     final Decoration? effectiveDataRowDecoration =
         dataRowDecoration ?? dataGridTheme.dataRowDecoration;
     final double effectiveRowSpacing =
-        rowSpacing ?? dataGridTheme.rowSpacing ?? _rowSpacing;
+        rowSpacing ?? dataGridTheme.rowSpacing ?? TxDataGrid.defaultRowSpacing;
     final double effectiveColumnSpacing =
         columnSpacing ?? dataGridTheme.columnSpacing ?? _columnSpacing;
     final EdgeInsetsGeometry? effectiveDataRowPadding =
@@ -131,7 +180,7 @@ class TxDataGrid extends StatelessWidget {
             ? null
             : EdgeInsets.only(bottom: effectiveRowSpacing),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: crossAxisAlignment ?? CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           children: cells,
         ),
@@ -211,6 +260,8 @@ class TxDataCell {
     TextStyle? labelTextStyle,
     TextStyle? contentTextStyle,
     bool? numeric,
+    int? dataMaxLines,
+    CrossAxisAlignment? alignment,
   })  : placeholder = false,
         child = _RichCell(
           label: label,
@@ -222,6 +273,8 @@ class TxDataCell {
           minLabelWidth: minLabelWidth,
           labelTextColor: labelTextColor,
           numeric: numeric,
+          dataMaxLines: dataMaxLines,
+          alignment: alignment,
         );
 
   /// 没有内容且宽度和高度为零的单元格。
@@ -253,6 +306,8 @@ class _RichCell extends StatelessWidget {
     this.contentTextStyle,
     this.labelTextColor,
     bool? numeric,
+    this.dataMaxLines,
+    this.alignment,
   })  : assert(label != null || labelText != null),
         numeric =
             numeric ?? ((content == null && contentText is num) ? true : false);
@@ -266,6 +321,8 @@ class _RichCell extends StatelessWidget {
   final TextStyle? labelTextStyle;
   final TextStyle? contentTextStyle;
   final bool numeric;
+  final int? dataMaxLines;
+  final CrossAxisAlignment? alignment;
 
   @override
   Widget build(BuildContext context) {
@@ -280,8 +337,8 @@ class _RichCell extends StatelessWidget {
     final TextStyle effectiveContentStyle = contentTextStyle ??
         dataGridTheme.dataTextStyle ??
         theme.textTheme.bodyMedium!;
-    final CrossAxisAlignment effectiveAlignment =
-        numeric ? CrossAxisAlignment.center : CrossAxisAlignment.start;
+    final CrossAxisAlignment effectiveAlignment = alignment ??
+        (numeric ? CrossAxisAlignment.center : CrossAxisAlignment.start);
 
     Widget effectiveLabel = DefaultTextStyle(
       style: effectiveLabelStyle.copyWith(color: effectiveLabelColor),
@@ -296,7 +353,7 @@ class _RichCell extends StatelessWidget {
 
     final Widget effectiveContent = DefaultTextStyle(
       style: effectiveContentStyle,
-      maxLines: 2,
+      maxLines: dataMaxLines ?? dataGridTheme.dataMaxLines ?? _dataMaxLines,
       overflow: TextOverflow.ellipsis,
       child: content ?? Text('${contentText ?? ''}'),
     );

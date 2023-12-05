@@ -118,7 +118,6 @@ class TxRadioCell<T> extends StatelessWidget {
   /// 代替这个颜色。
   final Color? activeColor;
 
-  /// {@template flutter.material.radio.fillColor}
   /// 在所有 [MaterialState] 中填充单选按钮的颜色。
   ///
   /// Resolves in the following states:

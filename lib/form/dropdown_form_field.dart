@@ -103,7 +103,7 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
               isExpanded: isExpanded,
               itemHeight: itemHeight,
               focusNode: focusNode,
-              focusColor: focusColor,
+              focusColor: focusColor ?? Colors.transparent,
               autofocus: autofocus,
               dropdownColor: dropdownColor,
               menuMaxHeight: menuMaxHeight,

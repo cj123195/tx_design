@@ -78,7 +78,7 @@ class DateRangePickerFormField extends TxFormFieldItem<DateTimeRange> {
               if (onTap != null) {
                 range = await onTap(state.context, state.value);
               } else {
-                range = await showDateRangeDialog(
+                range = await showDateRangePickerDialog(
                   state.context,
                   firstDate: firstDate,
                   lastDate: lastDate,

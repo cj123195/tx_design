@@ -194,9 +194,8 @@ class TxSquareAvatar extends StatelessWidget {
       child: child == null
           ? null
           : Center(
-              child: MediaQuery(
+              child: MediaQuery.withNoTextScaling(
                 // 需要忽略此处的环境文本比例因子，以便在文本比例因子较大时文本不会转义头像。
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
                 child: IconTheme(
                   data: theme.iconTheme.copyWith(color: textStyle.color),
                   child: DefaultTextStyle(

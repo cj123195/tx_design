@@ -71,17 +71,17 @@ class TxTip extends StatelessWidget {
   /// 根据类型创建一个提示小组件
   ///
   /// [data]与[type]不能为null
-  TxTip.type(
-      {required TipType type,
-      required this.data,
-      super.key,
-      this.margin,
-      this.padding,
-      this.textStyle,
-      this.borderRadius,
-      this.visualDensity,
-      this.onClose})
-      : backgroundColor = type.color.shade100,
+  TxTip.type({
+    required TipType type,
+    required this.data,
+    super.key,
+    this.margin,
+    this.padding,
+    this.textStyle,
+    this.borderRadius,
+    this.visualDensity,
+    this.onClose,
+  })  : backgroundColor = type.color.shade100,
         foregroundColor = type.color,
         icon = Icon(type.icon),
         textSpan = null;
@@ -155,7 +155,7 @@ class TxTip extends StatelessWidget {
         theme.colorScheme.primaryContainer;
     final Color foreground = foregroundColor ??
         tipTheme.foregroundColor ??
-        theme.colorScheme.primary;
+        theme.colorScheme.onPrimaryContainer;
     final BorderRadius effectiveRadius = borderRadius ??
         tipTheme.borderRadius ??
         const BorderRadius.all(Radius.circular(8.0));

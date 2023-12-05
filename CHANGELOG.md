@@ -1,3 +1,16 @@
+# 0.2.3
+* Upgrade Flutter version to 3.16.0.
+* Add TxExpansionPanel widget.
+* Add TxTabBar and TxTabBarView widgets.
+* Add crossAxisAlignment property of TxDataGrid.
+* Add slots and dataMaxLines properties of TxDataGrid.fromData.
+* Update default format of TxDatePickerButton.
+* Change showDateRangeDialogs to showDateRangePickerDialog.
+* Fix page bug caused by not configuring SpacingThemeData.
+* Change default thickness from 0 to 0.5 of TxDivider and TxVerticalDivider.
+* Update default foregroundColor of TxTip.
+* Update default focusColor of DropdownFormField.
+
 # 0.2.2
 * Fix the shape mismatch between the foreground image and the background image of the square avatar.
 

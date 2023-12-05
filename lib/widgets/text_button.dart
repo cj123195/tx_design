@@ -1,6 +1,3 @@
-import 'dart:math' as math;
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 /// 图标位置
@@ -47,7 +44,7 @@ class TxTextButton extends TextButton {
       const EdgeInsets.all(8),
       const EdgeInsets.symmetric(horizontal: 4),
       const EdgeInsets.symmetric(horizontal: 4),
-      MediaQuery.maybeOf(context)?.textScaleFactor ?? 1,
+      1,
     );
     final TextStyle? textStyle =
         Theme.of(context).textTheme.labelLarge?.copyWith(height: 1.2);
@@ -77,9 +74,7 @@ class _TextButtonWithIconChild extends StatelessWidget {
     final bool isVerticalAlign =
         iconPosition == TextButtonIconPosition.bottom ||
             iconPosition == TextButtonIconPosition.top;
-    final double scale = MediaQuery.maybeOf(context)?.textScaleFactor ?? 1;
-    final double gap = this.gap ??
-        (scale <= 1 ? 4.0 : ui.lerpDouble(6, 4, math.min(scale - 1, 1))!);
+    final double gap = this.gap ?? 4.0;
 
     final List<Widget> children = [
       icon,

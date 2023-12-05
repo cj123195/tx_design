@@ -20,6 +20,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
     this.rowSpacing,
     this.columnSpacing,
     this.minLabelWidth,
+    this.dataMaxLines,
   });
 
   final Decoration? decoration;
@@ -32,6 +33,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
   final double? rowSpacing;
   final double? columnSpacing;
   final double? minLabelWidth;
+  final int? dataMaxLines;
 
   @override
   ThemeExtension<TxDataGridThemeData> copyWith({
@@ -45,6 +47,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
     double? rowSpacing,
     double? columnSpacing,
     double? minLabelWidth,
+    int? dataMaxLines,
   }) {
     return TxDataGridThemeData(
       decoration: decoration ?? this.decoration,
@@ -57,12 +60,15 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
       rowSpacing: rowSpacing ?? this.rowSpacing,
       columnSpacing: columnSpacing ?? this.columnSpacing,
       minLabelWidth: minLabelWidth ?? this.minLabelWidth,
+      dataMaxLines: dataMaxLines ?? this.dataMaxLines,
     );
   }
 
   @override
   ThemeExtension<TxDataGridThemeData> lerp(
-      ThemeExtension<TxDataGridThemeData>? other, double t) {
+    ThemeExtension<TxDataGridThemeData>? other,
+    double t,
+  ) {
     if (other is! TxDataGridThemeData) {
       return this;
     }
@@ -82,6 +88,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
       rowSpacing: lerpDouble(rowSpacing, other.rowSpacing, t),
       columnSpacing: lerpDouble(columnSpacing, other.columnSpacing, t),
       minLabelWidth: lerpDouble(minLabelWidth, minLabelWidth, t),
+      dataMaxLines: t < 0.5 ? dataMaxLines : other.dataMaxLines,
     );
   }
 }

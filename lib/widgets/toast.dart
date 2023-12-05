@@ -794,7 +794,6 @@ class Toast {
   /// 关闭Toast
   static Future<void> dismiss({bool animation = true}) {
     // cancel timer
-    _instance._cancelTimer();
     return _instance._dismiss(animation);
   }
 

@@ -11,13 +11,13 @@ extension DurationExtension on Duration {
       result = localizations.daysLabel(inDays);
     }
 
-    final int hours = inSeconds ~/ Duration.secondsPerHour;
+    final int hours = inHours % Duration.hoursPerDay;
     final String hourString = localizations.hoursLabel(hours);
     if (hours != 0 || result != null) {
       result = '${result ?? ''}$hourString';
     }
 
-    final int minutes = inSeconds ~/ Duration.secondsPerMinute;
+    final int minutes = inMinutes % Duration.minutesPerHour;
     final String minutesString = localizations.minutesLabel(minutes);
     if (minutes != 0 || result != null) {
       result = '${result ?? ''}$minutesString';

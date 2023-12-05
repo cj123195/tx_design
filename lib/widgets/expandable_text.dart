@@ -30,7 +30,7 @@ class TxExpandableText extends StatefulWidget {
     this.textDirection,
     this.locale,
     this.softWrap,
-    this.textScaleFactor,
+    this.textScaler,
     this.semanticsLabel,
     this.textWidthBasis,
     this.textHeightBehavior,
@@ -89,8 +89,8 @@ class TxExpandableText extends StatefulWidget {
   /// 例如，如果文本比例因子为 1.5，则文本将比指定的字体大小大 50%。
   ///
   /// 作为 textScaleFactor 提供给构造函数的值。 如果为 null，将使用从环境 [MediaQuery]
-  /// 获得的 [MediaQueryData.textScaleFactor]，如果范围内没有 [MediaQuery]，则为 1.0。
-  final double? textScaleFactor;
+  /// 获得的 [MediaQueryData.textScaler]，如果范围内没有 [MediaQuery]，则为 1.0。
+  final TextScaler? textScaler;
 
   /// 文本折叠后的行数
   ///
@@ -157,8 +157,8 @@ class _TxExpandableTextState extends State<TxExpandableText> {
         widget.textAlign ?? defaultTextStyle.textAlign ?? TextAlign.start;
     // 如果为 null，RichText 使用 Localizations.localeOf 获取默认值
     final bool softWrap = widget.softWrap ?? defaultTextStyle.softWrap;
-    final double textScaleFactor =
-        widget.textScaleFactor ?? MediaQuery.textScaleFactorOf(context);
+    final TextScaler textScaler =
+        widget.textScaler ?? MediaQuery.textScalerOf(context);
     final TextWidthBasis textWidthBasis =
         widget.textWidthBasis ?? defaultTextStyle.textWidthBasis;
     final TextHeightBehavior? textHeightBehavior = widget.textHeightBehavior ??
@@ -186,7 +186,7 @@ class _TxExpandableTextState extends State<TxExpandableText> {
           textHeightBehavior: textHeightBehavior,
           textAlign: textAlign,
           locale: widget.locale,
-          textScaleFactor: textScaleFactor,
+          textScaler: textScaler,
           textWidthBasis: textWidthBasis,
         )..layout(
             minWidth: 0,
@@ -278,7 +278,7 @@ class _TxExpandableTextState extends State<TxExpandableText> {
           softWrap: softWrap,
           overflow: TextOverflow.visible,
           maxLines: maxLines,
-          textScaleFactor: textScaleFactor,
+          textScaler: textScaler,
           strutStyle: widget.strutStyle,
           textWidthBasis: textWidthBasis,
           textHeightBehavior: textHeightBehavior,

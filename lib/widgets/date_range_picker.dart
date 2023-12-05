@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
@@ -11,7 +10,7 @@ const Duration _dialogSizeAnimationDuration = Duration(milliseconds: 200);
 const Size _inputPortraitDialogSize = Size(330.0, 400.0);
 
 /// 时间段选择
-Future<DateTimeRange?> showDateRangeDialog(
+Future<DateTimeRange?> showDateRangePickerDialog(
   BuildContext context, {
   DateTimeRange? initialDateRange,
   DateTime? firstDate,
@@ -234,7 +233,6 @@ class _TxDateRangePickerDialogState extends State<TxDateRangePickerDialog>
   Widget build(BuildContext context) {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final Orientation orientation = mediaQuery.orientation;
-    final double textScaleFactor = math.min(mediaQuery.textScaleFactor, 1.3);
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
     final TxLocalizations txLocalizations = TxLocalizations.of(context);
@@ -383,8 +381,7 @@ class _TxDateRangePickerDialogState extends State<TxDateRangePickerDialog>
       height: size.height,
       duration: _dialogSizeAnimationDuration,
       curve: Curves.easeIn,
-      child: MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaleFactor: textScaleFactor),
+      child: MediaQuery.withNoTextScaling(
         child: Builder(builder: (BuildContext context) {
           return content;
         }),

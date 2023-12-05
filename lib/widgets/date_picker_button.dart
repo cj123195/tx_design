@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../extensions/datetime_extension.dart';
 import 'date_picker_button_theme.dart';
 
-const String _kFormat = 'yyyy-M-d';
+const String _kFormat = 'M-d';
 const bool _kShowWeekday = false;
 
 /// 一个用于选择日期的按钮小部件
@@ -97,10 +97,8 @@ class _TxDatePickerButtonState extends State<TxDatePickerButton> {
     final TxDatePickerButtonThemeData buttonTheme =
         TxDatePickerButtonTheme.of(context);
 
-    String format = widget.format ?? buttonTheme.format ?? _kFormat;
-    if (_selectDate.isThisYear) {
-      format = format.substring(format.indexOf('M'));
-    }
+    final String format = widget.format ?? buttonTheme.format ?? _kFormat;
+
     final ButtonStyle buttonStyle = widget.buttonStyle ??
         buttonTheme.buttonStyle ??
         ElevatedButton.styleFrom(
