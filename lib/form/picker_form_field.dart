@@ -92,18 +92,19 @@ class PickerFormField<T, V> extends TxPickerTextFormField<T, V> {
           initialValue: initialData ??
               sources?.tryFind((e) =>
                   (valueMapper?.call(e) ?? labelMapper(e)) == initialValue),
-          onPickTap: (context, data) => showPickerBottomSheet<T, V>(
-            context,
-            labelMapper: labelMapper,
-            valueMapper: valueMapper,
-            sources: sources ?? [],
-            subtitleMapper: subtitleMapper,
-            pickerItemBuilder: pickerItemBuilder,
-            initialData: data,
-            enabledMapper: enabledMapper,
-            dataMapper: dataMapper,
-            inputEnabledMapper: inputEnabledMapper,
-          ),
+          onPickTap: onPickTap ??
+              (context, data) => showPickerBottomSheet<T, V>(
+                    context,
+                    labelMapper: labelMapper,
+                    valueMapper: valueMapper,
+                    sources: sources ?? [],
+                    subtitleMapper: subtitleMapper,
+                    pickerItemBuilder: pickerItemBuilder,
+                    initialData: data,
+                    enabledMapper: enabledMapper,
+                    dataMapper: dataMapper,
+                    inputEnabledMapper: inputEnabledMapper,
+                  ),
           actionsBuilder: (field) => actions,
         );
 }

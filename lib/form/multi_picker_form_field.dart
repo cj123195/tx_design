@@ -101,120 +101,120 @@ class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
             maxLength == TextField.noMaxLength ||
             maxLength > 0),
         super(
-            readonly: true,
-            labelMapper: (value) => value.map((e) => labelMapper(e)).join(''),
-            initialValue: initialData ??
-                sources.where((e) {
-                  final V value = (valueMapper?.call(e) ?? labelMapper(e)) as V;
-                  return initialValue?.contains(value) == true;
-                }).toSet(),
-            defaultValidator: (context, value) {
-              if (value == null) {
-                return required
-                    ? TxLocalizations.of(context).textFormFieldHint
-                    : null;
-              }
-              if (minPickNumber != null && value.length < minPickNumber) {
-                return TxLocalizations.of(context)
-                    .minimumSelectableQuantityLimitLabel(minPickNumber);
-              }
-              if (maxPickNumber != null && value.length > maxPickNumber) {
-                return TxLocalizations.of(context)
-                    .maximumSelectableQuantityLimitLabel(maxPickNumber);
-              }
+          readonly: true,
+          labelMapper: (value) => value.map((e) => labelMapper(e)).join(''),
+          initialValue: initialData ??
+              sources.where((e) {
+                final V value = (valueMapper?.call(e) ?? labelMapper(e)) as V;
+                return initialValue?.contains(value) == true;
+              }).toSet(),
+          defaultValidator: (context, value) {
+            if (value == null) {
+              return required
+                  ? TxLocalizations.of(context).textFormFieldHint
+                  : null;
+            }
+            if (minPickNumber != null && value.length < minPickNumber) {
+              return TxLocalizations.of(context)
+                  .minimumSelectableQuantityLimitLabel(minPickNumber);
+            }
+            if (maxPickNumber != null && value.length > maxPickNumber) {
+              return TxLocalizations.of(context)
+                  .maximumSelectableQuantityLimitLabel(maxPickNumber);
+            }
+            return null;
+          },
+          defaultDecorationBuilder: (field) {
+            return InputDecoration(
+              hintText: TxLocalizations.of(field.context).pickerFormFieldHint,
+            );
+          },
+          builder: (FormFieldState<Set<T>> field) {
+            if (field.value?.isNotEmpty != true) {
               return null;
-            },
-            defaultDecorationBuilder: (field) {
-              return InputDecoration(
-                hintText: TxLocalizations.of(field.context).pickerFormFieldHint,
-              );
-            },
-            builder: (FormFieldState<Set<T>> field) {
-              if (field.value?.isNotEmpty != true) {
-                return null;
-              }
+            }
 
-              void onChangedHandler(Set<T>? value) {
-                field.didChange(value);
-                if (onChanged != null) {
-                  onChanged(value);
-                }
+            void onChangedHandler(Set<T>? value) {
+              field.didChange(value);
+              if (onChanged != null) {
+                onChanged(value);
               }
+            }
 
-              final List<Widget> children = field.value!
-                  .map(
-                    (e) => _PickedRawChip(
-                      labelMapper(e),
-                      readonly
-                          ? null
-                          : () {
-                              final Set<T> list = {...field.value!};
-                              list.remove(e);
-                              onChangedHandler(list);
-                            },
-                    ),
-                  )
-                  .toList();
-              return Wrap(
-                alignment: WrapAlignment.start,
-                crossAxisAlignment: WrapCrossAlignment.start,
-                runSpacing: 4.0,
-                spacing: 4.0,
-                children: children,
-              );
-            },
-            actionsBuilder: (field) {
-              if (readonly) {
-                return actions;
+            final List<Widget> children = field.value!
+                .map(
+                  (e) => _PickedRawChip(
+                    labelMapper(e),
+                    readonly
+                        ? null
+                        : () {
+                            final Set<T> list = {...field.value!};
+                            list.remove(e);
+                            onChangedHandler(list);
+                          },
+                  ),
+                )
+                .toList();
+            return Wrap(
+              alignment: WrapAlignment.start,
+              crossAxisAlignment: WrapCrossAlignment.start,
+              runSpacing: 4.0,
+              spacing: 4.0,
+              children: children,
+            );
+          },
+          actionsBuilder: (field) {
+            if (readonly) {
+              return actions;
+            }
+            void onChangedHandler(Set<T>? value) {
+              field.didChange(value);
+              if (onChanged != null) {
+                onChanged(value);
               }
-              void onChangedHandler(Set<T>? value) {
-                field.didChange(value);
-                if (onChanged != null) {
-                  onChanged(value);
-                }
-              }
+            }
 
-              Future<void> onTap() async {
-                final FocusScopeNode currentFocus =
-                    FocusScope.of(field.context);
-                if (!currentFocus.hasPrimaryFocus &&
-                    currentFocus.focusedChild != null) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                }
-                final Set<T>? res = (await (onPickTap?.call(
-                            field.context, field.value?.toSet()) ??
-                        showMultiPickerBottomSheet<T, T>(
-                          field.context,
-                          title: labelText,
-                          labelMapper: labelMapper,
-                          sources: sources,
-                          subtitleMapper: subtitleMapper,
-                          valueMapper: (val) => val,
-                          pickerItemBuilder: pickerItemBuilder,
-                          initialValue: field.value?.toList(),
-                          max: maxPickNumber,
-                          editableMapper: inputEnabledMapper,
-                        )))
-                    ?.toSet();
-                if (res == null) {
-                  return;
-                }
-                if (res != field.value) {
-                  onChangedHandler(res);
-                }
+            Future<void> onTap() async {
+              final FocusScopeNode currentFocus = FocusScope.of(field.context);
+              if (!currentFocus.hasPrimaryFocus &&
+                  currentFocus.focusedChild != null) {
+                FocusManager.instance.primaryFocus?.unfocus();
               }
+              final Set<T>? res = (await (onPickTap?.call(
+                          field.context, field.value?.toSet()) ??
+                      showMultiPickerBottomSheet<T, T>(
+                        field.context,
+                        title: labelText,
+                        labelMapper: labelMapper,
+                        sources: sources,
+                        subtitleMapper: subtitleMapper,
+                        valueMapper: (val) => val,
+                        pickerItemBuilder: pickerItemBuilder,
+                        initialValue: field.value?.toList(),
+                        max: maxPickNumber,
+                        editableMapper: inputEnabledMapper,
+                      )))
+                  ?.toSet();
+              if (res == null) {
+                return;
+              }
+              if (res != field.value) {
+                onChangedHandler(res);
+              }
+            }
 
-              final Widget suffixIcon = IconButton(
-                onPressed: onTap,
-                icon: const Icon(Icons.add),
-                visualDensity: VisualDensity.compact,
-                padding: EdgeInsets.zero,
-                style: const ButtonStyle(
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              );
-              return [...?actions, suffixIcon];
-            });
+            final Widget suffixIcon = IconButton(
+              onPressed: onTap,
+              icon: const Icon(Icons.add),
+              visualDensity: VisualDensity.compact,
+              padding: EdgeInsets.zero,
+              style: const ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            );
+            return [...?actions, suffixIcon];
+          },
+        );
 }
 
 /// 已选项Chip
