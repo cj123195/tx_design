@@ -10,7 +10,7 @@ class FormItemContainer extends StatelessWidget {
   const FormItemContainer({
     required this.formField,
     super.key,
-    this.required = false,
+    bool? required,
     this.label,
     this.labelText,
     this.backgroundColor,
@@ -21,7 +21,7 @@ class FormItemContainer extends StatelessWidget {
     this.starStyle,
     this.horizontalGap,
     this.minLabelWidth,
-  });
+  }) : required = required == true;
 
   /// 表单项
   final Widget formField;

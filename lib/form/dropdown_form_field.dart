@@ -57,7 +57,7 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
   }) : super(
           builder: (field) {
             final FormFieldValidator<T>? effectiveValidator = validator ??
-                (required
+                (required == true
                     ? (value) => value == null
                         ? TxLocalizations.of(field.context).pickerFormFieldHint
                         : null

@@ -110,7 +110,7 @@ class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
               }).toSet(),
           defaultValidator: (context, value) {
             if (value == null) {
-              return required
+              return required == true
                   ? TxLocalizations.of(context).textFormFieldHint
                   : null;
             }

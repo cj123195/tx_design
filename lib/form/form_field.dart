@@ -14,11 +14,11 @@ class TxFormField<T> extends FormField<T> {
     super.onSaved,
     super.validator,
     super.initialValue,
-    super.enabled = true,
+    bool? enabled,
     super.autovalidateMode,
     super.restorationId,
     this.defaultValidator,
-  });
+  }) : super(enabled: enabled ?? true);
 
   final String? Function(BuildContext context, T? value)? defaultValidator;
 
@@ -36,7 +36,7 @@ class TxFormFieldState<T> extends FormFieldState<T> {
   String? get errorText => _defaultErrorText.value ?? super.errorText;
 
   @override
-  bool get hasError => _defaultErrorText.value != null && super.hasError;
+  bool get hasError => _defaultErrorText.value != null || super.hasError;
 
   @override
   void initState() {
@@ -84,7 +84,7 @@ class TxFormFieldItem<T> extends TxFormField<T> {
     super.autovalidateMode,
     super.restorationId,
     super.defaultValidator,
-    bool required = false,
+    bool? required,
     Widget? label,
     String? labelText,
     Color? backgroundColor,
@@ -121,8 +121,8 @@ class TxFormFieldItem<T> extends TxFormField<T> {
     BuildContext context,
     InputDecoration? decoration,
     InputDecoration defaultDecoration, [
-    IconMergeMode prefixIconMergeMode = IconMergeMode.appendStart,
-    IconMergeMode suffixIconMergeMode = IconMergeMode.appendStart,
+    IconMergeMode? prefixIconMergeMode,
+    IconMergeMode? suffixIconMergeMode,
   ]) {
     final ThemeData theme = Theme.of(context);
     final FormItemThemeData formItemTheme = FormItemTheme.of(context);
@@ -194,7 +194,7 @@ class TxPickerFormFieldItem<T, V> extends TxFormFieldItem<T> {
               child: builder(field),
             );
           },
-          defaultValidator: required
+          defaultValidator: required == true
               ? (context, value) => value == null
                   ? TxLocalizations.of(context).pickerFormFieldHint
                   : null
@@ -269,7 +269,7 @@ class TxMultiPickerFormFieldItem<T, V> extends TxFormFieldItem<Set<T>> {
           },
           defaultValidator: (context, value) {
             if (value == null) {
-              return required
+              return required == true
                   ? TxLocalizations.of(context).textFormFieldHint
                   : null;
             }
@@ -321,20 +321,20 @@ class TxTextFormFieldItem<T> extends TxFormFieldItem<T> {
     super.starStyle,
     super.horizontalGap,
     super.minLabelWidth,
-    IconMergeMode prefixIconMergeMode = IconMergeMode.appendStart,
-    IconMergeMode suffixIconMergeMode = IconMergeMode.appendStart,
+    IconMergeMode? prefixIconMergeMode,
+    IconMergeMode? suffixIconMergeMode,
     FocusNode? focusNode,
     InputDecoration? decoration = const InputDecoration(),
     TextInputType? keyboardType,
-    TextCapitalization textCapitalization = TextCapitalization.none,
+    TextCapitalization? textCapitalization,
     TextInputAction? textInputAction,
     TextStyle? style,
     StrutStyle? strutStyle,
     TextDirection? textDirection,
     TextAlign? textAlign,
     TextAlignVertical? textAlignVertical,
-    bool autofocus = false,
-    bool readonly = false,
+    bool? autofocus,
+    bool? readonly,
     int? maxLines,
     int? minLines,
     int? maxLength,
@@ -344,33 +344,32 @@ class TxTextFormFieldItem<T> extends TxFormFieldItem<T> {
     VoidCallback? onEditingComplete,
     List<TextInputFormatter>? inputFormatters,
     bool? showCursor,
-    String obscuringCharacter = '•',
-    bool obscureText = false,
-    bool autocorrect = true,
+    String? obscuringCharacter,
+    bool? obscureText,
+    bool? autocorrect,
     SmartDashesType? smartDashesType,
     SmartQuotesType? smartQuotesType,
-    bool enableSuggestions = true,
+    bool? enableSuggestions,
     MaxLengthEnforcement? maxLengthEnforcement,
-    bool expands = false,
+    bool? expands,
     TapRegionCallback? onTapOutside,
     ValueChanged<String>? onFieldSubmitted,
-    double cursorWidth = 2.0,
+    double? cursorWidth,
     double? cursorHeight,
     Radius? cursorRadius,
     Color? cursorColor,
     Brightness? keyboardAppearance,
-    EdgeInsets scrollPadding = const EdgeInsets.all(20.0),
+    EdgeInsets? scrollPadding,
     bool? enableInteractiveSelection,
     TextSelectionControls? selectionControls,
     InputCounterWidgetBuilder? buildCounter,
     ScrollPhysics? scrollPhysics,
     Iterable<String>? autofillHints,
     ScrollController? scrollController,
-    bool enableIMEPersonalizedLearning = true,
+    bool? enableIMEPersonalizedLearning,
     MouseCursor? mouseCursor,
-    EditableTextContextMenuBuilder? contextMenuBuilder =
-        _defaultContextMenuBuilder,
-  })  : assert((controller == null && readonly) || dataMapper != null),
+    EditableTextContextMenuBuilder? contextMenuBuilder,
+  })  : assert((controller == null && readonly == true) || dataMapper != null),
         super(
           builder: (FormFieldState<T> field) {
             assert(field is TxTextFormFieldItemState<T>);
@@ -393,7 +392,7 @@ class TxTextFormFieldItem<T> extends TxFormFieldItem<T> {
                   field as TxTextFormFieldItemState<T>);
             } else {
               Widget? suffixIcon;
-              if (!readonly && field.value != null) {
+              if (readonly != true && field.value != null) {
                 suffixIcon = IconButton(
                   onPressed: () => onChangedHandler(''),
                   icon: const Icon(Icons.cancel, size: 20.0),
@@ -433,20 +432,20 @@ class TxTextFormFieldItem<T> extends TxFormFieldItem<T> {
               textAlign: effectiveTextAlign,
               textAlignVertical: textAlignVertical,
               textDirection: textDirection,
-              textCapitalization: textCapitalization,
-              autofocus: autofocus,
-              readOnly: readonly,
+              textCapitalization: textCapitalization ?? TextCapitalization.none,
+              autofocus: autofocus ?? false,
+              readOnly: readonly ?? false,
               showCursor: showCursor,
-              obscuringCharacter: obscuringCharacter,
-              obscureText: obscureText,
-              autocorrect: autocorrect,
+              obscuringCharacter: obscuringCharacter ?? '•',
+              obscureText: obscureText ?? false,
+              autocorrect: autocorrect ?? true,
               smartDashesType: smartDashesType,
               smartQuotesType: smartQuotesType,
-              enableSuggestions: enableSuggestions,
+              enableSuggestions: enableSuggestions ?? true,
               maxLengthEnforcement: maxLengthEnforcement,
               maxLines: maxLines ?? (minLines == null ? 1 : null),
               minLines: minLines,
-              expands: expands,
+              expands: expands ?? false,
               maxLength: maxLength,
               onChanged: onChangedHandler,
               onTap: onTap,
@@ -455,22 +454,24 @@ class TxTextFormFieldItem<T> extends TxFormFieldItem<T> {
               onSubmitted: onFieldSubmitted,
               inputFormatters: inputFormatters,
               enabled: enabled,
-              cursorWidth: cursorWidth,
+              cursorWidth: cursorWidth ?? 2.0,
               cursorHeight: cursorHeight,
               cursorRadius: cursorRadius,
               cursorColor: cursorColor,
-              scrollPadding: scrollPadding,
+              scrollPadding: scrollPadding ?? const EdgeInsets.all(20.0),
               scrollPhysics: scrollPhysics,
               keyboardAppearance: keyboardAppearance,
-              enableInteractiveSelection:
-                  enableInteractiveSelection ?? (!obscureText || !readonly),
+              enableInteractiveSelection: enableInteractiveSelection ??
+                  (obscureText != true || readonly != true),
               selectionControls: selectionControls,
               buildCounter: buildCounter,
               autofillHints: autofillHints,
               scrollController: scrollController,
-              enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+              enableIMEPersonalizedLearning:
+                  enableIMEPersonalizedLearning ?? true,
               mouseCursor: mouseCursor,
-              contextMenuBuilder: contextMenuBuilder,
+              contextMenuBuilder:
+                  contextMenuBuilder ?? _defaultContextMenuBuilder,
             );
           },
         );
@@ -617,7 +618,7 @@ class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
     ValueMapper<T, V>? valueMapper,
     super.dataMapper,
     super.initialValue,
-    bool inputEnabled = false,
+    bool? inputEnabled,
     super.key,
     super.onSaved,
     super.validator,
@@ -649,7 +650,7 @@ class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
     super.textAlign,
     super.textAlignVertical,
     super.autofocus,
-    bool readonly = false,
+    bool? readonly,
     super.maxLines,
     super.minLines,
     super.maxLength,
@@ -683,10 +684,10 @@ class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
     super.mouseCursor,
     super.contextMenuBuilder,
     super.onTap,
-  })  : assert(!inputEnabled || dataMapper != null),
+  })  : assert(inputEnabled != true || dataMapper != null),
         super(
-          readonly: !inputEnabled,
-          onFieldTap: readonly
+          readonly: inputEnabled != true,
+          onFieldTap: readonly == true
               ? null
               : (field) async {
                   final FocusScopeNode currentFocus =
@@ -713,7 +714,7 @@ class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
             }
 
             Widget suffixIcon = const Icon(Icons.keyboard_arrow_right);
-            if (!readonly && field.value != null) {
+            if (readonly != true && field.value != null) {
               suffixIcon = Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -733,7 +734,7 @@ class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
               hintText: TxLocalizations.of(field.context).pickerFormFieldHint,
             );
           },
-          defaultValidator: required
+          defaultValidator: required == true
               ? (context, value) => value == null
                   ? TxLocalizations.of(context).pickerFormFieldHint
                   : null
@@ -750,8 +751,8 @@ enum IconMergeMode {
 extension InputDecorationExtension on InputDecoration {
   InputDecoration merge(
     InputDecoration? other, {
-    IconMergeMode prefixMergeMode = IconMergeMode.appendStart,
-    IconMergeMode suffixMergeMode = IconMergeMode.appendStart,
+    IconMergeMode? prefixMergeMode,
+    IconMergeMode? suffixMergeMode,
   }) {
     if (other == null) {
       return this;
@@ -822,7 +823,7 @@ extension InputDecorationExtension on InputDecoration {
     );
   }
 
-  Widget? _mergeIcon(Widget? icon, Widget? otherIcon, IconMergeMode mode) {
+  Widget? _mergeIcon(Widget? icon, Widget? otherIcon, IconMergeMode? mode) {
     if (mode == IconMergeMode.replace || icon == null) {
       return otherIcon;
     }

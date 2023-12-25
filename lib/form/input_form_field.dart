@@ -75,7 +75,7 @@ class InputFormField extends TxTextFormFieldItem<String> {
   }) : super(
           labelMapper: (String data) => data,
           dataMapper: (String? data) => data,
-          defaultValidator: required
+          defaultValidator: required == true
               ? (context, val) {
                   return val?.isNotEmpty == true
                       ? null

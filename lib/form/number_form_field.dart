@@ -82,7 +82,7 @@ class NumberFormField extends TxTextFormFieldItem<num> {
           dataMapper: (String? data) => data == null ? 0 : num.tryParse(data),
           defaultValidator: (context, value) {
             if (value == null) {
-              return required
+              return required == true
                   ? TxLocalizations.of(context).textFormFieldHint
                   : null;
             }

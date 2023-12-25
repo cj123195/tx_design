@@ -1,3 +1,10 @@
+# 0.2.5
+* Fix bug that function validate of TxFormFieldState always return tru.
+* Refactor some parameter type of form widgets.
+
+# 0.2.4
+* Fix the issue that onPickTap parameter of PickerFormField not working.
+
 # 0.2.3
 * Upgrade Flutter version to 3.16.0.
 * Add TxExpansionPanel widget.
