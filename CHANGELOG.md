@@ -1,3 +1,7 @@
+# 0.2.6
+* Add charts.
+* Add CircularLinearGradientIndicator.
+
 # 0.2.5
 * Fix bug that function validate of TxFormFieldState always return tru.
 * Refactor some parameter type of form widgets.

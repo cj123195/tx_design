@@ -1,8 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 const int _kIndeterminateLinearDuration = 1800;
 
+/// 线性渐变进度指示器
 class _LinearGradientProgressIndicatorPainter extends CustomPainter {
   const _LinearGradientProgressIndicatorPainter({
     required this.backgroundColor,
@@ -260,4 +263,147 @@ class _TxLinearGradientProgressIndicatorState
       },
     );
   }
+}
+
+/// 环形渐变进度指示器
+class TxGradientCircularProgressIndicator extends StatelessWidget {
+  const TxGradientCircularProgressIndicator({
+    this.radius,
+    this.colors,
+    super.key,
+    this.strokeWidth = 2.0,
+    this.stops,
+    this.strokeCapRound = false,
+    this.backgroundColor,
+    this.totalAngle = 2 * math.pi,
+    this.value,
+  });
+
+  ///粗细
+  final double strokeWidth;
+
+  /// 圆的半径
+  final double? radius;
+
+  ///两端是否为圆角
+  final bool strokeCapRound;
+
+  /// 当前进度，取值范围 [0.0-1.0]
+  final double? value;
+
+  /// 进度条背景色
+  final Color? backgroundColor;
+
+  /// 进度条的总弧度，2*PI为整圆，小于2*PI则不是整圆
+  final double totalAngle;
+
+  /// 渐变色数组
+  final List<Color>? colors;
+
+  /// 渐变色的终止点，对应colors属性
+  final List<double>? stops;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    double angle = -math.pi;
+    // 如果两端为圆角，则需要对起始位置进行调整，否则圆角部分会偏离起始位置
+    // 下面调整的角度的计算公式是通过数学几何知识得出，读者有兴趣可以研究一下为什么是这样
+    if (strokeCapRound && radius != null) {
+      final double offset =
+          math.asin(strokeWidth / (radius! * 2 - strokeWidth));
+      angle = -math.pi / 2.0 - offset;
+    }
+    List<Color>? colors = this.colors;
+    if (colors == null) {
+      final Color color = colorScheme.primary;
+      colors = [color, color.withOpacity(0.3)];
+    }
+    return Transform.rotate(
+      angle: angle,
+      child: CustomPaint(
+        size: radius == null ? Size.zero : Size.fromRadius(radius!),
+        painter: _GradientCircularProgressPainter(
+          strokeWidth: strokeWidth,
+          strokeCapRound: strokeCapRound,
+          backgroundColor:
+              backgroundColor ?? colorScheme.outlineVariant.withOpacity(0.3),
+          value: value,
+          total: totalAngle,
+          radius: radius,
+          colors: colors,
+          stops: stops,
+        ),
+      ),
+    );
+  }
+}
+
+/// 实现画笔
+class _GradientCircularProgressPainter extends CustomPainter {
+  _GradientCircularProgressPainter({
+    required this.colors,
+    this.radius,
+    this.stops,
+    this.strokeWidth = 2.0,
+    this.strokeCapRound = false,
+    this.backgroundColor = const Color(0xFFEEEEEE),
+    this.total = 2 * math.pi,
+    this.value,
+  });
+
+  final double strokeWidth;
+  final bool strokeCapRound;
+  final double? value;
+  final Color backgroundColor;
+  final List<Color> colors;
+  final double total;
+  final double? radius;
+  final List<double>? stops;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (radius != null) {
+      size = Size.fromRadius(radius!);
+    }
+    final double offset = strokeWidth / 2.0;
+    double value = this.value ?? .0;
+    value = value.clamp(.0, 1.0) * total;
+    double start = .0;
+
+    if (strokeCapRound) {
+      start = math.asin(strokeWidth / (size.width - strokeWidth));
+    }
+
+    final Rect rect = Offset(offset, offset) &
+        Size(size.width - strokeWidth, size.height - strokeWidth);
+
+    final Paint paint = Paint()
+      ..strokeCap = strokeCapRound ? StrokeCap.round : StrokeCap.butt
+      ..style = PaintingStyle.stroke
+      ..isAntiAlias = true
+      ..strokeWidth = strokeWidth;
+
+    // 先画背景
+    if (backgroundColor != Colors.transparent) {
+      paint.color = backgroundColor;
+      canvas.drawArc(rect, start, total, false, paint);
+    }
+
+    // 再画前景，应用渐变
+    if (value > 0) {
+      paint.shader = SweepGradient(
+        endAngle: value,
+        colors: colors,
+        stops: stops,
+      ).createShader(rect);
+
+      canvas.drawArc(rect, start, value, false, paint);
+    }
+  }
+
+  //简单返回true，实践中应该根据画笔属性是否变化来确定返回true还是false
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
