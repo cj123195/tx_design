@@ -41,7 +41,8 @@ class PieChartData extends BaseChartData with EquatableMixin {
               (sectionsSpace == 0 &&
                   (sections == null ||
                       sections.isEmpty ||
-                      sections.every((s) => s.radius == sections[0].radius))),
+                      sections.every(
+                          (s) => s.radiusRatio == sections[0].radiusRatio))),
           'When the border is not null, sectionsSpace must be 0 and the radius '
           'of all sections must be equal.',
         ),
@@ -158,7 +159,7 @@ class PieChartSectionData {
   /// this is depends on sum of all sections, each section should
   /// occupy ([value] / sumValues) * 360 degrees.
   ///
-  /// It draws this section with filled [color], and [radius].
+  /// It draws this section with filled [color], and [radiusRatio].
   ///
   /// If [showTitle] is true, it draws a title at the middle of section,
   /// you can set the text using [title], and set the style using [titleStyle],
@@ -176,7 +177,7 @@ class PieChartSectionData {
     double? value,
     this.color,
     this.gradient,
-    this.radius,
+    this.radiusRatio,
     bool? showTitle,
     this.titleStyle,
     String? title,
@@ -185,7 +186,8 @@ class PieChartSectionData {
     double? titlePositionPercentageOffset,
     double? badgePositionPercentageOffset,
     this.borderRadius,
-  })  : value = value ?? 0,
+  })  : assert(radiusRatio == null || (radiusRatio >= 0 && radiusRatio <= 1)),
+        value = value ?? 0,
         showTitle = showTitle ?? true,
         title = title ?? (value == null ? '' : value.toString()),
         borderSide = borderSide ?? const BorderSide(width: 0),
@@ -208,7 +210,7 @@ class PieChartSectionData {
   final Gradient? gradient;
 
   /// Defines the radius of section.
-  final double? radius;
+  final double? radiusRatio;
 
   /// Defines show or hide the title of section.
   final bool showTitle;
@@ -252,7 +254,7 @@ class PieChartSectionData {
     double? value,
     Color? color,
     Gradient? gradient,
-    double? radius,
+    double? radiusRatio,
     bool? showTitle,
     TextStyle? titleStyle,
     String? title,
@@ -266,7 +268,7 @@ class PieChartSectionData {
       value: value ?? this.value,
       color: color ?? this.color,
       gradient: gradient ?? this.gradient,
-      radius: radius ?? this.radius,
+      radiusRatio: radiusRatio ?? this.radiusRatio,
       showTitle: showTitle ?? this.showTitle,
       titleStyle: titleStyle ?? this.titleStyle,
       title: title ?? this.title,
@@ -290,7 +292,7 @@ class PieChartSectionData {
       value: lerpDouble(a.value, b.value, t),
       color: Color.lerp(a.color, b.color, t),
       gradient: Gradient.lerp(a.gradient, b.gradient, t),
-      radius: lerpDouble(a.radius, b.radius, t),
+      radiusRatio: lerpDouble(a.radiusRatio, b.radiusRatio, t),
       showTitle: b.showTitle,
       titleStyle: TextStyle.lerp(a.titleStyle, b.titleStyle, t),
       title: b.title,
