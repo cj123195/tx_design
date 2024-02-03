@@ -107,16 +107,15 @@ class PieChartPainter extends BaseChartPainter<PieChartData> {
     PieChartData data,
     PieChartSectionData section,
   ) {
-    if (section.radius != null) {
-      return section.radius!;
-    }
+    final double radiusRatio = section.radiusRatio ?? 1;
     double radius = math.min(viewSize.width, viewSize.height) / 2;
     if (data.sectionsBorder != null) {
       radius = radius - data.sectionsBorder!.strokeOffset;
     }
-    return radius -
-        data.centerSpaceRadius -
-        section.borderSide.strokeOffset * 2;
+    return (radius -
+            data.centerSpaceRadius -
+            section.borderSide.strokeOffset * 2) *
+        radiusRatio;
   }
 
   @visibleForTesting

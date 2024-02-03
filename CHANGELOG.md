@@ -1,3 +1,6 @@
+# 0.2.7
+* Modify the radius parameter of PieChartSectionData to radiusRatio.
+
 # 0.2.6
 * Add charts.
 * Add CircularLinearGradientIndicator.
