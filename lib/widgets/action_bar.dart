@@ -91,7 +91,8 @@ class TxActionBar extends StatelessWidget {
         _DefaultIconButtonStyle(context, effectiveIconTheme?.size);
     final TextStyle effectiveLeadingTextStyle = leadingTextStyle ??
         actionTheme.leadingTextStyle ??
-        theme.textTheme.bodySmall!;
+        theme.textTheme.bodySmall!
+            .copyWith(fontSize: theme.textTheme.labelSmall!.fontSize);
     final double effectiveActionGap = actionGap ?? actionTheme.actionGap ?? 8.0;
     final double effectiveLeadingGap =
         leadingGap ?? actionTheme.leadingGap ?? 12.0;
@@ -149,7 +150,9 @@ class TxActionBar extends StatelessWidget {
     }
 
     return OutlinedButtonTheme(
-      data: OutlinedButtonThemeData(style: effectiveButtonStyle),
+      data: OutlinedButtonThemeData(
+          style:
+              effectiveButtonStyle.merge(_DefaultOutlinedButtonStyle(context))),
       child: ElevatedButtonTheme(
         data: ElevatedButtonThemeData(style: effectiveButtonStyle),
         child: FilledButtonTheme(
@@ -178,29 +181,52 @@ class _DefaultButtonStyle extends ButtonStyle {
   final BuildContext context;
 
   @override
+  MaterialStateProperty<OutlinedBorder?>? get shape =>
+      Theme.of(context).outlinedButtonTheme.style?.shape;
+
+  @override
   MaterialStateProperty<TextStyle?> get textStyle =>
       MaterialStatePropertyAll<TextStyle?>(
-          Theme.of(context).textTheme.labelMedium);
+          Theme.of(context).textTheme.labelSmall);
 
   @override
   MaterialStateProperty<EdgeInsetsGeometry>? get padding =>
       MaterialStatePropertyAll<EdgeInsetsGeometry>(
           ButtonStyleButton.scaledPadding(
-        const EdgeInsets.symmetric(horizontal: 16),
-        const EdgeInsets.symmetric(horizontal: 8),
-        const EdgeInsets.symmetric(horizontal: 4),
+        const EdgeInsets.symmetric(horizontal: 12.0),
+        const EdgeInsets.symmetric(horizontal: 4.0),
+        const EdgeInsets.symmetric(horizontal: 2.0),
         1,
       ));
 
   @override
   MaterialStateProperty<Size>? get minimumSize =>
-      const MaterialStatePropertyAll<Size>(Size(40.0, 36.0));
+      const MaterialStatePropertyAll<Size>(Size(40.0, 32.0));
 
   @override
   VisualDensity? get visualDensity => VisualDensity.compact;
 
   @override
   MaterialTapTargetSize? get tapTargetSize => MaterialTapTargetSize.shrinkWrap;
+}
+
+class _DefaultOutlinedButtonStyle extends ButtonStyle {
+  _DefaultOutlinedButtonStyle(BuildContext context)
+      : colorScheme = Theme.of(context).colorScheme;
+
+  final ColorScheme colorScheme;
+
+  @override
+  MaterialStateProperty<BorderSide>? get side =>
+      MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+        if (states.contains(MaterialState.disabled)) {
+          return BorderSide(color: colorScheme.onSurface.withOpacity(0.12));
+        }
+        if (states.contains(MaterialState.focused)) {
+          return BorderSide(color: colorScheme.primary);
+        }
+        return BorderSide(color: colorScheme.primary);
+      });
 }
 
 class _DefaultIconButtonStyle extends ButtonStyle {
