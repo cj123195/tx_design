@@ -21,6 +21,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
     this.columnSpacing,
     this.minLabelWidth,
     this.dataMaxLines,
+    this.contentTextAlign,
   });
 
   final Decoration? decoration;
@@ -34,6 +35,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
   final double? columnSpacing;
   final double? minLabelWidth;
   final int? dataMaxLines;
+  final TextAlign? contentTextAlign;
 
   @override
   ThemeExtension<TxDataGridThemeData> copyWith({
@@ -48,6 +50,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
     double? columnSpacing,
     double? minLabelWidth,
     int? dataMaxLines,
+    TextAlign? contentTextAlign,
   }) {
     return TxDataGridThemeData(
       decoration: decoration ?? this.decoration,
@@ -61,6 +64,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
       columnSpacing: columnSpacing ?? this.columnSpacing,
       minLabelWidth: minLabelWidth ?? this.minLabelWidth,
       dataMaxLines: dataMaxLines ?? this.dataMaxLines,
+      contentTextAlign: contentTextAlign ?? this.contentTextAlign,
     );
   }
 
@@ -89,6 +93,7 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
       columnSpacing: lerpDouble(columnSpacing, other.columnSpacing, t),
       minLabelWidth: lerpDouble(minLabelWidth, minLabelWidth, t),
       dataMaxLines: t < 0.5 ? dataMaxLines : other.dataMaxLines,
+      contentTextAlign: t < 0.5 ? contentTextAlign : other.contentTextAlign,
     );
   }
 }

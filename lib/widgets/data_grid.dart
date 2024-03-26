@@ -34,6 +34,7 @@ class TxDataGrid extends StatelessWidget {
     double? minLabelWidth,
     Color? labelTextColor,
     int? dataMaxLines,
+    TextAlign? contentTextAlign,
     super.key,
     this.decoration,
     this.padding,
@@ -53,6 +54,7 @@ class TxDataGrid extends StatelessWidget {
           labelTextColor,
           dataMaxLines,
           dataRowDecoration,
+          contentTextAlign,
         );
 
   /// 栅格的背景和边框装饰
@@ -112,6 +114,7 @@ class TxDataGrid extends StatelessWidget {
     Color? labelTextColor,
     int? dataMaxLines,
     Decoration? dataRowDecoration,
+    TextAlign? contentTextAlign,
   ) {
     final List<TxDataCell> cells = List.generate(
       data.length,
@@ -124,6 +127,7 @@ class TxDataGrid extends StatelessWidget {
           contentTextStyle: dataTextStyle,
           minLabelWidth: minLabelWidth,
           dataMaxLines: dataMaxLines,
+          contentTextAlign: contentTextAlign,
         );
       },
     );
@@ -214,6 +218,60 @@ class TxDataRow {
   /// [cells] 参数不得为空。
   const TxDataRow({required this.cells, this.decoration});
 
+  static List<Widget> fromDatasource({
+    required Map<String, dynamic> data,
+    Map<int, Widget>? slots,
+    int columnNumber = 1,
+    TextStyle? dataTextStyle,
+    TextStyle? dataLabelTextStyle,
+    double? minLabelWidth,
+    Color? labelTextColor,
+    int? dataMaxLines,
+    Decoration? dataRowDecoration,
+    TextAlign? contentTextAlign,
+    EdgeInsetsGeometry? padding = const EdgeInsets.symmetric(vertical: 4.0),
+  }) {
+    final List<Widget> cells = List.generate(
+      data.length,
+      (index) {
+        final String key = data.keys.toList()[index];
+        return Expanded(
+            child: TxRichDataCell(
+          labelText: key,
+          contentText: '${data[key] ?? ''}',
+          labelTextStyle: dataLabelTextStyle,
+          contentTextStyle: dataTextStyle,
+          minLabelWidth: minLabelWidth,
+          dataMaxLines: dataMaxLines,
+          contentTextAlign: contentTextAlign,
+        ));
+      },
+    );
+    if (slots?.isNotEmpty == true) {
+      for (int i = 0; i < slots!.length; i++) {
+        final int index = slots.keys.toList()[i];
+        assert(
+          index >= 0 && index <= cells.length,
+          '插入位置需大于等于0且小于cell的长度',
+        );
+        cells.insert(index, slots[index]!);
+      }
+    }
+
+    return [
+      for (int i = 0; i < cells.length; i += columnNumber)
+        Container(
+          padding: padding,
+          decoration: dataRowDecoration,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: cells.sublist(i, i + columnNumber),
+          ),
+        ),
+    ];
+  }
+
   /// 此行的数据。
   final List<TxDataCell> cells;
 
@@ -259,11 +317,12 @@ class TxDataCell {
     Color? labelTextColor,
     TextStyle? labelTextStyle,
     TextStyle? contentTextStyle,
+    TextAlign? contentTextAlign,
     bool? numeric,
     int? dataMaxLines,
     CrossAxisAlignment? alignment,
   })  : placeholder = false,
-        child = _RichCell(
+        child = TxRichDataCell(
           label: label,
           labelText: labelText,
           content: content,
@@ -275,6 +334,7 @@ class TxDataCell {
           numeric: numeric,
           dataMaxLines: dataMaxLines,
           alignment: alignment,
+          contentTextAlign: contentTextAlign,
         );
 
   /// 没有内容且宽度和高度为零的单元格。
@@ -295,8 +355,9 @@ class TxDataCell {
   final GestureTapCallback? onTap;
 }
 
-class _RichCell extends StatelessWidget {
-  const _RichCell({
+class TxRichDataCell extends StatelessWidget {
+  const TxRichDataCell({
+    super.key,
     this.label,
     this.labelText,
     this.content,
@@ -308,6 +369,7 @@ class _RichCell extends StatelessWidget {
     bool? numeric,
     this.dataMaxLines,
     this.alignment,
+    this.contentTextAlign,
   })  : assert(label != null || labelText != null),
         numeric =
             numeric ?? ((content == null && contentText is num) ? true : false);
@@ -323,6 +385,7 @@ class _RichCell extends StatelessWidget {
   final bool numeric;
   final int? dataMaxLines;
   final CrossAxisAlignment? alignment;
+  final TextAlign? contentTextAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -339,6 +402,8 @@ class _RichCell extends StatelessWidget {
         theme.textTheme.bodyMedium!;
     final CrossAxisAlignment effectiveAlignment = alignment ??
         (numeric ? CrossAxisAlignment.center : CrossAxisAlignment.start);
+    final TextAlign? effectiveContentTextAlign =
+        contentTextAlign ?? dataGridTheme.contentTextAlign;
 
     Widget effectiveLabel = DefaultTextStyle(
       style: effectiveLabelStyle.copyWith(color: effectiveLabelColor),
@@ -355,6 +420,7 @@ class _RichCell extends StatelessWidget {
       style: effectiveContentStyle,
       maxLines: dataMaxLines ?? dataGridTheme.dataMaxLines ?? _dataMaxLines,
       overflow: TextOverflow.ellipsis,
+      textAlign: effectiveContentTextAlign,
       child: content ?? Text('${contentText ?? ''}'),
     );
 
