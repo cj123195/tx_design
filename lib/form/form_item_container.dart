@@ -163,7 +163,7 @@ class FormItemContainer extends StatelessWidget {
         formItemTheme.starStyle ??
         textTheme.titleMedium!.copyWith(color: theme.colorScheme.error);
     final TextStyle effectiveLabelStyle =
-        labelStyle ?? formItemTheme.labelStyle ?? textTheme.titleMedium!;
+        labelStyle ?? formItemTheme.labelStyle ?? textTheme.labelLarge!;
     final Color? effectiveBackgroundColor =
         backgroundColor ?? formItemTheme.backgroundColor;
     final EdgeInsetsGeometry? effectivePadding =
