@@ -12,7 +12,6 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
   const TxPanelThemeData({
     this.dense,
     this.shape,
-    this.style,
     this.selectedColor,
     this.iconColor,
     this.textColor,
@@ -26,32 +25,93 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
     this.enableFeedback,
     this.mouseCursor,
     this.visualDensity,
-    this.leadingControlAffinity,
+    this.contentTextStyle,
+    this.titleTextStyle,
+    this.subtitleTextStyle,
+    this.leadingAndTrailingTextStyle,
+    this.titleAlignment,
+    this.focusColor,
+    this.splashColor,
+    this.hoverColor,
+    this.highlightColor,
   });
 
+  /// 覆盖 [TxPanel.dense] 的默认值。
   final bool? dense;
+
+  /// 覆盖 [TxPanel.shape] 的默认值。
   final ShapeBorder? shape;
-  final PanelStyle? style;
+
+  /// 覆盖 [TxPanel.selectedColor] 的默认值。
   final Color? selectedColor;
+
+  /// 覆盖 [TxPanel.iconColor] 的默认值。
   final Color? iconColor;
+
+  /// 覆盖 [TxPanel.textColor] 的默认值。
   final Color? textColor;
+
+  /// 覆盖 [TxPanel.padding] 的默认值。
   final EdgeInsetsGeometry? padding;
+
+  /// 覆盖 [TxPanel.margin] 的默认值。
   final EdgeInsetsGeometry? margin;
+
+  /// 覆盖 [TxPanel.panelColor] 的默认值。
   final Color? panelColor;
+
+  /// 覆盖 [TxPanel.selectedPanelColor] 的默认值。
   final Color? selectedPanelColor;
+
+  /// 覆盖 [TxPanel.horizontalTitleGap] 的默认值。
   final double? horizontalTitleGap;
+
+  /// 覆盖 [TxPanel.verticalGap] 的默认值。
   final double? verticalGap;
+
+  /// 覆盖 [TxPanel.minLeadingWidth] 的默认值。
   final double? minLeadingWidth;
+
+  /// 覆盖 [TxPanel.enableFeedback] 的默认值。
   final bool? enableFeedback;
+
+  /// 覆盖 [TxPanel.mouseCursor] 的默认值。
   final MaterialStateProperty<MouseCursor?>? mouseCursor;
+
+  /// 覆盖 [TxPanel.visualDensity] 的默认值。
   final VisualDensity? visualDensity;
-  final LeadingControlAffinity? leadingControlAffinity;
+
+  /// 重写 [TxPanel.titleTextStyle] 的默认值。
+  final TextStyle? titleTextStyle;
+
+  /// 重写 [TxPanel.subtitleTextStyle] 的默认值。
+  final TextStyle? subtitleTextStyle;
+
+  /// 覆盖 [TxPanel.contentTextStyle] 的默认值。
+  final TextStyle? contentTextStyle;
+
+  /// 覆盖 [TxPanel.leadingAndTrailingTextStyle] 的默认值。
+  final TextStyle? leadingAndTrailingTextStyle;
+
+  /// 如果指定，则覆盖 [TxPanel.titleAlignment] 的默认值。
+  final ListTileTitleAlignment? titleAlignment;
+
+  /// 覆盖 [TxPanel.focusColor] 的默认值。
+  final Color? focusColor;
+
+  /// 覆盖 [TxPanel.splashColor] 的默认值。
+  final Color? splashColor;
+
+  /// 覆盖 [TxPanel.hoverColor] 的默认值。
+  final Color? hoverColor;
+
+  /// 覆盖 [TxPanel.highlightColor] 的默认值。
+  final Color? highlightColor;
 
   @override
   ThemeExtension<TxPanelThemeData> copyWith({
     bool? dense,
     ShapeBorder? shape,
-    PanelStyle? style,
     Color? selectedColor,
     Color? iconColor,
     Color? textColor,
@@ -65,12 +125,19 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
     bool? enableFeedback,
     MaterialStateProperty<MouseCursor?>? mouseCursor,
     VisualDensity? visualDensity,
-    LeadingControlAffinity? leadingControlAffinity,
+    TextStyle? titleTextStyle,
+    TextStyle? subtitleTextStyle,
+    TextStyle? leadingAndTrailingTextStyle,
+    TextStyle? contentTextStyle,
+    ListTileTitleAlignment? titleAlignment,
+    Color? focusColor,
+    Color? splashColor,
+    Color? hoverColor,
+    Color? highlightColor,
   }) {
     return TxPanelThemeData(
       dense: dense ?? this.dense,
       shape: shape ?? this.shape,
-      style: style ?? this.style,
       selectedColor: selectedColor ?? this.selectedColor,
       iconColor: iconColor ?? this.iconColor,
       textColor: textColor ?? this.textColor,
@@ -84,8 +151,16 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
       enableFeedback: enableFeedback ?? this.enableFeedback,
       mouseCursor: mouseCursor ?? this.mouseCursor,
       visualDensity: visualDensity ?? this.visualDensity,
-      leadingControlAffinity:
-          leadingControlAffinity ?? this.leadingControlAffinity,
+      titleTextStyle: titleTextStyle ?? this.titleTextStyle,
+      subtitleTextStyle: subtitleTextStyle ?? this.subtitleTextStyle,
+      leadingAndTrailingTextStyle:
+          leadingAndTrailingTextStyle ?? this.leadingAndTrailingTextStyle,
+      contentTextStyle: contentTextStyle ?? this.contentTextStyle,
+      titleAlignment: titleAlignment ?? this.titleAlignment,
+      focusColor: focusColor ?? this.focusColor,
+      splashColor: splashColor ?? this.splashColor,
+      hoverColor: hoverColor ?? this.hoverColor,
+      highlightColor: highlightColor ?? this.highlightColor,
     );
   }
 
@@ -99,7 +174,6 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
     return TxPanelThemeData(
       dense: t < 0.5 ? dense : other.dense,
       shape: ShapeBorder.lerp(shape, other.shape, t),
-      style: t < 0.5 ? style : other.style,
       selectedColor: Color.lerp(selectedColor, other.selectedColor, t),
       iconColor: Color.lerp(iconColor, other.iconColor, t),
       textColor: Color.lerp(textColor, other.textColor, t),
@@ -115,8 +189,18 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
       enableFeedback: t < 0.5 ? enableFeedback : other.enableFeedback,
       mouseCursor: t < 0.5 ? mouseCursor : other.mouseCursor,
       visualDensity: t < 0.5 ? visualDensity : other.visualDensity,
-      leadingControlAffinity:
-          t < 0.5 ? leadingControlAffinity : other.leadingControlAffinity,
+      contentTextStyle:
+          TextStyle.lerp(contentTextStyle, other.contentTextStyle, t),
+      titleTextStyle: TextStyle.lerp(titleTextStyle, other.titleTextStyle, t),
+      subtitleTextStyle:
+          TextStyle.lerp(subtitleTextStyle, other.subtitleTextStyle, t),
+      leadingAndTrailingTextStyle: TextStyle.lerp(
+          leadingAndTrailingTextStyle, other.leadingAndTrailingTextStyle, t),
+      titleAlignment: t < 0.5 ? titleAlignment : other.titleAlignment,
+      focusColor: Color.lerp(focusColor, other.focusColor, t),
+      splashColor: Color.lerp(splashColor, other.splashColor, t),
+      hoverColor: Color.lerp(hoverColor, other.hoverColor, t),
+      highlightColor: Color.lerp(highlightColor, other.highlightColor, t),
     );
   }
 }

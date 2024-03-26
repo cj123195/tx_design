@@ -5,26 +5,6 @@ import 'package:flutter/rendering.dart';
 
 import 'panel_theme.dart';
 
-/// 面板样式
-enum PanelStyle {
-  /// 列表样式
-  list,
-
-  /// 卡片样式
-  card,
-}
-
-/// [TxPanel.leading]在面板布局中所要放置的位置
-enum LeadingControlAffinity {
-  /// [TxPanel.leading]会被放置到[TxPanel.title]之前
-  /// 此时[TxPanel.footer]与[TxPanel.content]将会与[TxPanel.leading]对齐
-  header,
-
-  /// [TxPanel.leading]会被放置整个面板的最前边
-  /// 此时[TxPanel.footer]与[TxPanel.content]将会与[TxPanel.title]对其
-  panel,
-}
-
 /// 通用面板组件
 class TxPanel extends StatelessWidget {
   const TxPanel({
@@ -40,7 +20,6 @@ class TxPanel extends StatelessWidget {
     this.margin,
     this.dense = false,
     this.panelColor,
-    this.leadingControlAffinity,
     this.verticalGap,
     this.horizontalTitleGap,
     this.enabled = true,
@@ -53,13 +32,20 @@ class TxPanel extends StatelessWidget {
     this.onLongPress,
     this.mouseCursor,
     this.focusColor,
+    this.splashColor,
     this.hoverColor,
     this.focusNode,
     this.autofocus = false,
     this.selectedPanelColor,
+    this.onFocusChange,
     this.enableFeedback,
     this.minLeadingWidth,
-    this.style,
+    this.titleTextStyle,
+    this.subtitleTextStyle,
+    this.contentTextStyle,
+    this.leadingAndTrailingTextStyle,
+    this.titleAlignment,
+    this.highlightColor,
   });
 
   /// 在标题前显示的小部件。
@@ -138,6 +124,36 @@ class TxPanel extends StatelessWidget {
   /// 如果此属性为空，则使用[ColorScheme.onSurface]。
   final Color? textColor;
 
+  /// TxPanel 的 [title] 的文本样式。
+  ///
+  /// 如果此属性为 null，则使用 [TxPanelThemeData.titleTextStyle]。如果这也为 null
+  /// 且 [ThemeData.useMaterial3] 为 true，则将使用 [TextTheme.bodyLarge] 和
+  /// [ColorScheme.onSurface]。否则，如果 ListTile 样式为 [ListTileStyle.list]，
+  /// 则将使用 [TextTheme.titleMedium]，如果 ListTile 样式为 [ListTileStyle.drawer]，
+  /// 则将使用 [TextTheme.bodyLarge]。
+  final TextStyle? titleTextStyle;
+
+  /// TxPanel 的 [subtitle] 的文本样式。
+  ///
+  /// 如果此属性为 null，则使用 [TxPanelThemeData.subtitleTextStyle]。如果这也是 null
+  /// 并且 [ThemeData.useMaterial3] 为 true，则将使用带有 [ColorScheme.onSurfaceVariant]
+  /// 的 [TextTheme.bodyMedium]，否则将使用带有 [TextTheme.bodySmall] 颜色的
+  /// [TextTheme.bodyMedium]。
+  final TextStyle? subtitleTextStyle;
+
+  /// TxPanel 的 [content] 的文本样式。
+  ///
+  /// 如果此属性为 null，则使用 [TxPanelThemeData.contentTextStyle]。如果这也是 null
+  /// 将使用带有 [TextTheme.bodyMedium]。
+  final TextStyle? contentTextStyle;
+
+  /// TxPanel 的 [leading] 和 [trailing] 的文本样式。
+  ///
+  /// 如果此属性为 null，则使用 [TxPanelThemeData.leadingAndTrailingTextStyle]。
+  /// 如果这也是 null 并且 [ThemeData.useMaterial3] 为 true，则将使用 [TextTheme.labelSmall]
+  /// 和 [ColorScheme.onSurfaceVariant]，否则将使用 [TextTheme.bodyMedium]。
+  final TextStyle? leadingAndTrailingTextStyle;
+
   /// 面板的内边距
   ///
   /// 插入一个 [TxPanel] 的内部：它的 [leading]、[title]、[subtitle]、[trailing]、
@@ -161,6 +177,9 @@ class TxPanel extends StatelessWidget {
   ///
   /// 如果 [enabled] 为 false，则无效。
   final GestureLongPressCallback? onLongPress;
+
+  /// {@macro flutter.material.inkwell.onFocusChange}
+  final ValueChanged<bool>? onFocusChange;
 
   /// 鼠标指针进入或悬停小部件时的光标。
   ///
@@ -186,8 +205,14 @@ class TxPanel extends StatelessWidget {
   /// 面板 的 [Material] 具有输入焦点时的颜色。
   final Color? focusColor;
 
+  /// 面板的 [Material] 的飞溅颜色。
+  final Color? splashColor;
+
   /// 当指针悬停在面板上时，面板 [Material] 的颜色。
   final Color? hoverColor;
+
+  /// 按下时面板的高亮颜色。
+  final Color? highlightColor;
 
   /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode;
@@ -240,24 +265,15 @@ class TxPanel extends StatelessWidget {
   ///
   /// 面板外部与其他小部件间隔的区域。
   ///
-  /// 该属性为空时，该值取决于[style]，
-  /// [PanelStyle.list] 使用“EdgeInsets.symmetric(horizontal: 4.0)”。
-  /// [PanelStyle.card] 使用“EdgeInsets.symmetric(horizontal: 12.0)”。
+  /// 默认值为 “EdgeInsets.symmetric(horizontal: 4.0)”。
   final EdgeInsetsGeometry? margin;
 
-  /// [leading]布局方式。
+  /// 定义 [TxPanel.leading] 和 [TxPanel.trailing] 相对于 [TxPanel] 的标题
+  /// （[TxPanel.title] 和 [TxPanel.subtitle]）的垂直对齐方式。
   ///
-  /// [LeadingControlAffinity.header]：展示在[title]之前，此时[content]与[footer]
-  /// 将会与[leading]对齐。
-  /// [LeadingControlAffinity.panel]： 展示在[TxPanel]最左侧，此时[content]与[footer]
-  /// 将会与[title]对齐。
-  final LeadingControlAffinity? leadingControlAffinity;
-
-  /// 面板样式
-  ///
-  /// [PanelStyle.list] 列表样式，该样式会有更小的[margin]。
-  /// [PanelStyle.card] 卡片样式，该样式会表现的更像[Card]。
-  final PanelStyle? style;
+  /// 如果此属性为 null，则使用 [ListTileThemeData.titleAlignment]。如果这也为 null，
+  /// 则使用 [ListTileTitleAlignment.threeLine]。
+  final ListTileTitleAlignment? titleAlignment;
 
   static Iterable<Widget> dividePanels(Iterable<Widget> tiles,
       {double width = 4.0}) {
@@ -285,108 +301,24 @@ class TxPanel extends StatelessWidget {
     ];
   }
 
-  Color? _iconColor(ThemeData theme, TxPanelThemeData panelTheme) {
-    if (!enabled) {
-      return theme.disabledColor;
-    }
-
-    if (selected) {
-      return selectedColor ??
-          panelTheme.selectedColor ??
-          theme.listTileTheme.selectedColor ??
-          theme.colorScheme.primary;
-    }
-
-    final Color? color =
-        iconColor ?? panelTheme.iconColor ?? theme.listTileTheme.iconColor;
-    if (color != null) {
-      return color;
-    }
-
-    switch (theme.brightness) {
-      case Brightness.light:
-        // 为了向后兼容，默认为unselected
-        // tiles 是 Colors.black45 而不是 colorScheme.onSurface.withAlpha(0x73)。
-        return Colors.black45;
-      case Brightness.dark:
-        return null; // null - use current icon theme color
-    }
-  }
-
-  Color? _textColor(
-      ThemeData theme, TxPanelThemeData panelTheme, Color? defaultColor) {
-    if (!enabled) {
-      return theme.disabledColor;
-    }
-
-    if (selected) {
-      return selectedColor ??
-          panelTheme.selectedColor ??
-          theme.listTileTheme.selectedColor ??
-          theme.colorScheme.primary;
-    }
-
-    return textColor ??
-        panelTheme.textColor ??
-        theme.listTileTheme.textColor ??
-        defaultColor;
-  }
-
-  bool _isDenseLayout(ThemeData theme, TxPanelThemeData panelTheme) {
+  bool _isDenseLayout(
+    ThemeData theme,
+    TxPanelThemeData panelTheme,
+  ) {
     return dense ?? panelTheme.dense ?? theme.listTileTheme.dense ?? false;
   }
 
-  TextStyle _titleTextStyle(ThemeData theme, TxPanelThemeData panelTheme) {
-    final TextStyle textStyle;
-    switch (style ?? PanelStyle.list) {
-      case PanelStyle.card:
-        textStyle = theme.textTheme.titleLarge!;
-        break;
-      case PanelStyle.list:
-        textStyle = theme.textTheme.titleMedium!;
-        break;
-    }
-    final Color? color = _textColor(theme, panelTheme, textStyle.color);
-    return _isDenseLayout(theme, panelTheme)
-        ? textStyle.copyWith(fontSize: 13.0, color: color)
-        : textStyle.copyWith(color: color);
-  }
-
-  TextStyle _subtitleTextStyle(ThemeData theme, TxPanelThemeData panelTheme) {
-    final Color? color = _textColor(
-      theme,
-      panelTheme,
-      theme.textTheme.bodySmall!.color,
-    );
-    return _isDenseLayout(theme, panelTheme)
-        ? theme.textTheme.bodyMedium!.copyWith(color: color, fontSize: 12.0)
-        : theme.textTheme.bodyMedium!.copyWith(color: color);
-  }
-
-  TextStyle _contentTextStyle(ThemeData theme, TxPanelThemeData panelTheme) {
-    final Color? color = _textColor(
-      theme,
-      panelTheme,
-      theme.textTheme.bodySmall!.color,
-    );
-    return _isDenseLayout(theme, panelTheme)
-        ? theme.textTheme.bodyMedium!.copyWith(color: color, fontSize: 12.0)
-        : theme.textTheme.bodyMedium!.copyWith(color: color);
-  }
-
-  TextStyle _trailingAndLeadingTextStyle(
-      ThemeData theme, TxPanelThemeData panelTheme) {
-    final TextStyle textStyle = theme.textTheme.bodyMedium!;
-    final Color? color = _textColor(theme, panelTheme, textStyle.color);
-    return textStyle.copyWith(color: color);
-  }
-
-  Color? _backgroundColor(ThemeData theme, TxPanelThemeData panelTheme) {
-    return selected
+  Color? _backgroundColor(
+    ThemeData theme,
+    TxPanelThemeData panelTheme,
+    TxPanelThemeData defaults,
+  ) {
+    final Color? color = selected
         ? selectedPanelColor ??
             panelTheme.selectedPanelColor ??
             theme.listTileTheme.selectedTileColor
         : panelColor ?? panelTheme.panelColor ?? theme.listTileTheme.tileColor;
+    return color ?? defaults.panelColor!;
   }
 
   @override
@@ -394,25 +326,78 @@ class TxPanel extends StatelessWidget {
     assert(debugCheckHasMaterial(context));
     final ThemeData theme = Theme.of(context);
     final TxPanelThemeData panelTheme = TxPanelTheme.of(context);
-    final IconThemeData iconThemeData =
-        IconThemeData(color: _iconColor(theme, panelTheme));
+    final ListTileThemeData tileTheme = theme.listTileTheme;
+    final TxPanelThemeData defaults = _PanelDefaultsM3(context);
+    final Set<MaterialState> states = <MaterialState>{
+      if (!enabled) MaterialState.disabled,
+      if (selected) MaterialState.selected,
+    };
 
-    TextStyle? leadingAndTrailingTextStyle;
+    Color? resolveColor(
+        Color? explicitColor, Color? selectedColor, Color? enabledColor,
+        [Color? disabledColor]) {
+      return _IndividualOverrides(
+        explicitColor: explicitColor,
+        selectedColor: selectedColor,
+        enabledColor: enabledColor,
+        disabledColor: disabledColor,
+      ).resolve(states);
+    }
+
+    final Color? effectiveIconColor =
+        resolveColor(iconColor, selectedColor, iconColor) ??
+            resolveColor(panelTheme.iconColor, panelTheme.selectedColor,
+                panelTheme.iconColor) ??
+            resolveColor(tileTheme.iconColor, tileTheme.selectedColor,
+                tileTheme.iconColor) ??
+            resolveColor(defaults.iconColor, defaults.selectedColor,
+                defaults.iconColor, theme.disabledColor);
+    final Color? effectiveColor =
+        resolveColor(textColor, selectedColor, textColor) ??
+            resolveColor(panelTheme.textColor, panelTheme.selectedColor,
+                panelTheme.textColor) ??
+            resolveColor(tileTheme.textColor, tileTheme.selectedColor,
+                tileTheme.textColor) ??
+            resolveColor(defaults.textColor, defaults.selectedColor,
+                defaults.textColor, theme.disabledColor);
+
+    final IconThemeData iconThemeData =
+        IconThemeData(color: effectiveIconColor);
+    final IconButtonThemeData iconButtonThemeData = IconButtonThemeData(
+      style: IconButton.styleFrom(foregroundColor: effectiveIconColor),
+    );
+
+    TextStyle? leadingAndTrailingStyle;
     if (leading != null || trailing != null || this.footer != null) {
-      leadingAndTrailingTextStyle =
-          _trailingAndLeadingTextStyle(theme, panelTheme);
+      leadingAndTrailingStyle = leadingAndTrailingTextStyle ??
+          panelTheme.leadingAndTrailingTextStyle ??
+          tileTheme.leadingAndTrailingTextStyle ??
+          defaults.leadingAndTrailingTextStyle!;
+      final Color? leadingAndTrailingTextColor = effectiveColor;
+      leadingAndTrailingStyle =
+          leadingAndTrailingStyle.copyWith(color: leadingAndTrailingTextColor);
     }
 
     Widget? leadingIcon;
     if (leading != null) {
       leadingIcon = AnimatedDefaultTextStyle(
-        style: leadingAndTrailingTextStyle!,
+        style: leadingAndTrailingStyle!,
         duration: kThemeChangeDuration,
         child: leading!,
       );
     }
 
-    final TextStyle titleStyle = _titleTextStyle(theme, panelTheme);
+    TextStyle titleStyle = titleTextStyle ??
+        panelTheme.titleTextStyle ??
+        tileTheme.titleTextStyle ??
+        defaults.titleTextStyle!;
+    final Color? titleColor = effectiveColor;
+    titleStyle = titleStyle.copyWith(
+      color: titleColor,
+      fontSize: _isDenseLayout(theme, panelTheme)
+          ? theme.textTheme.bodySmall!.fontSize
+          : null,
+    );
     final Widget titleText = AnimatedDefaultTextStyle(
       style: titleStyle,
       duration: kThemeChangeDuration,
@@ -422,7 +407,17 @@ class TxPanel extends StatelessWidget {
     Widget? subtitleText;
     TextStyle? subtitleStyle;
     if (subtitle != null) {
-      subtitleStyle = _subtitleTextStyle(theme, panelTheme);
+      subtitleStyle = subtitleTextStyle ??
+          panelTheme.subtitleTextStyle ??
+          tileTheme.subtitleTextStyle ??
+          defaults.subtitleTextStyle!;
+      final Color? subtitleColor = effectiveColor;
+      subtitleStyle = subtitleStyle.copyWith(
+        color: subtitleColor,
+        fontSize: _isDenseLayout(theme, panelTheme)
+            ? theme.textTheme.labelSmall!.fontSize
+            : null,
+      );
       subtitleText = AnimatedDefaultTextStyle(
         style: subtitleStyle,
         duration: kThemeChangeDuration,
@@ -432,17 +427,27 @@ class TxPanel extends StatelessWidget {
 
     Widget? trailingIcon;
     if (trailing != null) {
-      trailingIcon = AnimatedDefaultTextStyle(
-        style: leadingAndTrailingTextStyle!,
-        duration: kThemeChangeDuration,
-        child: trailing!,
+      trailingIcon = TextButtonTheme(
+        data: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            textStyle: theme.textTheme.labelMedium,
+            visualDensity: VisualDensity.compact,
+          ),
+        ),
+        child: AnimatedDefaultTextStyle(
+          style: leadingAndTrailingStyle!,
+          duration: kThemeChangeDuration,
+          child: trailing!,
+        ),
       );
     }
 
     Widget? content;
     TextStyle? contentStyle;
     if (this.content != null) {
-      contentStyle = _contentTextStyle(theme, panelTheme);
+      contentStyle = contentTextStyle ??
+          panelTheme.contentTextStyle ??
+          defaults.contentTextStyle!;
       content = AnimatedDefaultTextStyle(
         style: contentStyle,
         duration: kThemeChangeDuration,
@@ -453,57 +458,67 @@ class TxPanel extends StatelessWidget {
     Widget? footer;
     if (this.footer != null) {
       footer = AnimatedDefaultTextStyle(
-        style: leadingAndTrailingTextStyle!,
+        style: leadingAndTrailingStyle!,
         duration: kThemeChangeDuration,
         child: this.footer!,
       );
     }
 
-    const EdgeInsets defaultContentPadding = EdgeInsets.all(12.0);
     final TextDirection textDirection = Directionality.of(context);
     final EdgeInsets resolvedContentPadding = padding?.resolve(textDirection) ??
         panelTheme.padding?.resolve(textDirection) ??
-        defaultContentPadding;
+        defaults.padding!.resolve(textDirection);
 
-    final Set<MaterialState> states = <MaterialState>{
+    final Set<MaterialState> mouseStates = <MaterialState>{
       if (!enabled || (onTap == null && onLongPress == null))
         MaterialState.disabled,
-      if (selected) MaterialState.selected,
     };
-
     final MouseCursor effectiveMouseCursor =
-        MaterialStateProperty.resolveAs<MouseCursor?>(mouseCursor, states) ??
-            panelTheme.mouseCursor?.resolve(states) ??
-            MaterialStateMouseCursor.clickable.resolve(states);
+        MaterialStateProperty.resolveAs<MouseCursor?>(
+                mouseCursor, mouseStates) ??
+            panelTheme.mouseCursor?.resolve(mouseStates) ??
+            tileTheme.mouseCursor?.resolve(mouseStates) ??
+            MaterialStateMouseCursor.clickable.resolve(mouseStates);
 
-    final EdgeInsetsGeometry margin = this.margin ??
-        panelTheme.margin ??
-        (style == PanelStyle.card
-            ? const EdgeInsets.all(12.0)
-            : const EdgeInsets.all(4.0));
+    final ListTileTitleAlignment effectiveTitleAlignment = titleAlignment ??
+        panelTheme.titleAlignment ??
+        tileTheme.titleAlignment ??
+        (theme.useMaterial3
+            ? ListTileTitleAlignment.threeLine
+            : ListTileTitleAlignment.titleHeight);
+
+    final EdgeInsetsGeometry margin =
+        this.margin ?? panelTheme.margin ?? defaults.margin!;
     final ShapeBorder shape = this.shape ??
         panelTheme.shape ??
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0));
+
     return Padding(
       padding: margin,
       child: InkWell(
         customBorder: shape,
         onTap: enabled ? onTap : null,
         onLongPress: enabled ? onLongPress : null,
+        onFocusChange: onFocusChange,
         mouseCursor: effectiveMouseCursor,
         canRequestFocus: enabled,
         focusNode: focusNode,
-        focusColor: focusColor,
-        hoverColor: hoverColor,
+        focusColor: focusColor ?? panelTheme.focusColor,
+        hoverColor: hoverColor ?? panelTheme.hoverColor,
+        splashColor: splashColor ?? panelTheme.splashColor,
+        highlightColor: highlightColor ?? panelTheme.highlightColor,
         autofocus: autofocus,
-        enableFeedback: enableFeedback ?? panelTheme.enableFeedback ?? true,
+        enableFeedback: enableFeedback ??
+            panelTheme.enableFeedback ??
+            tileTheme.enableFeedback ??
+            true,
         child: Semantics(
           selected: selected,
           enabled: enabled,
           child: Ink(
             decoration: ShapeDecoration(
               shape: shape,
-              color: _backgroundColor(theme, panelTheme),
+              color: _backgroundColor(theme, panelTheme, defaults),
             ),
             child: SafeArea(
               top: false,
@@ -511,24 +526,30 @@ class TxPanel extends StatelessWidget {
               minimum: resolvedContentPadding,
               child: IconTheme.merge(
                 data: iconThemeData,
-                child: _Panel(
-                  leading: leadingIcon,
-                  title: titleText,
-                  subtitle: subtitleText,
-                  content: content,
-                  footer: footer,
-                  trailing: trailingIcon,
-                  leadingControlAffinity:
-                      leadingControlAffinity ?? LeadingControlAffinity.header,
-                  isDense: _isDenseLayout(theme, panelTheme),
-                  visualDensity: visualDensity ??
-                      panelTheme.visualDensity ??
-                      theme.visualDensity,
-                  horizontalTitleGap:
-                      horizontalTitleGap ?? panelTheme.horizontalTitleGap ?? 16,
-                  minLeadingWidth:
-                      minLeadingWidth ?? panelTheme.minLeadingWidth ?? 40,
-                  verticalGap: verticalGap ?? 8.0,
+                child: IconButtonTheme(
+                  data: iconButtonThemeData,
+                  child: _Panel(
+                    leading: leadingIcon,
+                    title: titleText,
+                    subtitle: subtitleText,
+                    content: content,
+                    footer: footer,
+                    trailing: trailingIcon,
+                    horizontalTitleGap: horizontalTitleGap ??
+                        panelTheme.horizontalTitleGap ??
+                        tileTheme.horizontalTitleGap ??
+                        16,
+                    minLeadingWidth: minLeadingWidth ??
+                        panelTheme.minLeadingWidth ??
+                        defaults.minLeadingWidth!,
+                    titleAlignment: effectiveTitleAlignment,
+                    isDense: _isDenseLayout(theme, panelTheme),
+                    visualDensity: visualDensity ??
+                        panelTheme.visualDensity ??
+                        theme.visualDensity,
+                    verticalGap: verticalGap ?? 8.0,
+                    textDirection: textDirection,
+                  ),
                 ),
               ),
             ),
@@ -537,117 +558,34 @@ class TxPanel extends StatelessWidget {
       ),
     );
   }
+}
 
-// @override
-// Widget build(BuildContext context) {
-//    ListTile()
-//
-//   final ThemeData theme = Theme.of(context);
-//
-//   final double iconSize = dense ? 14.0 : 18.0;
-//   final IconThemeData iconTheme = theme.iconTheme
-//       .copyWith(color: theme.colorScheme.primary, size: iconSize);
-//   final TextTheme textTheme = theme.textTheme;
-//
-//   final double smallSpace = dense ? 6.0 : 8.0;
-//   final double largeSpace = dense ? 12.0 : 16.0;
-//   final Widget smallHSpace = SizedBox(width: smallSpace);
-//   final Widget smallVSpace = SizedBox(height: smallSpace);
-//   final Widget largeHSpace = SizedBox(width: largeSpace);
-//   final Widget largeVSpace = SizedBox(height: largeSpace);
-//
-//   Widget header = this.header;
-//   if (header == null) {
-//     final TextStyle headerStyle =
-//         dense ? textTheme.titleSmall! : textTheme.titleMedium!;
-//     final TextStyle subtitleStyle =
-//         dense ? textTheme.overline! : textTheme.caption!;
-//     header = DefaultTextStyle(style: headerStyle, child: title!);
-//
-//     if (subtitle != null) {
-//       header = Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           header,
-//           DefaultTextStyle(style: subtitleStyle, child: subtitle!)
-//         ],
-//       );
-//     }
-//
-//     if (titleLeading != null || trailing != null) {
-//       header = Row(
-//         crossAxisAlignment: CrossAxisAlignment.center,
-//         children: [
-//           if (titleLeading != null) ...[
-//             IconTheme(data: iconTheme, child: titleLeading!),
-//             smallHSpace
-//           ],
-//           Expanded(child: header),
-//           if (trailing != null) ...[
-//             largeHSpace,
-//             DefaultTextStyle(style: subtitleStyle, child: trailing!)
-//           ]
-//         ],
-//       );
-//     }
-//
-//     if (leading != null) {
-//       header = IntrinsicHeight(
-//         child: Row(
-//           children: [
-//             IconTheme(data: iconTheme, child: leading!),
-//             largeHSpace,
-//             Expanded(child: header),
-//           ],
-//         ),
-//       );
-//     }
-//   }
-//
-//   Widget? footer = this.footer;
-//   if (footer == null && actions != null) {
-//     footer = Row(
-//       mainAxisAlignment: MainAxisAlignment.end,
-//       children: actions!,
-//     );
-//   }
-//
-//   Widget result = header;
-//   if (footer != null || content != null) {
-//     result = Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         result,
-//         smallVSpace,
-//         if (content != null) ...[
-//           smallVSpace,
-//           DefaultTextStyle(style: theme.textTheme.caption!, child: content!)
-//         ],
-//         if (footer != null) ...[largeVSpace, footer],
-//       ],
-//     );
-//   }
-//
-//   final EdgeInsetsGeometry padding =
-//       this.padding ?? (EdgeInsets.all(dense ? 12.0 : 16.0));
-//   result = Padding(padding: padding, child: result);
-//
-//   if (onTap != null) {
-//     result = InkWell(
-//       onTap: onTap,
-//       customBorder: theme.cardTheme.shape,
-//       child: result,
-//     );
-//   }
-//
-//   final EdgeInsetsGeometry margin =
-//       this.margin ?? (EdgeInsets.all(dense ? 8.0 : 16.0));
-//   return TxCard(
-//     margin: margin,
-//     color: background,
-//     child: result,
-//   );
-// }
+class _IndividualOverrides extends MaterialStateProperty<Color?> {
+  _IndividualOverrides({
+    this.explicitColor,
+    this.enabledColor,
+    this.selectedColor,
+    this.disabledColor,
+  });
+
+  final Color? explicitColor;
+  final Color? enabledColor;
+  final Color? selectedColor;
+  final Color? disabledColor;
+
+  @override
+  Color? resolve(Set<MaterialState> states) {
+    if (explicitColor is MaterialStateColor) {
+      return MaterialStateProperty.resolveAs<Color?>(explicitColor, states);
+    }
+    if (states.contains(MaterialState.disabled)) {
+      return disabledColor;
+    }
+    if (states.contains(MaterialState.selected)) {
+      return selectedColor;
+    }
+    return enabledColor;
+  }
 }
 
 enum _PanelSlot {
@@ -668,12 +606,13 @@ class _Panel
     required this.horizontalTitleGap,
     required this.minLeadingWidth,
     required this.verticalGap,
+    required this.textDirection,
+    required this.titleAlignment,
     this.leading,
     this.subtitle,
     this.trailing,
     this.content,
     this.footer,
-    this.leadingControlAffinity = LeadingControlAffinity.header,
   });
 
   final Widget? leading;
@@ -687,27 +626,30 @@ class _Panel
   final double horizontalTitleGap;
   final double verticalGap;
   final double minLeadingWidth;
-  final LeadingControlAffinity leadingControlAffinity;
+  final TextDirection textDirection;
+  final ListTileTitleAlignment titleAlignment;
 
   @override
   void updateRenderObject(BuildContext context, _RenderPanel renderObject) {
     renderObject
+      ..verticalGap = verticalGap
       ..isDense = isDense
       ..visualDensity = visualDensity
+      ..textDirection = textDirection
       ..horizontalTitleGap = horizontalTitleGap
       ..minLeadingWidth = minLeadingWidth
-      ..leadControlAffinity = leadingControlAffinity
-      ..verticalGap = verticalGap;
+      ..titleAlignment = titleAlignment;
   }
 
   @override
   _RenderPanel createRenderObject(BuildContext context) {
     return _RenderPanel(
-      dense: isDense,
+      isDense: isDense,
       visualDensity: visualDensity,
+      textDirection: textDirection,
       horizontalTitleGap: horizontalTitleGap,
       minLeadingWidth: minLeadingWidth,
-      leadingControlAffinity: leadingControlAffinity,
+      titleAlignment: titleAlignment,
       verticalGap: verticalGap,
     );
   }
@@ -737,18 +679,20 @@ class _Panel
 class _RenderPanel extends RenderBox
     with SlottedContainerRenderObjectMixin<_PanelSlot, RenderBox> {
   _RenderPanel({
-    required bool dense,
+    required bool isDense,
     required VisualDensity visualDensity,
     required double horizontalTitleGap,
     required double minLeadingWidth,
-    required LeadingControlAffinity leadingControlAffinity,
     required double verticalGap,
-  })  : _isDense = dense,
+    required TextDirection textDirection,
+    required ListTileTitleAlignment titleAlignment,
+  })  : _isDense = isDense,
         _visualDensity = visualDensity,
         _horizontalTitleGap = horizontalTitleGap,
         _minLeadingWidth = minLeadingWidth,
-        _leadControlAffinity = leadingControlAffinity,
-        _verticalGap = verticalGap;
+        _verticalGap = verticalGap,
+        _textDirection = textDirection,
+        _titleAlignment = titleAlignment;
 
   RenderBox? get leading => childForSlot(_PanelSlot.leading);
 
@@ -774,23 +718,6 @@ class _RenderPanel extends RenderBox
     ];
   }
 
-  LeadingControlAffinity get leadControlAffinity {
-    if (content == null && footer == null) {
-      return LeadingControlAffinity.header;
-    }
-    return _leadControlAffinity;
-  }
-
-  LeadingControlAffinity _leadControlAffinity;
-
-  set leadControlAffinity(LeadingControlAffinity value) {
-    if (_leadControlAffinity == value) {
-      return;
-    }
-    _leadControlAffinity = value;
-    markNeedsLayout();
-  }
-
   bool get isDense => _isDense;
   bool _isDense;
 
@@ -810,6 +737,17 @@ class _RenderPanel extends RenderBox
       return;
     }
     _visualDensity = value;
+    markNeedsLayout();
+  }
+
+  TextDirection get textDirection => _textDirection;
+  TextDirection _textDirection;
+
+  set textDirection(TextDirection value) {
+    if (_textDirection == value) {
+      return;
+    }
+    _textDirection = value;
     markNeedsLayout();
   }
 
@@ -852,6 +790,17 @@ class _RenderPanel extends RenderBox
     markNeedsLayout();
   }
 
+  ListTileTitleAlignment get titleAlignment => _titleAlignment;
+  ListTileTitleAlignment _titleAlignment;
+
+  set titleAlignment(ListTileTitleAlignment value) {
+    if (_titleAlignment == value) {
+      return;
+    }
+    _titleAlignment = value;
+    markNeedsLayout();
+  }
+
   @override
   bool get sizedByParent => false;
 
@@ -869,20 +818,16 @@ class _RenderPanel extends RenderBox
     final double minSubtitleWidth = _minWidth(subtitle, height);
     final double minContentWidth = _minWidth(content, height);
     final double minFooterWidth = _minWidth(footer, height);
+
     final double leadingWidth = leading != null
         ? math.max(leading!.getMinIntrinsicWidth(height), _minLeadingWidth) +
             _effectiveHorizontalTitleGap
         : 0.0;
-    double headerWidth =
-        math.max(minTitleWidth, minSubtitleWidth) + _maxWidth(trailing, height);
-    if (_leadControlAffinity == LeadingControlAffinity.header) {
-      headerWidth += leadingWidth;
-    }
-    final double width =
-        math.max(math.max(headerWidth, minContentWidth), minFooterWidth);
-    return _leadControlAffinity == LeadingControlAffinity.panel
-        ? width + leadingWidth
-        : width;
+    final double minHeaderWidth = leadingWidth +
+        math.max(minTitleWidth, minSubtitleWidth) +
+        _maxWidth(trailing, height);
+
+    return math.max(math.max(minHeaderWidth, minContentWidth), minFooterWidth);
   }
 
   @override
@@ -891,20 +836,16 @@ class _RenderPanel extends RenderBox
     final double maxSubtitleWidth = _maxWidth(subtitle, height);
     final double maxContentWidth = _maxWidth(content, height);
     final double maxFooterWidth = _maxWidth(footer, height);
+
     final double leadingWidth = leading != null
         ? math.max(leading!.getMaxIntrinsicWidth(height), _minLeadingWidth) +
             _effectiveHorizontalTitleGap
         : 0.0;
-    double headerWidth =
-        math.max(maxTitleWidth, maxSubtitleWidth) + _maxWidth(trailing, height);
-    if (_leadControlAffinity == LeadingControlAffinity.header) {
-      headerWidth += leadingWidth;
-    }
-    final double width =
-        math.max(math.max(headerWidth, maxContentWidth), maxFooterWidth);
-    return _leadControlAffinity == LeadingControlAffinity.panel
-        ? width + leadingWidth
-        : width;
+    final double maxHeaderWidth = leadingWidth +
+        math.max(maxTitleWidth, maxSubtitleWidth) +
+        _maxWidth(trailing, height);
+
+    return math.max(math.max(maxHeaderWidth, maxContentWidth), maxFooterWidth);
   }
 
   @override
@@ -1006,58 +947,104 @@ class _RenderPanel extends RenderBox
     final Size titleSize = _layoutBox(title, textConstraints);
     final Size subtitleSize = _layoutBox(subtitle, textConstraints);
 
-    final double contentAndFooterStart =
-        leadControlAffinity == LeadingControlAffinity.panel ? titleStart : 0.0;
-    final BoxConstraints footerAndContentConstraints = looseConstraints.tighten(
-      width: tileWidth - contentAndFooterStart,
-    );
+    final BoxConstraints footerAndContentConstraints =
+        looseConstraints.tighten(width: tileWidth);
     final Size contentSize = _layoutBox(content, footerAndContentConstraints);
     final Size footerSize = _layoutBox(footer, footerAndContentConstraints);
 
     double headerHeight = titleSize.height;
     const double titleY = 0;
-    _positionBox(title!, Offset(titleStart, titleY));
-
+    double? subtitleY;
     if (hasSubtitle) {
       headerHeight = headerHeight + subtitleSize.height + gap / 2.0;
-      final double subtitleY = titleSize.height + gap / 2.0;
-      _positionBox(subtitle!, Offset(titleStart, subtitleY));
+      subtitleY = titleSize.height + gap / 2.0;
     }
 
     final double leadingY;
     final double trailingY;
-    if (headerHeight > 72.0) {
-      leadingY = 16.0;
-      trailingY = 16.0;
-    } else {
-      trailingY = (headerHeight - trailingSize.height) / 2.0;
-      if (leadControlAffinity == LeadingControlAffinity.panel) {
-        leadingY = 16.0;
-      } else {
-        leadingY = math.min((headerHeight - leadingSize.height) / 2.0, 16.0);
-      }
+    switch (titleAlignment) {
+      case ListTileTitleAlignment.threeLine:
+        {
+          leadingY = (headerHeight - leadingSize.height) / 2.0;
+          trailingY = (headerHeight - trailingSize.height) / 2.0;
+          break;
+        }
+      case ListTileTitleAlignment.titleHeight:
+        {
+          if (headerHeight > 72.0) {
+            leadingY = 16.0;
+            trailingY = 16.0;
+          } else {
+            leadingY =
+                math.min((headerHeight - leadingSize.height) / 2.0, 16.0);
+            trailingY = (headerHeight - trailingSize.height) / 2.0;
+          }
+          break;
+        }
+      case ListTileTitleAlignment.top:
+        {
+          leadingY = 0;
+          trailingY = 0;
+          break;
+        }
+      case ListTileTitleAlignment.center:
+        {
+          leadingY = (headerHeight - leadingSize.height) / 2.0;
+          trailingY = (headerHeight - trailingSize.height) / 2.0;
+          break;
+        }
+      case ListTileTitleAlignment.bottom:
+        {
+          leadingY = headerHeight - leadingSize.height - _verticalGap;
+          trailingY = headerHeight - trailingSize.height - _verticalGap;
+          break;
+        }
     }
-    if (hasLeading) {
-      _positionBox(leading!, Offset(0.0, leadingY));
-    }
-    if (hasTrailing) {
-      _positionBox(
-        trailing!,
-        Offset(tileWidth - trailingSize.width, trailingY),
-      );
+
+    switch (textDirection) {
+      case TextDirection.rtl:
+        {
+          if (hasLeading) {
+            _positionBox(
+                leading!, Offset(tileWidth - leadingSize.width, leadingY));
+          }
+          _positionBox(title!, Offset(adjustedTrailingWidth, titleY));
+          if (hasSubtitle) {
+            _positionBox(subtitle!, Offset(adjustedTrailingWidth, subtitleY!));
+          }
+          if (hasTrailing) {
+            _positionBox(trailing!, Offset(0.0, trailingY));
+          }
+          break;
+        }
+      case TextDirection.ltr:
+        {
+          if (hasLeading) {
+            _positionBox(leading!, Offset(0.0, leadingY));
+          }
+          _positionBox(title!, Offset(titleStart, titleY));
+          if (hasSubtitle) {
+            _positionBox(subtitle!, Offset(titleStart, subtitleY!));
+          }
+          if (hasTrailing) {
+            _positionBox(
+                trailing!, Offset(tileWidth - trailingSize.width, trailingY));
+          }
+          break;
+        }
     }
 
     double panelHeight = headerHeight;
     if (hasContent) {
       final double contentY = headerHeight + gap;
       panelHeight = contentY + contentSize.height;
-      _positionBox(content!, Offset(contentAndFooterStart, contentY));
+      _positionBox(content!, Offset(0, contentY));
     }
 
     if (hasFooter) {
       final double footerY = panelHeight + gap;
       panelHeight = footerY + footerSize.height;
-      _positionBox(footer!, Offset(contentAndFooterStart, footerY));
+      _positionBox(footer!, Offset(0, footerY));
     }
 
     size = constraints.constrain(Size(tileWidth, panelHeight));
@@ -1103,4 +1090,43 @@ class _RenderPanel extends RenderBox
     }
     return false;
   }
+}
+
+class _PanelDefaultsM3 extends TxPanelThemeData {
+  _PanelDefaultsM3(this.context)
+      : super(
+          padding: const EdgeInsets.all(12.0),
+          minLeadingWidth: 24,
+          shape: const RoundedRectangleBorder(),
+          margin: const EdgeInsets.all(0.0),
+        );
+
+  final BuildContext context;
+  late final ThemeData _theme = Theme.of(context);
+  late final ColorScheme _colors = _theme.colorScheme;
+  late final TextTheme _textTheme = _theme.textTheme;
+
+  @override
+  Color? get panelColor => Colors.transparent;
+
+  @override
+  TextStyle? get titleTextStyle =>
+      _textTheme.bodyLarge!.copyWith(color: _colors.onSurface);
+
+  @override
+  TextStyle? get subtitleTextStyle =>
+      _textTheme.bodyMedium!.copyWith(color: _colors.onSurfaceVariant);
+
+  @override
+  TextStyle? get leadingAndTrailingTextStyle =>
+      _textTheme.labelSmall!.copyWith(color: _colors.onSurfaceVariant);
+
+  @override
+  TextStyle? get contentTextStyle => _textTheme.bodyMedium;
+
+  @override
+  Color? get selectedColor => _colors.primary;
+
+  @override
+  Color? get iconColor => _colors.onSurfaceVariant;
 }
