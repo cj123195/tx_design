@@ -203,7 +203,7 @@ Future<List<V>?> showMultiPickerBottomSheet<T, V>(
   return await showDefaultBottomSheet<List<V>>(
     context,
     title: title ?? TxLocalizations.of(context).pickerTitle,
-    content: content,
+    contentBuilder: (context) => content,
     onConfirm: () => Navigator.pop(context, data),
     isScrollControlled: isScrollControlled,
   );

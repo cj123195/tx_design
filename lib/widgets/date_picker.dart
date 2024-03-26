@@ -1196,7 +1196,7 @@ Future<DateTime?> showMonthPicker(
   return await showDefaultBottomSheet(
     context,
     title: titleText ?? TxLocalizations.of(context).monthPickerTitle,
-    content: MonthPicker(
+    contentBuilder: (context) => MonthPicker(
       onChanged: (month) => result = month,
       initialDateTime: initialDateTime,
       minimumDate: minimumDate,
@@ -1223,7 +1223,7 @@ Future<DateTime?> showYearPicker(
   return await showDefaultBottomSheet(
     context,
     title: titleText ?? TxLocalizations.of(context).yearPickerTitle,
-    content: YearPicker(
+    contentBuilder: (context) => YearPicker(
       onChanged: (month) => result = month,
       initialDateTime: initialDateTime,
       minimumYear: minimumYear,
@@ -1250,7 +1250,7 @@ Future<DateTime?> showDatetimePicker(
   return await showDefaultBottomSheet(
     context,
     title: titleText ?? TxLocalizations.of(context).datetimePickerTitle,
-    content: CupertinoDatePicker(
+    contentBuilder: (context) => CupertinoDatePicker(
       mode: CupertinoDatePickerMode.dateAndTime,
       initialDateTime: initialDateTime,
       minimumDate: minimumDate,

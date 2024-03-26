@@ -156,7 +156,7 @@ Future<T?> showPickerBottomSheet<T, V>(
   return await showDefaultBottomSheet<T>(
     context,
     title: title ?? TxLocalizations.of(context).pickerTitle,
-    content: content,
+    contentBuilder: (context) => content,
     onConfirm: () => Navigator.pop(context, data),
     isScrollControlled: isScrollControlled,
   );

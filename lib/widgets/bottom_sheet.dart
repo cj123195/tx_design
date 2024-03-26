@@ -290,16 +290,16 @@ const EdgeInsetsGeometry _contentPadding = EdgeInsets.all(12.0);
 /// 默认底部弹框
 Future<T?> showDefaultBottomSheet<T>(
   BuildContext context, {
-  required Widget content,
-  Widget? header,
+  required WidgetBuilder contentBuilder,
+  WidgetBuilder? headerBuilder,
   String? title,
   bool? centerTitle,
   double? titleSpacing,
-  Widget? leading,
+  WidgetBuilder? leadingBuilder,
   double? leadingWidth,
   bool automaticallyImplyLeading = true,
-  List<Widget>? actions,
-  Widget? footer,
+  List<Widget> Function(BuildContext context)? actionsBuilder,
+  WidgetBuilder? footerBuilder,
   VoidCallback? onConfirm,
   VoidCallback? onClose,
   VoidCallback? onCancel,
@@ -324,16 +324,17 @@ Future<T?> showDefaultBottomSheet<T>(
   RouteSettings? settings,
   Duration? enterBottomSheetDuration,
   Duration? exitBottomSheetDuration,
+  ActionsPosition? actionsPosition,
 }) async {
   return showTxModalBottomSheet<T>(
     context,
     builder: (_) => _DefaultSheet(
-      content: content,
+      contentBuilder: contentBuilder,
       title: title,
       titleSpacing: titleSpacing,
       centerTitle: centerTitle,
-      header: header,
-      actions: actions,
+      headerBuilder: headerBuilder,
+      actionsBuilder: actionsBuilder,
       onConfirm: onConfirm,
       onCancel: onCancel,
       onClose: onClose,
@@ -343,10 +344,11 @@ Future<T?> showDefaultBottomSheet<T>(
       showCancelButton: showCancelButton,
       padding: padding,
       contentPadding: contentPadding,
-      leading: leading,
+      leadingBuilder: leadingBuilder,
       leadingWidth: leadingWidth,
       automaticallyImplyLeading: automaticallyImplyLeading,
-      footer: footer,
+      footerBuilder: footerBuilder,
+      actionsPosition: actionsPosition,
     ),
     persistent: persistent,
     isScrollControlled: isScrollControlled,
@@ -366,17 +368,23 @@ Future<T?> showDefaultBottomSheet<T>(
   );
 }
 
+/// 操作按钮显示位置
+enum ActionsPosition {
+  header,
+  footer,
+}
+
 class _DefaultSheet extends StatelessWidget {
   const _DefaultSheet({
-    required this.content,
-    this.header,
+    required this.contentBuilder,
+    this.headerBuilder,
     this.title,
     this.titleSpacing,
     this.centerTitle,
-    this.leading,
+    this.leadingBuilder,
     this.leadingWidth,
     this.automaticallyImplyLeading = true,
-    this.actions,
+    this.actionsBuilder,
     this.onConfirm,
     this.onClose,
     this.onCancel,
@@ -386,19 +394,20 @@ class _DefaultSheet extends StatelessWidget {
     this.showCancelButton = true,
     this.padding,
     this.contentPadding = _contentPadding,
-    this.footer,
-  });
+    this.footerBuilder,
+    ActionsPosition? actionsPosition,
+  }) : actionsPosition = actionsPosition ?? ActionsPosition.header;
 
-  final Widget? header;
-  final Widget? leading;
+  final WidgetBuilder? headerBuilder;
+  final WidgetBuilder? leadingBuilder;
   final double? leadingWidth;
   final bool automaticallyImplyLeading;
   final String? title;
   final double? titleSpacing;
   final bool? centerTitle;
-  final Widget content;
-  final Widget? footer;
-  final List<Widget>? actions;
+  final WidgetBuilder contentBuilder;
+  final WidgetBuilder? footerBuilder;
+  final List<Widget> Function(BuildContext context)? actionsBuilder;
   final VoidCallback? onConfirm;
   final VoidCallback? onClose;
   final VoidCallback? onCancel;
@@ -408,33 +417,49 @@ class _DefaultSheet extends StatelessWidget {
   final bool showCancelButton;
   final EdgeInsetsGeometry? contentPadding;
   final EdgeInsetsGeometry? padding;
+  final ActionsPosition actionsPosition;
 
-  bool _getEffectiveCenterTitle(ThemeData theme) {
+  bool _getEffectiveCenterTitle(ThemeData theme, List<Widget>? actions) {
     bool platformCenter() {
       switch (theme.platform) {
         case TargetPlatform.android:
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
-          return false;
+          return true;
         case TargetPlatform.iOS:
         case TargetPlatform.macOS:
-          return actions == null || actions!.length < 2;
+          return actionsBuilder == null || actions!.length < 2;
       }
     }
 
     return centerTitle ?? theme.appBarTheme.centerTitle ?? platformCenter();
   }
 
-  Widget? _getLeading(ThemeData theme) {
-    Widget? leading = this.leading;
-    if (leading == null && automaticallyImplyLeading) {
-      leading = CloseButton(onPressed: onCancel);
+  Widget? _getLeading(BuildContext context, Widget? leading) {
+    if (leading == null) {
+      if (actionsPosition == ActionsPosition.header) {
+        final MaterialLocalizations localizations =
+            MaterialLocalizations.of(context);
+
+        leading = TextButton(
+          onPressed: onCancel ?? () => Navigator.pop(context, false),
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(context).colorScheme.onSurface,
+          ),
+          child: Text(localizations.cancelButtonLabel),
+        );
+      } else if (automaticallyImplyLeading) {
+        leading = CloseButton(
+          onPressed: onCancel ?? () => Navigator.pop(context, false),
+        );
+      }
     }
+
     if (leading != null) {
       final BoxConstraints constraints =
           BoxConstraints.tightFor(width: leadingWidth ?? kToolbarHeight);
-      if (theme.useMaterial3) {
+      if (Theme.of(context).useMaterial3) {
         leading = ConstrainedBox(
           constraints: constraints,
           child: leading is IconButton ? Center(child: leading) : leading,
@@ -456,9 +481,9 @@ class _DefaultSheet extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     Widget? footer;
-    if (this.footer != null) {
-      footer = this.footer;
-    } else {
+    if (footerBuilder != null) {
+      footer = footerBuilder!(context);
+    } else if (actionsPosition == ActionsPosition.footer) {
       final List<Widget> buttons = [
         if (showCancelButton)
           OutlinedButton(
@@ -485,29 +510,39 @@ class _DefaultSheet extends StatelessWidget {
       }
     }
 
-    final Widget? action = actions == null
-        ? null
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: actions!,
-          );
+    List<Widget>? actions;
+    Widget? action;
+    if (actionsBuilder != null) {
+      actions = actionsBuilder!(context);
+      action = Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: actionsBuilder!(context),
+      );
+    } else if (actionsPosition == ActionsPosition.header) {
+      action = TextButton(
+        onPressed: onConfirm ?? () => Navigator.pop(context, true),
+        child: Text(localizations.okButtonLabel),
+      );
+    }
 
-    Widget? header = this.header;
-    if (header == null && title != null) {
+    Widget? header;
+    if (headerBuilder != null && title != null) {
+      header = headerBuilder!(context);
+    } else if (title != null) {
       header = SizedBox(
         height: kToolbarHeight,
         child: NavigationToolbar(
-          leading: _getLeading(theme),
+          leading: _getLeading(context, leadingBuilder?.call(context)),
           middle: Text(title!, style: theme.textTheme.titleMedium),
           trailing: action,
-          centerMiddle: _getEffectiveCenterTitle(theme),
+          centerMiddle: _getEffectiveCenterTitle(theme, actions),
           middleSpacing: titleSpacing ?? NavigationToolbar.kMiddleSpacing,
         ),
       );
     }
 
-    Widget content = this.content;
+    Widget content = contentBuilder(context);
     if (contentPadding != null) {
       content = Padding(padding: contentPadding!, child: content);
     }
@@ -541,13 +576,18 @@ Future<T?> showSimplePickerBottomSheet<T>({
   required BuildContext context,
   required SimplePickerItemsBuilder<T> itemsBuilder,
   Widget? title,
+  Widget? divider,
 }) async {
   return showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (context) {
       final List<Widget> items = itemsBuilder(context);
-      return _SimplePickerBottomSheet(pickerItems: items, title: title);
+      return _SimplePickerBottomSheet(
+        pickerItems: items,
+        title: title,
+        divider: divider,
+      );
     },
   );
 }
@@ -557,6 +597,7 @@ class _SimplePickerBottomSheet<T> extends StatelessWidget {
     required this.pickerItems,
     super.key,
     this.title,
+    this.divider,
   });
 
   /// 标题
@@ -564,6 +605,9 @@ class _SimplePickerBottomSheet<T> extends StatelessWidget {
 
   /// 选择项
   final List<Widget> pickerItems;
+
+  /// 分隔线
+  final Widget? divider;
 
   @override
   Widget build(BuildContext context) {
@@ -573,22 +617,35 @@ class _SimplePickerBottomSheet<T> extends StatelessWidget {
       top: Radius.circular(Theme.of(context).useMaterial3 ? 12.0 : 4.0),
     );
 
-    final Iterable<Widget> children = ListTile.divideTiles(
-      color: colorScheme.outlineVariant,
-      tiles: [
-        if (title != null)
-          ListTile(
-            title: DefaultTextStyle(
-              style:
-                  theme.textTheme.labelMedium!.copyWith(color: theme.hintColor),
-              textAlign: TextAlign.center,
-              child: title ??
-                  Text(TxLocalizations.of(context).pickerFormFieldHint),
-            ),
+    final List<Widget> children = [
+      if (title != null) ...[
+        ListTile(
+          title: DefaultTextStyle(
+            style:
+                theme.textTheme.labelMedium!.copyWith(color: theme.hintColor),
+            textAlign: TextAlign.center,
+            child:
+                title ?? Text(TxLocalizations.of(context).pickerFormFieldHint),
           ),
-        ...pickerItems
+        ),
+        const Divider(),
       ],
-    );
+    ];
+    List<Widget> pickTiles;
+    if (divider != null) {
+      pickTiles = [
+        for (int i = 0; i < pickerItems.length; i++) ...[
+          pickerItems[i],
+          if (i != pickerItems.length - 1) divider!,
+        ],
+      ];
+    } else {
+      pickTiles = ListTile.divideTiles(
+        color: colorScheme.outlineVariant,
+        tiles: pickerItems,
+      ).toList();
+    }
+    children.addAll(pickTiles);
     final Widget cancelTile = ListTile(
       title: Text(
         MaterialLocalizations.of(context).cancelButtonLabel,
@@ -599,7 +656,7 @@ class _SimplePickerBottomSheet<T> extends StatelessWidget {
 
     return Material(
       shape: RoundedRectangleBorder(borderRadius: borderRadius),
-      surfaceTintColor: theme.colorScheme.surfaceTint,
+      surfaceTintColor: theme.colorScheme.background,
       color: theme.colorScheme.surface,
       elevation: 1,
       child: Column(
@@ -607,8 +664,8 @@ class _SimplePickerBottomSheet<T> extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           ...children,
-          Divider(
-            thickness: SpacingTheme.of(context).medium,
+          Container(
+            height: SpacingTheme.of(context).medium,
             color: colorScheme.outline.withOpacity(0.05),
           ),
           cancelTile,
@@ -626,6 +683,7 @@ class SimplePickerItem<T> extends StatelessWidget {
     this.onTap,
     this.enabled = true,
     this.subtitle,
+    this.leading,
     super.key,
   });
 
@@ -645,6 +703,9 @@ class SimplePickerItem<T> extends StatelessWidget {
 
   /// 参考[ListTile.subtitle]
   final Widget? subtitle;
+
+  /// 参考[ListTile.leading]
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
@@ -667,6 +728,7 @@ class SimplePickerItem<T> extends StatelessWidget {
 
     return ListTile(
       enabled: enabled,
+      leading: leading,
       title: effectiveTitle,
       subtitle: effectiveSubtitle,
       onTap: enabled
@@ -682,16 +744,16 @@ class SimplePickerItem<T> extends StatelessWidget {
 /// 显示筛选弹框
 Future<T?> showFilterBottomSheet<T>(
   BuildContext context, {
-  required Widget content,
-  Widget? header,
+  required WidgetBuilder contentBuilder,
+  WidgetBuilder? headerBuilder,
   String? title,
   bool? centerTitle,
   double? titleSpacing,
-  Widget? leading,
+  WidgetBuilder? leadingBuilder,
   double? leadingWidth,
   bool automaticallyImplyLeading = true,
-  List<Widget>? actions,
-  Widget? footer,
+  List<Widget> Function(BuildContext context)? actionsBuilder,
+  WidgetBuilder? footerBuilder,
   VoidCallback? onConfirm,
   VoidCallback? onClose,
   VoidCallback? onReset,
@@ -716,23 +778,24 @@ Future<T?> showFilterBottomSheet<T>(
   RouteSettings? settings,
   Duration? enterBottomSheetDuration,
   Duration? exitBottomSheetDuration,
+  ActionsPosition? actionsPosition = ActionsPosition.footer,
 }) async {
   final TxLocalizations localizations = TxLocalizations.of(context);
 
   return showDefaultBottomSheet<T>(
     context,
-    content: FormItemTheme(
+    contentBuilder: (context) => FormItemTheme(
       data: const FormItemThemeData(
         backgroundColor: Colors.transparent,
         padding: EdgeInsets.zero,
       ),
-      child: content,
+      child: contentBuilder(context),
     ),
     title: title ?? localizations.filterSheetLabel,
     titleSpacing: titleSpacing,
     centerTitle: centerTitle,
-    header: header,
-    actions: actions,
+    headerBuilder: headerBuilder,
+    actionsBuilder: actionsBuilder,
     onConfirm: onConfirm,
     onCancel: onReset,
     onClose: onClose,
@@ -742,10 +805,11 @@ Future<T?> showFilterBottomSheet<T>(
     showCancelButton: showCancelButton,
     padding: padding,
     contentPadding: contentPadding,
-    leading: leading ?? const Icon(Icons.filter_alt_outlined),
+    leadingBuilder:
+        leadingBuilder ?? (context) => const Icon(Icons.filter_alt_outlined),
     leadingWidth: leadingWidth,
     automaticallyImplyLeading: automaticallyImplyLeading,
-    footer: footer,
+    footerBuilder: footerBuilder,
     persistent: persistent,
     isScrollControlled: isScrollControlled,
     backgroundColor: backgroundColor,
@@ -759,5 +823,6 @@ Future<T?> showFilterBottomSheet<T>(
     enableDrag: enableDrag,
     enterBottomSheetDuration: enterBottomSheetDuration,
     exitBottomSheetDuration: exitBottomSheetDuration,
+    actionsPosition: actionsPosition,
   );
 }

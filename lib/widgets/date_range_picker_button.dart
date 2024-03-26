@@ -14,7 +14,7 @@ class TxDateRangePickerButton extends StatefulWidget {
     this.onChanged,
     this.style,
     this.format,
-    this.icon = const Icon(Icons.calendar_month),
+    this.icon = const Icon(Icons.calendar_month, size: 16.0),
     this.firstDate,
     this.lastDate,
   });
@@ -97,12 +97,18 @@ class _TxDateRangePickerButtonState extends State<TxDateRangePickerButton> {
     } else {
       final String startText = _range!.start.format(effectiveFormat);
       final String endText = _range!.end.format(effectiveFormat);
-      final String separator = localizations.dateRangeDateSeparator;
-      buttonText = startText + separator + endText;
+      buttonText = '$startText — $endText';
     }
 
+    final ButtonStyle defaults = OutlinedButton.styleFrom(
+      minimumSize: const Size(0.0, 32.0),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4.0),
+      visualDensity: VisualDensity.compact,
+      textStyle: Theme.of(context).textTheme.labelSmall,
+    );
     final ButtonStyle buttonStyle =
-        widget.style ?? buttonTheme.buttonStyle ?? OutlinedButton.styleFrom();
+        (widget.style ?? buttonTheme.buttonStyle ?? const ButtonStyle())
+            .merge(defaults);
 
     if (widget.icon == null) {
       return OutlinedButton(
