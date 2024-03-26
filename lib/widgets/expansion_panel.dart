@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import '../localizations.dart';
-import '../theme_extensions/spacing.dart';
-import 'data_grid.dart';
-import 'data_grid_theme.dart';
+import 'expansion_panel_theme.dart';
 import 'panel.dart';
 import 'panel_theme.dart';
 
 const Duration _kExpand = Duration(milliseconds: 200);
+
+enum ExpansionPanelControlAffinity {
+  leading,
+  trailing,
+  footer,
+}
 
 /// 启用对单个 [TxExpansionPanel] 的 expanded/collapsed 状态的控制。
 ///
@@ -172,14 +175,14 @@ class TxExpansionPanel extends StatefulWidget {
     super.key,
     this.leading,
     this.subtitle,
-    this.content,
     this.footer,
+    this.collapsedChildren,
     this.onExpansionChanged,
     this.children = const <Widget>[],
     this.trailing,
     this.initiallyExpanded = false,
     this.maintainState = false,
-    this.padding,
+    this.panelPadding,
     this.expandedCrossAxisAlignment,
     this.expandedAlignment,
     this.collapsedPadding,
@@ -193,9 +196,17 @@ class TxExpansionPanel extends StatefulWidget {
     this.collapsedShape,
     this.clipBehavior,
     this.controller,
-    this.collapseButtonText,
-    this.moreButtonText,
+    this.showControlText = true,
+    this.collapseLabel,
+    this.expandLabel,
     this.childrenPadding,
+    this.controlAffinity,
+    this.childrenDecoration,
+    this.dense,
+    this.visualDensity,
+    this.enableFeedback,
+    this.enabled = true,
+    this.expansionAnimationStyle,
   }) : assert(
           expandedCrossAxisAlignment != CrossAxisAlignment.baseline,
           'CrossAxisAlignment.baseline is not supported since the expanded '
@@ -212,9 +223,6 @@ class TxExpansionPanel extends StatefulWidget {
   /// 参考[TxPanel.subtitle]
   final Widget? subtitle;
 
-  /// 参考[TxPanel.content]
-  final Widget? content;
-
   /// 参考[TxPanel.footer]
   final Widget? footer;
 
@@ -223,6 +231,9 @@ class TxExpansionPanel extends StatefulWidget {
   /// 当 panel 开始展开时，将使用值 true 调用此函数。
   /// 当 panel 开始折叠时，将使用值 false 调用此函数。
   final ValueChanged<bool>? onExpansionChanged;
+
+  /// panel 折叠时时显示的小组件。
+  final List<Widget>? collapsedChildren;
 
   /// panel 展开时显示的小组件。
   ///
@@ -311,12 +322,12 @@ class TxExpansionPanel extends StatefulWidget {
   final CrossAxisAlignment? expandedCrossAxisAlignment;
 
   /// 指定 [TxExpansionPanel] 的填充。。
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? panelPadding;
 
   /// 指定 [children] 的填充。
   ///
   /// 如果此属性为 null，则使用 [ExpansionTileThemeData.childrenPadding]。如果这也为
-  /// null，则 [padding] 的值为 [EdgeInsets.zero]。
+  /// null，则 [panelPadding] 的值为 [EdgeInsets.zero]。
   ///
   /// 另请参阅：
   ///
@@ -418,15 +429,59 @@ class TxExpansionPanel extends StatefulWidget {
   /// [TxExpansionPanelController.of]可能比提供控制器更方便。
   final TxExpansionPanelController? controller;
 
+  /// 是否显示控制文字
+  ///
+  /// 默认值为 true
+  final bool showControlText;
+
   /// 收起按钮文字
   ///
   /// 默认值为TxLocalizations.of(context).collapsedButtonLabel
-  final String? collapseButtonText;
+  final String? collapseLabel;
 
   /// 展开按钮文字
   ///
   /// 默认值为TxLocalizations.of(context).moreButtonLabel
-  final String? moreButtonText;
+  final String? expandLabel;
+
+  /// 通常用于将扩展文字和箭头图标强制到[leading]、[trailing]或[footer]。
+  ///
+  /// 默认情况下，[controlAffinity] 的值为 [ListTileControlAffinity.trailing]。
+  final ExpansionPanelControlAffinity? controlAffinity;
+
+  /// [collapsedChildren] 和 [children] 装饰器
+  final Decoration? childrenDecoration;
+
+  /// {@macro flutter.material.ListTile.dense}
+  final bool? dense;
+
+  /// 定义展开磁贴布局的紧凑程度。
+  ///
+  /// {@macro flutter.material.themedata.visualDensity}
+  final VisualDensity? visualDensity;
+
+  /// {@macro flutter.material.ListTile.enableFeedback}
+  final bool? enableFeedback;
+
+  /// 此扩展磁贴是否为交互式磁贴。
+  ///
+  /// 如果为 false，则内部 [TxPanel] 将被禁用，根据主题更改其外观并禁用用户交互。
+  ///
+  /// 即使禁用，仍可以通过 [ExpansionTileController] 以编程方式切换扩展。
+  final bool enabled;
+
+  /// 用于覆盖展开动画曲线和持续时间。
+  ///
+  /// 如果提供了 [AnimationStyle.duration]，它将用于覆盖扩展动画持续时间。如果为 null，
+  /// 则将使用 [TxExpansionPanelThemeData.expansionAnimationStyle] 中的
+  /// [AnimationStyle.duration]。否则，默认为 200 毫秒。
+  ///
+  /// 如果提供了 [AnimationStyle.curve]，它将用于覆盖展开动画曲线。如果为 null，则将使用
+  /// [ExpansionTileThemeData.expansionAnimationStyle] 中的
+  /// [AnimationStyle.curve]。否则，默认为 [Curves.easeIn]。
+  ///
+  /// 要禁用主题动画，请使用 [AnimationStyle.noAnimation]。
+  final AnimationStyle? expansionAnimationStyle;
 
   @override
   State<TxExpansionPanel> createState() => _ExpansionTileState();
@@ -445,7 +500,7 @@ class _ExpansionTileState extends State<TxExpansionPanel>
   final ColorTween _headerColorTween = ColorTween();
   final ColorTween _iconColorTween = ColorTween();
   final ColorTween _backgroundColorTween = ColorTween();
-  final EdgeInsetsGeometryTween _paddingTween = EdgeInsetsGeometryTween();
+  final CurveTween _heightFactorTween = CurveTween(curve: Curves.easeIn);
 
   late AnimationController _animationController;
   late Animation<double> _iconTurns;
@@ -454,7 +509,6 @@ class _ExpansionTileState extends State<TxExpansionPanel>
   late Animation<Color?> _headerColor;
   late Animation<Color?> _iconColor;
   late Animation<Color?> _backgroundColor;
-  late Animation<EdgeInsetsGeometry?> _padding;
 
   bool _isExpanded = false;
   late TxExpansionPanelController _tileController;
@@ -463,7 +517,7 @@ class _ExpansionTileState extends State<TxExpansionPanel>
   void initState() {
     super.initState();
     _animationController = AnimationController(duration: _kExpand, vsync: this);
-    _heightFactor = _animationController.drive(_easeInTween);
+    _heightFactor = _animationController.drive(_heightFactorTween);
     _iconTurns = _animationController.drive(_halfTween.chain(_easeInTween));
     _border = _animationController.drive(_borderTween.chain(_easeOutTween));
     _headerColor =
@@ -472,7 +526,6 @@ class _ExpansionTileState extends State<TxExpansionPanel>
         _animationController.drive(_iconColorTween.chain(_easeInTween));
     _backgroundColor =
         _animationController.drive(_backgroundColorTween.chain(_easeOutTween));
-    _padding = _animationController.drive(_paddingTween.chain(_easeOutTween));
 
     _isExpanded = PageStorage.maybeOf(context)?.readState(context) as bool? ??
         widget.initiallyExpanded;
@@ -523,51 +576,80 @@ class _ExpansionTileState extends State<TxExpansionPanel>
     _toggleExpansion();
   }
 
-  Widget _buildFooter() {
-    final TxLocalizations localizations = TxLocalizations.of(context);
+  // Platform 或 null 关联性默认为尾随。
+  ExpansionPanelControlAffinity _effectiveAffinity(BuildContext context) {
+    return widget.controlAffinity ??
+        TxExpansionPanelTheme.of(context).controlAffinity ??
+        ExpansionPanelControlAffinity.trailing;
+  }
 
-    return GestureDetector(
-      onTap: _toggleExpansion,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        alignment: Alignment.center,
-        child: RichText(
-          text: TextSpan(
-            text: _isExpanded
-                ? (widget.collapseButtonText ??
-                    localizations.collapsedButtonLabel)
-                : (widget.moreButtonText ?? localizations.moreButtonLabel),
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall!
-                .copyWith(color: _headerColor.value),
-            children: [
-              WidgetSpan(
-                alignment: PlaceholderAlignment.middle,
-                child: RotationTransition(
-                  turns: _iconTurns,
-                  child: const Icon(Icons.expand_more),
-                ),
-              ),
-            ],
+  Widget? _buildIcon(BuildContext context) {
+    final Widget icon = RotationTransition(
+      turns: _iconTurns,
+      child: const Icon(Icons.expand_more),
+    );
+    if (!widget.showControlText) {
+      return icon;
+    }
+
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
+    final String collapseLabel =
+        widget.collapseLabel ?? localizations.expandedIconTapHint;
+    final String expandLabel =
+        widget.expandLabel ?? localizations.collapsedIconTapHint;
+    final Widget label = Text(_isExpanded ? collapseLabel : expandLabel);
+
+    return Row(mainAxisSize: MainAxisSize.min, children: [label, icon]);
+  }
+
+  Widget? _buildLeadingIcon(BuildContext context) {
+    if (_effectiveAffinity(context) != ExpansionPanelControlAffinity.leading) {
+      return null;
+    }
+    return _buildIcon(context);
+  }
+
+  Widget? _buildTrailingIcon(BuildContext context) {
+    if (_effectiveAffinity(context) != ExpansionPanelControlAffinity.trailing) {
+      return null;
+    }
+    return _buildIcon(context);
+  }
+
+  Widget? _buildFooter(BuildContext context) {
+    if (_effectiveAffinity(context) != ExpansionPanelControlAffinity.footer) {
+      return null;
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Divider(height: 12.0),
+        GestureDetector(
+          onTap: _toggleExpansion,
+          behavior: HitTestBehavior.opaque,
+          child: Container(
+            alignment: Alignment.center,
+            child: _buildIcon(context),
           ),
         ),
-      ),
+      ],
     );
   }
 
   Widget _buildChildren(BuildContext context, Widget? child) {
     final ThemeData theme = Theme.of(context);
-    final SpacingThemeData spacingTheme = SpacingTheme.of(context);
+    final TxExpansionPanelThemeData expansionPanelTheme =
+        TxExpansionPanelTheme.of(context);
     final ExpansionTileThemeData expansionTileTheme =
         ExpansionTileTheme.of(context);
-    final ShapeBorder expansionTileBorder = _border.value ??
-        const Border(
-          top: BorderSide(color: Colors.transparent),
-          bottom: BorderSide(color: Colors.transparent),
-        );
-    final Clip clipBehavior =
-        widget.clipBehavior ?? expansionTileTheme.clipBehavior ?? Clip.none;
+    final ShapeBorder expansionTileBorder =
+        _border.value ?? const RoundedRectangleBorder();
+    final Clip clipBehavior = widget.clipBehavior ??
+        expansionPanelTheme.clipBehavior ??
+        expansionTileTheme.clipBehavior ??
+        Clip.none;
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
     final String onTapHint = _isExpanded
@@ -589,37 +671,26 @@ class _ExpansionTileState extends State<TxExpansionPanel>
         break;
     }
 
-    final ButtonStyle buttonStyle = ButtonStyle(
-        padding: ButtonStyleButton.allOrNull<EdgeInsetsGeometry>(
-            EdgeInsets.symmetric(
-          vertical: spacingTheme.mini,
-          horizontal: spacingTheme.mini / 2,
-        )),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        visualDensity: const VisualDensity(
-          horizontal: VisualDensity.minimumDensity,
-          vertical: VisualDensity.minimumDensity,
-        ),
-        iconSize: ButtonStyleButton.allOrNull<double>(16.0),
-        textStyle: ButtonStyleButton.allOrNull<TextStyle>(
-          theme.textTheme.labelSmall,
-        ));
-    Widget? trailing;
-    if (widget.trailing != null) {
-      trailing = TextButtonTheme(
-        data: TextButtonThemeData(style: buttonStyle),
-        child: ElevatedButtonTheme(
-          data: ElevatedButtonThemeData(style: buttonStyle),
-          child: OutlinedButtonTheme(
-            data: OutlinedButtonThemeData(style: buttonStyle),
-            child: FilledButtonTheme(
-              data: FilledButtonThemeData(style: buttonStyle),
-              child: IconButtonTheme(
-                data: IconButtonThemeData(style: buttonStyle),
-                child: widget.trailing!,
-              ),
-            ),
-          ),
+    Widget content = ClipRect(
+      child: Align(
+        alignment: widget.expandedAlignment ??
+            expansionTileTheme.expandedAlignment ??
+            Alignment.center,
+        heightFactor: _heightFactor.value,
+        child: child,
+      ),
+    );
+    if (widget.collapsedChildren?.isNotEmpty == true) {
+      content = _buildContent(
+        expansionPanelTheme,
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment:
+              widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.stretch,
+          children: [
+            ...widget.collapsedChildren!,
+            content,
+          ],
         ),
       );
     }
@@ -632,45 +703,44 @@ class _ExpansionTileState extends State<TxExpansionPanel>
             Colors.transparent,
         shape: expansionTileBorder,
       ),
-      padding: _padding.value,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Semantics(
-            hint: semanticsHint,
-            onTapHint: onTapHint,
-            child: TxPanel(
-              onTap: _handleTap,
-              margin: EdgeInsets.zero,
-              padding: EdgeInsets.zero,
-              leading: widget.leading,
-              title: widget.title,
-              subtitle: widget.subtitle,
-              trailing: trailing,
-              content: widget.content,
-              footer: widget.footer,
-            ),
+      child: Semantics(
+        hint: semanticsHint,
+        onTapHint: onTapHint,
+        child: ListTileTheme.merge(
+          iconColor: _iconColor.value ?? expansionTileTheme.iconColor,
+          textColor: _headerColor.value,
+          child: TxPanel(
+            enabled: widget.enabled,
+            onTap: _handleTap,
+            dense: widget.dense,
+            visualDensity: widget.visualDensity,
+            enableFeedback: widget.enableFeedback,
+            padding: widget.panelPadding ?? expansionPanelTheme.panelPadding,
+            leading: widget.leading ?? _buildLeadingIcon(context),
+            title: widget.title,
+            subtitle: widget.subtitle,
+            trailing: widget.trailing ?? _buildTrailingIcon(context),
+            footer: widget.footer ?? _buildFooter(context),
+            content: content,
           ),
-          ClipRect(
-            child: Align(
-              alignment: widget.expandedAlignment ??
-                  expansionTileTheme.expandedAlignment ??
-                  Alignment.center,
-              heightFactor: _heightFactor.value,
-              child: child,
-            ),
-          ),
-          Divider(height: spacingTheme.medium),
-          IconTheme(
-            data: IconThemeData(
-              size: 18.0,
-              color: _iconColor.value ?? expansionTileTheme.iconColor,
-            ),
-            child: _buildFooter(),
-          ),
-        ],
+        ),
       ),
     );
+  }
+
+  Widget _buildContent(TxExpansionPanelThemeData theme, Widget child) {
+    final Decoration? childrenDecoration =
+        widget.childrenDecoration ?? theme.childrenDecoration;
+    final EdgeInsetsGeometry? childrenPadding =
+        widget.childrenPadding ?? theme.childrenPadding;
+
+    if (childrenPadding != null) {
+      child = Padding(padding: childrenPadding, child: child);
+    }
+    if (childrenDecoration != null) {
+      child = DecoratedBox(decoration: childrenDecoration, child: child);
+    }
+    return child;
   }
 
   @override
@@ -679,26 +749,28 @@ class _ExpansionTileState extends State<TxExpansionPanel>
     final ThemeData theme = Theme.of(context);
     final ExpansionTileThemeData expansionTileTheme =
         ExpansionTileTheme.of(context);
+    final TxExpansionPanelThemeData expansionPanelTheme =
+        TxExpansionPanelTheme.of(context);
     final ExpansionTileThemeData defaults = _ExpansionTileDefaultsM3(context);
     if (widget.collapsedShape != oldWidget.collapsedShape ||
         widget.shape != oldWidget.shape) {
-      _updateShapeBorder(expansionTileTheme, theme);
+      _updateShapeBorder(expansionPanelTheme, expansionTileTheme, theme);
     }
     if (widget.collapsedTextColor != oldWidget.collapsedTextColor ||
         widget.textColor != oldWidget.textColor) {
-      _updateHeaderColor(expansionTileTheme, defaults);
+      _updateHeaderColor(expansionPanelTheme, expansionTileTheme, defaults);
     }
     if (widget.collapsedIconColor != oldWidget.collapsedIconColor ||
         widget.iconColor != oldWidget.iconColor) {
-      _updateIconColor(expansionTileTheme, defaults);
+      _updateIconColor(expansionPanelTheme, expansionTileTheme, defaults);
     }
     if (widget.backgroundColor != oldWidget.backgroundColor ||
         widget.collapsedBackgroundColor != oldWidget.collapsedBackgroundColor) {
-      _updateBackgroundColor(expansionTileTheme);
+      _updateBackgroundColor(expansionPanelTheme, expansionTileTheme);
     }
-    if (widget.padding != oldWidget.padding ||
-        widget.collapsedPadding != oldWidget.collapsedPadding) {
-      _updatePadding();
+    if (widget.expansionAnimationStyle != oldWidget.expansionAnimationStyle) {
+      _updateAnimationDuration(expansionPanelTheme, expansionTileTheme);
+      _updateHeightFactorCurve(expansionPanelTheme, expansionTileTheme);
     }
   }
 
@@ -707,73 +779,97 @@ class _ExpansionTileState extends State<TxExpansionPanel>
     final ThemeData theme = Theme.of(context);
     final ExpansionTileThemeData expansionTileTheme =
         ExpansionTileTheme.of(context);
+    final TxExpansionPanelThemeData expansionPanelTheme =
+        TxExpansionPanelTheme.of(context);
     final ExpansionTileThemeData defaults = _ExpansionTileDefaultsM3(context);
-    _updateShapeBorder(expansionTileTheme, theme);
-    _updateHeaderColor(expansionTileTheme, defaults);
-    _updateIconColor(expansionTileTheme, defaults);
-    _updateBackgroundColor(expansionTileTheme);
-    _updatePadding();
+    _updateAnimationDuration(expansionPanelTheme, expansionTileTheme);
+    _updateShapeBorder(expansionPanelTheme, expansionTileTheme, theme);
+    _updateHeaderColor(expansionPanelTheme, expansionTileTheme, defaults);
+    _updateIconColor(expansionPanelTheme, expansionTileTheme, defaults);
+    _updateBackgroundColor(expansionPanelTheme, expansionTileTheme);
+    _updateHeightFactorCurve(expansionPanelTheme, expansionTileTheme);
     super.didChangeDependencies();
   }
 
+  void _updateAnimationDuration(
+    TxExpansionPanelThemeData expansionPanelTheme,
+    ExpansionTileThemeData expansionTileTheme,
+  ) {
+    _animationController.duration = widget.expansionAnimationStyle?.duration ??
+        expansionPanelTheme.expansionAnimationStyle?.duration ??
+        expansionTileTheme.expansionAnimationStyle?.duration ??
+        _kExpand;
+  }
+
   void _updateShapeBorder(
+    TxExpansionPanelThemeData expansionPanelTheme,
     ExpansionTileThemeData expansionTileTheme,
     ThemeData theme,
   ) {
     _borderTween
       ..begin = widget.collapsedShape ??
+          expansionPanelTheme.collapsedShape ??
           expansionTileTheme.collapsedShape ??
-          const Border(
-            top: BorderSide(color: Colors.transparent),
-            bottom: BorderSide(color: Colors.transparent),
-          )
+          const RoundedRectangleBorder()
       ..end = widget.shape ??
+          expansionPanelTheme.shape ??
           expansionTileTheme.shape ??
-          const Border(
-            top: BorderSide(color: Colors.transparent),
-            bottom: BorderSide(color: Colors.transparent),
-          );
+          const RoundedRectangleBorder();
   }
 
   void _updateHeaderColor(
+    TxExpansionPanelThemeData expansionPanelTheme,
     ExpansionTileThemeData expansionTileTheme,
     ExpansionTileThemeData defaults,
   ) {
     _headerColorTween
       ..begin = widget.collapsedTextColor ??
+          expansionPanelTheme.collapsedTextColor ??
           expansionTileTheme.collapsedTextColor ??
           defaults.collapsedTextColor
       ..end = widget.textColor ??
+          expansionPanelTheme.textColor ??
           expansionTileTheme.textColor ??
           defaults.textColor;
   }
 
   void _updateIconColor(
+    TxExpansionPanelThemeData expansionPanelTheme,
     ExpansionTileThemeData expansionTileTheme,
     ExpansionTileThemeData defaults,
   ) {
     _iconColorTween
       ..begin = widget.collapsedIconColor ??
+          expansionPanelTheme.collapsedIconColor ??
           expansionTileTheme.collapsedIconColor ??
           defaults.collapsedIconColor
       ..end = widget.iconColor ??
+          expansionPanelTheme.iconColor ??
           expansionTileTheme.iconColor ??
           defaults.iconColor;
   }
 
-  void _updateBackgroundColor(ExpansionTileThemeData expansionTileTheme) {
+  void _updateBackgroundColor(
+    TxExpansionPanelThemeData expansionPanelTheme,
+    ExpansionTileThemeData expansionTileTheme,
+  ) {
     _backgroundColorTween
       ..begin = widget.collapsedBackgroundColor ??
+          expansionPanelTheme.collapsedBackgroundColor ??
           expansionTileTheme.collapsedBackgroundColor
-      ..end = widget.backgroundColor ?? expansionTileTheme.backgroundColor;
+      ..end = widget.backgroundColor ??
+          expansionPanelTheme.backgroundColor ??
+          expansionTileTheme.backgroundColor;
   }
 
-  void _updatePadding() {
-    final EdgeInsetsGeometry defaultPadding =
-        SpacingTheme.of(context).edgeInsetsMedium;
-    _paddingTween
-      ..begin = widget.collapsedPadding ?? defaultPadding
-      ..end = widget.padding ?? defaultPadding;
+  void _updateHeightFactorCurve(
+    TxExpansionPanelThemeData expansionPanelTheme,
+    ExpansionTileThemeData expansionTileTheme,
+  ) {
+    _heightFactorTween.curve = widget.expansionAnimationStyle?.curve ??
+        expansionPanelTheme.expansionAnimationStyle?.curve ??
+        expansionTileTheme.expansionAnimationStyle?.curve ??
+        Curves.easeIn;
   }
 
   @override
@@ -785,17 +881,10 @@ class _ExpansionTileState extends State<TxExpansionPanel>
       offstage: closed,
       child: TickerMode(
         enabled: !closed,
-        child: Padding(
-          padding: widget.childrenPadding ??
-              EdgeInsets.only(
-                top: TxDataGridTheme.of(context).rowSpacing ??
-                    TxDataGrid.defaultRowSpacing,
-              ),
-          child: Column(
-            crossAxisAlignment:
-                widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.center,
-            children: widget.children,
-          ),
+        child: Column(
+          crossAxisAlignment:
+              widget.expandedCrossAxisAlignment ?? CrossAxisAlignment.stretch,
+          children: widget.children,
         ),
       ),
     );
