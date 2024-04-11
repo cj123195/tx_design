@@ -12,56 +12,60 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
   const TxCellThemeData({
     this.dense,
     this.iconColor,
-    this.textColor,
     this.padding,
-    this.horizontalGap,
+    this.gap,
     this.minLeadingWidth,
     this.minLabelWidth,
     this.visualDensity,
-    this.labelStyle,
-    this.contentStyle,
-    this.crossAxisAlignment,
+    this.labelTextStyle,
+    this.contentTextStyle,
+    this.leadingTextStyle,
+    this.minVerticalPadding,
+    this.contentTextAlign,
   });
 
   final bool? dense;
   final Color? iconColor;
-  final Color? textColor;
   final EdgeInsetsGeometry? padding;
-  final double? horizontalGap;
+  final double? gap;
   final double? minLeadingWidth;
   final double? minLabelWidth;
   final VisualDensity? visualDensity;
-  final TextStyle? labelStyle;
-  final TextStyle? contentStyle;
-  final CrossAxisAlignment? crossAxisAlignment;
+  final TextStyle? labelTextStyle;
+  final TextStyle? contentTextStyle;
+  final TextStyle? leadingTextStyle;
+  final double? minVerticalPadding;
+  final TextAlign? contentTextAlign;
 
   @override
-  ThemeExtension<TxCellThemeData> copyWith({
+  TxCellThemeData copyWith({
     bool? dense,
     Color? iconColor,
-    Color? textColor,
     EdgeInsetsGeometry? padding,
-    double? horizontalGap,
+    double? gap,
     double? minLeadingWidth,
     double? minLabelWidth,
     VisualDensity? visualDensity,
-    TextStyle? labelStyle,
-    TextStyle? contentStyle,
-    CrossAxisAlignment? crossAxisAlignment,
-    bool? alignContentWithLabel,
+    TextStyle? labelTextStyle,
+    TextStyle? contentTextStyle,
+    double? minVerticalPadding,
+    TextStyle? leadingTextStyle,
+    TextAlign? contentTextAlign,
+    int? contentMaxLines,
   }) {
     return TxCellThemeData(
       dense: dense ?? this.dense,
       iconColor: iconColor ?? this.iconColor,
-      textColor: textColor ?? this.textColor,
+      minVerticalPadding: minVerticalPadding ?? this.minVerticalPadding,
       padding: padding ?? this.padding,
-      horizontalGap: horizontalGap ?? this.horizontalGap,
+      gap: gap ?? this.gap,
       minLeadingWidth: minLeadingWidth ?? this.minLeadingWidth,
       minLabelWidth: minLabelWidth ?? this.minLabelWidth,
       visualDensity: visualDensity ?? this.visualDensity,
-      labelStyle: labelStyle ?? this.labelStyle,
-      contentStyle: contentStyle ?? this.contentStyle,
-      crossAxisAlignment: crossAxisAlignment ?? this.crossAxisAlignment,
+      labelTextStyle: labelTextStyle ?? this.labelTextStyle,
+      contentTextStyle: contentTextStyle ?? this.contentTextStyle,
+      contentTextAlign: contentTextAlign ?? this.contentTextAlign,
+      leadingTextStyle: leadingTextStyle ?? this.leadingTextStyle,
     );
   }
 
@@ -74,17 +78,20 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
 
     return TxCellThemeData(
       dense: t < 0.5 ? dense : other.dense,
-      labelStyle: TextStyle.lerp(labelStyle, other.labelStyle, t),
-      contentStyle: TextStyle.lerp(contentStyle, other.contentStyle, t),
+      labelTextStyle: TextStyle.lerp(labelTextStyle, other.labelTextStyle, t),
+      contentTextStyle:
+          TextStyle.lerp(contentTextStyle, other.contentTextStyle, t),
       iconColor: Color.lerp(iconColor, other.iconColor, t),
-      textColor: Color.lerp(textColor, other.textColor, t),
+      contentTextAlign: t < 0.5 ? contentTextAlign : other.contentTextAlign,
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t),
-      horizontalGap: lerpDouble(horizontalGap, other.horizontalGap, t),
+      gap: lerpDouble(gap, other.gap, t),
       minLeadingWidth: lerpDouble(minLeadingWidth, other.minLeadingWidth, t),
       minLabelWidth: lerpDouble(minLabelWidth, other.minLabelWidth, t),
       visualDensity: t < 0.5 ? visualDensity : other.visualDensity,
-      crossAxisAlignment:
-          t < 0.5 ? crossAxisAlignment : other.crossAxisAlignment,
+      minVerticalPadding:
+          lerpDouble(minVerticalPadding, other.minVerticalPadding, t),
+      leadingTextStyle:
+          TextStyle.lerp(leadingTextStyle, other.leadingTextStyle, t),
     );
   }
 }
