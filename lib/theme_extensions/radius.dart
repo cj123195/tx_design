@@ -18,6 +18,7 @@ class RadiusThemeData extends ThemeExtension<RadiusThemeData> {
     this.large = 16.0,
     this.largest = 28.0,
   });
+
   final double mini;
   final double small;
   final double medium;
@@ -25,19 +26,34 @@ class RadiusThemeData extends ThemeExtension<RadiusThemeData> {
   final double largest;
 
   /// 最小号四角圆角
-  BorderRadius get miniRadius => BorderRadius.circular(mini);
+  BorderRadius get miniBorderRadius => BorderRadius.circular(mini);
 
   /// 小号四角圆角
-  BorderRadius get smallRadius => BorderRadius.circular(small);
+  BorderRadius get smallBorderRadius => BorderRadius.circular(small);
 
   /// 中号四角圆角
-  BorderRadius get mediumRadius => BorderRadius.circular(medium);
+  BorderRadius get mediumBorderRadius => BorderRadius.circular(medium);
 
   /// 大号四角圆角
-  BorderRadius get largeRadius => BorderRadius.circular(large);
+  BorderRadius get largeBorderRadius => BorderRadius.circular(large);
 
   /// 最大号四角圆角
-  BorderRadius get largestRadius => BorderRadius.circular(largest);
+  BorderRadius get largestBorderRadius => BorderRadius.circular(largest);
+
+  /// 最小号四角圆角
+  Radius get miniRadius => Radius.circular(mini);
+
+  /// 小号四角圆角
+  Radius get smallRadius => Radius.circular(small);
+
+  /// 中号四角圆角
+  Radius get mediumRadius => Radius.circular(medium);
+
+  /// 大号四角圆角
+  Radius get largeRadius => Radius.circular(large);
+
+  /// 最大号四角圆角
+  Radius get largestRadius => Radius.circular(largest);
 
   @override
   ThemeExtension<RadiusThemeData> copyWith({
