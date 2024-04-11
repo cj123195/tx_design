@@ -401,6 +401,8 @@ class TxPanel extends StatelessWidget {
     final Widget titleText = AnimatedDefaultTextStyle(
       style: titleStyle,
       duration: kThemeChangeDuration,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
       child: title ?? const SizedBox(),
     );
 
@@ -538,7 +540,7 @@ class TxPanel extends StatelessWidget {
                     horizontalTitleGap: horizontalTitleGap ??
                         panelTheme.horizontalTitleGap ??
                         tileTheme.horizontalTitleGap ??
-                        16,
+                        defaults.horizontalTitleGap!,
                     minLeadingWidth: minLeadingWidth ??
                         panelTheme.minLeadingWidth ??
                         defaults.minLeadingWidth!,
@@ -547,7 +549,9 @@ class TxPanel extends StatelessWidget {
                     visualDensity: visualDensity ??
                         panelTheme.visualDensity ??
                         theme.visualDensity,
-                    verticalGap: verticalGap ?? 8.0,
+                    verticalGap: verticalGap ??
+                        panelTheme.verticalGap ??
+                        defaults.verticalGap!,
                     textDirection: textDirection,
                   ),
                 ),
@@ -1099,6 +1103,8 @@ class _PanelDefaultsM3 extends TxPanelThemeData {
           minLeadingWidth: 24,
           shape: const RoundedRectangleBorder(),
           margin: const EdgeInsets.all(0.0),
+          horizontalTitleGap: 16.0,
+          verticalGap: 12.0,
         );
 
   final BuildContext context;
