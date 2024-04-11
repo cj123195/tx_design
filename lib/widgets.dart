@@ -1,6 +1,8 @@
 export 'widgets/action_bar.dart';
 export 'widgets/action_bar_theme.dart';
 export 'widgets/animated_icon_button.dart';
+export 'widgets/badge.dart';
+export 'widgets/badge_theme.dart';
 export 'widgets/bottom_sheet.dart';
 export 'widgets/button_bar.dart';
 export 'widgets/button_bar_theme.dart';
@@ -49,4 +51,6 @@ export 'widgets/tip.dart';
 export 'widgets/tip_theme.dart';
 export 'widgets/toast.dart';
 export 'widgets/toast_theme.dart';
+export 'widgets/top_sheet.dart';
+export 'widgets/top_sheet_theme.dart';
 export 'widgets/wrap_grid_view.dart';
