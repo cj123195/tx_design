@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:tx_design/chart/base/axis_chart/axis_chart_data.dart';
+import 'package:tx_design/chart/base/axis_chart/axis_chart_widgets.dart';
+import 'package:tx_design/chart/line_chart/line_chart.dart';
 import 'package:tx_design/form/form_item_theme.dart';
 import 'package:tx_design/localizations.dart';
 import 'package:tx_design/tx_design.dart';
@@ -88,149 +91,267 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return FormView();
+  }
+}
+
+class FormView extends StatelessWidget {
+  FormView({super.key});
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Map form = {};
+  final Map form = {};
 
   static const List<String> sources = ['选项1', '选项2', '选项3'];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            onPressed: widget.changeTheme,
-            icon: Icon(Theme.of(context).brightness == Brightness.dark
-                ? Icons.dark_mode
-                : Icons.light_mode),
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(12.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              InputFormField(
-                labelText: '输入框',
-                // required: true,
-                onChanged: (val) => form['field1'] = val,
-                initialValue: form['field1'],
-                // direction: Axis.horizontal,
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(12.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  InputFormField(
+                    labelText: '输入框',
+                    // required: true,
+                    onChanged: (val) => form['field1'] = val,
+                    initialValue: form['field1'],
+                    // direction: Axis.horizontal,
+                  ),
+                  NumberFormField(
+                    labelText: '数字输入框',
+                    required: true,
+                    minimumValue: -10,
+                    maximumValue: 20,
+                    onChanged: (val) => form['field2'] = val,
+                    initialValue: form['field2'],
+                    // direction: Axis.horizontal,
+                  ),
+                  // const SizedBox(height: 8.0),
+                  CheckboxFormField(
+                    sources: sources,
+                    labelMapper: (data) => data,
+                    labelText: 'CheckBox多选',
+                    minPickNumber: 1,
+                    onChanged: (val) =>
+                        form['field3'] = val?.map((e) => e).toSet(),
+                    initialValue: form['field3'],
+                    required: true,
+                  ),
+                  // const SizedBox(height: 8.0),
+                  DatePickerFormField(
+                    labelText: '日期选择',
+                    onChanged: (val) => form['field4'] = val?.format(),
+                    initialDateStr: form['field4'],
+                  ),
+                  DatetimePickerFormField(
+                    labelText: '日期时间选择',
+                    onChanged: (val) => form['field5'] = val,
+                    initialDatetime: form['field5'],
+                    required: true,
+                    firstDate: DateTime.now(),
+                  ),
+                  TimePickerFormField(
+                    labelText: '时间选择',
+                    onChanged: (val) => form['field9'] = val,
+                    initialTime: form['field9'],
+                    required: true,
+                  ),
+                  // const SizedBox(height: 8.0),
+                  DateRangePickerFormField(
+                    labelText: '时间区间选择',
+                    onChanged: (val) => form['field6'] = val,
+                    initialValue: form['field6'],
+                    required: true,
+                    firstDate: DateTime.now(),
+                  ),
+                  DatetimeRangePickerFormField(
+                    labelText: '时间区间选择',
+                    onChanged: (val) => form['field6'] = val,
+                    initialValue: form['field6'],
+                    required: true,
+                    firstDate: DateTime.now(),
+                  ),
+                  DropdownFormField(
+                    sources: sources,
+                    labelMapper: (data) => data,
+                    labelText: '下拉选择',
+                    onChanged: (val) => form['field7'] = val,
+                    initialValue: form['field7'],
+                    required: true,
+                    direction: Axis.horizontal,
+                    isDense: true,
+                    isExpanded: true,
+                  ),
+                  PickerFormField(
+                    sources: sources,
+                    labelMapper: (data) => data,
+                    labelText: '单项选择',
+                    onChanged: (val) => form['field7'] = val,
+                    initialValue: form['field7'],
+                    required: true,
+                  ),
+                  RadioFormField(
+                    sources: sources,
+                    labelMapper: (data) => data,
+                    labelText: 'Radio单选',
+                    onChanged: (val) => form['field7'] = val,
+                    initialValue: form['field7'],
+                    required: true,
+                    direction: Axis.horizontal,
+                  ),
+                  MultiPickerFormField(
+                    sources: sources,
+                    labelMapper: (data) => data,
+                    labelText: '多选',
+                    minPickNumber: 1,
+                    onChanged: (val) =>
+                        form['field3'] = val?.map((e) => e).toSet(),
+                    initialValue: form['field3'],
+                    required: true,
+                  ),
+                ],
               ),
-              NumberFormField(
-                labelText: '数字输入框',
-                required: true,
-                minimumValue: -10,
-                maximumValue: 20,
-                onChanged: (val) => form['field2'] = val,
-                initialValue: form['field2'],
-                // direction: Axis.horizontal,
-              ),
-              // const SizedBox(height: 8.0),
-              CheckboxFormField(
-                sources: sources,
-                labelMapper: (data) => data,
-                labelText: 'CheckBox多选',
-                minPickNumber: 1,
-                onChanged: (val) => form['field3'] = val?.map((e) => e).toSet(),
-                initialValue: form['field3'],
-                required: true,
-              ),
-              // const SizedBox(height: 8.0),
-              DatePickerFormField(
-                labelText: '日期选择',
-                onChanged: (val) => form['field4'] = val?.format(),
-                initialDateStr: form['field4'],
-              ),
-              DatetimePickerFormField(
-                labelText: '日期时间选择',
-                onChanged: (val) => form['field5'] = val,
-                initialDatetime: form['field5'],
-                required: true,
-                firstDate: DateTime.now(),
-              ),
-              TimePickerFormField(
-                labelText: '时间选择',
-                onChanged: (val) => form['field9'] = val,
-                initialTime: form['field9'],
-                required: true,
-              ),
-              // const SizedBox(height: 8.0),
-              DateRangePickerFormField(
-                labelText: '时间区间选择',
-                onChanged: (val) => form['field6'] = val,
-                initialValue: form['field6'],
-                required: true,
-                firstDate: DateTime.now(),
-              ),
-              DatetimeRangePickerFormField(
-                labelText: '时间区间选择',
-                onChanged: (val) => form['field6'] = val,
-                initialValue: form['field6'],
-                required: true,
-                firstDate: DateTime.now(),
-              ),
-              DropdownFormField(
-                sources: sources,
-                labelMapper: (data) => data,
-                labelText: '下拉选择',
-                onChanged: (val) => form['field7'] = val,
-                initialValue: form['field7'],
-                required: true,
-                direction: Axis.horizontal,
-                isDense: true,
-                isExpanded: true,
-              ),
-              PickerFormField(
-                sources: sources,
-                labelMapper: (data) => data,
-                labelText: '单项选择',
-                onChanged: (val) => form['field7'] = val,
-                initialValue: form['field7'],
-                required: true,
-              ),
-              RadioFormField(
-                sources: sources,
-                labelMapper: (data) => data,
-                labelText: 'Radio单选',
-                onChanged: (val) => form['field7'] = val,
-                initialValue: form['field7'],
-                required: true,
-                direction: Axis.horizontal,
-              ),
-              MultiPickerFormField(
-                sources: sources,
-                labelMapper: (data) => data,
-                labelText: '多选',
-                minPickNumber: 1,
-                onChanged: (val) => form['field3'] = val?.map((e) => e).toSet(),
-                initialValue: form['field3'],
-                required: true,
-              ),
-            ],
+            ),
           ),
         ),
-      ),
-      bottomNavigationBar: TxButtonBar.more(
-        mainButton: ElevatedButton(
-          onPressed: () {
-            _formKey.currentState?.validate();
-          },
-          child: const Text('验证'),
+        TxButtonBar.more(
+          mainButton: ElevatedButton(
+            onPressed: () {
+              _formKey.currentState?.validate();
+            },
+            child: const Text('验证'),
+          ),
+          menus: const [
+            PopupMenuItem(child: Text('选项一')),
+            PopupMenuItem(child: Text('选项二')),
+            PopupMenuItem(child: Text('选项三'))
+          ],
         ),
-        menus: const [
-          PopupMenuItem(child: Text('选项一')),
-          PopupMenuItem(child: Text('选项二')),
-          PopupMenuItem(child: Text('选项三'))
-        ],
+      ],
+    );
+  }
+}
+
+class ChartView extends StatelessWidget {
+  const ChartView({super.key});
+
+  static const Map state = {
+    "labels": [
+      "9.12121212",
+      "9.1321212",
+      "9.142121",
+      "9.1521212",
+      "9.16",
+      "9.17",
+      "9.18",
+      "9.12",
+      "9.13",
+      "9.14",
+      "9.15",
+      "9.16",
+      "9.17",
+      "9.18"
+    ],
+    "data": [
+      {
+        "legend": "实际掘进进尺",
+        "values": [
+          12.2,
+          13.6,
+          20.0,
+          15.6,
+          18.0,
+          21.3,
+          23.0,
+          12.2,
+          13.6,
+          20.0,
+          15.6,
+          18.0,
+          21.3,
+          23.0
+        ]
+      },
+      {
+        "legend": "计划掘进进尺",
+        "values": [10.2, 11.6, 18.0, 13.6, 16.0, 19.3, 21.0]
+      }
+    ]
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final List<String>? labels = state['labels']?.cast<String>();
+
+    final List<Map> datasource = state['data']?.cast<Map>() ?? [];
+    final List<List<num>> values = [];
+
+    for (Map data in datasource) {
+      values.add(data['values']?.cast<num>() ?? []);
+    }
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: AspectRatio(
+          aspectRatio: 1.7,
+          child: LineChart(
+            LineChartData(
+              horizontalGap: 12.0,
+              lineBarsData: List.generate(
+                values.length,
+                (index) {
+                  final List<num> data = values[index];
+
+                  BarAreaData? belowBarData;
+
+                  return LineChartBarData(
+                    shadow:
+                        const BoxShadow(color: Colors.green, blurRadius: 8.0),
+                    color: Colors.primaries[index],
+                    isStrokeCapRound: true,
+                    isCurved: true,
+                    spots: List.generate(
+                      data.length,
+                      (i) => FlSpot(i.toDouble(), data[i].toDouble()),
+                    ),
+                    belowBarData: belowBarData,
+                  );
+                },
+              ),
+              titlesData: FlTitlesData(
+                leftTitles:
+                    const AxisTitles(sideTitles: SideTitles(showTitles: true)),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    titlesSize: 80,
+                    getTitlesWidget: (index, meta) {
+                      if (index >= labels!.length) {
+                        return const SizedBox();
+                      }
+                      return SideTitleWidget(
+                        axisSide: meta.axisSide,
+                        child: Text(labels[index.toInt()]),
+                      );
+                    },
+                    showTitles: true,
+                  ),
+                ),
+              ),
+              gridData: const FlGridData(show: true),
+              minY: 0,
+            ),
+          ),
+        ),
       ),
     );
   }
