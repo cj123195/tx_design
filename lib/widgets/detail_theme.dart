@@ -10,37 +10,49 @@ import 'detail.dart';
 @immutable
 class TxDetailThemeData extends ThemeExtension<TxDetailThemeData> {
   const TxDetailThemeData({
-    this.separate,
+    this.separator,
     this.dense,
     this.padding,
     this.minLabelWidth,
-    this.labelStyle,
-    this.contentStyle,
+    this.decoration,
+    this.contentTextStyle,
+    this.labelTextStyle,
+    this.contentTextAlign,
+    this.visualDensity,
   });
 
-  final bool? separate;
-  final bool? dense;
+  final Widget? separator;
+  final Decoration? decoration;
   final EdgeInsetsGeometry? padding;
+  final TextStyle? contentTextStyle;
+  final TextStyle? labelTextStyle;
   final double? minLabelWidth;
-  final TextStyle? labelStyle;
-  final TextStyle? contentStyle;
+  final TextAlign? contentTextAlign;
+  final bool? dense;
+  final VisualDensity? visualDensity;
 
   @override
   ThemeExtension<TxDetailThemeData> copyWith({
-    bool? dense,
-    bool? separate,
+    Decoration? decoration,
     EdgeInsetsGeometry? padding,
+    Widget? separator,
+    TextStyle? contentTextStyle,
+    TextStyle? labelTextStyle,
     double? minLabelWidth,
-    TextStyle? labelStyle,
-    TextStyle? contentStyle,
+    bool? dense,
+    VisualDensity? visualDensity,
+    TextAlign? contentTextAlign,
   }) {
     return TxDetailThemeData(
-      separate: separate ?? this.separate,
-      dense: dense ?? this.dense,
+      separator: separator ?? this.separator,
+      decoration: decoration ?? this.decoration,
       padding: padding ?? this.padding,
+      contentTextStyle: contentTextStyle ?? this.contentTextStyle,
+      labelTextStyle: labelTextStyle ?? this.labelTextStyle,
       minLabelWidth: minLabelWidth ?? this.minLabelWidth,
-      labelStyle: labelStyle ?? this.labelStyle,
-      contentStyle: contentStyle ?? this.contentStyle,
+      dense: dense ?? this.dense,
+      visualDensity: visualDensity ?? this.visualDensity,
+      contentTextAlign: contentTextAlign ?? this.contentTextAlign,
     );
   }
 
@@ -51,13 +63,27 @@ class TxDetailThemeData extends ThemeExtension<TxDetailThemeData> {
       return this;
     }
 
+    VisualDensity? effectiveVisualDensity;
+    if (visualDensity == null) {
+      effectiveVisualDensity = other.visualDensity;
+    } else if (other.visualDensity == null) {
+      effectiveVisualDensity = visualDensity;
+    } else {
+      effectiveVisualDensity =
+          VisualDensity.lerp(visualDensity!, other.visualDensity!, t);
+    }
+
     return TxDetailThemeData(
-      dense: t < 0.5 ? dense : other.dense,
-      separate: t < 0.5 ? separate : other.separate,
-      labelStyle: TextStyle.lerp(labelStyle, other.labelStyle, t),
-      contentStyle: TextStyle.lerp(contentStyle, other.contentStyle, t),
+      decoration: Decoration.lerp(decoration, other.decoration, t),
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t),
-      minLabelWidth: lerpDouble(minLabelWidth, other.minLabelWidth, t),
+      contentTextStyle:
+          TextStyle.lerp(contentTextStyle, other.contentTextStyle, t),
+      labelTextStyle: TextStyle.lerp(labelTextStyle, other.labelTextStyle, t),
+      dense: t < 0.5 ? dense : other.dense,
+      separator: t < 0.5 ? separator : other.separator,
+      minLabelWidth: lerpDouble(minLabelWidth, minLabelWidth, t),
+      visualDensity: effectiveVisualDensity,
+      contentTextAlign: t < 0.5 ? contentTextAlign : other.contentTextAlign,
     );
   }
 }

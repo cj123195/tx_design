@@ -1,211 +1,110 @@
 import 'package:flutter/material.dart';
 
-import '../localizations.dart';
+import 'cell.dart';
+import 'cell_theme.dart';
 import 'detail_theme.dart';
-import 'dialog.dart';
 
 /// 详情页，用于展示详情数据
 class TxDetailView extends StatelessWidget {
   const TxDetailView({
-    required this.detailItems,
+    required this.children,
     super.key,
-    this.separate,
-    this.labelStyle,
-    this.contentStyle,
-    this.dense,
-    this.minLabelWidth,
+    this.decoration,
     this.padding,
+    this.separator,
   });
 
-  factory TxDetailView.fromMap({
-    required Map<String, dynamic> source,
-    Map<int, DetailTile>? slots,
-    bool separate = true,
-    TextStyle? labelStyle,
-    TextStyle? contentStyle,
+  /// 创建由[data]参数派生出的描述数据表的小组件。
+  ///
+  /// [data] 参数不能为空。
+  TxDetailView.fromMap(
+    Map<String, dynamic> data, {
+    super.key,
+    final int columnNum = 2,
+    this.padding,
+    this.decoration,
+    this.separator,
+    Map<int, Widget>? slots,
     bool? dense,
+    VisualDensity? visualDensity,
     double? minLabelWidth,
-    EdgeInsetsGeometry? padding,
-  }) {
-    final List<DetailTile> tiles = source.keys.map((key) {
-      return DetailTile.fromText(labelText: key, contentValue: source[key]);
-    }).toList();
-    slots?.forEach((key, value) {
-      if (key >= tiles.length) {
-        tiles.add(value);
-      } else if (key < 0) {
-        tiles.insert(0, value);
-      } else {
-        tiles.insert(key, value);
-      }
-    });
+    double? minLeadingWidth,
+    double? horizontalGap,
+    TextStyle? contentTextStyle,
+    TextStyle? labelTextStyle,
+    TextAlign? contentTextAlign,
+  }) : children = TxCell.fromMap(
+          data,
+          padding: EdgeInsets.zero,
+          minVerticalPadding: 0,
+          slots: slots,
+          dense: dense,
+          visualDensity: visualDensity,
+          minLeadingWidth: minLeadingWidth,
+          minLabelWidth: minLabelWidth,
+          horizontalGap: horizontalGap,
+          labelTextStyle: labelTextStyle,
+          contentTextStyle: contentTextStyle,
+          contentTextAlign: contentTextAlign,
+          contentMaxLines: null,
+        );
 
-    return TxDetailView(
-      detailItems: tiles,
-      separate: separate,
-      labelStyle: labelStyle,
-      contentStyle: contentStyle,
-      dense: dense,
-      minLabelWidth: minLabelWidth,
-      padding: padding,
-    );
-  }
-
-  /// 详情项
-  final List<DetailTile> detailItems;
-
-  /// 是否分隔
-  final bool? separate;
-
-  /// [DetailTile.label]文字样式
-  final TextStyle? labelStyle;
-
-  /// [DetailTile.content]文字样式
-  final TextStyle? contentStyle;
-
-  /// 是否紧凑
-  final bool? dense;
-
-  /// [DetailTile.label]最小宽度
-  final double? minLabelWidth;
+  /// 栅格的背景和边框装饰
+  ///
+  /// 如果为 null，则使用 [TxDetailThemeData.decoration]。默认情况下没有装饰。
+  final Decoration? decoration;
 
   /// 内边距
+  ///
+  /// 如果为 null，则使用 [TxDetailThemeData.padding]。此值默认为
+  /// [kMinInteractiveDimension] 以符合Material Design规范。
   final EdgeInsetsGeometry? padding;
+
+  /// 垂直分隔组件。
+  ///
+  /// 如果为 null，则使用 [TxDetailThemeData.separator]。此值默认为 12.0。
+  final Widget? separator;
+
+  /// 要在每行中显示的数据（不包括包含列标题的行）。
+  ///
+  /// 必须为非null，但可以为空。
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
     final TxDetailThemeData detailTheme = TxDetailTheme.of(context);
 
-    final TextStyle effectiveLabelStyle =
-        labelStyle ?? detailTheme.labelStyle ?? textTheme.labelLarge!;
-    final TextStyle effectiveContentStyle =
-        contentStyle ?? detailTheme.contentStyle ?? textTheme.bodyMedium!;
+    final Widget effectiveSeparator =
+        separator ?? detailTheme.separator ?? const SizedBox(height: 8.0);
+    final EdgeInsetsGeometry? effectivePadding = padding ?? detailTheme.padding;
+    final Decoration? effectiveDecoration =
+        decoration ?? detailTheme.decoration;
 
-    final double effectiveMinLabelWidth =
-        minLabelWidth ?? detailTheme.minLabelWidth ?? 80.0;
+    final List<Widget> effectiveChildren = [
+      for (int i = 0; i < children.length; i++) ...[
+        children[i],
+        if (i != children.length - 1) effectiveSeparator,
+      ]
+    ];
 
-    Iterable<Widget> tiles = detailItems.map((item) {
-      final Widget label = DefaultTextStyle(
-        style: effectiveLabelStyle,
-        child: item.label,
-      );
-      final Widget? content = item.content == null
-          ? null
-          : DefaultTextStyle(
-              style: effectiveContentStyle,
-              child: item.content!,
-            );
-
-      return ListTile(
-        leading: label,
-        minLeadingWidth: effectiveMinLabelWidth,
-        title: content,
-        dense: dense ?? detailTheme.dense,
-        contentPadding: padding ?? detailTheme.padding,
-      );
-    });
-
-    final bool effectiveSeparate = separate ?? detailTheme.separate ?? true;
-    if (effectiveSeparate) {
-      tiles = ListTile.divideTiles(tiles: tiles, context: context);
-    }
-    return SingleChildScrollView(child: Column(children: tiles.toList()));
+    return Container(
+      decoration: effectiveDecoration,
+      padding: effectivePadding,
+      child: TxCellTheme(
+        data: TxCellTheme.of(context).copyWith(
+          dense: detailTheme.dense,
+          visualDensity: detailTheme.visualDensity,
+          minLabelWidth: detailTheme.minLabelWidth,
+          labelTextStyle: detailTheme.labelTextStyle,
+          contentTextStyle: detailTheme.contentTextStyle,
+          contentTextAlign: detailTheme.contentTextAlign,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: effectiveChildren,
+        ),
+      ),
+    );
   }
-}
-
-/// 详情Tile
-class DetailTile {
-  const DetailTile({
-    required this.label,
-    this.content,
-  });
-
-  DetailTile.fromText({
-    required String labelText,
-    required dynamic contentValue,
-  })  : label = Text('$labelText:'),
-        content = contentValue == null ? null : Text('${contentValue ?? '-'}');
-
-  final Widget label;
-  final Widget? content;
-}
-
-/// 状态详情Tile
-class StateDetailTile extends DetailTile {
-  StateDetailTile({
-    required this.statusColor,
-    required super.label,
-    super.content,
-  });
-
-  StateDetailTile.fromText({
-    required super.labelText,
-    required this.statusColor,
-    required super.contentValue,
-  }) : super.fromText();
-
-  final Color statusColor;
-}
-
-/// 显示详情Dialog
-Future<void> showDetailDialog({
-  required BuildContext context,
-  required List<DetailTile> detailItems,
-  bool separate = false,
-  TextStyle? labelStyle,
-  TextStyle? contentStyle,
-  bool dense = true,
-  double? minLabelWidth,
-  String? titleText,
-  Widget? title,
-}) async {
-  return showDefaultDialog(
-    context,
-    titleText: titleText ?? TxLocalizations.of(context).detailDialogTitle,
-    title: title,
-    showCancelButton: false,
-    confirmText: MaterialLocalizations.of(context).closeButtonLabel,
-    content: TxDetailView(
-      detailItems: detailItems,
-      separate: separate,
-      labelStyle: labelStyle,
-      contentStyle: contentStyle,
-      dense: dense,
-      minLabelWidth: minLabelWidth,
-      padding: EdgeInsets.zero,
-    ),
-  );
-}
-
-/// 通过DetailMap显示详情Dialog
-Future<void> showDetailDialogBySource({
-  required BuildContext context,
-  required Map<String, dynamic> source,
-  Map<int, DetailTile>? slots,
-  bool separate = true,
-  TextStyle? labelStyle,
-  TextStyle? contentStyle,
-  bool dense = true,
-  double? minLabelWidth = 80.0,
-  String? titleText,
-  Widget? title,
-}) async {
-  return showDefaultDialog(
-    context,
-    titleText: titleText ?? TxLocalizations.of(context).detailDialogTitle,
-    title: title,
-    showConfirmButton: false,
-    cancelText: MaterialLocalizations.of(context).closeButtonLabel,
-    content: TxDetailView.fromMap(
-      source: source,
-      slots: slots,
-      separate: separate,
-      labelStyle: labelStyle,
-      contentStyle: contentStyle,
-      dense: dense,
-      minLabelWidth: minLabelWidth,
-      padding: EdgeInsets.zero,
-    ),
-  );
 }
