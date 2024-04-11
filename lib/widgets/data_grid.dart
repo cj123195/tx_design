@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'cell.dart';
+import 'cell_theme.dart';
 import 'data_grid_theme.dart';
-
-const double _columnSpacing = 8.0;
-const int _dataMaxLines = 2;
 
 /// 数据展示栅格组件
 class TxDataGrid extends StatelessWidget {
@@ -15,47 +14,115 @@ class TxDataGrid extends StatelessWidget {
     super.key,
     this.decoration,
     this.padding,
-    this.dataRowDecoration,
-    this.rowSpacing,
-    this.columnSpacing,
-    this.dataTextStyle,
-    this.dataRowPadding,
-    this.crossAxisAlignment,
+    this.spacing,
   });
 
   /// 创建由[data]参数派生出的描述数据表的小组件。
   ///
   /// [data] 参数不能为空。
+  TxDataGrid.fromMap(
+    Map<String, dynamic> data, {
+    super.key,
+    int columnNum = 1,
+    this.padding,
+    this.decoration,
+    this.spacing,
+    Map<int, Widget>? slots,
+    bool? dense,
+    VisualDensity? visualDensity,
+    double? minLabelWidth,
+    double? minLeadingWidth,
+    double? horizontalGap,
+    TextStyle? contentTextStyle,
+    TextStyle? labelTextStyle,
+    TextAlign? contentTextAlign,
+    EdgeInsetsGeometry? rowPadding,
+    Decoration? rowDecoration,
+    double? columnSpacing,
+  })  : assert(columnNum > 0),
+        rows = columnNum == 1
+            ? TxCell.fromMap(
+                data,
+                padding: rowPadding,
+                slots: slots,
+                dense: dense,
+                visualDensity: visualDensity,
+                minLeadingWidth: minLeadingWidth,
+                minLabelWidth: minLabelWidth,
+                horizontalGap: horizontalGap,
+                labelTextStyle: labelTextStyle,
+                contentTextStyle: contentTextStyle,
+                contentTextAlign: contentTextAlign,
+              )
+            : TxDataRow.fromMap(
+                data,
+                spacing: columnSpacing,
+                decoration: rowDecoration,
+                padding: rowPadding,
+                slots: slots,
+                dense: dense,
+                visualDensity: visualDensity,
+                minLeadingWidth: minLeadingWidth,
+                minLabelWidth: minLabelWidth,
+                horizontalGap: horizontalGap,
+                labelTextStyle: labelTextStyle,
+                contentTextStyle: contentTextStyle,
+                contentTextAlign: contentTextAlign,
+              );
+
+  /// 创建由[data]参数派生出的描述数据表的小组件。
+  ///
+  /// [data] 参数不能为空。
+  @Deprecated('下一个版本即将弃用，使用TxDataGrid.fromMap替代')
   TxDataGrid.fromData({
     required Map<String, dynamic> data,
-    Map<int, TxDataCell>? slots,
-    int columnNumber = 1,
-    TextStyle? dataLabelTextStyle,
-    double? minLabelWidth,
-    Color? labelTextColor,
-    int? dataMaxLines,
-    TextAlign? contentTextAlign,
     super.key,
-    this.decoration,
+    int columnNum = 1,
     this.padding,
-    this.dataRowDecoration,
-    this.rowSpacing,
-    this.columnSpacing,
-    this.dataTextStyle,
-    this.dataRowPadding,
-    this.crossAxisAlignment,
-  }) : rows = _getRowsByDataSource(
-          data,
-          slots,
-          columnNumber,
-          dataTextStyle,
-          dataLabelTextStyle,
-          minLabelWidth,
-          labelTextColor,
-          dataMaxLines,
-          dataRowDecoration,
-          contentTextAlign,
-        );
+    this.decoration,
+    this.spacing,
+    Map<int, Widget>? slots,
+    bool? dense,
+    VisualDensity? visualDensity,
+    double? minLabelWidth,
+    double? minLeadingWidth,
+    double? horizontalGap,
+    TextStyle? contentTextStyle,
+    TextStyle? labelTextStyle,
+    TextAlign? contentTextAlign,
+    EdgeInsetsGeometry? rowPadding,
+    Decoration? rowDecoration,
+    double? columnSpacing,
+  })  : assert(columnNum > 0),
+        rows = columnNum == 1
+            ? TxCell.fromMap(
+                data,
+                padding: rowPadding,
+                slots: slots,
+                dense: dense,
+                visualDensity: visualDensity,
+                minLeadingWidth: minLeadingWidth,
+                minLabelWidth: minLabelWidth,
+                horizontalGap: horizontalGap,
+                labelTextStyle: labelTextStyle,
+                contentTextStyle: contentTextStyle,
+                contentTextAlign: contentTextAlign,
+              )
+            : TxDataRow.fromMap(
+                data,
+                spacing: columnSpacing,
+                decoration: rowDecoration,
+                padding: rowPadding,
+                slots: slots,
+                dense: dense,
+                visualDensity: visualDensity,
+                minLeadingWidth: minLeadingWidth,
+                minLabelWidth: minLabelWidth,
+                horizontalGap: horizontalGap,
+                labelTextStyle: labelTextStyle,
+                contentTextStyle: contentTextStyle,
+                contentTextAlign: contentTextAlign,
+              );
 
   /// 栅格的背景和边框装饰
   ///
@@ -68,139 +135,55 @@ class TxDataGrid extends StatelessWidget {
   /// [kMinInteractiveDimension] 以符合Material Design规范。
   final EdgeInsetsGeometry? padding;
 
-  /// 数据行的背景和边框装饰
-  ///
-  /// 如果为 null，则使用 [TxDataGridThemeData.decoration]。默认情况下没有装饰。
-  final Decoration? dataRowDecoration;
-
-  /// 每行的边距
-  ///
-  /// 如果为 null，则使用 [TxDataGridThemeData.dataRowPadding]。。
-  final EdgeInsetsGeometry? dataRowPadding;
-
-  /// 数据的文本样式。
-  ///
-  /// 如果为 null，则使用 [TxDataGridThemeData.dataTextStyle]。默认情况下，文本样式为
-  /// [TextTheme.labelLarge]。
-  final TextStyle? dataTextStyle;
-
-  /// 每个数据行之间的垂直间距
-  ///
-  /// 如果为 null，则使用 [TxDataGridThemeData.rowSpacing]。此值默认为 8.0。
-  final double? rowSpacing;
-
   /// 每个数据列的内容之间的水平边距。
   ///
-  /// 如果为 null，则使用 [TxDataGridThemeData.columnSpacing]。此值默认为 12.0。
-  final double? columnSpacing;
+  /// 如果为 null，则使用 [TxDataGridThemeData.runSpacing]。此值默认为 12.0。
+  final double? spacing;
 
   /// 要在每行中显示的数据（不包括包含列标题的行）。
   ///
   /// 必须为非null，但可以为空。
-  final List<TxDataRow> rows;
-
-  /// 交叉轴对其方式
-  final CrossAxisAlignment? crossAxisAlignment;
-
-  static const double defaultRowSpacing = 8.0;
-
-  static List<TxDataRow> _getRowsByDataSource(
-    Map<String, dynamic> data,
-    Map<int, TxDataCell>? slots,
-    int columnNumber,
-    TextStyle? dataTextStyle,
-    TextStyle? dataLabelTextStyle,
-    double? minLabelWidth,
-    Color? labelTextColor,
-    int? dataMaxLines,
-    Decoration? dataRowDecoration,
-    TextAlign? contentTextAlign,
-  ) {
-    final List<TxDataCell> cells = List.generate(
-      data.length,
-      (index) {
-        final String key = data.keys.toList()[index];
-        return TxDataCell.rich(
-          labelText: key,
-          contentText: '${data[key] ?? ''}',
-          labelTextStyle: dataLabelTextStyle,
-          contentTextStyle: dataTextStyle,
-          minLabelWidth: minLabelWidth,
-          dataMaxLines: dataMaxLines,
-          contentTextAlign: contentTextAlign,
-        );
-      },
-    );
-    if (slots?.isNotEmpty == true) {
-      for (int i = 0; i < slots!.length; i++) {
-        final int index = slots.keys.toList()[i];
-        assert(
-          index >= 0 && index <= cells.length,
-          '插入位置需大于等于0且小于cell的长度',
-        );
-        cells.insert(index, slots[index]!);
-      }
-    }
-
-    return [
-      for (int i = 0; i < cells.length; i += columnNumber)
-        TxDataRow(
-          cells: cells.sublist(
-            i,
-            cells.length - i > columnNumber ? i + columnNumber : null,
-          ),
-          decoration: dataRowDecoration,
-        )
-    ];
-  }
+  final List<Widget> rows;
 
   @override
   Widget build(BuildContext context) {
-    final TxDataGridThemeData dataGridTheme = TxDataGridTheme.of(context);
+    final TxDataGridThemeData gridTheme = TxDataGridTheme.of(context);
+    const TxDataGridThemeData defaults = _DefaultDataGridTheme();
 
-    final Decoration? effectiveDataRowDecoration =
-        dataRowDecoration ?? dataGridTheme.dataRowDecoration;
-    final double effectiveRowSpacing =
-        rowSpacing ?? dataGridTheme.rowSpacing ?? TxDataGrid.defaultRowSpacing;
-    final double effectiveColumnSpacing =
-        columnSpacing ?? dataGridTheme.columnSpacing ?? _columnSpacing;
-    final EdgeInsetsGeometry? effectiveDataRowPadding =
-        dataRowPadding ?? dataGridTheme.dataRowPadding;
+    final double effectiveSpacing =
+        spacing ?? gridTheme.runSpacing ?? defaults.runSpacing!;
+    final EdgeInsetsGeometry? effectivePadding =
+        padding ?? gridTheme.padding ?? defaults.padding;
+    final Decoration? effectiveDecoration =
+        decoration ?? gridTheme.decoration ?? defaults.decoration;
 
-    final List<Widget> effectiveRows = List.generate(rows.length, (index) {
-      final int cellsLength = rows[index].cells.length;
-
-      final List<Widget> cells = [
-        for (int i = 0; i < cellsLength; i++) ...[
-          Expanded(child: rows[index].cells[i].child),
-          if (i != cellsLength - 1) SizedBox(width: effectiveColumnSpacing)
-        ]
-      ];
-
-      return Container(
-        padding: effectiveDataRowPadding,
-        decoration: effectiveDataRowDecoration,
-        margin: index == rows.length - 1
-            ? null
-            : EdgeInsets.only(bottom: effectiveRowSpacing),
-        child: Row(
-          crossAxisAlignment: crossAxisAlignment ?? CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
-          children: cells,
-        ),
-      );
-    });
-
-    final Widget grid = Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: effectiveRows,
-    );
+    final List<Widget> children = [
+      for (int i = 0; i < rows.length; i++) ...[
+        rows[i],
+        if (i != rows.length - 1) SizedBox(height: effectiveSpacing),
+      ]
+    ];
 
     return Container(
-      decoration: decoration ?? dataGridTheme.decoration,
-      padding: padding ?? dataGridTheme.padding,
-      child: grid,
+      decoration: effectiveDecoration,
+      padding: effectivePadding,
+      child: TxCellTheme(
+        data: TxCellTheme.of(context).copyWith(
+          dense: gridTheme.dense,
+          visualDensity: gridTheme.visualDensity,
+          minLabelWidth: gridTheme.minLabelWidth,
+          labelTextStyle: gridTheme.labelTextStyle,
+          contentTextStyle: gridTheme.contentTextStyle,
+          contentTextAlign: gridTheme.contentTextAlign,
+          minVerticalPadding: 0,
+          padding: EdgeInsets.zero,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
+      ),
     );
   }
 }
@@ -211,225 +194,106 @@ class TxDataGrid extends StatelessWidget {
 /// [TxDataGrid.new] 构造函数。
 ///
 /// 表的这一行的数据在 [TxDataRow] 对象的 [cells] 属性中提供。
-@immutable
-class TxDataRow {
+class TxDataRow extends StatelessWidget {
   /// 为 [TxDataGrid] 的行创建配置。
   ///
   /// [cells] 参数不得为空。
-  const TxDataRow({required this.cells, this.decoration});
+  const TxDataRow({
+    required this.cells,
+    this.decoration,
+    this.spacing,
+    this.padding,
+    super.key,
+  });
 
-  static List<Widget> fromDatasource({
-    required Map<String, dynamic> data,
+  /// 通过指定 [data] 数据生成 [TxDataRow] 列表
+  ///
+  /// [columnNum] 用来控制列数， 如列数为1，请优先考虑使用 [TxCell.fromMap]。
+  static List<Widget> fromMap(
+    Map<String, dynamic> data, {
+    final int columnNum = 2,
     Map<int, Widget>? slots,
-    int columnNumber = 1,
-    TextStyle? dataTextStyle,
-    TextStyle? dataLabelTextStyle,
+    bool? dense,
+    VisualDensity? visualDensity,
     double? minLabelWidth,
-    Color? labelTextColor,
-    int? dataMaxLines,
-    Decoration? dataRowDecoration,
+    double? minLeadingWidth,
+    double? horizontalGap,
+    TextStyle? contentTextStyle,
+    TextStyle? labelTextStyle,
     TextAlign? contentTextAlign,
-    EdgeInsetsGeometry? padding = const EdgeInsets.symmetric(vertical: 4.0),
+    EdgeInsetsGeometry? padding,
+    Decoration? decoration,
+    double? spacing,
   }) {
-    final List<Widget> cells = List.generate(
-      data.length,
-      (index) {
-        final String key = data.keys.toList()[index];
-        return Expanded(
-            child: TxRichDataCell(
-          labelText: key,
-          contentText: '${data[key] ?? ''}',
-          labelTextStyle: dataLabelTextStyle,
-          contentTextStyle: dataTextStyle,
-          minLabelWidth: minLabelWidth,
-          dataMaxLines: dataMaxLines,
-          contentTextAlign: contentTextAlign,
-        ));
-      },
+    final List<Widget> cells = TxCell.fromMap(
+      data,
+      slots: slots,
+      dense: dense,
+      visualDensity: visualDensity,
+      minLeadingWidth: minLeadingWidth,
+      minLabelWidth: minLabelWidth,
+      minVerticalPadding: 0,
+      horizontalGap: horizontalGap,
+      labelTextStyle: labelTextStyle,
+      contentTextStyle: contentTextStyle,
+      contentTextAlign: contentTextAlign,
+      padding: EdgeInsets.zero,
     );
-    if (slots?.isNotEmpty == true) {
-      for (int i = 0; i < slots!.length; i++) {
-        final int index = slots.keys.toList()[i];
-        assert(
-          index >= 0 && index <= cells.length,
-          '插入位置需大于等于0且小于cell的长度',
-        );
-        cells.insert(index, slots[index]!);
-      }
-    }
 
     return [
-      for (int i = 0; i < cells.length; i += columnNumber)
-        Container(
+      for (int i = 0; i < cells.length; i += columnNum)
+        TxDataRow(
+          cells: cells.sublist(i, i + columnNum),
+          decoration: decoration,
           padding: padding,
-          decoration: dataRowDecoration,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: cells.sublist(i, i + columnNumber),
-          ),
+          spacing: spacing,
         ),
     ];
   }
 
   /// 此行的数据。
-  final List<TxDataCell> cells;
+  final List<Widget> cells;
 
   /// 数据行的背景和边框装饰
   ///
   /// 如果为 null，则使用 [TxDataGridThemeData.decoration]。默认情况下没有装饰。
   final Decoration? decoration;
-}
 
-/// [TxDataRow] 的单元格的数据。
-///
-/// 必须在新的 [TxDataRow] 构造函数的“cells”参数中为 [TxDataGrid] 中的每个 [DataRow]
-/// 提供一个 [TxDataCell] 对象列表。
-@immutable
-class TxDataCell {
-  /// 创建一个对象以保存 [TxDataGrid] 中单元格的数据。
-  ///
-  /// 第一个参数是要为单元格显示的小部件，通常是 [Text] 或 [DropdownButton] 小部件;
-  /// 这将成为 [子] 属性，并且不得为 null。
-  ///
-  /// 如果单元格没有数据，则应改为提供带有占位符文本的 [Text] 小部件，然后将 [placeholder]
-  /// 参数设置为 true。
-  const TxDataCell(
-    this.child, {
-    this.placeholder = false,
-    this.onTap,
-  });
+  /// [cells] 之间的间距
+  final double? spacing;
 
-  /// 创建一个对象以保存 [TxDataGrid] 中单元格的数据。
-  ///
-  /// 第一个参数是要为单元格显示的小部件，通常是 [Text] 或 [DropdownButton] 小部件;
-  /// 这将成为 [子] 属性，并且不得为 null。
-  ///
-  /// 如果单元格没有数据，则应改为提供带有占位符文本的 [Text] 小部件，然后将 [placeholder]
-  /// 参数设置为 true。
-  TxDataCell.rich({
-    Widget? label,
-    Widget? content,
-    String? labelText,
-    dynamic contentText,
-    double? minLabelWidth,
-    this.onTap,
-    Color? labelTextColor,
-    TextStyle? labelTextStyle,
-    TextStyle? contentTextStyle,
-    TextAlign? contentTextAlign,
-    bool? numeric,
-    int? dataMaxLines,
-    CrossAxisAlignment? alignment,
-  })  : placeholder = false,
-        child = TxRichDataCell(
-          label: label,
-          labelText: labelText,
-          content: content,
-          contentText: contentText,
-          labelTextStyle: labelTextStyle,
-          contentTextStyle: contentTextStyle,
-          minLabelWidth: minLabelWidth,
-          labelTextColor: labelTextColor,
-          numeric: numeric,
-          dataMaxLines: dataMaxLines,
-          alignment: alignment,
-          contentTextAlign: contentTextAlign,
-        );
-
-  /// 没有内容且宽度和高度为零的单元格。
-  static const TxDataCell empty = TxDataCell(SizedBox.shrink());
-
-  /// 单元格的数据。
-  ///
-  /// 如果单元格没有数据，则应改为提供带有占位符文本的 [Text] 小部件，并将 [placeholder]
-  /// 设置为 true
-  final Widget child;
-
-  /// [child] 是否实际上是占位符。
-  ///
-  /// 如果为 true，则单元格的默认文本样式将更改为适合占位符文本。
-  final bool placeholder;
-
-  /// 如果点击单元格，则调用。
-  final GestureTapCallback? onTap;
-}
-
-class TxRichDataCell extends StatelessWidget {
-  const TxRichDataCell({
-    super.key,
-    this.label,
-    this.labelText,
-    this.content,
-    this.contentText,
-    this.minLabelWidth,
-    this.labelTextStyle,
-    this.contentTextStyle,
-    this.labelTextColor,
-    bool? numeric,
-    this.dataMaxLines,
-    this.alignment,
-    this.contentTextAlign,
-  })  : assert(label != null || labelText != null),
-        numeric =
-            numeric ?? ((content == null && contentText is num) ? true : false);
-
-  final Widget? label;
-  final String? labelText;
-  final Widget? content;
-  final dynamic contentText;
-  final double? minLabelWidth;
-  final Color? labelTextColor;
-  final TextStyle? labelTextStyle;
-  final TextStyle? contentTextStyle;
-  final bool numeric;
-  final int? dataMaxLines;
-  final CrossAxisAlignment? alignment;
-  final TextAlign? contentTextAlign;
+  /// 内边距
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final TxDataGridThemeData dataGridTheme = TxDataGridTheme.of(context);
+    final TxDataGridThemeData gridTheme = TxDataGridTheme.of(context);
+    const TxDataGridThemeData defaults = _DefaultDataGridTheme();
 
-    final Color? effectiveLabelColor =
-        labelTextColor ?? dataGridTheme.dataLabelTextColor;
-    final TextStyle effectiveLabelStyle = labelTextStyle ??
-        dataGridTheme.dataLabelTextStyle ??
-        theme.textTheme.labelLarge!.copyWith(color: theme.colorScheme.outline);
-    final TextStyle effectiveContentStyle = contentTextStyle ??
-        dataGridTheme.dataTextStyle ??
-        theme.textTheme.bodyMedium!;
-    final CrossAxisAlignment effectiveAlignment = alignment ??
-        (numeric ? CrossAxisAlignment.center : CrossAxisAlignment.start);
-    final TextAlign? effectiveContentTextAlign =
-        contentTextAlign ?? dataGridTheme.contentTextAlign;
+    final Decoration? effectiveDecoration =
+        decoration ?? gridTheme.rowDecoration ?? defaults.decoration;
+    final EdgeInsetsGeometry? effectivePadding =
+        padding ?? gridTheme.padding ?? defaults.padding;
+    final double effectiveSpacing =
+        spacing ?? gridTheme.spacing ?? defaults.spacing!;
 
-    Widget effectiveLabel = DefaultTextStyle(
-      style: effectiveLabelStyle.copyWith(color: effectiveLabelColor),
-      child: label ?? Text('${labelText!}：'),
-    );
-    if (minLabelWidth != null) {
-      effectiveLabel = ConstrainedBox(
-        constraints: BoxConstraints(minWidth: minLabelWidth!),
-        child: effectiveLabel,
-      );
-    }
-
-    final Widget effectiveContent = DefaultTextStyle(
-      style: effectiveContentStyle,
-      maxLines: dataMaxLines ?? dataGridTheme.dataMaxLines ?? _dataMaxLines,
-      overflow: TextOverflow.ellipsis,
-      textAlign: effectiveContentTextAlign,
-      child: content ?? Text('${contentText ?? ''}'),
-    );
-
-    return Row(
-      crossAxisAlignment: effectiveAlignment,
-      children: [
-        effectiveLabel,
-        Expanded(child: effectiveContent),
-      ],
+    return Container(
+      padding: effectivePadding,
+      decoration: effectiveDecoration,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          for (int i = 0; i < cells.length; i++) ...[
+            cells[i],
+            if (i != cells.length - 1) SizedBox(width: effectiveSpacing)
+          ],
+        ],
+      ),
     );
   }
+}
+
+class _DefaultDataGridTheme extends TxDataGridThemeData {
+  const _DefaultDataGridTheme() : super(spacing: 8.0, runSpacing: 6);
 }
