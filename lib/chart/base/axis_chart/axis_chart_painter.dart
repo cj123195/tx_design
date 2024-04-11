@@ -36,8 +36,8 @@ abstract class AxisChartPainter<D extends AxisChartData>
   /// [_rangeAnnotationPaint] draws range annotations;
   late Paint _rangeAnnotationPaint;
 
-  late double maxX;
   late double maxY;
+  late double minY;
 
   /// Paints [AxisChartData] into the provided canvas.
   @override
@@ -48,19 +48,14 @@ abstract class AxisChartPainter<D extends AxisChartData>
   ) {
     final data = holder.data;
 
-    final verticalInterval = data.gridData.verticalInterval ??
-        ChartUtils().getEfficientInterval(
-          canvasWrapper.size.width,
-          data.horizontalDiff,
-        );
-    maxX = verticalInterval * (data.maxX / verticalInterval).ceil();
-
     final horizontalInterval = data.gridData.horizontalInterval ??
         ChartUtils().getEfficientInterval(
           canvasWrapper.size.height,
           data.verticalDiff,
+          pixelPerInterval: data.gridData.horizontalPixelPerInterval,
         );
     maxY = horizontalInterval * (data.maxY / horizontalInterval).ceil();
+    minY = horizontalInterval * (data.minY / horizontalInterval).floor();
 
     super.paint(context, canvasWrapper, holder);
     drawBackground(canvasWrapper, holder);
@@ -81,6 +76,7 @@ abstract class AxisChartPainter<D extends AxisChartData>
           ChartUtils().getEfficientInterval(
             viewSize.width,
             data.horizontalDiff,
+            pixelPerInterval: data.gridData.verticalPixelPerInterval,
           );
       final axisValues = AxisChartHelper().iterateThroughAxis(
         min: data.minX,
@@ -125,7 +121,11 @@ abstract class AxisChartPainter<D extends AxisChartData>
     // Show Horizontal Grid
     if (data.gridData.drawHorizontalLine) {
       final horizontalInterval = data.gridData.horizontalInterval ??
-          ChartUtils().getEfficientInterval(viewSize.height, data.verticalDiff);
+          ChartUtils().getEfficientInterval(
+            viewSize.height,
+            data.verticalDiff,
+            pixelPerInterval: data.gridData.horizontalPixelPerInterval,
+          );
 
       final axisValues = AxisChartHelper().iterateThroughAxis(
         min: data.minY,
@@ -440,7 +440,7 @@ abstract class AxisChartPainter<D extends AxisChartData>
   /// the view 0, 0 is on the top/left, but the spots is bottom/left
   double getPixelX(double spotX, Size viewSize, PaintHolder<D> holder) {
     final data = holder.data;
-    final deltaX = maxX - data.minX;
+    final deltaX = data.maxX - data.minX;
     if (deltaX == 0.0) {
       return 0;
     }
@@ -450,12 +450,11 @@ abstract class AxisChartPainter<D extends AxisChartData>
   /// With this function we can convert our [FlSpot] y
   /// to the view base axis y.
   double getPixelY(double spotY, Size viewSize, PaintHolder<D> holder) {
-    final data = holder.data;
-    final deltaY = maxY - data.minY;
+    final deltaY = maxY - minY;
     if (deltaY == 0.0) {
       return viewSize.height;
     }
-    return viewSize.height - (((spotY - data.minY) / deltaY) * viewSize.height);
+    return viewSize.height - (((spotY - minY) / deltaY) * viewSize.height);
   }
 
   /// With this function we can get horizontal

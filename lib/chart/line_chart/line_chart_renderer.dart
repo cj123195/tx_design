@@ -118,7 +118,7 @@ class RenderLineChart extends RenderBaseChart<LineTouchResponse> {
       ..translate(offset.dx, offset.dy);
     painter.paint(
       buildContext,
-      CanvasWrapper(canvas, mockTestSize ?? size, padding),
+      CanvasWrapper(canvas, mockTestSize ?? size, padding, data.horizontalGap),
       paintHolder,
     );
     canvas.restore();

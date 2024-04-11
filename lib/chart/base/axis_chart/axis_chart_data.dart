@@ -27,6 +27,7 @@ abstract class AxisChartData extends BaseChartData with EquatableMixin {
     Color? backgroundColor,
     super.borderData,
     ExtraLinesData? extraLinesData,
+    this.horizontalGap = 0,
   })  : gridData = gridData ?? const FlGridData(),
         rangeAnnotations = rangeAnnotations ?? const RangeAnnotations(),
         baselineX = baselineX ?? 0,
@@ -37,6 +38,7 @@ abstract class AxisChartData extends BaseChartData with EquatableMixin {
   final FlGridData gridData;
   final FlTitlesData titlesData;
   final RangeAnnotations rangeAnnotations;
+  final double horizontalGap;
 
   double minX;
   double maxX;
@@ -77,6 +79,7 @@ abstract class AxisChartData extends BaseChartData with EquatableMixin {
         borderData,
         touchData,
         extraLinesData,
+        horizontalGap,
       ];
 }
 
@@ -154,6 +157,7 @@ class SideTitles with EquatableMixin {
   const SideTitles({
     this.showTitles = false,
     this.getTitlesWidget = defaultGetTitle,
+    this.titlesSize,
     this.reservedSize = 22,
     this.interval,
   }) : assert(interval != 0, "SideTitles.interval couldn't be zero");
@@ -173,14 +177,17 @@ class SideTitles with EquatableMixin {
   /// we try to find a suitable value to set as [interval] under the hood.
   final double? interval;
 
+  /// Size of the widget from [getTitlesWidget]
+  final double? titlesSize;
+
   /// Lerps a [SideTitles] based on [t] value, check [Tween.lerp].
   static SideTitles lerp(SideTitles a, SideTitles b, double t) {
     return SideTitles(
-      showTitles: b.showTitles,
-      getTitlesWidget: b.getTitlesWidget,
-      reservedSize: lerpDouble(a.reservedSize, b.reservedSize, t)!,
-      interval: lerpDouble(a.interval, b.interval, t),
-    );
+        showTitles: b.showTitles,
+        getTitlesWidget: b.getTitlesWidget,
+        reservedSize: lerpDouble(a.reservedSize, b.reservedSize, t)!,
+        interval: lerpDouble(a.interval, b.interval, t),
+        titlesSize: lerpDouble(a.titlesSize, b.titlesSize, t));
   }
 
   /// Copies current [SideTitles] to a new [SideTitles],
@@ -190,12 +197,14 @@ class SideTitles with EquatableMixin {
     GetTitleWidgetFunction? getTitlesWidget,
     double? reservedSize,
     double? interval,
+    double? titlesSize,
   }) {
     return SideTitles(
       showTitles: showTitles ?? this.showTitles,
       getTitlesWidget: getTitlesWidget ?? this.getTitlesWidget,
       reservedSize: reservedSize ?? this.reservedSize,
       interval: interval ?? this.interval,
+      titlesSize: titlesSize ?? this.titlesSize,
     );
   }
 
@@ -206,6 +215,7 @@ class SideTitles with EquatableMixin {
         getTitlesWidget,
         reservedSize,
         interval,
+        titlesSize,
       ];
 }
 
@@ -556,6 +566,8 @@ class FlGridData with EquatableMixin {
     this.verticalInterval,
     this.getDrawingVerticalLine = defaultGridLine,
     this.checkToShowVerticalLine = showAllGrids,
+    this.horizontalPixelPerInterval,
+    this.verticalPixelPerInterval,
   })  : assert(
           horizontalInterval != 0,
           "FlGridData.horizontalInterval couldn't be zero",
@@ -575,6 +587,9 @@ class FlGridData with EquatableMixin {
   /// calculated.
   final double? horizontalInterval;
 
+  /// 确定水平线之间的间距大小
+  final double? horizontalPixelPerInterval;
+
   /// Gives you a y value, and gets a [FlLine] that represents specified line.
   final GetDrawingGridLine getDrawingHorizontalLine;
 
@@ -588,6 +603,9 @@ class FlGridData with EquatableMixin {
   /// Determines interval between vertical lines, left it null to be auto
   /// calculated.
   final double? verticalInterval;
+
+  /// 确定垂直线之间的间距大小
+  final double? verticalPixelPerInterval;
 
   /// Gives you a x value, and gets a [FlLine] that represents specified line.
   final GetDrawingGridLine getDrawingVerticalLine;
@@ -603,10 +621,14 @@ class FlGridData with EquatableMixin {
       drawHorizontalLine: b.drawHorizontalLine,
       horizontalInterval:
           lerpDouble(a.horizontalInterval, b.horizontalInterval, t),
+      horizontalPixelPerInterval: lerpDouble(
+          a.horizontalPixelPerInterval, b.horizontalPixelPerInterval, t),
       getDrawingHorizontalLine: b.getDrawingHorizontalLine,
       checkToShowHorizontalLine: b.checkToShowHorizontalLine,
       drawVerticalLine: b.drawVerticalLine,
       verticalInterval: lerpDouble(a.verticalInterval, b.verticalInterval, t),
+      verticalPixelPerInterval:
+          lerpDouble(a.verticalPixelPerInterval, b.verticalPixelPerInterval, t),
       getDrawingVerticalLine: b.getDrawingVerticalLine,
       checkToShowVerticalLine: b.checkToShowVerticalLine,
     );
@@ -618,10 +640,12 @@ class FlGridData with EquatableMixin {
     bool? show,
     bool? drawHorizontalLine,
     double? horizontalInterval,
+    double? horizontalPixelPerInterval,
     GetDrawingGridLine? getDrawingHorizontalLine,
     CheckToShowGrid? checkToShowHorizontalLine,
     bool? drawVerticalLine,
     double? verticalInterval,
+    double? verticalPixelPerInterval,
     GetDrawingGridLine? getDrawingVerticalLine,
     CheckToShowGrid? checkToShowVerticalLine,
   }) {
@@ -629,12 +653,16 @@ class FlGridData with EquatableMixin {
       show: show ?? this.show,
       drawHorizontalLine: drawHorizontalLine ?? this.drawHorizontalLine,
       horizontalInterval: horizontalInterval ?? this.horizontalInterval,
+      horizontalPixelPerInterval:
+          horizontalPixelPerInterval ?? this.horizontalPixelPerInterval,
       getDrawingHorizontalLine:
           getDrawingHorizontalLine ?? this.getDrawingHorizontalLine,
       checkToShowHorizontalLine:
           checkToShowHorizontalLine ?? this.checkToShowHorizontalLine,
       drawVerticalLine: drawVerticalLine ?? this.drawVerticalLine,
       verticalInterval: verticalInterval ?? this.verticalInterval,
+      verticalPixelPerInterval:
+          verticalPixelPerInterval ?? this.verticalPixelPerInterval,
       getDrawingVerticalLine:
           getDrawingVerticalLine ?? this.getDrawingVerticalLine,
       checkToShowVerticalLine:
@@ -648,10 +676,12 @@ class FlGridData with EquatableMixin {
         show,
         drawHorizontalLine,
         horizontalInterval,
+        horizontalPixelPerInterval,
         getDrawingHorizontalLine,
         checkToShowHorizontalLine,
         drawVerticalLine,
         verticalInterval,
+        verticalPixelPerInterval,
         getDrawingVerticalLine,
         checkToShowVerticalLine,
       ];

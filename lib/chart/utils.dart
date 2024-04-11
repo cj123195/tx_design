@@ -132,8 +132,10 @@ class ChartUtils {
   double getEfficientInterval(
     double axisViewSize,
     double diffInAxis, {
-    double pixelPerInterval = 40,
+    double? pixelPerInterval,
   }) {
+    pixelPerInterval ??= 40.0;
+
     final allowedCount = math.max(axisViewSize ~/ pixelPerInterval, 1);
     if (diffInAxis == 0) {
       return 1;
@@ -322,7 +324,12 @@ class ChartUtils {
     if (mod == 0) {
       return min;
     }
-    return min + mod;
+
+    if (min > baseline) {
+      return baseline;
+    }
+
+    return baseline - interval;
   }
 
   /// 将半径数转换为西格玛以绘制阴影

@@ -46,8 +46,21 @@ class AxisChartHelper {
 
     final epsilon = interval / 100000;
     if (minIncluded && !firstPositionOverlapsWithMin) {
-      yield min;
+      yield initialValue;
     }
+
+    while (axisSeek <= end + epsilon) {
+      yield axisSeek;
+      axisSeek += interval;
+    }
+    if (maxIncluded && !lastPositionOverlapsWithMax) {
+      if (ceilMaxValue) {
+        yield interval * (max / interval).ceil();
+      } else {
+        yield max;
+      }
+    }
+
     while (axisSeek <= end + epsilon) {
       yield axisSeek;
       axisSeek += interval;

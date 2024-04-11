@@ -112,7 +112,26 @@ class SideTitlesWidget extends StatelessWidget {
         return titlesPadding.vertical + borderPadding.vertical;
       case AxisSide.top:
       case AxisSide.bottom:
-        return titlesPadding.horizontal + borderPadding.horizontal;
+        return titlesPadding.horizontal +
+            borderPadding.horizontal +
+            axisChartData.horizontalGap * 2;
+    }
+  }
+
+  Iterable<double> _iterateHorizontalAxis({
+    required double min,
+    required double max,
+    required double interval,
+  }) sync* {
+    // final double diff = max - min;
+    // final count = diff ~/ interval;
+
+    yield min;
+
+    double axisSeek = min + interval;
+    while (axisSeek <= max) {
+      yield axisSeek.roundToDouble();
+      axisSeek += interval;
     }
   }
 
@@ -128,6 +147,7 @@ class SideTitlesWidget extends StatelessWidget {
         ChartUtils().getEfficientInterval(
           axisViewSize,
           axisMax - axisMin,
+          pixelPerInterval: sideTitles.titlesSize,
         );
     if (isHorizontal && axisChartData is BarChartData) {
       final barChartData = axisChartData as BarChartData;
@@ -142,22 +162,43 @@ class SideTitlesWidget extends StatelessWidget {
         return AxisSideTitleMetaData(xValue.toDouble(), xLocation);
       }).toList();
     } else {
-      final axisValues = AxisChartHelper().iterateThroughAxis(
+      late final Iterable<double> axisValues;
+      late final double axisDiff;
+      late final double minY;
+      if (isHorizontal) {
+        axisValues = _iterateHorizontalAxis(
+          min: axisMin,
+          max: axisMax,
+          interval: interval,
+        );
+        axisDiff = axisMax - axisMin;
+        minY = axisMin;
+      } else {
+        axisValues = AxisChartHelper().iterateThroughAxis(
           min: axisMin,
           max: axisMax,
           baseLine: axisBaseLine,
           interval: interval,
-          ceilMaxValue: true);
-      final axisDiff = axisValues.last - axisMin;
+          ceilMaxValue: true,
+        );
+        minY = interval * (axisMin / interval).floor();
+        axisDiff = axisValues.last - minY;
+      }
+
       axisPositions = axisValues.map((axisValue) {
         var portion = 0.0;
         if (axisDiff > 0) {
-          portion = (axisValue - axisMin) / axisDiff;
+          portion = (axisValue - minY) / axisDiff;
         }
+
         if (isVertical) {
           portion = 1 - portion;
         }
-        final axisLocation = portion * axisViewSize;
+        double axisLocation = portion * axisViewSize;
+        if (isHorizontal) {
+          axisLocation = axisChartData.horizontalGap + axisLocation;
+        }
+
         return AxisSideTitleMetaData(axisValue, axisLocation);
       }).toList();
     }

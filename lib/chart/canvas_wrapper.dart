@@ -19,15 +19,20 @@ class CanvasWrapper {
     this.canvas,
     this.size, [
     this.padding,
+    this.horizontalSpacing,
   ]);
 
   final Canvas canvas;
   final Size size;
   final EdgeInsets? padding;
+  final double? horizontalSpacing;
 
   double get left => -(padding?.left ?? 0);
 
   double get right => size.width + (padding?.right ?? 0);
+
+  Size get barSize =>
+      Size(size.width - (horizontalSpacing ?? 0) * 2, size.height);
 
   /// Directly calls [Canvas.drawRRect]
   void drawRRect(RRect rrect, Paint paint) => canvas.drawRRect(rrect, paint);

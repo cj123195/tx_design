@@ -166,7 +166,14 @@ class BarChartPainter extends AxisChartPainter<BarChartData> {
         final barRod = barGroup.barRods[j];
         final widthHalf = barRod.width / 2;
         final borderRadius = barRod.borderRadius ??
-            BorderRadius.vertical(top: Radius.circular(barRod.width / 2));
+            BorderRadius.vertical(
+              top: barRod.toY < 0
+                  ? Radius.zero
+                  : Radius.circular(barRod.width / 2),
+              bottom: barRod.toY > 0
+                  ? Radius.zero
+                  : Radius.circular(barRod.width / 2),
+            );
         final borderSide = barRod.borderSide;
 
         final x = groupBarsPosition[i].barsX[j];

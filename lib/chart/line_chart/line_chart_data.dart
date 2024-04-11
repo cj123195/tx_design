@@ -69,6 +69,7 @@ class LineChartData extends AxisChartData with EquatableMixin {
     super.baselineY,
     FlClipData? clipData,
     super.backgroundColor,
+    super.horizontalGap,
   })  : lineTouchData = lineTouchData ?? const LineTouchData(),
         super(
           touchData: lineTouchData ?? const LineTouchData(),
@@ -127,6 +128,7 @@ class LineChartData extends AxisChartData with EquatableMixin {
             lerpBetweenBarsDataList(a.betweenBarsData, b.betweenBarsData, t),
         lineTouchData: b.lineTouchData,
         showingTooltipIndicators: b.showingTooltipIndicators,
+        horizontalGap: lerpDouble(a.horizontalGap, b.horizontalGap, t)!,
       );
     } else {
       throw Exception('Illegal State');
@@ -153,6 +155,7 @@ class LineChartData extends AxisChartData with EquatableMixin {
     double? baselineY,
     FlClipData? clipData,
     Color? backgroundColor,
+    double? horizontalGap,
   }) {
     return LineChartData(
       lineBarsData: lineBarsData ?? this.lineBarsData,
@@ -173,6 +176,7 @@ class LineChartData extends AxisChartData with EquatableMixin {
       baselineY: baselineY ?? this.baselineY,
       clipData: clipData ?? this.clipData,
       backgroundColor: backgroundColor ?? this.backgroundColor,
+      horizontalGap: horizontalGap ?? this.horizontalGap,
     );
   }
 
@@ -196,6 +200,7 @@ class LineChartData extends AxisChartData with EquatableMixin {
         baselineY,
         clipData,
         backgroundColor,
+        horizontalGap,
       ];
 }
 
@@ -1080,6 +1085,7 @@ class LineTouchTooltipData with EquatableMixin {
   /// chart horizontally, also you can set [fitInsideVertically] true to force
   /// it to shift inside the chart vertically.
   const LineTouchTooltipData({
+    this.getTitle,
     this.tooltipBgColor,
     this.tooltipRoundedRadius = 4,
     this.tooltipPadding =
@@ -1095,6 +1101,9 @@ class LineTouchTooltipData with EquatableMixin {
     this.rotateAngle = 0.0,
     this.tooltipBorder = BorderSide.none,
   });
+
+  /// 标题
+  final GetLineTooltipTitle? getTitle;
 
   /// The tooltip background color.
   final Color? tooltipBgColor;
@@ -1141,6 +1150,7 @@ class LineTouchTooltipData with EquatableMixin {
   /// Used for equality check, see [EquatableMixin].
   @override
   List<Object?> get props => [
+        getTitle,
         tooltipBgColor,
         tooltipRoundedRadius,
         tooltipPadding,
@@ -1156,6 +1166,10 @@ class LineTouchTooltipData with EquatableMixin {
         tooltipBorder,
       ];
 }
+
+typedef GetLineTooltipTitle = LineTooltipTitle? Function(
+  List<LineBarSpot> touchedSpots,
+);
 
 /// Provides a [LineTooltipItem] for showing content inside the
 /// [LineTouchTooltipData].
@@ -1221,6 +1235,35 @@ class TouchLineBarSpot extends LineBarSpot {
 
   /// Distance in pixels from where the user taped
   final double distance;
+}
+
+class LineTooltipTitle with EquatableMixin {
+  const LineTooltipTitle(
+    this.text, {
+    this.textStyle,
+    this.textAlign = TextAlign.left,
+    this.textDirection = TextDirection.ltr,
+  });
+
+  /// Showing text.
+  final String text;
+
+  /// Style of showing text.
+  final TextStyle? textStyle;
+
+  /// Align of showing text.
+  final TextAlign textAlign;
+
+  /// Direction of showing text.
+  final TextDirection textDirection;
+
+  @override
+  List<Object?> get props => [
+        text,
+        textStyle,
+        textAlign,
+        textDirection,
+      ];
 }
 
 /// Holds data of showing each row item in the tooltip popup.
