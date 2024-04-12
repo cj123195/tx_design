@@ -1,3 +1,16 @@
+# 0.2.8
+* Upgrade flutter version to 3.19.5 and Migrate AGP.
+* Update default buttonStyle of TxActionBar.
+* Update default label's textStyle of FormItemContainer.
+* Update some parameters of TxPanel an TxPanelThemeData and update layout of TxPanel.
+* Add ExpansionPanelTheme and ExpansionPanelThemeData to set the style of TxExpansionPanel.
+* Refactor TxCell.
+* DataGrid and DataRow no longer use DataCell but instead use TxCell to build.
+* DetailView no longer use DetailTile but instead use TxCell to build.
+* Optimize the style of AxisChart through optimization algorithms.
+* Update RadiusThemeData.
+* Add TxBadge and TopSheet.
+
 # 0.2.7
 * Modify the radius parameter of PieChartSectionData to radiusRatio.
 
