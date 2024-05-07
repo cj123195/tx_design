@@ -240,11 +240,13 @@ class TxDataRow extends StatelessWidget {
       padding: EdgeInsets.zero,
     );
 
+    final int last = cells.length - 1;
+
     return [
       for (int i = 0; i < cells.length; i += columnNum)
         TxDataRow(
           cells: cells
-              .sublist(i, i + columnNum)
+              .sublist(i, i + columnNum > last ? last : i + columnNum)
               .map((e) => Expanded(child: e))
               .toList(),
           decoration: decoration,
