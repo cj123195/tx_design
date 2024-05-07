@@ -243,7 +243,10 @@ class TxDataRow extends StatelessWidget {
     return [
       for (int i = 0; i < cells.length; i += columnNum)
         TxDataRow(
-          cells: cells.sublist(i, i + columnNum),
+          cells: cells
+              .sublist(i, i + columnNum)
+              .map((e) => Expanded(child: e))
+              .toList(),
           decoration: decoration,
           padding: padding,
           spacing: spacing,
