@@ -51,7 +51,7 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
     Color? dropdownColor,
     InputDecoration? decoration,
     double? menuMaxHeight,
-    AlignmentGeometry alignment = AlignmentDirectional.centerEnd,
+    AlignmentGeometry? alignment,
     BorderRadius? borderRadius = const BorderRadius.all(Radius.circular(8.0)),
     EdgeInsetsGeometry? fieldPadding = EdgeInsets.zero,
   }) : super(
@@ -75,16 +75,28 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
               null,
               direction,
             );
+            alignment ??=
+                FormItemContainer.getAlignment(field.context, direction);
             final List<DropdownMenuItem<T>>? items = sources
                 ?.map((e) => DropdownMenuItem<T>(
                       value: e,
-                      alignment: FormItemContainer.getAlignment(
-                        field.context,
-                        direction,
-                      ),
+                      alignment: alignment!,
                       child: Text(labelMapper(e)),
                     ))
                 .toList();
+
+            selectedItemBuilder ??= (context) {
+              return sources
+                      ?.map((e) => DropdownMenuItem<T>(
+                            value: e,
+                            alignment: alignment!,
+                            child: Text(labelMapper(e)),
+                          ))
+                      .toList() ??
+                  [];
+            };
+
+            style ??= Theme.of(field.context).textTheme.bodyLarge;
 
             return DropdownButtonFormField<T>(
               items: items,
@@ -107,7 +119,7 @@ class DropdownFormField<T, V> extends TxFormFieldItem {
               autofocus: autofocus,
               dropdownColor: dropdownColor,
               menuMaxHeight: menuMaxHeight,
-              alignment: alignment,
+              alignment: alignment!,
               value: initialData ??
                   sources?.tryFind((e) =>
                       (valueMapper?.call(e) ?? labelMapper(e)) == initialValue),
