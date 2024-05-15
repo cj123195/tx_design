@@ -4,16 +4,16 @@ import '../localizations.dart';
 import 'form_field.dart';
 
 /// 数字输入Form表单
-class NumberFormField extends TxTextFormFieldItem<num> {
+class NumberFormField extends TxTextFormFieldItem<String> {
   NumberFormField({
     num? maximumValue, // 最大值
     num? minimumValue = 0, // 最小值
-    bool showOperateButton = true, // 是否显示操作按钮
+    bool showOperateButton = false, // 是否显示操作按钮
     num? difference, // 自增或自减时的差值，showOperateButton为true时生效
     super.key,
-    super.onSaved,
-    super.validator,
-    super.initialValue,
+    FormFieldSetter<num>? onSaved,
+    FormFieldValidator<num>? validator,
+    num? initialValue,
     super.enabled,
     super.autovalidateMode,
     super.restorationId,
@@ -46,7 +46,7 @@ class NumberFormField extends TxTextFormFieldItem<num> {
     super.maxLines,
     super.minLines,
     super.maxLength,
-    super.onChanged,
+    ValueChanged<num?>? onChanged,
     super.onTap,
     super.onEditingComplete,
     super.inputFormatters,
@@ -78,9 +78,25 @@ class NumberFormField extends TxTextFormFieldItem<num> {
     super.contextMenuBuilder,
   }) : super(
           textAlign: textAlign ?? (showOperateButton ? TextAlign.center : null),
-          labelMapper: (num data) => data.toString(),
-          dataMapper: (String? data) => data == null ? 0 : num.tryParse(data),
-          defaultValidator: (context, value) {
+          labelMapper: (String data) => data,
+          dataMapper: (String? data) {
+            if (data == null) {
+              return '0';
+            }
+            return data;
+          },
+          onChanged: onChanged == null
+              ? null
+              : (val) => onChanged(val == null ? null : num.tryParse(val)),
+          initialValue: initialValue?.toString(),
+          onSaved: onSaved == null
+              ? null
+              : (val) => onSaved(val == null ? null : num.tryParse(val)),
+          validator: validator == null
+              ? null
+              : (val) => validator(val == null ? null : num.tryParse(val)),
+          defaultValidator: (context, val) {
+            final num? value = val == null ? null : num.tryParse(val);
             if (value == null) {
               return required == true
                   ? TxLocalizations.of(context).textFormFieldHint
@@ -97,13 +113,15 @@ class NumberFormField extends TxTextFormFieldItem<num> {
           defaultDecorationBuilder: showOperateButton
               ? (field) {
                   void onChangedHandler(num? value) {
-                    field.didChange(value);
+                    field.didChange(value.toString());
                     if (onChanged != null) {
                       onChanged(value);
                     }
                   }
 
-                  final num value = field.value ?? 0;
+                  final num value = field.value == null
+                      ? 0
+                      : (num.tryParse(field.value!) ?? 0);
                   final bool canAdd =
                       maximumValue == null || value < maximumValue;
                   final Widget suffixIcon = IconButton(
