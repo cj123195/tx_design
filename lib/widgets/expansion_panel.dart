@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -233,7 +232,7 @@ class TxExpansionPanel extends StatefulWidget {
   /// 当 panel 开始折叠时，将使用值 false 调用此函数。
   final ValueChanged<bool>? onExpansionChanged;
 
-  /// panel 折叠时时显示的小组件。
+  /// panel 折叠时显示的小组件。
   final List<Widget>? collapsedChildren;
 
   /// panel 展开时显示的小组件。
@@ -281,7 +280,7 @@ class TxExpansionPanel extends StatefulWidget {
   /// 和 [trailing] 小部件的插图。它不会插入展开的 [children] 小部件。
   ///
   /// 如果此属性为 null，则使用 [ExpansionTileThemeData.tilePadding]。如果这也为 null，
-  /// 则 panel 的填充为 'EdgeInsets.symmetric（horizontal： 16.0）'。
+  /// 则 panel 的填充为 'EdgeInsets.symmetric(horizontal： 16.0)'。
   ///
   /// 另请参阅：
   ///
@@ -916,99 +915,4 @@ class _ExpansionTileDefaultsM3 extends ExpansionTileThemeData {
 
   @override
   Color? get collapsedIconColor => _colors.outlineVariant;
-}
-
-@immutable
-class AnimationStyle with Diagnosticable {
-  /// Creates an instance of Animation Style class.
-  AnimationStyle({
-    this.curve,
-    this.duration,
-    this.reverseCurve,
-    this.reverseDuration,
-  });
-
-  /// Creates an instance of Animation Style class with no animation.
-  static AnimationStyle noAnimation = AnimationStyle(
-    duration: Duration.zero,
-    reverseDuration: Duration.zero,
-  );
-
-  /// When specified, the animation will use this curve.
-  final Curve? curve;
-
-  /// When specified, the animation will use this duration.
-  final Duration? duration;
-
-  /// When specified, the reverse animation will use this curve.
-  final Curve? reverseCurve;
-
-  /// When specified, the reverse animation will use this duration.
-  final Duration? reverseDuration;
-
-  /// Creates a new [AnimationStyle] based on the current selection, with the
-  /// provided parameters overridden.
-  AnimationStyle copyWith({
-    final Curve? curve,
-    final Duration? duration,
-    final Curve? reverseCurve,
-    final Duration? reverseDuration,
-  }) {
-    return AnimationStyle(
-      curve: curve ?? this.curve,
-      duration: duration ?? this.duration,
-      reverseCurve: reverseCurve ?? this.reverseCurve,
-      reverseDuration: reverseDuration ?? this.reverseDuration,
-    );
-  }
-
-  /// Linearly interpolate between two animation styles.
-  static AnimationStyle? lerp(AnimationStyle? a, AnimationStyle? b, double t) {
-    if (identical(a, b)) {
-      return a;
-    }
-    return AnimationStyle(
-      curve: t < 0.5 ? a?.curve : b?.curve,
-      duration: t < 0.5 ? a?.duration : b?.duration,
-      reverseCurve: t < 0.5 ? a?.reverseCurve : b?.reverseCurve,
-      reverseDuration: t < 0.5 ? a?.reverseDuration : b?.reverseDuration,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other.runtimeType != runtimeType) {
-      return false;
-    }
-    return other is AnimationStyle &&
-        other.curve == curve &&
-        other.duration == duration &&
-        other.reverseCurve == reverseCurve &&
-        other.reverseDuration == reverseDuration;
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        curve,
-        duration,
-        reverseCurve,
-        reverseDuration,
-      );
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-        .add(DiagnosticsProperty<Curve>('curve', curve, defaultValue: null));
-    properties.add(DiagnosticsProperty<Duration>('duration', duration,
-        defaultValue: null));
-    properties.add(DiagnosticsProperty<Curve>('reverseCurve', reverseCurve,
-        defaultValue: null));
-    properties.add(DiagnosticsProperty<Duration>(
-        'reverseDuration', reverseDuration,
-        defaultValue: null));
-  }
 }

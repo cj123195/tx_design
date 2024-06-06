@@ -2,16 +2,164 @@ import 'package:flutter/material.dart';
 
 import 'datetime_extension.dart';
 
+const Map<String, MaterialColor> _colorMap = {
+  'red': Colors.red,
+  'pink': Colors.pink,
+  'purple': Colors.purple,
+  'deepPurple': Colors.deepPurple,
+  'indigo': Colors.indigo,
+  'blue': Colors.blue,
+  'lightBlue': Colors.lightBlue,
+  'cyan': Colors.cyan,
+  'teal': Colors.teal,
+  'green': Colors.green,
+  'lightGreen': Colors.lightGreen,
+  'lime': Colors.lime,
+  'yellow': Colors.yellow,
+  'amber': Colors.amber,
+  'orange': Colors.orange,
+  'deepOrange': Colors.deepOrange,
+  'brown': Colors.brown,
+  'blueGrey': Colors.blueGrey,
+};
+
+const Map<String, MaterialAccentColor> _accentColorMap = {
+  'redAccent': Colors.redAccent,
+  'pinkAccent': Colors.pinkAccent,
+  'purpleAccent': Colors.purpleAccent,
+  'deepPurpleAccent': Colors.deepPurpleAccent,
+  'indigoAccent': Colors.indigoAccent,
+  'blueAccent': Colors.blueAccent,
+  'lightBlueAccent': Colors.lightBlueAccent,
+  'cyanAccent': Colors.cyanAccent,
+  'tealAccent': Colors.tealAccent,
+  'greenAccent': Colors.greenAccent,
+  'lightGreenAccent': Colors.lightGreenAccent,
+  'limeAccent': Colors.limeAccent,
+  'yellowAccent': Colors.yellowAccent,
+  'amberAccent': Colors.amberAccent,
+  'orangeAccent': Colors.orangeAccent,
+  'deepOrangeAccent': Colors.deepOrangeAccent,
+};
+
 extension StringExtension on String {
+  /// 获取有效的Rgb值
+  int _getValidRgbValue(int value) {
+    if (value < 0) {
+      return 0;
+    }
+    if (value > 255) {
+      return 255;
+    }
+    return value;
+  }
+
+  /// 以argb方式生成Color
+  Color? _toArgbColor() {
+    final List<String> rgba = (toLowerCase()
+          ..replaceAll('rgba', '')
+          ..replaceAll('rgb', '')
+          ..replaceAll('(', '')
+          ..replaceAll(')', ''))
+        .split(',');
+    if (rgba.length < 3) {
+      return null;
+    }
+    final int? r = int.tryParse(rgba[0]);
+    if (r == null) {
+      return null;
+    }
+    final int? g = int.tryParse(rgba[1]);
+    if (g == null) {
+      return null;
+    }
+    final int? b = int.tryParse(rgba[2]);
+    if (b == null) {
+      return null;
+    }
+    int? a;
+    if (rgba.length > 3) {
+      a = int.tryParse(rgba[3]);
+    }
+    return Color.fromARGB(
+      a == null ? 255 : _getValidRgbValue(a),
+      _getValidRgbValue(r),
+      _getValidRgbValue(g),
+      _getValidRgbValue(b),
+    );
+  }
+
+  /// 以rgbo方式生成Color
+  Color? _toRgboColor() {
+    final List<String> rgbo = (toLowerCase()
+          ..replaceAll('rgbo(', '')
+          ..replaceAll(')', ''))
+        .split(',');
+    if (rgbo.length < 3) {
+      return null;
+    }
+    final int? r = int.tryParse(rgbo[0]);
+    if (r == null) {
+      return null;
+    }
+    final int? g = int.tryParse(rgbo[1]);
+    if (g == null) {
+      return null;
+    }
+    final int? b = int.tryParse(rgbo[2]);
+    if (b == null) {
+      return null;
+    }
+    double? o;
+    if (rgbo.length > 3) {
+      o = double.tryParse(rgbo[3]);
+    }
+    return Color.fromRGBO(
+      _getValidRgbValue(r),
+      _getValidRgbValue(r),
+      _getValidRgbValue(r),
+      o ?? 1.0,
+    );
+  }
+
+  /// 格式化为颜色
   Color? toColor() {
-    var hexColor = replaceAll("#", "");
-    if (hexColor.length == 6) {
-      hexColor = "FF$hexColor";
+    if (toLowerCase().startsWith('rgbo')) {
+      return _toRgboColor();
     }
-    if (hexColor.length == 8) {
-      return Color(int.parse("0x$hexColor"));
+
+    if (toLowerCase().startsWith('rgb')) {
+      return _toArgbColor();
     }
-    return null;
+
+    String? value;
+    if (length == 10 && startsWith('0x')) {
+      value = this;
+    } else {
+      value = startsWith('#') ? replaceAll('#', '') : this;
+      if (value.length == 6) {
+        value = '0xFF$value';
+      } else if (value.length == 8) {
+        value = '0x$value';
+      }
+    }
+
+    final int? colorValue = int.tryParse(value);
+    if (colorValue == null) {
+      return null;
+    }
+
+    return Color(colorValue);
+  }
+
+  /// 转换为[MaterialColor]
+  MaterialColor? toMaterialColor() {
+    return _colorMap[this];
+  }
+
+  /// 转换为[MaterialAccentColor]
+  MaterialAccentColor? toMaterialAccentColor() {
+    return _accentColorMap[this];
   }
 
   /// 转换为时间
@@ -204,6 +352,21 @@ extension StringExtension on String {
         path.endsWith(".conf") ||
         path.endsWith('.py') ||
         path.endsWith('.json');
+  }
+
+  /// 判断是否为网络地址
+  bool get isNetworkUrl {
+    final Uri? uri = Uri.tryParse(this);
+    if (uri == null) {
+      return false;
+    }
+
+    final String scheme = uri.scheme.toLowerCase();
+    if (scheme == 'http' || scheme == 'https' || scheme == 'www') {
+      return true;
+    }
+
+    return false;
   }
 
   /// 针对 Dart 字符串优化的 64 位哈希算法 FNV-1a
