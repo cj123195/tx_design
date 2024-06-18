@@ -1,3 +1,10 @@
+# 0.2.9
+* Fix TxDataRow layout exception.
+* Fix the issue of formatting the number input form that prevents the deletion of decimal points and numbers after decimal points.
+* Update String extension.
+* Update widgets exports.
+* The charts will be deleted next version, please replace other chart libraries in advance.
+
 # 0.2.8
 * Upgrade flutter version to 3.19.5 and Migrate AGP.
 * Update default buttonStyle of TxActionBar.
