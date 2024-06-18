@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:tx_design/chart/base/axis_chart/axis_chart_data.dart';
-import 'package:tx_design/chart/base/axis_chart/axis_chart_widgets.dart';
-import 'package:tx_design/chart/line_chart/line_chart.dart';
 import 'package:tx_design/form/form_item_theme.dart';
 import 'package:tx_design/localizations.dart';
 import 'package:tx_design/tx_design.dart';
@@ -93,7 +90,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return FormView();
+    return Scaffold(
+      appBar: AppBar(title: const Text('Tx Design')),
+      body: FormView(),
+    );
   }
 }
 
@@ -237,122 +237,6 @@ class FormView extends StatelessWidget {
           ],
         ),
       ],
-    );
-  }
-}
-
-class ChartView extends StatelessWidget {
-  const ChartView({super.key});
-
-  static const Map state = {
-    "labels": [
-      "9.12121212",
-      "9.1321212",
-      "9.142121",
-      "9.1521212",
-      "9.16",
-      "9.17",
-      "9.18",
-      "9.12",
-      "9.13",
-      "9.14",
-      "9.15",
-      "9.16",
-      "9.17",
-      "9.18"
-    ],
-    "data": [
-      {
-        "legend": "实际掘进进尺",
-        "values": [
-          12.2,
-          13.6,
-          20.0,
-          15.6,
-          18.0,
-          21.3,
-          23.0,
-          12.2,
-          13.6,
-          20.0,
-          15.6,
-          18.0,
-          21.3,
-          23.0
-        ]
-      },
-      {
-        "legend": "计划掘进进尺",
-        "values": [10.2, 11.6, 18.0, 13.6, 16.0, 19.3, 21.0]
-      }
-    ]
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    final List<String>? labels = state['labels']?.cast<String>();
-
-    final List<Map> datasource = state['data']?.cast<Map>() ?? [];
-    final List<List<num>> values = [];
-
-    for (Map data in datasource) {
-      values.add(data['values']?.cast<num>() ?? []);
-    }
-
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: AspectRatio(
-          aspectRatio: 1.7,
-          child: LineChart(
-            LineChartData(
-              horizontalGap: 12.0,
-              lineBarsData: List.generate(
-                values.length,
-                (index) {
-                  final List<num> data = values[index];
-
-                  BarAreaData? belowBarData;
-
-                  return LineChartBarData(
-                    shadow:
-                        const BoxShadow(color: Colors.green, blurRadius: 8.0),
-                    color: Colors.primaries[index],
-                    isStrokeCapRound: true,
-                    isCurved: true,
-                    spots: List.generate(
-                      data.length,
-                      (i) => FlSpot(i.toDouble(), data[i].toDouble()),
-                    ),
-                    belowBarData: belowBarData,
-                  );
-                },
-              ),
-              titlesData: FlTitlesData(
-                leftTitles:
-                    const AxisTitles(sideTitles: SideTitles(showTitles: true)),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    titlesSize: 80,
-                    getTitlesWidget: (index, meta) {
-                      if (index >= labels!.length) {
-                        return const SizedBox();
-                      }
-                      return SideTitleWidget(
-                        axisSide: meta.axisSide,
-                        child: Text(labels[index.toInt()]),
-                      );
-                    },
-                    showTitles: true,
-                  ),
-                ),
-              ),
-              gridData: const FlGridData(show: true),
-              minY: 0,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
