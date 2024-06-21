@@ -9,7 +9,7 @@ import 'form_field.dart';
 class DatetimePickerFormField
     extends TxPickerTextFormField<DateTime, DateTime> {
   DatetimePickerFormField({
-    String? format,
+    String? format = 'yyyy-MM-dd HH:mm',
     DateTime? firstDate,
     DateTime? lastDate,
     String? initialDatetimeStr,
@@ -83,7 +83,7 @@ class DatetimePickerFormField
           labelMapper: (DateTime date) => date.format(format),
           valueMapper: (DateTime date) => date,
           initialValue: initialDatetime ?? initialDatetimeStr?.toDatetime(),
-          onPickTap: (context, initialDate) => showDatetimePicker(
+          onPickTap: (context, initialDate) => showCupertinoDatetimePicker(
             context,
             initialDateTime: initialDate ?? DateTime.now(),
             minimumDate: firstDate,
