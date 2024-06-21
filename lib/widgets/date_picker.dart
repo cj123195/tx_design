@@ -1,8 +1,10 @@
 import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+import '../extensions/time_of_day_extension.dart';
 import '../localizations.dart';
 import 'bottom_sheet.dart';
 
@@ -1180,52 +1182,22 @@ class _YearPickerState extends _CommonPickerState {
   }
 }
 
-/// 显示月份选择器
-Future<DateTime?> showMonthPicker(
+/// 显示 iOS 风格的年份选择器
+Future<int?> showCupertinoYearPicker(
   BuildContext context, {
   String? titleText,
-  DateTime? initialDateTime,
-  DateTime? minimumDate,
-  DateTime? maximumDate,
-  int minimumYear = 1970,
-  int? maximumYear,
-  Color? backgroundColor,
-  DatePickerDateOrder? dateOrder,
-}) async {
-  DateTime? result;
-  return await showDefaultBottomSheet(
-    context,
-    title: titleText ?? TxLocalizations.of(context).monthPickerTitle,
-    contentBuilder: (context) => MonthPicker(
-      onChanged: (month) => result = month,
-      initialDateTime: initialDateTime,
-      minimumDate: minimumDate,
-      maximumDate: maximumDate,
-      minimumYear: minimumYear,
-      maximumYear: maximumYear,
-      backgroundColor: backgroundColor,
-      dateOrder: dateOrder,
-    ),
-    onConfirm: () => Navigator.pop(context, result),
-  );
-}
-
-/// 显示年份选择器
-Future<DateTime?> showYearPicker(
-  BuildContext context, {
-  String? titleText,
-  DateTime? initialDateTime,
-  int minimumYear = 1970,
+  int? initialYear,
+  int? minimumYear,
   int? maximumYear,
   Color? backgroundColor,
 }) async {
-  DateTime? result;
+  int? result = initialYear ?? DateTime.now().year;
   return await showDefaultBottomSheet(
     context,
     title: titleText ?? TxLocalizations.of(context).yearPickerTitle,
     contentBuilder: (context) => YearPicker(
-      onChanged: (month) => result = month,
-      initialDateTime: initialDateTime,
+      onChanged: (year) => result = year.year,
+      initialDateTime: DateTime(result!),
       minimumYear: minimumYear,
       maximumYear: maximumYear,
       backgroundColor: backgroundColor,
@@ -1234,28 +1206,139 @@ Future<DateTime?> showYearPicker(
   );
 }
 
-/// 显示时间选择器
-Future<DateTime?> showDatetimePicker(
+/// 显示 iOS 风格的月份选择器
+Future<DateTime?> showCupertinoMonthPicker(
+  BuildContext context, {
+  String? titleText,
+  DateTime? initialMonth,
+  DateTime? minimumMonth,
+  DateTime? maximumMonth,
+  int? minimumYear,
+  int? maximumYear,
+  Color? backgroundColor,
+  DatePickerDateOrder? dateOrder,
+}) async {
+  return await _showCupertinoDatetimePicker(
+    context,
+    mode: CupertinoDatePickerMode.monthYear,
+    titleText: titleText ?? TxLocalizations.of(context).monthPickerTitle,
+    initialDateTime: initialMonth,
+    minimumDate: minimumMonth,
+    maximumDate: maximumMonth,
+    minimumYear: minimumYear,
+    maximumYear: maximumYear,
+    backgroundColor: backgroundColor,
+    dateOrder: dateOrder,
+  );
+}
+
+/// 显示 iOS 风格的日期时间选择器
+Future<DateTime?> showCupertinoDatetimePicker(
   BuildContext context, {
   String? titleText,
   DateTime? initialDateTime,
   DateTime? minimumDate,
   DateTime? maximumDate,
-  int minimumYear = 1970,
+  int? minimumYear,
   int? maximumYear,
   Color? backgroundColor,
   DatePickerDateOrder? dateOrder,
 }) async {
-  DateTime? result;
-  return await showDefaultBottomSheet(
+  return await _showCupertinoDatetimePicker(
     context,
-    title: titleText ?? TxLocalizations.of(context).datetimePickerTitle,
+    mode: CupertinoDatePickerMode.dateAndTime,
+    titleText: titleText ?? TxLocalizations.of(context).datetimePickerTitle,
+    initialDateTime: initialDateTime,
+    minimumDate: minimumDate,
+    maximumDate: maximumDate,
+    minimumYear: minimumYear,
+    maximumYear: maximumYear,
+    backgroundColor: backgroundColor,
+    dateOrder: dateOrder,
+  );
+}
+
+/// 显示 iOS 风格的日期选择器
+Future<DateTime?> showCupertinoDatePicker(
+  BuildContext context, {
+  String? titleText,
+  DateTime? initialDate,
+  DateTime? minimumDate,
+  DateTime? maximumDate,
+  int? minimumYear,
+  int? maximumYear,
+  Color? backgroundColor,
+  DatePickerDateOrder? dateOrder,
+}) async {
+  return _showCupertinoDatetimePicker(
+    context,
+    mode: CupertinoDatePickerMode.date,
+    titleText: titleText ?? TxLocalizations.of(context).datePickerTitle,
+    initialDateTime: initialDate,
+    minimumDate: minimumDate,
+    maximumDate: maximumDate,
+    minimumYear: minimumYear,
+    maximumYear: maximumYear,
+    backgroundColor: backgroundColor,
+    dateOrder: dateOrder,
+  );
+}
+
+/// 显示 iOS 风格的事件选择器
+Future<TimeOfDay?> showCupertinoTimePicker(
+  BuildContext context, {
+  String? titleText,
+  TimeOfDay? initialTime,
+  TimeOfDay? minimumTime,
+  TimeOfDay? maximumTime,
+  Color? backgroundColor,
+}) async {
+  minimumTime ??= const TimeOfDay(hour: 0, minute: 0);
+  maximumTime ??= const TimeOfDay(hour: 23, minute: 59);
+  final DateTime? time = await _showCupertinoDatetimePicker(
+    context,
+    titleText: titleText ?? TxLocalizations.of(context).timePickerTitle,
+    mode: CupertinoDatePickerMode.time,
+    initialDateTime: initialTime?.toDateTime(),
+    minimumDate: minimumTime.toDateTime(),
+    maximumDate: maximumTime.toDateTime(),
+    backgroundColor: backgroundColor,
+  );
+  return time == null ? null : TimeOfDay.fromDateTime(time);
+}
+
+/// 显示 iOS 风格的日期选择器
+Future<DateTime?> _showCupertinoDatetimePicker(
+  BuildContext context, {
+  required CupertinoDatePickerMode mode,
+  required String titleText,
+  DateTime? initialDateTime,
+  DateTime? minimumDate,
+  DateTime? maximumDate,
+  int? minimumYear,
+  int? maximumYear,
+  Color? backgroundColor,
+  DatePickerDateOrder? dateOrder,
+}) async {
+  DateTime? result = initialDateTime ?? DateTime.now();
+  if (minimumDate != null && result.isBefore(minimumDate)) {
+    result = minimumDate;
+  }
+
+  if (maximumDate != null && result.isAfter(maximumDate)) {
+    result = maximumDate;
+  }
+
+  return await showDefaultBottomSheet<DateTime>(
+    context,
+    title: titleText,
     contentBuilder: (context) => CupertinoDatePicker(
-      mode: CupertinoDatePickerMode.dateAndTime,
-      initialDateTime: initialDateTime,
+      mode: mode,
+      initialDateTime: result,
       minimumDate: minimumDate,
       maximumDate: maximumDate,
-      minimumYear: minimumYear,
+      minimumYear:
+          minimumYear ?? (minimumDate == null ? 1970 : minimumDate.year),
       maximumYear: maximumYear,
       backgroundColor: backgroundColor,
       dateOrder: dateOrder,

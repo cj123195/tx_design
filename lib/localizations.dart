@@ -48,6 +48,12 @@ abstract class TxLocalizations {
   /// Title text for default dialog;
   String get dialogContent;
 
+  /// Title for date picker bottom sheet;
+  String get datePickerTitle;
+
+  /// Title for time picker bottom sheet;
+  String get timePickerTitle;
+
   /// Title for datetime picker bottom sheet;
   String get datetimePickerTitle;
 
@@ -311,6 +317,12 @@ class DefaultTxLocalizations implements TxLocalizations {
   String get pickerTitle => 'Select';
 
   @override
+  String get datePickerTitle => 'Select Date';
+
+  @override
+  String get timePickerTitle => 'Select Time';
+
+  @override
   String get datetimePickerTitle => 'Select Datetime';
 
   @override
@@ -531,7 +543,13 @@ class ZhTxLocalizations implements TxLocalizations {
   String get pickerTitle => '请选择';
 
   @override
-  String get datetimePickerTitle => '选择时间';
+  String get datePickerTitle => '选择日期';
+
+  @override
+  String get timePickerTitle => '选择时间';
+
+  @override
+  String get datetimePickerTitle => '选择日期时间';
 
   @override
   String get monthPickerTitle => '选择月份';
