@@ -147,28 +147,12 @@ class _TxDateRangePickerDialogState extends State<TxDateRangePickerDialog>
     if (_endNode.hasFocus) {
       return _startDate ?? widget.firstDate;
     }
-    if (_endDate != null) {
-      final DateTime oneYear =
-          DateTime(_endDate!.year - 1, _endDate!.month, _endDate!.day + 1);
-      if (widget.firstDate == null) {
-        return oneYear;
-      }
-      return oneYear.isAfter(widget.firstDate!) ? oneYear : widget.firstDate;
-    }
     return widget.firstDate;
   }
 
   DateTime? get _maximumDate {
     if (_startNode.hasFocus) {
       return _endDate ?? widget.lastDate;
-    }
-    if (_startDate != null) {
-      final DateTime oneYear = DateTime(
-          _startDate!.year + 1, _startDate!.month, _startDate!.day - 1);
-      if (widget.lastDate == null) {
-        return oneYear;
-      }
-      return oneYear.isBefore(widget.lastDate!) ? oneYear : widget.lastDate;
     }
     return widget.lastDate;
   }
@@ -197,7 +181,7 @@ class _TxDateRangePickerDialogState extends State<TxDateRangePickerDialog>
 
   @override
   void initState() {
-    _startDate = widget.initialDateRange?.start;
+    _startDate = widget.initialDateRange?.start ?? DateTime.now();
     _endDate = widget.initialDateRange?.end;
     _startController = TextEditingController(text: _startDate?.format(_format));
     _endController = TextEditingController(text: _endDate?.format(_format));
@@ -210,7 +194,14 @@ class _TxDateRangePickerDialogState extends State<TxDateRangePickerDialog>
     });
     _endNode.addListener(() {
       if (_endNode.hasFocus) {
-        setState(() {});
+        if (_endDate == null && _startDate != null) {
+          _onDateChanged(
+            _startDate,
+            _startDate?.add(const Duration(days: 1)),
+          );
+        } else {
+          setState(() {});
+        }
       }
     });
     super.initState();
@@ -346,7 +337,7 @@ class _TxDateRangePickerDialogState extends State<TxDateRangePickerDialog>
       maximumDate: _maximumDate,
       minimumDate: _minimumDate,
       maximumYear: _maximumDate?.year,
-      minimumYear: _minimumDate?.year,
+      minimumYear: _minimumDate?.year ?? 1,
       initialDateTime: _startNode.hasFocus ? _startDate : _endDate,
     );
 
