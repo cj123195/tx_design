@@ -42,24 +42,73 @@ class RadioFormField<T, V> extends TxPickerFormFieldItem<T, V> {
               }
             }
 
-            final List<Widget> children = sources?.map((e) {
-                  return RadioListTile<T?>(
-                    title: Text(labelMapper(e)),
-                    value: e,
-                    groupValue: field.value,
-                    onChanged: enableMapper?.call(e) != false
-                        ? onChangedHandler
-                        : null,
+            final List<Widget> children = sources == null
+                ? []
+                : List.generate(
+                    sources.length,
+                    (index) => _RadioItem<T?>(
+                      key: ValueKey('RadioFormItem-$index-${sources[index]}'),
+                      label: labelMapper(sources[index]),
+                      value: sources[index],
+                      groupValue: field.value,
+                      onChanged: enableMapper?.call(sources[index]) != false
+                          ? onChangedHandler
+                          : null,
+                    ),
                   );
-                }).toList() ??
-                [];
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: children,
-            );
+            return Wrap(children: children);
           },
           actionsBuilder: (field) => actions,
+          decoration: const InputDecoration(contentPadding: EdgeInsets.zero),
         );
+}
+
+class _RadioItem<T> extends StatelessWidget {
+  const _RadioItem({
+    required this.label,
+    required this.value,
+    required this.groupValue,
+    required this.onChanged,
+    super.key,
+  });
+
+  final String label;
+  final T value;
+  final T? groupValue;
+  final ValueChanged<T?>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool checked = value == groupValue;
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(4.0),
+      onTap: onChanged != null
+          ? () {
+              if (checked) {
+                onChanged!(null);
+              } else {
+                onChanged!(value);
+              }
+            }
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 4.0, right: 8.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Radio<T>(
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+              value: value,
+              groupValue: groupValue,
+              onChanged: onChanged,
+            ),
+            Text(label),
+          ],
+        ),
+      ),
+    );
+  }
 }
