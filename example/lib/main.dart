@@ -62,16 +62,17 @@ class _MyAppState extends State<MyApp> {
         TxLocalizations.delegate,
       ],
       home: MyHomePage(
-          title: 'HomePage',
-          changeTheme: () {
-            setState(() {
-              if (_themeMode == ThemeMode.dark) {
-                _themeMode = ThemeMode.light;
-              } else {
-                _themeMode = ThemeMode.dark;
-              }
-            });
-          }),
+        title: 'HomePage',
+        changeTheme: () {
+          setState(() {
+            if (_themeMode == ThemeMode.dark) {
+              _themeMode = ThemeMode.light;
+            } else {
+              _themeMode = ThemeMode.dark;
+            }
+          });
+        },
+      ),
     );
   }
 }
@@ -147,6 +148,16 @@ class FormView extends StatelessWidget {
                     required: true,
                   ),
                   // const SizedBox(height: 8.0),
+                  YearPickerFormField(
+                    labelText: '年份选择',
+                    onChanged: (val) => form['fieldYear'] = val,
+                    initialYear: form['fieldYear'],
+                  ),
+                  MonthPickerFormField(
+                    labelText: '月份选择',
+                    onChanged: (val) => form['fieldMonth'] = val?.format(),
+                    initialMonth: form['fieldMonth'],
+                  ),
                   DatePickerFormField(
                     labelText: '日期选择',
                     onChanged: (val) => form['field4'] = val?.format(),
