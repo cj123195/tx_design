@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../extensions/string_extension.dart' show StringExtension;
 import '../extensions/time_of_day_extension.dart';
+import '../widgets/date_picker.dart' show showCupertinoTimePicker;
 import 'form_field.dart';
 
 /// 时间选择Form组件
@@ -9,6 +10,8 @@ class TimePickerFormField extends TxPickerTextFormField<TimeOfDay, TimeOfDay> {
   TimePickerFormField({
     String? initialValue,
     TimeOfDay? initialTime,
+    TimeOfDay? minimumTime,
+    TimeOfDay? maximumTime,
     String format = 'HH:mm',
     super.key,
     super.onSaved,
@@ -80,9 +83,11 @@ class TimePickerFormField extends TxPickerTextFormField<TimeOfDay, TimeOfDay> {
               time?.formatWithoutLocalization() ?? '',
           valueMapper: (TimeOfDay time) => time,
           initialValue: initialTime ?? initialValue?.toTime(),
-          onPickTap: (context, initialTime) => showTimePicker(
-            context: context,
-            initialTime: initialTime ?? TimeOfDay.now(),
+          onPickTap: (context, initialTime) => showCupertinoTimePicker(
+            context,
+            initialTime: initialTime,
+            minimumTime: minimumTime,
+            maximumTime: maximumTime,
           ),
           actionsBuilder: (field) => actions,
         );
