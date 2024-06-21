@@ -374,7 +374,7 @@ enum ActionsPosition {
   footer,
 }
 
-class _DefaultSheet extends StatelessWidget {
+class _DefaultSheet<T> extends StatelessWidget {
   const _DefaultSheet({
     required this.contentBuilder,
     this.headerBuilder,
@@ -443,7 +443,7 @@ class _DefaultSheet extends StatelessWidget {
             MaterialLocalizations.of(context);
 
         leading = TextButton(
-          onPressed: onCancel ?? () => Navigator.pop(context, false),
+          onPressed: onCancel ?? () => Navigator.pop(context),
           style: TextButton.styleFrom(
             foregroundColor: Theme.of(context).colorScheme.onSurface,
           ),
@@ -451,7 +451,7 @@ class _DefaultSheet extends StatelessWidget {
         );
       } else if (automaticallyImplyLeading) {
         leading = CloseButton(
-          onPressed: onCancel ?? () => Navigator.pop(context, false),
+          onPressed: onCancel ?? () => Navigator.pop(context),
         );
       }
     }
@@ -487,12 +487,12 @@ class _DefaultSheet extends StatelessWidget {
       final List<Widget> buttons = [
         if (showCancelButton)
           OutlinedButton(
-            onPressed: onCancel ?? () => Navigator.pop(context, false),
+            onPressed: onCancel ?? () => Navigator.pop(context),
             child: Text(textCancel ?? localizations.cancelButtonLabel),
           ),
         if (showConfirmButton)
           FilledButton(
-            onPressed: onConfirm ?? () => Navigator.pop(context, true),
+            onPressed: onConfirm ?? () => Navigator.pop<T>(context, true as T),
             child: Text(textConfirm ?? localizations.okButtonLabel),
           ),
       ];
@@ -521,7 +521,7 @@ class _DefaultSheet extends StatelessWidget {
       );
     } else if (actionsPosition == ActionsPosition.header) {
       action = TextButton(
-        onPressed: onConfirm ?? () => Navigator.pop(context, true),
+        onPressed: onConfirm ?? () => Navigator.pop<T>(context, true as T),
         child: Text(localizations.okButtonLabel),
       );
     }
