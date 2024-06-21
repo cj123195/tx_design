@@ -440,16 +440,14 @@ class _RenderFormItem extends RenderBox
     );
     final Size formFieldSize = _layoutBox(formField, textConstraints);
 
-    final double defaultTileHeight = formFieldSize.height;
-
-    final double tileHeight = math.max(defaultTileHeight, formFieldSize.height);
+    final double tileHeight = math.max(labelSize.height, formFieldSize.height);
     final double formFieldY = (tileHeight - formFieldSize.height) / 2.0;
 
     final double labelY;
-    if (tileHeight > 72.0) {
+    if (labelSize.height * 2 < formFieldSize.height) {
       labelY = 16.0;
     } else {
-      labelY = math.min((tileHeight - labelSize.height) / 2.0, 16.0);
+      labelY = (tileHeight - labelSize.height) / 2.0;
     }
 
     if (hasLabel) {
