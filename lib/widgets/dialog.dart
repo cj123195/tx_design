@@ -79,7 +79,7 @@ Future<T?> showDefaultDialog<T>(
   } else {
     if (showCancelButton) {
       final VoidCallback effectiveOnCancel =
-          onCancel ?? () => Navigator.pop(context, false);
+          onCancel ?? () => Navigator.pop(context);
       final Widget effectiveCancel =
           cancel ?? Text(cancelText ?? localizations.cancelButtonLabel);
       effectiveActions = [
@@ -93,7 +93,7 @@ Future<T?> showDefaultDialog<T>(
 
     if (showConfirmButton) {
       final VoidCallback effectiveOnConfirm =
-          onConfirm ?? () => Navigator.pop(context, true);
+          onConfirm ?? () => Navigator.pop<T>(context, true as T);
       final Widget effectiveConfirm =
           confirm ?? Text(confirmText ?? localizations.okButtonLabel);
       effectiveActions = [
