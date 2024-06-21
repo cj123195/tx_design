@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
 import '../extensions/string_extension.dart';
-import '../widgets/date_picker.dart';
+import '../widgets/date_picker.dart' show showCupertinoDatetimePicker;
 import 'form_field.dart';
 
 /// 日期+时间选择组件
 class DatetimePickerFormField
     extends TxPickerTextFormField<DateTime, DateTime> {
   DatetimePickerFormField({
-    String? format = 'yyyy-MM-dd HH:mm',
-    DateTime? firstDate,
-    DateTime? lastDate,
     String? initialDatetimeStr,
     DateTime? initialDatetime,
+    String? format = 'yyyy-MM-dd HH:mm',
+    DateTime? minimumDate,
+    DateTime? maximumDate,
+    int? minimumYear,
+    int? maximumYear,
     super.key,
     super.onSaved,
     super.validator,
@@ -85,9 +87,11 @@ class DatetimePickerFormField
           initialValue: initialDatetime ?? initialDatetimeStr?.toDatetime(),
           onPickTap: (context, initialDate) => showCupertinoDatetimePicker(
             context,
-            initialDateTime: initialDate ?? DateTime.now(),
-            minimumDate: firstDate,
-            maximumDate: lastDate,
+            initialDateTime: initialDate,
+            minimumDate: minimumDate,
+            maximumDate: maximumDate,
+            minimumYear: minimumYear,
+            maximumYear: maximumYear,
           ),
           actionsBuilder: (field) => actions,
         );

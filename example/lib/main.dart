@@ -168,7 +168,7 @@ class FormView extends StatelessWidget {
                     onChanged: (val) => form['field5'] = val,
                     initialDatetime: form['field5'],
                     required: true,
-                    firstDate: DateTime.now(),
+                    minimumDate: DateTime.now(),
                   ),
                   TimePickerFormField(
                     labelText: '时间选择',
