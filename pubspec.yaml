@@ -3,6 +3,8 @@ description: A custom component library that contains some basic UI components a
 version: 0.2.9
 homepage: https://github.com/cj123195/tx_design.git
 repository: https://github.com/cj123195/tx_design
+issue_tracker: https://github.com/cj123195/tx_design/issues
+documentation: https://github.com/cj123195/tx_design
 
 environment:
   sdk: '>=3.1.1 <4.0.0'
