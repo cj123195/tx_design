@@ -48,23 +48,61 @@ class CheckboxFormField<T, V> extends TxMultiPickerFormFieldItem<T, V> {
               }
             }
 
-            final List<Widget> children = sources?.map((e) {
-                  final bool value = field.value?.contains(e) == true;
-                  return CheckboxListTile(
-                    title: Text(labelMapper(e)),
-                    enabled: enabledMapper?.call(e),
-                    value: value,
-                    onChanged: (value) => onChangedHandler(value, e),
+            final List<Widget> children = sources == null
+                ? []
+                : List.generate(
+                    sources.length,
+                    (index) => _CheckboxItem(
+                      key:
+                          ValueKey('CheckboxFormItem-$index-${sources[index]}'),
+                      label: labelMapper(sources[index]),
+                      value: field.value?.contains(sources[index]) == true,
+                      enabled: enabledMapper?.call(sources[index]),
+                      onChanged: (value) =>
+                          onChangedHandler(value, sources[index]),
+                    ),
                   );
-                }).toList() ??
-                [];
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: children,
-            );
+            return Wrap(children: children);
           },
           actionsBuilder: (field) => actions,
         );
+}
+
+class _CheckboxItem<T> extends StatelessWidget {
+  const _CheckboxItem({
+    required this.label,
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+    super.key,
+  });
+
+  final String label;
+  final bool value;
+  final ValueChanged<bool?>? onChanged;
+  final bool? enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(4.0),
+      onTap: onChanged != null ? () => onChanged!(!value) : null,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 8.0, right: 4.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(label),
+            Checkbox(
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              visualDensity: VisualDensity.compact,
+              value: value,
+              onChanged: onChanged,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
