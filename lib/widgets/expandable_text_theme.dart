@@ -32,17 +32,22 @@ class TxExpandableTextThemeData
   const TxExpandableTextThemeData({
     this.collapsedLines,
     this.toggleButtonTextStyle,
+    this.toggleButtonForegroundColor,
+    this.overflow,
   }) : assert(collapsedLines == null || collapsedLines > 0);
 
   final int? collapsedLines;
-
   final TextStyle? toggleButtonTextStyle;
+  final Color? toggleButtonForegroundColor;
+  final TxTextOverflow? overflow;
 
   /// 创建此对象的副本，但将给定字段替换为新值。
   @override
   TxExpandableTextThemeData copyWith({
     int? collapsedLines,
     TextStyle? toggleButtonTextStyle,
+    Color? toggleButtonForegroundColor,
+    TxTextOverflow? overflow,
   }) {
     assert(collapsedLines == null || collapsedLines > 0);
 
@@ -50,6 +55,9 @@ class TxExpandableTextThemeData
       collapsedLines: collapsedLines ?? this.collapsedLines,
       toggleButtonTextStyle:
           toggleButtonTextStyle ?? this.toggleButtonTextStyle,
+      toggleButtonForegroundColor:
+          toggleButtonForegroundColor ?? this.toggleButtonForegroundColor,
+      overflow: overflow ?? this.overflow,
     );
   }
 
@@ -69,7 +77,9 @@ class TxExpandableTextThemeData
     }
     return other is TxExpandableTextThemeData &&
         other.collapsedLines == collapsedLines &&
-        other.toggleButtonTextStyle == toggleButtonTextStyle;
+        other.toggleButtonTextStyle == toggleButtonTextStyle &&
+        other.toggleButtonForegroundColor == toggleButtonForegroundColor &&
+        other.overflow == overflow;
   }
 
   @override
@@ -79,6 +89,11 @@ class TxExpandableTextThemeData
         .add(IntProperty('collapsedLines', collapsedLines, defaultValue: null));
     properties.add(DiagnosticsProperty<TextStyle>(
         'toggleButtonTextStyle', toggleButtonTextStyle,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<Color>(
+        'toggleButtonForegroundColor', toggleButtonForegroundColor,
+        defaultValue: null));
+    properties.add(DiagnosticsProperty<TxTextOverflow>('overflow', overflow,
         defaultValue: null));
   }
 
@@ -93,6 +108,9 @@ class TxExpandableTextThemeData
       collapsedLines: _lerpInt(collapsedLines, other.collapsedLines, t),
       toggleButtonTextStyle:
           TextStyle.lerp(toggleButtonTextStyle, other.toggleButtonTextStyle, t),
+      toggleButtonForegroundColor: Color.lerp(
+          toggleButtonForegroundColor, other.toggleButtonForegroundColor, t),
+      overflow: t < 0.5 ? overflow : other.overflow,
     );
   }
 }
