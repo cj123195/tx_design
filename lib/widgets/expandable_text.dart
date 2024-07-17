@@ -1,17 +1,35 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../localizations.dart';
 import 'expandable_text_theme.dart';
 
-/// 一组具有单一样式的可展开文本。
+enum TxTextOverflow {
+  clip,
+  ellipsis,
+}
+
+/// 在文本超出指定行数之后，会显示 展开/收起 按钮的文本展示组件
 ///
-/// [expanded]用来初始化是否展开。
-/// [collapsedLines]用来设置折叠时的文字行数
+/// 用例1: 常规使用
+/// TxExpandableText(
+///   '一大段文字...',
+///   collapsedLines: 2,
+///   textStyle: TextStyle(color: Colors.blue),
+/// )
 ///
-/// 参考[Text]
+/// 用例2：特性化使用-比如 一段文字结尾显示的是 编辑，而点击编辑按钮之后要做一些事, 且显示样式不变
+/// TxExpandableText(
+///   '一大段文字...',
+///   collapsedLines: 2, // 这两个长度也要设置一致
+///   textStyle: TextStyle(color: Colors.blue),
+///   collapseButtonLabel: '编辑',
+///   expandable: false,  // 设置为不可展开
+///   onToggle: onToggle, // 执行按钮操作事件
+/// )
 class TxExpandableText extends StatefulWidget {
   /// 创建可展开文本小部件。
   ///
@@ -22,9 +40,16 @@ class TxExpandableText extends StatefulWidget {
     this.data, {
     super.key,
     this.collapsedLines,
+    this.maxLines,
     this.style,
+    this.collapseButtonLabel,
+    this.expandButtonLabel,
+    this.collapseIcon,
+    this.expandIcon,
+    this.toggleButtonForegroundColor,
     this.toggleButtonTextStyle,
     this.expanded,
+    this.expandable = true,
     this.strutStyle,
     this.textAlign,
     this.textDirection,
@@ -35,6 +60,8 @@ class TxExpandableText extends StatefulWidget {
     this.textWidthBasis,
     this.textHeightBehavior,
     this.selectionColor,
+    this.onToggle,
+    this.overflow,
   });
 
   /// 要显示的文本。
@@ -45,50 +72,51 @@ class TxExpandableText extends StatefulWidget {
   /// 默认值为false
   final bool? expanded;
 
+  ///  是否可展开
+  ///
+  /// 值为 true 时，文字可展开，否则不可展开
+  ///
+  /// 当用户需要点击尾部按钮执行其他操作，如跳转到详情页时，将此值设置为 false，并传递
+  /// [onToggle] 事件执行用户自定义操作。
+  ///
+  /// 默认值为 true
+  final bool expandable;
+
   /// 如果非空，则此文本使用的样式。
   ///
   /// 如果样式的“inherit”属性为真，该样式将与最接近的外围[DefaultTextStyle]合并。
   /// 否则，该样式将替换最接近的外围[DefaultTextStyle]。
   final TextStyle? style;
 
+  /// 展开/折叠按钮的文字样式
+  ///
   /// 如果值为 null，则使用[TxExpandableTextThemeData.toggleButtonTextStyle]，
   /// 如果它也为null，则使用[style]并修改文字颜色为[ColorScheme.primary]，
-  /// 如果它也为null，则使用[DefaultTextStyle]并修改文字颜色为[ColorScheme.primary]。
+  /// 如果它也为null，则使用[DefaultTextStyle]并修改文字颜色为[toggleButtonForegroundColor]。
   final TextStyle? toggleButtonTextStyle;
 
-  /// {@macro flutter.paintings.textPainter.strutStyle}
+  /// 展开/折叠按钮的文字颜色
+  ///
+  /// 如果值为 null，则使用 [TxExpandableTextThemeData.toggleButtonTextColor]，
+  /// 如果它也为null，则使用 [ColorScheme.primary]，
+  final Color? toggleButtonForegroundColor;
+
+  /// 参考 [Text.strutStyle]
   final StrutStyle? strutStyle;
 
-  /// 文本应该如何水平对齐。
+  /// 参考 [Text.textAlign]
   final TextAlign? textAlign;
 
-  /// 文本的方向性。
-  ///
-  /// 这决定了如何解释 [textAlign] 值，如 [TextAlign.start] 和 [TextAlign.end]。
-  ///
-  /// 这也用于消除如何呈现双向文本的歧义。 例如，如果 [data] 是一个英语短语，后跟一个希伯来语
-  /// 短语，在 [TextDirection.ltr] 上下文中，英语短语将在左侧，希伯来语短语在其右侧，
-  /// 而在 [TextDirection.rtl] 上下文中 上下文中，英语短语将在右侧，希伯来语短语将在其左侧。
-  ///
-  /// 默认为环境[Directionality]，如果有的话。
+  /// 参考 [Text.textDirection]
   final TextDirection? textDirection;
 
-  /// 当相同的 Unicode 字符可以根据区域设置以不同方式呈现时，用于选择字体。
-  ///
-  /// 很少需要设置此属性。 默认情况下，它的值是从带有“Localizations.localeOf(context)”的
-  /// 封闭应用程序继承的。
+  /// 参考 [Text.locale]
   final Locale? locale;
 
-  /// 文本是否应该在软换行符处中断。
-  ///
-  /// 如果为 false，文本中的字形将被定位为好像有无限的水平空间。
+  /// 参考 [Text.softWrap]
   final bool? softWrap;
 
-  /// 每个逻辑像素的字体像素数。
-  ///
-  /// 例如，如果文本比例因子为 1.5，则文本将比指定的字体大小大 50%。
-  ///
-  /// 作为 textScaleFactor 提供给构造函数的值。 如果为 null，将使用从环境 [MediaQuery]
+  /// 参考 [Text.textScaler]
   /// 获得的 [MediaQueryData.textScaler]，如果范围内没有 [MediaQuery]，则为 1.0。
   final TextScaler? textScaler;
 
@@ -98,36 +126,120 @@ class TxExpandableText extends StatefulWidget {
   /// 则默认值为2
   final int? collapsedLines;
 
-  /// {@template flutter.widgets.Text.semanticsLabel}
-  /// 此文本的替代语义标签。
+  /// 文本展开后的最大显示行数
   ///
-  /// 如果存在，此小部件的语义将包含此值而不是实际文本。 这将覆盖直接应用于 [TextSpan] 的
-  /// 任何语义标签。
+  /// 如果值为 null，则使用[TxExpandableTextThemeData.maxLines]，如果它也为null, 则
+  /// 默认值为 null，此时将展示全部文字。
+  final int? maxLines;
+
+  /// 折叠按钮文字
   ///
-  /// 这对于用全文值替换缩写或速记很有用：
+  /// 如果值为 null，则使用[TxExpandableTextThemeData.collapseButtonLabel]
+  /// 如果值为 null，则使用[TxLocalizations.collapsedButtonLabel]
+  final String? collapseButtonLabel;
+
+  /// 展开按钮文字
   ///
-  /// ```dart
-  /// Text(r'$$', semanticsLabel: 'Double dollars')
-  /// ```
-  /// {@endtemplate}
+  /// 如果值为 null，则使用[TxExpandableTextThemeData.expandButtonLabel]
+  /// 如果值为 null，则使用 [TxLocalizations.moreButtonLabel]
+  final String? expandButtonLabel;
+
+  /// 折叠按钮
+  ///
+  /// 如果值为 null，则使用 [TextSpan] 并设置 text 为 [collapseButtonLabel]
+  final Widget? collapseIcon;
+
+  /// 展开按钮
+  ///
+  /// 如果值为 null，则使用 [TextSpan] 并设置 text 为 [expandButtonLabel]
+  final Widget? expandIcon;
+
+  /// 参考 [Text.semanticsLabel]
   final String? semanticsLabel;
 
-  /// {@macro flutter.paintings.textPainter.textWidthBasis}
+  /// 参考 [Text.textWidthBasis]
   final TextWidthBasis? textWidthBasis;
 
-  /// {@macro dart.ui.textHeightBehavior}
+  /// 参考 [Text.textHeightBehavior]
   final ui.TextHeightBehavior? textHeightBehavior;
 
-  /// 绘制选区时使用的颜色。
+  /// 参考 [Text.selectionColor]
   final Color? selectionColor;
+
+  /// 文字溢出时处理方式
+  ///
+  /// 值为 null 时，则使用[TxExpandableTextThemeData.overflow]，
+  /// 如果这也为 null，默认值为 [TxTextOverflow.ellipsis]
+  final TxTextOverflow? overflow;
+
+  /// 展开/折叠切换回调
+  ///
+  /// 参数为展开状态，true 表示展开，false 表示折叠
+  final ValueChanged<bool>? onToggle;
 
   @override
   State<TxExpandableText> createState() => _TxExpandableTextState();
 }
 
 class _TxExpandableTextState extends State<TxExpandableText> {
-  static const String _ellipsizeText = '...';
+  static const String _ellipsizeText = '\u2026';
   late bool _expanded;
+
+  // 切换状态
+  void _onToggle() {
+    if (widget.onToggle != null) {
+      widget.onToggle!(!_expanded);
+    }
+    if (widget.expandable) {
+      setState(() {
+        _expanded = !_expanded;
+      });
+    }
+  }
+
+  // 文字样式
+  TextStyle _textStyle(DefaultTextStyle defaults) {
+    TextStyle textStyle;
+    if (widget.style == null || widget.style!.inherit) {
+      textStyle = defaults.style.merge(widget.style);
+    } else {
+      textStyle = widget.style!;
+    }
+    if (MediaQuery.boldTextOf(context)) {
+      textStyle = textStyle.merge(const TextStyle(fontWeight: FontWeight.bold));
+    }
+    return textStyle;
+  }
+
+  // 切换按钮
+  InlineSpan _toggleButton(
+    TextStyle style,
+    Color color,
+    String label,
+    Widget? child,
+  ) {
+    if (child != null) {
+      return WidgetSpan(
+        child: DefaultTextStyle(
+          style: style.copyWith(color: color),
+          child: IconTheme(
+            data: IconThemeData(color: color),
+            child: GestureDetector(
+              onTap: _onToggle,
+              child: child,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return TextSpan(
+      text: label,
+      style: style.copyWith(color: color),
+      recognizer: TapGestureRecognizer()..onTap = _onToggle,
+      // recognizer:
+    );
+  }
 
   @override
   void initState() {
@@ -138,20 +250,10 @@ class _TxExpandableTextState extends State<TxExpandableText> {
   @override
   Widget build(BuildContext context) {
     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
-    final TxExpandableTextThemeData expandableTextTheme =
-        TxExpandableTextTheme.of(context);
-    TextStyle? effectiveTextStyle = widget.style;
-    if (widget.style == null || widget.style!.inherit) {
-      effectiveTextStyle = defaultTextStyle.style.merge(widget.style);
-    }
-    if (MediaQuery.boldTextOf(context)) {
-      effectiveTextStyle = effectiveTextStyle!
-          .merge(const TextStyle(fontWeight: FontWeight.bold));
-    }
-    final TextStyle? buttonStyle = (widget.toggleButtonTextStyle ??
-            expandableTextTheme.toggleButtonTextStyle ??
-            effectiveTextStyle)
-        ?.copyWith(color: Theme.of(context).colorScheme.primary);
+    final TxExpandableTextThemeData theme = TxExpandableTextTheme.of(context);
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+
+    final TextStyle textStyle = _textStyle(defaultTextStyle);
 
     final TextAlign textAlign =
         widget.textAlign ?? defaultTextStyle.textAlign ?? TextAlign.start;
@@ -166,103 +268,101 @@ class _TxExpandableTextState extends State<TxExpandableText> {
         DefaultTextHeightBehavior.maybeOf(context);
     final Color? selectionColor = widget.selectionColor ??
         DefaultSelectionStyle.of(context).selectionColor;
+    final TextDirection textDirection =
+        widget.textDirection ?? Directionality.of(context);
+    final Locale locale = widget.locale ?? Localizations.localeOf(context);
 
-    TextSpan textSpan = TextSpan(text: widget.data, style: effectiveTextStyle);
+    TextSpan textSpan = TextSpan(text: widget.data, style: textStyle);
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         assert(constraints.hasBoundedWidth);
 
-        final int collapsedLines =
-            widget.collapsedLines ?? expandableTextTheme.collapsedLines ?? 2;
-        int? maxLines;
-
         /// 文字尺寸
-        final TextPainter textPainter = TextPainter(
-          text: textSpan,
-          textDirection: TextDirection.ltr,
+        final int collapsedLines =
+            widget.collapsedLines ?? theme.collapsedLines ?? 2;
+        final TextPainter painter = TextPainter(
+          text: TextSpan(text: widget.data),
           maxLines: collapsedLines,
+          textDirection: textDirection,
           strutStyle: widget.strutStyle,
           textHeightBehavior: textHeightBehavior,
           textAlign: textAlign,
-          locale: widget.locale,
+          locale: locale,
           textScaler: textScaler,
           textWidthBasis: textWidthBasis,
-        )..layout(
-            minWidth: 0,
-            maxWidth: constraints.maxWidth,
-          );
-        final Size textSize = textPainter.size;
+        )..layout(maxWidth: constraints.maxWidth);
+        final Size textSize = painter.size;
 
-        if (textPainter.didExceedMaxLines) {
+        if (painter.didExceedMaxLines) {
           final TxLocalizations localizations = TxLocalizations.of(context);
+          final TextStyle buttonTextStyle = widget.toggleButtonTextStyle ??
+              theme.toggleButtonTextStyle ??
+              textStyle;
+          final Color buttonColor = widget.toggleButtonForegroundColor ??
+              theme.toggleButtonForegroundColor ??
+              colorScheme.primary;
 
+          InlineSpan button;
+          bool needClipData = true; // 是否需要截取文字
           if (_expanded) {
-            final WidgetSpan collapsedSpan = WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: InkWell(
-                onTap: () => setState(() => _expanded = false),
-                child: Text(
-                  localizations.collapsedButtonLabel,
-                  style: buttonStyle,
-                ),
-              ),
+            button = _toggleButton(
+              buttonTextStyle,
+              buttonColor,
+              widget.collapseButtonLabel ?? localizations.collapsedButtonLabel,
+              widget.collapseIcon,
             );
-            textSpan = TextSpan(children: [textSpan, collapsedSpan]);
+            // 计算文字 + 按钮的总行数是否超过maxLines，如果溢出，则需要截取文字
+            textSpan = TextSpan(children: [textSpan, button]);
+            painter
+              ..text = textSpan
+              ..maxLines = widget.maxLines
+              ..layout(maxWidth: constraints.maxWidth);
+            needClipData = painter.didExceedMaxLines;
           } else {
-            maxLines = collapsedLines;
-
-            /// 收起/展开按钮
-            final WidgetSpan expandedBtn = WidgetSpan(
-              alignment: PlaceholderAlignment.middle,
-              child: InkWell(
-                onTap: () => setState(() => _expanded = true),
-                child: Text(localizations.moreButtonLabel, style: buttonStyle),
-              ),
+            button = _toggleButton(
+              buttonTextStyle,
+              buttonColor,
+              widget.expandButtonLabel ?? localizations.moreButtonLabel,
+              widget.expandIcon,
             );
+          }
 
-            // 省略号
-            final TextSpan ellipsizeText = TextSpan(
-              text: _ellipsizeText,
-              style: effectiveTextStyle,
-            );
+          if (needClipData) {
+            painter
+              ..text = button
+              ..layout(maxWidth: constraints.maxWidth);
+            final Size btnSize = painter.size;
 
-            /// 按钮尺寸
-            textPainter.text = TextSpan(
-              text: ' ${localizations.moreButtonLabel} ',
-              style: buttonStyle,
-            );
-            textPainter.layout(
-              minWidth: 0,
-              maxWidth: constraints.maxWidth,
-            );
-            final Size btnSize = textPainter.size;
+            Size ellipsizeSize = Size.zero;
+            final TxTextOverflow overflow =
+                widget.overflow ?? theme.overflow ?? TxTextOverflow.ellipsis;
+            TextSpan? ellipsizeText;
+            if (overflow == TxTextOverflow.ellipsis) {
+              ellipsizeText = TextSpan(text: _ellipsizeText, style: textStyle);
+              painter
+                ..text = ellipsizeText
+                ..layout(maxWidth: constraints.maxWidth);
+              ellipsizeSize = painter.size;
+            }
 
-            /// 省略号尺寸
-            textPainter.text = ellipsizeText;
-            textPainter.layout(
-              minWidth: 0,
-              maxWidth: constraints.maxWidth,
-            );
-            final Size ellipsizeSize = textPainter.size;
+            painter
+              ..text = TextSpan(
+                text: widget.data,
+                children: [if (ellipsizeText != null) ellipsizeText, button],
+                style: textStyle,
+              )
+              ..layout(maxWidth: constraints.maxWidth);
 
-            textPainter.text = TextSpan(
-                text: '${widget.data} ${localizations.moreButtonLabel}');
-            textPainter.layout(
-              minWidth: 0,
-              maxWidth: constraints.maxWidth,
-            );
-
-            /// 计算标题最大位置
-            final TextPosition pos = textPainter.getPositionForOffset(Offset(
+            final TextPosition pos = painter.getPositionForOffset(Offset(
               textSize.width - btnSize.width - ellipsizeSize.width,
               textSize.height,
             ));
-            final int? endIndex = textPainter.getOffsetBefore(pos.offset);
+            final int? endIndex = painter.getOffsetBefore(pos.offset);
             textSpan = TextSpan(
               text: widget.data.substring(0, endIndex),
-              children: [ellipsizeText, expandedBtn],
-              style: effectiveTextStyle,
+              children: [if (ellipsizeText != null) ellipsizeText, button],
+              style: textStyle,
             );
           }
         }
@@ -277,7 +377,7 @@ class _TxExpandableTextState extends State<TxExpandableText> {
           // 如果为 null，RichText 使用 Localizations.localeOf 获取默认值
           softWrap: softWrap,
           overflow: TextOverflow.visible,
-          maxLines: maxLines,
+          maxLines: _expanded ? widget.maxLines : collapsedLines,
           textScaler: textScaler,
           strutStyle: widget.strutStyle,
           textWidthBasis: textWidthBasis,
@@ -306,3 +406,216 @@ class _TxExpandableTextState extends State<TxExpandableText> {
     );
   }
 }
+
+///  TODO 富文本组件
+///
+/// 与 [RichText] 不同的是，当设置了 [maxLines] 并且文字的长度大于 [maxLines]，此时仅会
+/// 隐藏 [text] 文本的内容。
+// class TxRichText extends StatelessWidget {
+//   const TxRichText({
+//     required this.text,
+//     required this.fixedSpans,
+//     this.style,
+//     this.alwaysShowFixedSpans = true,
+//     super.key,
+//     this.textAlign,
+//     this.textDirection,
+//     this.softWrap,
+//     this.overflow,
+//     this.textScaler,
+//     this.maxLines = 2,
+//     this.locale,
+//     this.strutStyle,
+//     this.textWidthBasis,
+//     this.textHeightBehavior,
+//     this.selectionRegistrar,
+//     this.selectionColor,
+//   });
+//
+//   /// 要在此小组件中显示的文本。
+//   final String text;
+//
+//   /// 如果非空，则此文本使用的样式。
+//   ///
+//   /// 如果样式的“inherit”属性为真，该样式将与最接近的外围[DefaultTextStyle]合并。
+//   /// 否则，该样式将替换最接近的外围[DefaultTextStyle]。
+//   final TextStyle? style;
+//
+//   /// 固定在尾部的 span
+//   final List<InlineSpan> fixedSpans;
+//
+//   /// 是否一直显示固定组件
+//   ///
+//   /// 值为 false 且[maxLines] 不为 null 时，当 [text] 行数没有超过 [maxLines] 时，
+//   /// 不显示 [fixedSpans]。
+//   final bool alwaysShowFixedSpans;
+//
+//   /// 参考 [RichText.textAlign]
+//   final TextAlign? textAlign;
+//
+//   /// 参考 [RichText.textDirection]
+//   final TextDirection? textDirection;
+//
+//   /// 参考 [RichText.softWrap]
+//   final bool? softWrap;
+//
+//   /// 参考 [RichText.overflow]
+//   final TxTextOverflow? overflow;
+//
+//   /// 参考 [RichText.textScaler]
+//   final TextScaler? textScaler;
+//
+//   /// 参考 [RichText.maxLines]
+//   final int? maxLines;
+//
+//   /// 参考 [RichText.locale]
+//   final Locale? locale;
+//
+//   /// 参考 [RichText.strutStyle]
+//   final StrutStyle? strutStyle;
+//
+//   /// 参考 [RichText.textWidthBasis]
+//   final TextWidthBasis? textWidthBasis;
+//
+//   /// 参考 [RichText.textHeightBehavior]
+//   final ui.TextHeightBehavior? textHeightBehavior;
+//
+//   /// 参考 [RichText.selectionRegistrar]
+//   final SelectionRegistrar? selectionRegistrar;
+//
+//   /// 参考 [RichText.selectionColor]
+//   final Color? selectionColor;
+//
+//   static const String _ellipsize = '\u2026';
+//
+//   // 文字样式
+//   TextStyle _textStyle(BuildContext context, DefaultTextStyle defaults) {
+//     TextStyle textStyle;
+//     if (style == null || style!.inherit) {
+//       textStyle = defaults.style.merge(style);
+//     } else {
+//       textStyle = style!;
+//     }
+//     if (MediaQuery.boldTextOf(context)) {
+//       textStyle = textStyle.merge(const TextStyle(fontWeight: FontWeight.bold));
+//     }
+//     return textStyle;
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final DefaultTextStyle defaultTextStyle = DefaultTextStyle.of(context);
+//
+//     final TextStyle style = _textStyle(context, defaultTextStyle);
+//
+//     final TextAlign textAlign =
+//         this.textAlign ?? defaultTextStyle.textAlign ?? TextAlign.start;
+//     // 如果为 null，RichText 使用 Localizations.localeOf 获取默认值
+//     final bool softWrap = this.softWrap ?? defaultTextStyle.softWrap;
+//     final TextScaler textScaler =
+//         this.textScaler ?? MediaQuery.textScalerOf(context);
+//     final TextWidthBasis textWidthBasis =
+//         this.textWidthBasis ?? defaultTextStyle.textWidthBasis;
+//     final TextHeightBehavior? textHeightBehavior = this.textHeightBehavior ??
+//         defaultTextStyle.textHeightBehavior ??
+//         DefaultTextHeightBehavior.maybeOf(context);
+//     final Color? selectionColor =
+//         this.selectionColor ?? DefaultSelectionStyle.of(context).selectionColor;
+//     final TextDirection textDirection =
+//         this.textDirection ?? Directionality.of(context);
+//     final Locale locale = this.locale ?? Localizations.localeOf(context);
+//
+//     return LayoutBuilder(
+//       builder: (BuildContext context, BoxConstraints constraints) {
+//         assert(constraints.hasBoundedWidth);
+//
+//         TextSpan textSpan = TextSpan(text: text, style: style);
+//
+//         final TextPainter painter = TextPainter(
+//           text: textSpan,
+//           maxLines: maxLines,
+//           textDirection: textDirection,
+//           strutStyle: strutStyle,
+//           textHeightBehavior: textHeightBehavior,
+//           textAlign: textAlign,
+//           locale: locale,
+//           textScaler: textScaler,
+//           textWidthBasis: textWidthBasis,
+//         )..layout(maxWidth: constraints.maxWidth);
+//         final Size textSize = painter.size;
+//
+//         if (alwaysShowFixedSpans ||
+//             (painter..layout(maxWidth: constraints.maxWidth))
+//                 .didExceedMaxLines) {
+//           textSpan = TextSpan(children: [textSpan, ...fixedSpans]);
+//           painter
+//             ..text = textSpan
+//             ..layout(maxWidth: constraints.maxWidth);
+//         }
+//
+//         if (painter.didExceedMaxLines) {
+//           final List<InlineSpan> spans = fixedSpans;
+//
+//           double fixedWidth = 0;
+//           for (InlineSpan span in fixedSpans) {
+//             painter
+//               ..text = span
+//               ..layout(maxWidth: constraints.maxWidth);
+//             fixedWidth += painter.size.width;
+//           }
+//
+//           if (overflow == TxTextOverflow.ellipsis) {
+//             final TextSpan span = TextSpan(text: _ellipsize, style: style);
+//             painter
+//               ..text = span
+//               ..layout(maxWidth: constraints.maxWidth);
+//             fixedWidth += painter.size.width;
+//             spans.insert(0, span);
+//           }
+//
+//           painter
+//             ..text = textSpan
+//             ..layout(maxWidth: constraints.maxWidth);
+//           final TextPosition pos = painter.getPositionForOffset(Offset(
+//             textSize.width - fixedWidth,
+//             textSize.height,
+//           ));
+//           final int? endIndex = painter.getOffsetBefore(pos.offset);
+//           textSpan = TextSpan(
+//             children: [
+//               TextSpan(text: text.substring(0, endIndex), style: style),
+//               ...spans,
+//             ],
+//           );
+//         }
+//
+//         final SelectionRegistrar? registrar =
+//             SelectionContainer.maybeOf(context);
+//         Widget result = RichText(
+//           textAlign: textAlign,
+//           textDirection: textDirection,
+//           // 如果为空，RichText 使用 Directionality.of 获取默认值。
+//           locale: locale,
+//           // 如果为 null，RichText 使用 Localizations.localeOf 获取默认值
+//           softWrap: softWrap,
+//           overflow: TextOverflow.visible,
+//           maxLines: maxLines,
+//           textScaler: textScaler,
+//           strutStyle: strutStyle,
+//           textWidthBasis: textWidthBasis,
+//           textHeightBehavior: textHeightBehavior,
+//           selectionRegistrar: registrar,
+//           selectionColor: selectionColor,
+//           text: textSpan,
+//         );
+//         if (registrar != null) {
+//           result = MouseRegion(
+//             cursor: SystemMouseCursors.text,
+//             child: result,
+//           );
+//         }
+//         return result;
+//       },
+//     );
+//   }
+// }
