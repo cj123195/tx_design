@@ -240,7 +240,7 @@ class TxDataRow extends StatelessWidget {
       padding: EdgeInsets.zero,
     );
 
-    final int last = cells.length - 1;
+    final int last = cells.length;
 
     return [
       for (int i = 0; i < cells.length; i += columnNum)

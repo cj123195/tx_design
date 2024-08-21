@@ -1,3 +1,7 @@
+# 0.2.11
+* Fix the issue that TxDataRow.fromMap displaying incorrectly.
+* Delete charts.
+
 # 0.2.10
 * Update default return value of showDefaultDialog and showDefaultBottomSheet to null.
 * Update time related pickers and form components.
