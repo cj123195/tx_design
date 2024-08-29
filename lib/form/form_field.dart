@@ -49,7 +49,7 @@ class TxFormFieldState<T> extends FormFieldState<T> {
   @override
   bool validate() {
     _validate();
-    return !hasError;
+    return super.validate();
   }
 
   void _validate() {
