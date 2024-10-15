@@ -742,6 +742,7 @@ class SimplePickerItem<T> extends StatelessWidget {
 }
 
 /// 显示筛选弹框
+@Deprecated('This feature was deprecated after v0.3.0.')
 Future<T?> showFilterBottomSheet<T>(
   BuildContext context, {
   required WidgetBuilder contentBuilder,
@@ -806,7 +807,7 @@ Future<T?> showFilterBottomSheet<T>(
     padding: padding,
     contentPadding: contentPadding,
     leadingBuilder:
-        leadingBuilder ?? (context) => const Icon(Icons.filter_alt_outlined),
+        leadingBuilder ?? (context) => const Icon(Icons.filter_list),
     leadingWidth: leadingWidth,
     automaticallyImplyLeading: automaticallyImplyLeading,
     footerBuilder: footerBuilder,

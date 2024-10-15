@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../localizations.dart';
-import 'form_field.dart';
+import 'text_form_field.dart';
 
 /// 文本输入Form表单
-class InputFormField extends TxTextFormFieldItem<String> {
+@Deprecated(
+  'Use TxTextFormFieldTile instead. '
+  'This feature was deprecated after v0.3.0.',
+)
+class InputFormField extends TxTextFormFieldTile {
+  @Deprecated(
+    'Use TxTextFormFieldTile instead. '
+    'This feature was deprecated after v0.3.0.',
+  )
   InputFormField({
     super.key,
     super.onSaved,
@@ -14,19 +21,16 @@ class InputFormField extends TxTextFormFieldItem<String> {
     super.autovalidateMode,
     super.restorationId,
     super.required,
-    super.label,
+    Widget? label,
     super.labelText,
-    super.backgroundColor,
-    super.direction,
+    Color? backgroundColor,
+    Axis? direction,
     super.padding,
-    List<Widget>? actions,
+    super.actions,
     super.labelStyle,
-    super.starStyle,
     super.horizontalGap,
     super.minLabelWidth,
     super.controller,
-    super.prefixIconMergeMode,
-    super.suffixIconMergeMode,
     super.focusNode,
     super.decoration,
     super.keyboardType,
@@ -38,7 +42,7 @@ class InputFormField extends TxTextFormFieldItem<String> {
     super.textAlign,
     super.textAlignVertical,
     super.autofocus,
-    super.readonly,
+    super.readOnly,
     super.maxLines,
     super.minLines,
     super.maxLength,
@@ -73,15 +77,8 @@ class InputFormField extends TxTextFormFieldItem<String> {
     super.mouseCursor,
     super.contextMenuBuilder,
   }) : super(
-          labelMapper: (String data) => data,
-          dataMapper: (String? data) => data,
-          defaultValidator: required == true
-              ? (context, val) {
-                  return val?.isNotEmpty == true
-                      ? null
-                      : TxLocalizations.of(context).textFormFieldHint;
-                }
-              : null,
-          actionsBuilder: (field) => actions,
+          labelBuilder: label == null ? null : (context) => label,
+          tileColor: backgroundColor,
+          layoutDirection: direction,
         );
 }

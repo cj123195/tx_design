@@ -7,7 +7,9 @@ import '../utils/basic_types.dart';
 import 'form_item_container.dart';
 import 'form_item_theme.dart';
 
+@Deprecated('This feature was deprecated after v0.3.0.')
 class TxFormField<T> extends FormField<T> {
+  @Deprecated('This feature was deprecated after v0.3.0.')
   const TxFormField({
     required super.builder,
     super.key,
@@ -26,6 +28,7 @@ class TxFormField<T> extends FormField<T> {
   TxFormFieldState<T> createState() => TxFormFieldState<T>();
 }
 
+@Deprecated('This feature was deprecated after v0.3.0.')
 class TxFormFieldState<T> extends FormFieldState<T> {
   @override
   TxFormField<T> get widget => super.widget as TxFormField<T>;
@@ -73,7 +76,9 @@ class TxFormFieldState<T> extends FormFieldState<T> {
   }
 }
 
+@Deprecated('This feature was deprecated after v0.3.0.')
 class TxFormFieldItem<T> extends TxFormField<T> {
+  @Deprecated('This feature was deprecated after v0.3.0.')
   TxFormFieldItem({
     required FormFieldBuilder<T> builder,
     super.key,
@@ -117,6 +122,7 @@ class TxFormFieldItem<T> extends TxFormField<T> {
           },
         );
 
+  @Deprecated('This feature was deprecated after v0.3.0.')
   static InputDecoration mergeDecoration(
     BuildContext context,
     InputDecoration? decoration,
@@ -139,6 +145,7 @@ class TxFormFieldItem<T> extends TxFormField<T> {
 }
 
 /// 通用选择Form组件
+@Deprecated('This feature was deprecated after v0.3.0.')
 class TxPickerFormFieldItem<T, V> extends TxFormFieldItem<T> {
   /// 创建一个通用选择Form组件
   /// [labelMapper] 标签，用于展示
@@ -147,6 +154,7 @@ class TxPickerFormFieldItem<T, V> extends TxFormFieldItem<T> {
   /// [enabledMapper] 数据是否可被选择
   /// [inputEnabledMapper] 数据是否支持修改，该值不为null时，[dataMapper]必传
   /// [dataMapper] 根据输入值生成[T]类型数据
+  @Deprecated('This feature was deprecated after v0.3.0.')
   TxPickerFormFieldItem({
     required FormFieldBuilder<T> builder,
     required ValueMapper<T, String> labelMapper,
@@ -208,6 +216,7 @@ class TxPickerFormFieldItem<T, V> extends TxFormFieldItem<T> {
 }
 
 /// 通用多项选择Form组件
+@Deprecated('This feature was deprecated after v0.3.0.')
 class TxMultiPickerFormFieldItem<T, V> extends TxFormFieldItem<Set<T>> {
   /// 创建一个通用选择Form组件
   /// [labelMapper] 标签，用于展示
@@ -218,6 +227,7 @@ class TxMultiPickerFormFieldItem<T, V> extends TxFormFieldItem<Set<T>> {
   /// [dataMapper] 根据输入值生成[T]类型数据
   /// [minPickNumber] 最小可选择数量
   /// [maxPickNumber] 最大可选择数量
+  @Deprecated('This feature was deprecated after v0.3.0.')
   TxMultiPickerFormFieldItem({
     required FormFieldBuilder<Set<T>> builder,
     required ValueMapper<T, String> labelMapper,
@@ -291,11 +301,14 @@ class TxMultiPickerFormFieldItem<T, V> extends TxFormFieldItem<Set<T>> {
         );
 }
 
+@Deprecated('This feature was deprecated after v0.3.0.')
 typedef FormFieldDecorationBuilder<T> = InputDecoration Function(
     TxTextFormFieldItemState<T> filed);
 
 /// 文字输入Form组件
+@Deprecated('This feature was deprecated after v0.3.0.')
 class TxTextFormFieldItem<T> extends TxFormFieldItem<T> {
+  @Deprecated('This feature was deprecated after v0.3.0.')
   TxTextFormFieldItem({
     required this.labelMapper,
     Widget? Function(FormFieldState<T> field)? builder,
@@ -495,6 +508,7 @@ class TxTextFormFieldItem<T> extends TxFormFieldItem<T> {
   TxTextFormFieldItemState<T> createState() => TxTextFormFieldItemState<T>();
 }
 
+@Deprecated('This feature was deprecated after v0.3.0.')
 class TxTextFormFieldItemState<T> extends TxFormFieldState<T> {
   RestorableTextEditingController? _controller;
 
@@ -611,7 +625,9 @@ class TxTextFormFieldItemState<T> extends TxFormFieldState<T> {
 }
 
 /// 单项选择Form组件
+@Deprecated('This feature was deprecated after v0.3.0.')
 class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
+  @Deprecated('This feature was deprecated after v0.3.0.')
   TxPickerTextFormField({
     required super.labelMapper,
     required PickerFuture<T> onPickTap,
@@ -742,12 +758,14 @@ class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
         );
 }
 
+@Deprecated('This feature was deprecated after v0.3.0.')
 enum IconMergeMode {
   replace,
   appendEnd,
   appendStart,
 }
 
+@Deprecated('This feature was deprecated after v0.3.0.')
 extension InputDecorationExtension on InputDecoration {
   InputDecoration merge(
     InputDecoration? other, {

@@ -1,110 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../field/number_field.dart';
-import '../utils/basic_types.dart';
+import '../field/text_field.dart';
 import 'common_text_form_field.dart';
 
-/// 数字输入Form表单
-@Deprecated(
-  'Use TxNumberFormFieldTile instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class NumberFormField<T extends num> extends TxNumberFormFieldTile<T> {
-  @Deprecated(
-    'Use TxNumberFormFieldTile instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  NumberFormField({
-    T? maximumValue, // 最大值
-    T? minimumValue, // 最小值
-    bool? showOperateButton, // 是否显示操作按钮
-    T? difference, // 自增或自减时的差值，showOperateButton为true时生效
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.initialValue,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    Color? backgroundColor,
-    Axis? direction,
-    super.padding,
-    super.actions,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.controller,
-    super.focusNode,
-    super.decoration,
-    super.textCapitalization,
-    super.textInputAction,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.textAlignVertical,
-    super.autofocus,
-    super.readOnly,
-    super.maxLines,
-    super.minLines,
-    super.maxLength,
-    super.onChanged,
-    super.onTap,
-    super.onEditingComplete,
-    super.inputFormatters,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
-    super.expands,
-    super.onTapOutside,
-    super.onFieldSubmitted,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorColor,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.scrollController,
-    super.enableIMEPersonalizedLearning,
-    super.mouseCursor,
-    super.contextMenuBuilder,
-  }) : super(
-          maxValue: maximumValue,
-          minValue: minimumValue,
-          autodecrement: showOperateButton,
-          autodecrementDifference: difference,
-          labelBuilder: label == null ? null : (context) => label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-        );
-}
-
-/// [builder] 构建组件为文本输入框的 [FormField]
-class TxNumberFormField<T extends num> extends TxCommonTextFormField<T> {
-  TxNumberFormField({
-    T? maxValue,
-    T? minValue,
-    bool? autodecrement,
-    T? autodecrementDifference,
-    ValueMapper<String, T>? format,
+/// [builder] 构建组件为文本输入框的 [TxCommonTextFormField]
+class TxTextFormField extends TxCommonTextFormField<String> {
+  TxTextFormField({
     super.key,
     super.controller,
     super.initialValue,
     super.focusNode,
     super.decoration,
+    super.keyboardType,
     super.textCapitalization,
     super.textInputAction,
     super.style,
@@ -163,25 +70,21 @@ class TxNumberFormField<T extends num> extends TxCommonTextFormField<T> {
     super.scribbleEnabled,
     super.canRequestFocus,
     super.onSaved,
-    FormFieldValidator<T>? validator,
+    FormFieldValidator<String>? validator,
     super.enabled,
     super.autovalidateMode,
     super.restorationId,
     super.required,
-    FormFieldValidator<T>? emptyValidator,
+    FormFieldValidator<String>? emptyValidator,
   }) : super(
           builder: (field, decoration, onChanged) {
-            return TxNumberField<T>(
-              minValue: minValue,
-              maxValue: maxValue,
-              autodecrement: autodecrement,
-              autodecrementDifference: autodecrementDifference,
-              format: format,
+            return TxTextField(
               restorationId: restorationId,
               controller: controller,
               focusNode: focusNode,
               decoration: decoration,
               initialValue: field.value,
+              keyboardType: keyboardType,
               textInputAction: textInputAction,
               style: style,
               strutStyle: strutStyle,
@@ -243,46 +146,27 @@ class TxNumberFormField<T extends num> extends TxCommonTextFormField<T> {
             );
           },
           validator: (value) {
-            if (required == true && value == null) {
+            if (required == true && (value == null || value.isEmpty)) {
               return '请输入';
             }
 
             if (validator != null) {
-              final String? errorText = validator(value);
-              if (errorText != null) {
-                return errorText;
-              }
+              return validator(value);
             }
-
-            /// 如果最小值不为空，判断输入值是否小于最小值
-            if (minValue != null && value! < minValue) {
-              return '输入值需大于或等于$minValue';
-            }
-
-            /// 如果最小数量不为空，判断已选数量是否小于最小数量
-            if (maxValue != null && value! > maxValue) {
-              return '输入值需小于或等于$maxValue';
-            }
-
             return null;
           },
         );
 }
 
 /// [field] 为文本输入框表单的 [TxCommonTextFormFieldTile]
-class TxNumberFormFieldTile<T extends num>
-    extends TxCommonTextFormFieldTile<T> {
-  TxNumberFormFieldTile({
-    T? maxValue,
-    T? minValue,
-    bool? autodecrement,
-    T? autodecrementDifference,
-    ValueMapper<String, T>? format,
+class TxTextFormFieldTile extends TxCommonTextFormFieldTile<String> {
+  TxTextFormFieldTile({
     super.key,
     super.controller,
     super.initialValue,
     super.focusNode,
     super.decoration,
+    super.keyboardType,
     super.textCapitalization,
     super.textInputAction,
     super.style,
@@ -366,12 +250,7 @@ class TxNumberFormFieldTile<T extends num>
     super.minVerticalPadding,
     super.dense,
   }) : super(
-          field: TxNumberFormField<T>(
-            minValue: minValue,
-            maxValue: maxValue,
-            autodecrement: autodecrement,
-            autodecrementDifference: autodecrementDifference,
-            format: format,
+          field: TxTextFormField(
             initialValue: initialValue,
             enabled: enabled,
             autovalidateMode: autovalidateMode,
@@ -379,6 +258,7 @@ class TxNumberFormFieldTile<T extends num>
             controller: controller,
             focusNode: focusNode,
             decoration: decoration,
+            keyboardType: keyboardType,
             textInputAction: textInputAction,
             style: style,
             strutStyle: strutStyle,

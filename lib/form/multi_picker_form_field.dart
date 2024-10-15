@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 
-import '../localizations.dart';
+import '../field/multi_picker_field.dart';
 import '../utils/basic_types.dart';
-import '../widgets/multi_picker_bottom_sheet.dart';
-import 'form_field.dart';
+import 'common_text_form_field.dart';
 
 export '../utils/basic_types.dart' show ValueMapper;
 export '../widgets/multi_picker_bottom_sheet.dart' show MultiPickerItemBuilder;
 
 /// 多选Form组件
-class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
+@Deprecated(
+  'Use TxMultiPickerFormFieldTile instead. '
+  'This feature was deprecated after v0.3.0.',
+)
+class MultiPickerFormField<T, V> extends TxMultiPickerFormFieldTile {
+  @Deprecated(
+    'Use TxMultiPickerFormFieldTile instead. '
+    'This feature was deprecated after v0.3.0.',
+  )
   MultiPickerFormField({
     required List<T> sources,
-    required ValueMapper<T, String> labelMapper,
-    MultiPickerItemBuilder<T>? pickerItemBuilder,
-    PickerFuture<Set<T>?>? onPickTap,
-    ValueMapper<T, String>? subtitleMapper,
-    super.dataMapper, // 根据输入文字生成对应实体
-    ValueMapper<T, V>? valueMapper,
-    ValueMapper<T, bool>? enabledMapper,
-    ValueMapper<T, bool>? inputEnabledMapper,
+    required super.labelMapper,
+    super.valueMapper,
+    super.enabledMapper,
     int? minPickNumber,
     int? maxPickNumber,
     Set<V>? initialValue,
@@ -31,19 +33,16 @@ class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
     super.autovalidateMode,
     super.restorationId,
     super.required,
-    super.label,
+    Widget? label,
     super.labelText,
-    super.backgroundColor,
-    super.direction,
+    Color? backgroundColor,
+    Axis? direction,
     super.padding,
-    List<Widget>? actions,
+    super.actions,
     super.labelStyle,
-    super.starStyle,
     super.horizontalGap,
     super.minLabelWidth,
     super.controller,
-    super.prefixIconMergeMode,
-    super.suffixIconMergeMode,
     super.focusNode,
     super.decoration,
     super.keyboardType,
@@ -55,7 +54,7 @@ class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
     super.textAlign,
     super.textAlignVertical,
     super.autofocus,
-    bool readonly = false,
+    super.readOnly,
     super.maxLines,
     super.minLines,
     super.maxLength,
@@ -88,166 +87,718 @@ class MultiPickerFormField<T, V> extends TxTextFormFieldItem<Set<T>> {
     super.enableIMEPersonalizedLearning,
     super.mouseCursor,
     super.contextMenuBuilder,
-  })  : assert(minPickNumber == null || minPickNumber > 0),
-        assert(inputEnabledMapper == null || dataMapper != null),
-        assert(maxPickNumber == null || maxPickNumber > (minPickNumber ?? 0)),
-        assert(maxLines == null || maxLines > 0),
-        assert(minLines == null || minLines > 0),
-        assert(
-          (maxLines == null) || (minLines == null) || (maxLines >= minLines),
-          "最小行数不能大于最大行数",
-        ),
-        assert(maxLength == null ||
-            maxLength == TextField.noMaxLength ||
-            maxLength > 0),
-        super(
-          readonly: true,
-          labelMapper: (value) => value.map((e) => labelMapper(e)).join(''),
-          initialValue: initialData ??
-              sources.where((e) {
-                final V value = (valueMapper?.call(e) ?? labelMapper(e)) as V;
-                return initialValue?.contains(value) == true;
-              }).toSet(),
-          defaultValidator: (context, value) {
-            if (value == null) {
-              return required == true
-                  ? TxLocalizations.of(context).textFormFieldHint
-                  : null;
-            }
-            if (minPickNumber != null && value.length < minPickNumber) {
-              return TxLocalizations.of(context)
-                  .minimumSelectableQuantityLimitLabel(minPickNumber);
-            }
-            if (maxPickNumber != null && value.length > maxPickNumber) {
-              return TxLocalizations.of(context)
-                  .maximumSelectableQuantityLimitLabel(maxPickNumber);
-            }
-            return null;
-          },
-          defaultDecorationBuilder: (field) {
-            return InputDecoration(
-              hintText: TxLocalizations.of(field.context).pickerFormFieldHint,
-            );
-          },
-          builder: (FormFieldState<Set<T>> field) {
-            if (field.value?.isNotEmpty != true) {
-              return null;
-            }
-
-            void onChangedHandler(Set<T>? value) {
-              field.didChange(value);
-              if (onChanged != null) {
-                onChanged(value);
-              }
-            }
-
-            final List<Widget> children = field.value!
-                .map(
-                  (e) => _PickedRawChip(
-                    labelMapper(e),
-                    readonly
-                        ? null
-                        : () {
-                            final Set<T> list = {...field.value!};
-                            list.remove(e);
-                            onChangedHandler(list);
-                          },
-                  ),
-                )
-                .toList();
-            return Wrap(
-              alignment: WrapAlignment.start,
-              crossAxisAlignment: WrapCrossAlignment.start,
-              runSpacing: 4.0,
-              spacing: 4.0,
-              children: children,
-            );
-          },
-          actionsBuilder: (field) {
-            if (readonly) {
-              return actions;
-            }
-            void onChangedHandler(Set<T>? value) {
-              field.didChange(value);
-              if (onChanged != null) {
-                onChanged(value);
-              }
-            }
-
-            Future<void> onTap() async {
-              final FocusScopeNode currentFocus = FocusScope.of(field.context);
-              if (!currentFocus.hasPrimaryFocus &&
-                  currentFocus.focusedChild != null) {
-                FocusManager.instance.primaryFocus?.unfocus();
-              }
-              final Set<T>? res = (await (onPickTap?.call(
-                          field.context, field.value?.toSet()) ??
-                      showMultiPickerBottomSheet<T, T>(
-                        field.context,
-                        title: labelText,
-                        labelMapper: labelMapper,
-                        sources: sources,
-                        subtitleMapper: subtitleMapper,
-                        valueMapper: (val) => val,
-                        pickerItemBuilder: pickerItemBuilder,
-                        initialValue: field.value?.toList(),
-                        max: maxPickNumber,
-                        editableMapper: inputEnabledMapper,
-                      )))
-                  ?.toSet();
-              if (res == null) {
-                return;
-              }
-              if (res != field.value) {
-                onChangedHandler(res);
-              }
-            }
-
-            final Widget suffixIcon = IconButton(
-              onPressed: onTap,
-              icon: const Icon(Icons.add),
-              visualDensity: VisualDensity.compact,
-              padding: EdgeInsets.zero,
-              style: const ButtonStyle(
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            );
-            return [...?actions, suffixIcon];
-          },
+  }) : super(
+          source: sources,
+          minCount: minPickNumber,
+          maxCount: maxPickNumber,
+          initialValue: initialValue?.toList(),
+          initialData: initialData?.toList(),
+          labelBuilder: label == null ? null : (context) => label,
+          tileColor: backgroundColor,
+          layoutDirection: direction,
         );
 }
 
-/// 已选项Chip
-class _PickedRawChip extends StatelessWidget {
-  const _PickedRawChip(this.label, [this.onDeleteTap]);
+/// [builder] 构建组件为多项选择框的 [FormField]
+class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
+  TxMultiPickerFormField({
+    required List<T> source,
+    required ValueMapper<T, String?> labelMapper,
+    ValueMapper<T, V?>? valueMapper,
+    IndexedValueMapper<T, bool>? enabledMapper,
+    List<T>? initialData,
+    List<V>? initialValue,
+    int? minCount,
+    int? maxCount,
+    String splitCharacter = '、',
+    super.key,
+    super.controller,
+    super.focusNode,
+    super.decoration,
+    super.keyboardType,
+    super.textCapitalization,
+    super.textInputAction,
+    super.style,
+    super.strutStyle,
+    super.textDirection,
+    super.textAlign,
+    super.textAlignVertical,
+    super.autofocus,
+    super.readOnly = true,
+    super.showCursor,
+    super.obscuringCharacter,
+    super.obscureText,
+    super.autocorrect,
+    super.smartDashesType,
+    super.smartQuotesType,
+    super.enableSuggestions,
+    super.maxLengthEnforcement,
+    super.maxLines,
+    super.minLines,
+    super.expands,
+    super.maxLength,
+    super.onChanged,
+    super.onTapAlwaysCalled,
+    super.onTapOutside,
+    super.onEditingComplete,
+    super.onFieldSubmitted,
+    super.inputFormatters,
+    super.cursorWidth,
+    super.cursorHeight,
+    super.cursorColor,
+    super.cursorRadius,
+    super.cursorErrorColor,
+    super.keyboardAppearance,
+    super.scrollPadding,
+    super.enableInteractiveSelection,
+    super.selectionControls,
+    super.buildCounter,
+    super.scrollPhysics,
+    super.autofillHints,
+    super.scrollController,
+    super.enableIMEPersonalizedLearning,
+    super.mouseCursor,
+    super.contextMenuBuilder,
+    super.spellCheckConfiguration,
+    super.magnifierConfiguration,
+    super.undoController,
+    super.onAppPrivateCommand,
+    super.cursorOpacityAnimates,
+    super.selectionHeightStyle,
+    super.selectionWidthStyle,
+    super.dragStartBehavior,
+    super.contentInsertionConfiguration,
+    super.statesController,
+    super.clipBehavior,
+    super.scribbleEnabled,
+    super.canRequestFocus,
+    super.onSaved,
+    FormFieldValidator<List<T>>? validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    super.required,
+  }) : super(
+          initialValue: TxMultiPickerField.initData<T, V>(
+            source,
+            initialData,
+            initialValue,
+            valueMapper,
+          ),
+          builder: (field, decoration, onChanged) {
+            return TxMultiPickerField<T, V>(
+              source: source,
+              labelMapper: labelMapper,
+              valueMapper: valueMapper,
+              enabledMapper: enabledMapper,
+              initialData: field.value,
+              minCount: minCount,
+              maxCount: maxCount,
+              splitCharacter: splitCharacter,
+              restorationId: restorationId,
+              controller: controller,
+              focusNode: focusNode,
+              decoration: decoration,
+              keyboardType: keyboardType,
+              textInputAction: textInputAction,
+              style: style,
+              strutStyle: strutStyle,
+              textAlign: textAlign,
+              textAlignVertical: textAlignVertical,
+              textDirection: textDirection,
+              textCapitalization: textCapitalization,
+              autofocus: autofocus,
+              statesController: statesController,
+              readOnly: readOnly,
+              showCursor: showCursor,
+              obscuringCharacter: obscuringCharacter,
+              obscureText: obscureText,
+              autocorrect: autocorrect,
+              smartDashesType: smartDashesType,
+              smartQuotesType: smartQuotesType,
+              enableSuggestions: enableSuggestions,
+              maxLengthEnforcement: maxLengthEnforcement,
+              maxLines: maxLines,
+              minLines: minLines,
+              expands: expands,
+              maxLength: maxLength,
+              onChanged: onChanged,
+              onTapAlwaysCalled: onTapAlwaysCalled,
+              onTapOutside: onTapOutside,
+              onEditingComplete: onEditingComplete,
+              onSubmitted: onFieldSubmitted,
+              inputFormatters: inputFormatters,
+              enabled: enabled,
+              cursorWidth: cursorWidth,
+              cursorHeight: cursorHeight,
+              cursorRadius: cursorRadius,
+              cursorColor: cursorColor,
+              cursorErrorColor: cursorErrorColor,
+              scrollPadding: scrollPadding,
+              scrollPhysics: scrollPhysics,
+              keyboardAppearance: keyboardAppearance,
+              enableInteractiveSelection: enableInteractiveSelection,
+              selectionControls: selectionControls,
+              buildCounter: buildCounter,
+              autofillHints: autofillHints,
+              scrollController: scrollController,
+              enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+              mouseCursor: mouseCursor,
+              contextMenuBuilder: contextMenuBuilder,
+              spellCheckConfiguration: spellCheckConfiguration,
+              magnifierConfiguration: magnifierConfiguration,
+              undoController: undoController,
+              onAppPrivateCommand: onAppPrivateCommand,
+              cursorOpacityAnimates: cursorOpacityAnimates,
+              selectionHeightStyle: selectionHeightStyle,
+              selectionWidthStyle: selectionWidthStyle,
+              dragStartBehavior: dragStartBehavior,
+              contentInsertionConfiguration: contentInsertionConfiguration,
+              clipBehavior: clipBehavior,
+              scribbleEnabled: scribbleEnabled,
+              canRequestFocus: canRequestFocus,
+            );
+          },
+          validator: (data) =>
+              generateValidator(data, validator, required, minCount, maxCount),
+        );
 
-  final String label;
+  TxMultiPickerFormField.custom({
+    required MultiPickVoidCallback<T>? onPickTap,
+    required String? Function(T data)? displayTextMapper,
+    String splitCharacter = '、',
+    int? minCount,
+    int? maxCount,
+    super.initialValue,
+    super.key,
+    super.controller,
+    super.focusNode,
+    super.decoration,
+    super.keyboardType,
+    super.textCapitalization,
+    super.textInputAction,
+    super.style,
+    super.strutStyle,
+    super.textDirection,
+    super.textAlign,
+    super.textAlignVertical,
+    super.autofocus,
+    super.readOnly = true,
+    super.showCursor,
+    super.obscuringCharacter,
+    super.obscureText,
+    super.autocorrect,
+    super.smartDashesType,
+    super.smartQuotesType,
+    super.enableSuggestions,
+    super.maxLengthEnforcement,
+    super.maxLines,
+    super.minLines,
+    super.expands,
+    super.maxLength,
+    super.onChanged,
+    super.onTapAlwaysCalled,
+    super.onTapOutside,
+    super.onEditingComplete,
+    super.onFieldSubmitted,
+    super.inputFormatters,
+    super.cursorWidth,
+    super.cursorHeight,
+    super.cursorColor,
+    super.cursorRadius,
+    super.cursorErrorColor,
+    super.keyboardAppearance,
+    super.scrollPadding,
+    super.enableInteractiveSelection,
+    super.selectionControls,
+    super.buildCounter,
+    super.scrollPhysics,
+    super.autofillHints,
+    super.scrollController,
+    super.enableIMEPersonalizedLearning,
+    super.mouseCursor,
+    super.contextMenuBuilder,
+    super.spellCheckConfiguration,
+    super.magnifierConfiguration,
+    super.undoController,
+    super.onAppPrivateCommand,
+    super.cursorOpacityAnimates,
+    super.selectionHeightStyle,
+    super.selectionWidthStyle,
+    super.dragStartBehavior,
+    super.contentInsertionConfiguration,
+    super.statesController,
+    super.clipBehavior,
+    super.scribbleEnabled,
+    super.canRequestFocus,
+    super.onSaved,
+    FormFieldValidator<List<T>>? validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    super.required,
+  }) : super(
+          builder: (field, decoration, onChanged) {
+            return TxMultiPickerField<T, V>.custom(
+              onPickTap: onPickTap,
+              initialValue: field.value,
+              displayTextMapper: displayTextMapper,
+              splitCharacter: splitCharacter,
+              restorationId: restorationId,
+              controller: controller,
+              focusNode: focusNode,
+              decoration: decoration,
+              keyboardType: keyboardType,
+              textInputAction: textInputAction,
+              style: style,
+              strutStyle: strutStyle,
+              textAlign: textAlign,
+              textAlignVertical: textAlignVertical,
+              textDirection: textDirection,
+              textCapitalization: textCapitalization,
+              autofocus: autofocus,
+              statesController: statesController,
+              readOnly: readOnly,
+              showCursor: showCursor,
+              obscuringCharacter: obscuringCharacter,
+              obscureText: obscureText,
+              autocorrect: autocorrect,
+              smartDashesType: smartDashesType,
+              smartQuotesType: smartQuotesType,
+              enableSuggestions: enableSuggestions,
+              maxLengthEnforcement: maxLengthEnforcement,
+              maxLines: maxLines,
+              minLines: minLines,
+              expands: expands,
+              maxLength: maxLength,
+              onChanged: onChanged,
+              onTapAlwaysCalled: onTapAlwaysCalled,
+              onTapOutside: onTapOutside,
+              onEditingComplete: onEditingComplete,
+              onSubmitted: onFieldSubmitted,
+              inputFormatters: inputFormatters,
+              enabled: enabled,
+              cursorWidth: cursorWidth,
+              cursorHeight: cursorHeight,
+              cursorRadius: cursorRadius,
+              cursorColor: cursorColor,
+              cursorErrorColor: cursorErrorColor,
+              scrollPadding: scrollPadding,
+              scrollPhysics: scrollPhysics,
+              keyboardAppearance: keyboardAppearance,
+              enableInteractiveSelection: enableInteractiveSelection,
+              selectionControls: selectionControls,
+              buildCounter: buildCounter,
+              autofillHints: autofillHints,
+              scrollController: scrollController,
+              enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+              mouseCursor: mouseCursor,
+              contextMenuBuilder: contextMenuBuilder,
+              spellCheckConfiguration: spellCheckConfiguration,
+              magnifierConfiguration: magnifierConfiguration,
+              undoController: undoController,
+              onAppPrivateCommand: onAppPrivateCommand,
+              cursorOpacityAnimates: cursorOpacityAnimates,
+              selectionHeightStyle: selectionHeightStyle,
+              selectionWidthStyle: selectionWidthStyle,
+              dragStartBehavior: dragStartBehavior,
+              contentInsertionConfiguration: contentInsertionConfiguration,
+              clipBehavior: clipBehavior,
+              scribbleEnabled: scribbleEnabled,
+              canRequestFocus: canRequestFocus,
+            );
+          },
+          validator: (data) => generateValidator<T>(
+            data,
+            validator,
+            required,
+            minCount,
+            maxCount,
+          ),
+        );
 
-  final VoidCallback? onDeleteTap;
+  /// 根据当前表单值 [value]、传入验证器 [validator]、 是否必填 [required]、最小选择数量
+  /// [minCount]、最大选择 数量 [maxCount] 生成默认验证器法。
+  static String? generateValidator<T>(
+    List<T>? value,
+    FormFieldValidator<List<T>>? validator,
+    bool? required,
+    int? minCount,
+    int? maxCount,
+  ) {
+    if (required == true && (value == null || value.isEmpty)) {
+      return '请选择';
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme scheme = theme.colorScheme;
-    final TextStyle? style =
-        theme.primaryTextTheme.labelMedium?.copyWith(color: scheme.primary);
+    if (validator != null) {
+      final String? errorText = validator(value);
+      if (errorText != null) {
+        return errorText;
+      }
+    }
 
-    return Tooltip(
-      message: label,
-      child: RawChip(
-        label: ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 0.0, maxWidth: 80.0),
-          child: Text(label),
-        ),
-        backgroundColor: scheme.primaryContainer,
-        deleteIcon:
-            onDeleteTap == null ? null : const Icon(Icons.cancel, size: 18.0),
-        visualDensity: VisualDensity.compact,
-        deleteButtonTooltipMessage: '删除',
-        deleteIconColor: scheme.primary,
-        labelStyle: style,
-        onDeleted: onDeleteTap,
-      ),
-    );
+    /// 如果最小数量不为空，判断已选数量是否小于最小数量
+    if (minCount != null && (value?.length ?? 0) < minCount) {
+      return '请至少选择$minCount项';
+    }
+
+    /// 如果最小数量不为空，判断已选数量是否小于最小数量
+    if (maxCount != null && (value?.length ?? 0) > maxCount) {
+      return '最多可选择$maxCount项';
+    }
+
+    return null;
   }
+}
+
+/// [field] 为多项选择框表单的 [TxCommonTextFormFieldTile]
+class TxMultiPickerFormFieldTile<T, V>
+    extends TxCommonTextFormFieldTile<List<T>> {
+  TxMultiPickerFormFieldTile({
+    required List<T> source,
+    required ValueMapper<T, String?> labelMapper,
+    ValueMapper<T, V?>? valueMapper,
+    IndexedValueMapper<T, bool>? enabledMapper,
+    List<T>? initialData,
+    List<V>? initialValue,
+    int? minCount,
+    int? maxCount,
+    String splitCharacter = '、',
+    super.key,
+    super.controller,
+    super.focusNode,
+    super.decoration,
+    super.keyboardType,
+    super.textCapitalization,
+    super.textInputAction,
+    super.style,
+    super.strutStyle,
+    super.textDirection,
+    super.textAlign,
+    super.textAlignVertical,
+    super.autofocus,
+    super.readOnly = true,
+    super.showCursor,
+    super.obscuringCharacter,
+    super.obscureText,
+    super.autocorrect,
+    super.smartDashesType,
+    super.smartQuotesType,
+    super.enableSuggestions,
+    super.maxLengthEnforcement,
+    super.maxLines,
+    super.minLines,
+    super.expands,
+    super.maxLength,
+    super.onChanged,
+    super.onTapAlwaysCalled,
+    super.onTapOutside,
+    super.onEditingComplete,
+    super.onFieldSubmitted,
+    super.inputFormatters,
+    super.cursorWidth,
+    super.cursorHeight,
+    super.cursorColor,
+    super.cursorRadius,
+    super.cursorErrorColor,
+    super.keyboardAppearance,
+    super.scrollPadding,
+    super.enableInteractiveSelection,
+    super.selectionControls,
+    super.buildCounter,
+    super.scrollPhysics,
+    super.autofillHints,
+    super.scrollController,
+    super.enableIMEPersonalizedLearning,
+    super.mouseCursor,
+    super.contextMenuBuilder,
+    super.spellCheckConfiguration,
+    super.magnifierConfiguration,
+    super.undoController,
+    super.onAppPrivateCommand,
+    super.cursorOpacityAnimates,
+    super.selectionHeightStyle,
+    super.selectionWidthStyle,
+    super.dragStartBehavior,
+    super.contentInsertionConfiguration,
+    super.statesController,
+    super.clipBehavior,
+    super.scribbleEnabled,
+    super.canRequestFocus,
+    super.onSaved,
+    super.validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    bool? required,
+    super.labelBuilder,
+    super.labelText,
+    super.padding,
+    super.actions,
+    super.labelStyle,
+    super.horizontalGap,
+    super.tileColor,
+    super.layoutDirection,
+    super.trailing,
+    super.leading,
+    super.visualDensity,
+    super.shape,
+    super.iconColor,
+    super.textColor,
+    super.leadingAndTrailingTextStyle,
+    super.minLeadingWidth,
+    super.minLabelWidth,
+    super.minVerticalPadding,
+    super.dense,
+  }) : super(
+          required: required == true && minCount != null && minCount > 0,
+          field: TxMultiPickerFormField<T, V>(
+            source: source,
+            labelMapper: labelMapper,
+            valueMapper: valueMapper,
+            enabledMapper: enabledMapper,
+            initialValue: initialValue,
+            initialData: initialData,
+            minCount: minCount,
+            maxCount: maxCount,
+            splitCharacter: splitCharacter,
+            enabled: enabled,
+            autovalidateMode: autovalidateMode,
+            restorationId: restorationId,
+            controller: controller,
+            focusNode: focusNode,
+            decoration: decoration,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            style: style,
+            strutStyle: strutStyle,
+            textAlign: textAlign,
+            textAlignVertical: textAlignVertical,
+            textDirection: textDirection,
+            textCapitalization: textCapitalization,
+            autofocus: autofocus,
+            statesController: statesController,
+            readOnly: readOnly,
+            showCursor: showCursor,
+            obscuringCharacter: obscuringCharacter,
+            obscureText: obscureText,
+            autocorrect: autocorrect,
+            smartDashesType: smartDashesType,
+            smartQuotesType: smartQuotesType,
+            enableSuggestions: enableSuggestions,
+            maxLengthEnforcement: maxLengthEnforcement,
+            maxLines: maxLines,
+            minLines: minLines,
+            expands: expands,
+            maxLength: maxLength,
+            onChanged: onChanged,
+            onTapAlwaysCalled: onTapAlwaysCalled,
+            onTapOutside: onTapOutside,
+            onEditingComplete: onEditingComplete,
+            onFieldSubmitted: onFieldSubmitted,
+            inputFormatters: inputFormatters,
+            cursorWidth: cursorWidth,
+            cursorHeight: cursorHeight,
+            cursorRadius: cursorRadius,
+            cursorColor: cursorColor,
+            cursorErrorColor: cursorErrorColor,
+            scrollPadding: scrollPadding,
+            scrollPhysics: scrollPhysics,
+            keyboardAppearance: keyboardAppearance,
+            enableInteractiveSelection: enableInteractiveSelection,
+            selectionControls: selectionControls,
+            buildCounter: buildCounter,
+            autofillHints: autofillHints,
+            scrollController: scrollController,
+            enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+            mouseCursor: mouseCursor,
+            contextMenuBuilder: contextMenuBuilder,
+            spellCheckConfiguration: spellCheckConfiguration,
+            magnifierConfiguration: magnifierConfiguration,
+            undoController: undoController,
+            onAppPrivateCommand: onAppPrivateCommand,
+            cursorOpacityAnimates: cursorOpacityAnimates,
+            selectionHeightStyle: selectionHeightStyle,
+            selectionWidthStyle: selectionWidthStyle,
+            dragStartBehavior: dragStartBehavior,
+            contentInsertionConfiguration: contentInsertionConfiguration,
+            clipBehavior: clipBehavior,
+            scribbleEnabled: scribbleEnabled,
+            canRequestFocus: canRequestFocus,
+            onSaved: onSaved,
+            validator: validator,
+            required: required,
+          ),
+        );
+
+  TxMultiPickerFormFieldTile.custom({
+    required MultiPickVoidCallback<T>? onPickTap,
+    required String? Function(T data)? displayTextMapper,
+    super.initialValue,
+    int? minCount,
+    int? maxCount,
+    String splitCharacter = '、',
+    super.key,
+    super.controller,
+    super.focusNode,
+    super.decoration,
+    super.keyboardType,
+    super.textCapitalization,
+    super.textInputAction,
+    super.style,
+    super.strutStyle,
+    super.textDirection,
+    super.textAlign,
+    super.textAlignVertical,
+    super.autofocus,
+    super.readOnly = true,
+    super.showCursor,
+    super.obscuringCharacter,
+    super.obscureText,
+    super.autocorrect,
+    super.smartDashesType,
+    super.smartQuotesType,
+    super.enableSuggestions,
+    super.maxLengthEnforcement,
+    super.maxLines,
+    super.minLines,
+    super.expands,
+    super.maxLength,
+    super.onChanged,
+    super.onTapAlwaysCalled,
+    super.onTapOutside,
+    super.onEditingComplete,
+    super.onFieldSubmitted,
+    super.inputFormatters,
+    super.cursorWidth,
+    super.cursorHeight,
+    super.cursorColor,
+    super.cursorRadius,
+    super.cursorErrorColor,
+    super.keyboardAppearance,
+    super.scrollPadding,
+    super.enableInteractiveSelection,
+    super.selectionControls,
+    super.buildCounter,
+    super.scrollPhysics,
+    super.autofillHints,
+    super.scrollController,
+    super.enableIMEPersonalizedLearning,
+    super.mouseCursor,
+    super.contextMenuBuilder,
+    super.spellCheckConfiguration,
+    super.magnifierConfiguration,
+    super.undoController,
+    super.onAppPrivateCommand,
+    super.cursorOpacityAnimates,
+    super.selectionHeightStyle,
+    super.selectionWidthStyle,
+    super.dragStartBehavior,
+    super.contentInsertionConfiguration,
+    super.statesController,
+    super.clipBehavior,
+    super.scribbleEnabled,
+    super.canRequestFocus,
+    super.onSaved,
+    super.validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    bool? required,
+    super.labelBuilder,
+    super.labelText,
+    super.padding,
+    super.actions,
+    super.labelStyle,
+    super.horizontalGap,
+    super.tileColor,
+    super.layoutDirection,
+    super.trailing,
+    super.leading,
+    super.visualDensity,
+    super.shape,
+    super.iconColor,
+    super.textColor,
+    super.leadingAndTrailingTextStyle,
+    super.minLeadingWidth,
+    super.minLabelWidth,
+    super.minVerticalPadding,
+    super.dense,
+  }) : super(
+          required: required == true && minCount != null && minCount > 0,
+          field: TxMultiPickerFormField<T, V>.custom(
+            onPickTap: onPickTap,
+            displayTextMapper: displayTextMapper,
+            initialValue: initialValue,
+            minCount: minCount,
+            maxCount: maxCount,
+            splitCharacter: splitCharacter,
+            enabled: enabled,
+            autovalidateMode: autovalidateMode,
+            restorationId: restorationId,
+            controller: controller,
+            focusNode: focusNode,
+            decoration: decoration,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            style: style,
+            strutStyle: strutStyle,
+            textAlign: textAlign,
+            textAlignVertical: textAlignVertical,
+            textDirection: textDirection,
+            textCapitalization: textCapitalization,
+            autofocus: autofocus,
+            statesController: statesController,
+            readOnly: readOnly,
+            showCursor: showCursor,
+            obscuringCharacter: obscuringCharacter,
+            obscureText: obscureText,
+            autocorrect: autocorrect,
+            smartDashesType: smartDashesType,
+            smartQuotesType: smartQuotesType,
+            enableSuggestions: enableSuggestions,
+            maxLengthEnforcement: maxLengthEnforcement,
+            maxLines: maxLines,
+            minLines: minLines,
+            expands: expands,
+            maxLength: maxLength,
+            onChanged: onChanged,
+            onTapAlwaysCalled: onTapAlwaysCalled,
+            onTapOutside: onTapOutside,
+            onEditingComplete: onEditingComplete,
+            onFieldSubmitted: onFieldSubmitted,
+            inputFormatters: inputFormatters,
+            cursorWidth: cursorWidth,
+            cursorHeight: cursorHeight,
+            cursorRadius: cursorRadius,
+            cursorColor: cursorColor,
+            cursorErrorColor: cursorErrorColor,
+            scrollPadding: scrollPadding,
+            scrollPhysics: scrollPhysics,
+            keyboardAppearance: keyboardAppearance,
+            enableInteractiveSelection: enableInteractiveSelection,
+            selectionControls: selectionControls,
+            buildCounter: buildCounter,
+            autofillHints: autofillHints,
+            scrollController: scrollController,
+            enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+            mouseCursor: mouseCursor,
+            contextMenuBuilder: contextMenuBuilder,
+            spellCheckConfiguration: spellCheckConfiguration,
+            magnifierConfiguration: magnifierConfiguration,
+            undoController: undoController,
+            onAppPrivateCommand: onAppPrivateCommand,
+            cursorOpacityAnimates: cursorOpacityAnimates,
+            selectionHeightStyle: selectionHeightStyle,
+            selectionWidthStyle: selectionWidthStyle,
+            dragStartBehavior: dragStartBehavior,
+            contentInsertionConfiguration: contentInsertionConfiguration,
+            clipBehavior: clipBehavior,
+            scribbleEnabled: scribbleEnabled,
+            canRequestFocus: canRequestFocus,
+            onSaved: onSaved,
+            validator: validator,
+            required: required,
+          ),
+        );
 }

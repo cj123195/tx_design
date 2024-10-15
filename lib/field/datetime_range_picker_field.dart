@@ -1,78 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_range_extension.dart';
-import '../utils/basic_types.dart';
-import '../widgets/date_range_picker.dart';
-import 'picker_form_field.dart';
+import '../widgets/datetime_range_picker.dart';
+import 'field_tile.dart';
+import 'picker_field.dart';
 
-/// 日期范围选择组件
-@Deprecated(
-  'Use TxDateRangePickerFormFieldTile instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class DateRangePickerFormField extends TxDateRangePickerFormFieldTile {
-  @Deprecated(
-    'Use TxDateRangePickerFormFieldTile instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  DateRangePickerFormField({
-    super.format,
-    super.firstDate,
-    super.lastDate,
-    super.helpText,
-    super.fieldStartHintText,
-    super.fieldEndHintText,
-    super.quickChoices,
-    super.key,
-    super.onSaved,
-    super.validator,
-    DateTimeRange? initialValue,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    Color? backgroundColor,
-    Axis? direction,
-    super.padding,
-    super.actions,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    InputDecoration decoration = const InputDecoration(),
-    TextStyle? style,
-    StrutStyle? strutStyle,
-    TextDirection? textDirection,
-    TextAlign textAlign = TextAlign.center,
-    TextAlignVertical? textAlignVertical,
-    EditableTextContextMenuBuilder? contextMenuBuilder,
-    ValueChanged<DateTimeRange?>? onChanged,
-    PickerFuture<DateTimeRange?>? onTap,
-  }) : super(
-          initialDateRange: initialValue,
-          labelBuilder: label == null ? null : (context) => label,
-          layoutDirection: direction,
-        );
-}
+const String _defaultFormat = 'yyyy/MM/dd HH:mm\t——\tyyyy/MM/dd HH:mm';
 
-const String _defaultFormat = 'yyyy/MM/dd\t——\tyyyy/MM/dd';
-
-/// builder 构建组件为日期范围选择框的 [FormField]
-class TxDateRangePickerFormField
-    extends TxPickerFormField<DateTimeRange, String> {
-  TxDateRangePickerFormField({
-    DateTimeRange? initialDateRange,
+/// 日期时间范围选择框
+class TxDatetimeRangePickerField extends TxPickerField<DateTimeRange, String> {
+  TxDatetimeRangePickerField({
+    DateTimeRange? initialDatetimeRange,
     DateTime? firstDate,
     DateTime? lastDate,
     String? helpText,
-    String? fieldStartHintText,
-    String? fieldEndHintText,
-    List<DateRangeQuickChoice>? quickChoices = const [
-      DateRangeMonthQuickChoice(),
-      DateRangeMonthQuickChoice(value: 6),
-      DateRangeYearQuickChoice(),
-    ],
+    String? titleText,
     String? format,
     super.key,
     super.controller,
@@ -103,9 +45,10 @@ class TxDateRangePickerFormField
     super.maxLengthEnforcement,
     super.onChanged,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
+    super.enabled,
     super.cursorWidth,
     super.cursorHeight,
     super.cursorRadius,
@@ -128,50 +71,37 @@ class TxDateRangePickerFormField
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
   }) : super.custom(
-          initialValue: initialDateRange,
-          onPickTap: (context, range) => showDateRangePickerDialog(
+          initialValue: initialDatetimeRange,
+          onPickTap: (context, range) => showDatetimeRangePicker(
             context,
             firstDate: firstDate,
             lastDate: lastDate,
-            initialDateRange: range,
-            helpText: helpText,
-            quickChoices: quickChoices,
-            fieldEndHintText: fieldEndHintText,
-            fieldStartHintText: fieldStartHintText,
+            initialDatetimeRange: range,
+            noticeText: helpText,
+            title: titleText,
           ),
           displayTextMapper: (context, range) =>
               range.format(format ?? _defaultFormat),
         );
 }
 
-/// field 为日期范围选择框表单的 [TxPickerFormFieldTile]
-class TxDateRangePickerFormFieldTile
-    extends TxPickerFormFieldTile<DateTimeRange, DateTimeRange> {
-  TxDateRangePickerFormFieldTile({
-    DateTimeRange? initialDateRange,
+/// [field] 为日期时间范围选择框的 [TxFieldTile]
+class TxDatetimeRangePickerFieldTile
+    extends TxPickerFieldTile<DateTimeRange, String> {
+  TxDatetimeRangePickerFieldTile({
+    DateTimeRange? initialDatetimeRange,
     DateTime? firstDate,
     DateTime? lastDate,
     String? helpText,
-    String? fieldStartHintText,
-    String? fieldEndHintText,
-    List<DateRangeQuickChoice>? quickChoices = const [
-      DateRangeMonthQuickChoice(),
-      DateRangeMonthQuickChoice(value: 6),
-      DateRangeYearQuickChoice(),
-    ],
+    String? titleText,
     String? format,
     super.labelBuilder,
     super.labelText,
@@ -221,9 +151,10 @@ class TxDateRangePickerFormFieldTile
     super.maxLengthEnforcement,
     super.onChanged,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
+    super.enabled,
     super.cursorWidth,
     super.cursorHeight,
     super.cursorRadius,
@@ -246,29 +177,22 @@ class TxDateRangePickerFormFieldTile
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
   }) : super.custom(
-          initialValue: initialDateRange,
-          onPickTap: (context, range) => showDateRangePickerDialog(
+          initialValue: initialDatetimeRange,
+          onPickTap: (context, range) => showDatetimeRangePicker(
             context,
             firstDate: firstDate,
             lastDate: lastDate,
-            initialDateRange: range,
-            helpText: helpText,
-            quickChoices: quickChoices,
-            fieldEndHintText: fieldEndHintText,
-            fieldStartHintText: fieldStartHintText,
+            initialDatetimeRange: range,
+            noticeText: helpText,
+            title: titleText,
           ),
           displayTextMapper: (context, range) =>
               range.format(format ?? _defaultFormat),

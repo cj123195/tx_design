@@ -78,6 +78,12 @@ abstract class TxLocalizations {
   /// Label for recent years choice on quick choices.
   String recentYearsLabel(int count);
 
+  /// Label for add buttons and menu items.
+  String get addButtonLabel;
+
+  /// Label for remove buttons and menu items.
+  String get removeButtonLabel;
+
   /// Label for Clear buttons and menu items.
   String get clearButtonLabel;
 
@@ -174,6 +180,9 @@ abstract class TxLocalizations {
 
   /// The default hint for the picker form fields.
   String get pickerFormFieldHint;
+
+  /// The default hint for the picker form fields which input enabled.
+  String multiPickerFormFieldHint(String splitCharacter);
 
   /// The default hint for the signature form fields.
   String get signatureFormFieldHint;
@@ -332,6 +341,12 @@ class DefaultTxLocalizations implements TxLocalizations {
   String get yearPickerTitle => 'Select Year';
 
   @override
+  String get addButtonLabel => 'New';
+
+  @override
+  String get removeButtonLabel => 'Remove';
+
+  @override
   String get clearButtonLabel => 'Clear';
 
   @override
@@ -455,6 +470,10 @@ class DefaultTxLocalizations implements TxLocalizations {
   String get pickerFormFieldHint => 'Please select';
 
   @override
+  String multiPickerFormFieldHint(String splitCharacter) =>
+      'Please select or enter separated by \'$splitCharacter\'';
+
+  @override
   String get textFormFieldHint => 'Please enter';
 
   @override
@@ -556,6 +575,12 @@ class ZhTxLocalizations implements TxLocalizations {
 
   @override
   String get yearPickerTitle => '选择年份';
+
+  @override
+  String get addButtonLabel => '新增';
+
+  @override
+  String get removeButtonLabel => '移除';
 
   @override
   String get clearButtonLabel => '清除';
@@ -671,6 +696,10 @@ class ZhTxLocalizations implements TxLocalizations {
 
   @override
   String get pickerFormFieldHint => '请选择';
+
+  @override
+  String multiPickerFormFieldHint(String splitCharacter) =>
+      '请选择或以“$splitCharacter”分隔输入';
 
   @override
   String get textFormFieldHint => '请输入';

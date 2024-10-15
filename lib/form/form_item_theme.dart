@@ -7,8 +7,10 @@ import 'form_item_container.dart';
 /// 与 [FormItemTheme] 一起使用来定义后代 [FormItemContainer] 小部件的默认属性值。
 ///
 /// 有关详细信息，请参阅各个 [FormItemContainer] 属性。
+@Deprecated('This feature was deprecated after v0.3.0.')
 @immutable
 class FormItemThemeData extends ThemeExtension<FormItemThemeData> {
+  @Deprecated('This feature was deprecated after v0.3.0.')
   const FormItemThemeData({
     this.backgroundColor,
     this.labelStyle,
@@ -76,8 +78,10 @@ class FormItemThemeData extends ThemeExtension<FormItemThemeData> {
 /// 一个继承的小部件，它在此小部件的子树中定义 [FormItemContainer] 的颜色和样式参数。
 ///
 /// 此处指定的值用于未指定显式非空值的 [FormItemContainer] 属性。
+@Deprecated('This feature was deprecated after v0.3.0.')
 class FormItemTheme extends InheritedWidget {
   /// 创建一个日期选择按钮主题，该主题定义后代 [FormItemContainer] 的颜色和样式参数。
+  @Deprecated('This feature was deprecated after v0.3.0.')
   const FormItemTheme({
     required super.child,
     required this.data,
@@ -90,6 +94,7 @@ class FormItemTheme extends InheritedWidget {
   ///
   /// 如果没有祖先，则返回 [ThemeData.extension<FormItemThemeData>()]。
   /// 如果它也为null，则返回默认[FormItemThemeData]
+  @Deprecated('This feature was deprecated after v0.3.0.')
   static FormItemThemeData of(BuildContext context) {
     final FormItemTheme? txDatePickerButtonTheme =
         context.dependOnInheritedWidgetOfExactType<FormItemTheme>();

@@ -97,7 +97,7 @@ class TxExpandableText extends StatefulWidget {
 
   /// 展开/折叠按钮的文字颜色
   ///
-  /// 如果值为 null，则使用 [TxExpandableTextThemeData.toggleButtonTextColor]，
+  /// 如果值为 null，则使用 [TxExpandableTextThemeData.toggleButtonForegroundColor]，
   /// 如果它也为null，则使用 [ColorScheme.primary]，
   final Color? toggleButtonForegroundColor;
 
@@ -128,19 +128,16 @@ class TxExpandableText extends StatefulWidget {
 
   /// 文本展开后的最大显示行数
   ///
-  /// 如果值为 null，则使用[TxExpandableTextThemeData.maxLines]，如果它也为null, 则
-  /// 默认值为 null，此时将展示全部文字。
+  /// 如果值为 null，默认值为 null，此时将展示全部文字。
   final int? maxLines;
 
   /// 折叠按钮文字
   ///
-  /// 如果值为 null，则使用[TxExpandableTextThemeData.collapseButtonLabel]
   /// 如果值为 null，则使用[TxLocalizations.collapsedButtonLabel]
   final String? collapseButtonLabel;
 
   /// 展开按钮文字
   ///
-  /// 如果值为 null，则使用[TxExpandableTextThemeData.expandButtonLabel]
   /// 如果值为 null，则使用 [TxLocalizations.moreButtonLabel]
   final String? expandButtonLabel;
 
@@ -497,7 +494,9 @@ class _TxExpandableTextState extends State<TxExpandableText> {
 //       textStyle = style!;
 //     }
 //     if (MediaQuery.boldTextOf(context)) {
-//       textStyle = textStyle.merge(const TextStyle(fontWeight: FontWeight.bold));
+//       textStyle = textStyle.merge(
+//       const TextStyle(fontWeight: FontWeight.bold),
+//       );
 //     }
 //     return textStyle;
 //   }
@@ -520,7 +519,8 @@ class _TxExpandableTextState extends State<TxExpandableText> {
 //         defaultTextStyle.textHeightBehavior ??
 //         DefaultTextHeightBehavior.maybeOf(context);
 //     final Color? selectionColor =
-//         this.selectionColor ?? DefaultSelectionStyle.of(context).selectionColor;
+//         this.selectionColor ??
+//         DefaultSelectionStyle.of(context).selectionColor;
 //     final TextDirection textDirection =
 //         this.textDirection ?? Directionality.of(context);
 //     final Locale locale = this.locale ?? Localizations.localeOf(context);

@@ -22,24 +22,29 @@ class _MultiSelectContent<T, V> extends StatefulWidget {
     required this.valueMapper,
     required this.onChanged,
     required this.sources,
-    Key? key,
+    super.key,
+    this.enabledMapper,
     this.editableMapper,
     this.editableItemMapper,
     this.subtitleMapper,
     this.pickerItemBuilder,
     this.initialData,
-    this.max,
+    this.maxCount,
+    this.minCount,
     this.onLabelChanged,
-  }) : super(key: key);
+  });
 
   /// 标题
-  final ValueMapper<T, String> labelMapper;
+  final ValueMapper<T, String?> labelMapper;
 
   /// 值
   final ValueMapper<T, V> valueMapper;
 
   /// 副标题
   final ValueMapper<T, String>? subtitleMapper;
+
+  /// 是否可操作
+  final bool Function(int index, T data)? enabledMapper;
 
   /// 是否可编辑
   final ValueMapper<T, bool>? editableMapper;
@@ -63,30 +68,33 @@ class _MultiSelectContent<T, V> extends StatefulWidget {
   final List<V>? initialData;
 
   /// 最大选择个数
-  final int? max;
+  final int? maxCount;
+
+  /// 最小选择个数
+  final int? minCount;
 
   @override
   State<_MultiSelectContent> createState() => _MultiSelectContentState<T, V>();
 }
 
 class _MultiSelectContentState<T, V> extends State<_MultiSelectContent<T, V>> {
-  late List<V> initialData;
+  late List<V> _data;
   late List<T> source;
 
   @override
   void initState() {
-    initialData = widget.initialData ?? [];
+    _data = widget.initialData ?? [];
     source = [...widget.sources];
     super.initState();
   }
 
   void _onChanged(bool? value, T data) {
     if (value == true) {
-      initialData.add(widget.valueMapper(data));
+      _data.add(widget.valueMapper(data));
     } else {
-      initialData.remove(widget.valueMapper(data));
+      _data.remove(widget.valueMapper(data));
     }
-    widget.onChanged.call(initialData);
+    widget.onChanged.call(_data);
     setState(() {});
   }
 
@@ -97,7 +105,7 @@ class _MultiSelectContentState<T, V> extends State<_MultiSelectContent<T, V>> {
         itemBuilder: (context, index) => widget.pickerItemBuilder!(
           context,
           source[index],
-          initialData.contains(widget.valueMapper(source[index])),
+          _data.contains(widget.valueMapper(source[index])),
           _onChanged,
         ),
         itemCount: source.length,
@@ -107,11 +115,19 @@ class _MultiSelectContentState<T, V> extends State<_MultiSelectContent<T, V>> {
     final List<Widget> tiles = List.generate(source.length, (index) {
       final T data = source[index];
 
-      final int i =
-          initialData.indexWhere((e) => e == widget.valueMapper(data));
+      final int i = _data.indexWhere((e) => e == widget.valueMapper(data));
       final bool value = i != -1;
-      final bool enable =
-          widget.max == null || initialData.length < widget.max! || value;
+
+      bool enable = true;
+      if (widget.enabledMapper != null) {
+        enable = enable && widget.enabledMapper!(index, data);
+      }
+      if (widget.maxCount != null) {
+        enable = enable && (_data.length < widget.maxCount! || value);
+      }
+      if (widget.minCount != null) {
+        enable = enable && (_data.length > widget.minCount! || !value);
+      }
 
       Widget title;
       if (widget.editableMapper?.call(data) == true && value) {
@@ -120,9 +136,9 @@ class _MultiSelectContentState<T, V> extends State<_MultiSelectContent<T, V>> {
             if (widget.editableItemMapper != null) {
               source[index] = widget.editableItemMapper!(val);
               final V data = widget.valueMapper(source[index]);
-              if (data != initialData[i]) {
-                initialData[i] = data;
-                widget.onChanged.call(initialData);
+              if (data != _data[i]) {
+                _data[i] = data;
+                widget.onChanged.call(_data);
               }
             }
             widget.onLabelChanged?.call(index, val);
@@ -130,7 +146,7 @@ class _MultiSelectContentState<T, V> extends State<_MultiSelectContent<T, V>> {
           initialValue: widget.labelMapper(data),
         );
       } else {
-        title = Text(widget.labelMapper(data));
+        title = Text(widget.labelMapper(data) ?? '');
       }
 
       return CheckboxListTile(
@@ -141,21 +157,23 @@ class _MultiSelectContentState<T, V> extends State<_MultiSelectContent<T, V>> {
             : Text(widget.subtitleMapper!(data)),
         enabled: enable,
         onChanged: (val) => _onChanged(val, data),
+        contentPadding: EdgeInsets.zero,
       );
     });
-    if (widget.max == null || source.length < widget.max!) {
+    if (widget.maxCount == null || source.length < widget.maxCount!) {
       final Widget all = CheckboxListTile(
         title: Text(MaterialLocalizations.of(context).selectAllButtonLabel),
-        value: source.every((e) => initialData.contains(widget.valueMapper(e))),
+        value: source.every((e) => _data.contains(widget.valueMapper(e))),
         onChanged: (val) {
           if (val == true) {
-            initialData = source.map<V>((e) => widget.valueMapper(e)).toList();
+            _data = source.map<V>((e) => widget.valueMapper(e)).toList();
           } else {
-            initialData.clear();
+            _data.clear();
           }
-          widget.onChanged.call(initialData);
+          widget.onChanged.call(_data);
           setState(() {});
         },
+        contentPadding: EdgeInsets.zero,
       );
       tiles.insert(0, all);
     }
@@ -169,24 +187,28 @@ class _MultiSelectContentState<T, V> extends State<_MultiSelectContent<T, V>> {
 }
 
 /// 多选选择
+///
+/// 点击取消将返回 null，开发者可根据返回值是否为 null 判断用户是否取消选择。
 Future<List<V>?> showMultiPickerBottomSheet<T, V>(
   BuildContext context, {
   required List<T> sources,
-  required ValueMapper<T, String> labelMapper,
+  required ValueMapper<T, String?> labelMapper,
   String? title,
   List<V>? initialValue,
   ValueMapper<T, V>? valueMapper,
   ValueMapper<T, String>? subtitleMapper,
   MultiPickerItemBuilder<T>? pickerItemBuilder,
   bool? isScrollControlled,
-  int? max,
+  int? maxCount,
+  int? minCount,
   ValueMapper<T, bool>? editableMapper,
   ValueMapper<String, T>? editableItemMapper,
   LabelEditCallback? onLabelChanged,
+  bool Function(int index, T data)? enabledMapper,
 }) async {
   valueMapper ??= (T data) => data as V;
   isScrollControlled ??= sources.length > 10;
-  List<V>? data = initialValue == null ? null : [...initialValue];
+  List<V> data = [...?initialValue];
   final Widget content = _MultiSelectContent<T, V>(
     valueMapper: valueMapper,
     labelMapper: labelMapper,
@@ -198,7 +220,8 @@ Future<List<V>?> showMultiPickerBottomSheet<T, V>(
     editableItemMapper: editableItemMapper,
     onLabelChanged: onLabelChanged,
     initialData: data,
-    max: max,
+    maxCount: maxCount,
+    enabledMapper: enabledMapper,
   );
   return await showDefaultBottomSheet<List<V>>(
     context,

@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 
+import '../field/picker_field.dart';
+import '../field/radio_field.dart';
 import '../utils/basic_types.dart';
-import 'form_field.dart';
+import 'picker_form_field.dart';
+import 'wrap_form_field.dart';
 
 /// Radio单选Form 组件
-class RadioFormField<T, V> extends TxPickerFormFieldItem<T, V> {
+@Deprecated(
+  'Use TxRadioFormFieldTile instead. '
+  'This feature was deprecated after v0.3.0.',
+)
+class RadioFormField<T, V> extends TxRadioFormFieldTile<T, V> {
+  @Deprecated(
+    'Use TxRadioFormFieldTile instead. '
+    'This feature was deprecated after v0.3.0.',
+  )
   RadioFormField({
     required super.labelMapper,
-    required super.sources,
-    ValueMapper<T, V>? enableMapper, // 选项是否可选
+    required List<T>? sources,
     super.initialData,
     super.valueMapper,
     super.enabledMapper,
-    super.inputEnabledMapper,
-    super.dataMapper,
     super.onChanged,
     super.key,
     super.onSaved,
@@ -23,92 +31,217 @@ class RadioFormField<T, V> extends TxPickerFormFieldItem<T, V> {
     super.autovalidateMode,
     super.restorationId,
     super.required,
-    super.label,
+    Widget? label,
     super.labelText,
-    super.backgroundColor,
-    super.direction,
+    Color? backgroundColor,
+    Axis? direction,
     super.padding,
-    List<Widget>? actions,
+    super.actions,
     super.labelStyle,
-    super.starStyle,
     super.horizontalGap,
     super.minLabelWidth,
+  }) : super(
+          source: sources ?? [],
+          labelBuilder: label == null ? null : (context) => label,
+          tileColor: backgroundColor,
+          layoutDirection: direction,
+        );
+}
+
+/// [builder] 构建组件为 Radio 单项选择框的 [FormField]
+class TxRadioFormField<T, V> extends TxWrapFormField<T> {
+  TxRadioFormField({
+    required List<T> source,
+    required ValueMapper<T, String> labelMapper,
+    ValueMapper<T, V?>? valueMapper,
+    IndexedValueMapper<T, bool>? enabledMapper,
+    T? initialData,
+    V? initialValue,
+    super.onChanged,
+    super.runSpacing,
+    super.spacing,
+    super.decoration,
+    super.alignment,
+    super.runAlignment,
+    super.crossAxisAlignment,
+    super.focusNode,
+    MouseCursor? mouseCursor,
+    Color? activeColor,
+    MaterialStateProperty<Color?>? fillColor,
+    Color? focusColor,
+    Color? hoverColor,
+    MaterialStateProperty<Color?>? overlayColor,
+    double? splashRadius,
+    MaterialTapTargetSize? materialTapTargetSize,
+    IndexedValueMapper<T, bool>? toggleableMapper,
+    ListTileControlAffinity? controlAffinity,
+    EdgeInsetsGeometry? cellPadding,
+    ShapeBorder? cellShape,
+    TextStyle? cellLabelStyle,
+    bool? useCupertinoCheckmarkStyle,
+    Color? textColor,
+    super.key,
+    super.onSaved,
+    FormFieldValidator<T>? validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    bool? required,
   }) : super(
           builder: (field) {
             void onChangedHandler(T? value) {
               field.didChange(value);
-              if (onChanged != null) {
-                onChanged(value);
-              }
+              onChanged?.call(value);
             }
 
-            final List<Widget> children = sources == null
-                ? []
-                : List.generate(
-                    sources.length,
-                    (index) => _RadioItem<T?>(
-                      key: ValueKey('RadioFormItem-$index-${sources[index]}'),
-                      label: labelMapper(sources[index]),
-                      value: sources[index],
-                      groupValue: field.value,
-                      onChanged: enableMapper?.call(sources[index]) != false
-                          ? onChangedHandler
-                          : null,
-                    ),
-                  );
+            final InputDecoration effectiveDecoration =
+                (decoration ?? const InputDecoration())
+                    .copyWith(errorText: field.errorText);
 
-            return Wrap(children: children);
+            return UnmanagedRestorationScope(
+              bucket: field.bucket,
+              child: TxRadioField(
+                source: source,
+                labelMapper: labelMapper,
+                valueMapper: valueMapper,
+                enabledMapper: enabledMapper,
+                initialData: field.value,
+                onChanged: onChangedHandler,
+                runSpacing: runSpacing,
+                spacing: spacing,
+                decoration: effectiveDecoration,
+                alignment: alignment,
+                runAlignment: runAlignment,
+                crossAxisAlignment: crossAxisAlignment,
+                focusNode: focusNode,
+                enabled: enabled,
+                mouseCursor: mouseCursor,
+                activeColor: activeColor,
+                fillColor: fillColor,
+                focusColor: focusColor,
+                hoverColor: hoverColor,
+                overlayColor: overlayColor,
+                splashRadius: splashRadius,
+                materialTapTargetSize: materialTapTargetSize,
+                controlAffinity: controlAffinity,
+                cellPadding: cellPadding,
+                cellShape: cellShape,
+                labelStyle: cellLabelStyle,
+                useCupertinoCheckmarkStyle: useCupertinoCheckmarkStyle,
+                toggleableMapper: toggleableMapper,
+                textColor: textColor,
+              ),
+            );
           },
-          actionsBuilder: (field) => actions,
-          decoration: const InputDecoration(contentPadding: EdgeInsets.zero),
+          initialValue: TxPickerField.initData<T, V>(
+            source,
+            initialData,
+            initialValue,
+            valueMapper,
+          ),
+          validator: (value) => TxPickerFormField.generateValidator<T>(
+            value,
+            validator,
+            required,
+          ),
         );
 }
 
-class _RadioItem<T> extends StatelessWidget {
-  const _RadioItem({
-    required this.label,
-    required this.value,
-    required this.groupValue,
-    required this.onChanged,
+/// [field] 为 Radio 单项选择框表单的 [TxWrapFormFieldTile]
+class TxRadioFormFieldTile<T, V> extends TxWrapFormFieldTile<T> {
+  TxRadioFormFieldTile({
+    required List<T> source,
+    required ValueMapper<T, String> labelMapper,
+    ValueMapper<T, V?>? valueMapper,
+    IndexedValueMapper<T, bool>? enabledMapper,
+    T? initialData,
+    V? initialValue,
+    super.onChanged,
+    super.runSpacing,
+    super.spacing,
+    super.decoration,
+    super.alignment,
+    super.runAlignment,
+    super.crossAxisAlignment,
+    super.focusNode,
+    MouseCursor? mouseCursor,
+    Color? activeColor,
+    MaterialStateProperty<Color?>? fillColor,
+    Color? focusColor,
+    Color? hoverColor,
+    MaterialStateProperty<Color?>? overlayColor,
+    double? splashRadius,
+    MaterialTapTargetSize? materialTapTargetSize,
+    IndexedValueMapper<T, bool>? toggleableMapper,
+    ListTileControlAffinity? controlAffinity,
+    EdgeInsetsGeometry? cellPadding,
+    ShapeBorder? cellShape,
+    TextStyle? cellLabelStyle,
+    bool? useCupertinoCheckmarkStyle,
     super.key,
-  });
-
-  final String label;
-  final T value;
-  final T? groupValue;
-  final ValueChanged<T?>? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool checked = value == groupValue;
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(4.0),
-      onTap: onChanged != null
-          ? () {
-              if (checked) {
-                onChanged!(null);
-              } else {
-                onChanged!(value);
-              }
-            }
-          : null,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 4.0, right: 8.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Radio<T>(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              visualDensity: VisualDensity.compact,
-              value: value,
-              groupValue: groupValue,
-              onChanged: onChanged,
-            ),
-            Text(label),
-          ],
-        ),
-      ),
-    );
-  }
+    super.labelBuilder,
+    super.labelText,
+    super.padding,
+    super.actions,
+    super.labelStyle,
+    super.horizontalGap,
+    super.tileColor,
+    super.layoutDirection,
+    super.trailing,
+    super.leading,
+    super.visualDensity,
+    super.shape,
+    super.iconColor,
+    super.textColor,
+    super.leadingAndTrailingTextStyle,
+    super.enabled,
+    super.onTap,
+    super.minLeadingWidth,
+    super.minLabelWidth,
+    super.minVerticalPadding,
+    super.dense,
+    super.onSaved,
+    super.validator,
+    super.restorationId,
+    super.autovalidateMode,
+    super.required,
+  }) : super(
+          field: TxRadioFormField<T, V>(
+            source: source,
+            labelMapper: labelMapper,
+            valueMapper: valueMapper,
+            enabledMapper: enabledMapper,
+            initialData: initialData,
+            initialValue: initialValue,
+            onChanged: onChanged,
+            runSpacing: runSpacing,
+            spacing: spacing,
+            decoration: decoration,
+            alignment: alignment,
+            runAlignment: runAlignment,
+            crossAxisAlignment: crossAxisAlignment,
+            focusNode: focusNode,
+            enabled: enabled,
+            mouseCursor: mouseCursor,
+            activeColor: activeColor,
+            fillColor: fillColor,
+            focusColor: focusColor,
+            hoverColor: hoverColor,
+            overlayColor: overlayColor,
+            splashRadius: splashRadius,
+            materialTapTargetSize: materialTapTargetSize,
+            cellPadding: cellPadding,
+            controlAffinity: controlAffinity,
+            cellLabelStyle: cellLabelStyle,
+            cellShape: cellShape,
+            toggleableMapper: toggleableMapper,
+            useCupertinoCheckmarkStyle: useCupertinoCheckmarkStyle,
+            textColor: textColor,
+            onSaved: onSaved,
+            validator: validator,
+            required: required,
+            autovalidateMode: autovalidateMode,
+            restorationId: restorationId,
+          ),
+        );
 }
