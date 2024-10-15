@@ -1,121 +1,32 @@
-import 'package:flutter/material.dart';
-
 import '../extensions/datetime_extension.dart';
 import '../widgets/date_picker.dart';
-import 'picker_form_field.dart';
-
-/// 年份选择 Form 组件
-@Deprecated(
-  'Use TxTimePickerFormFieldTile instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class YearPickerFormField extends TxYearPickerFormFieldTile {
-  @Deprecated(
-    'Use TxTimePickerFormFieldTile instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  YearPickerFormField({
-    super.initialYear,
-    super.format,
-    super.minimumYear,
-    super.maximumYear,
-    super.titleText,
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    Color? backgroundColor,
-    Axis? direction,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.controller,
-    super.focusNode,
-    super.decoration,
-    super.keyboardType,
-    super.textCapitalization,
-    super.textInputAction,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.textAlignVertical,
-    super.autofocus,
-    super.maxLines,
-    super.minLines,
-    super.maxLength,
-    super.onChanged,
-    super.onEditingComplete,
-    super.inputFormatters,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
-    super.expands,
-    super.onTapOutside,
-    super.onFieldSubmitted,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorColor,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.scrollController,
-    super.enableIMEPersonalizedLearning,
-    super.mouseCursor,
-    super.contextMenuBuilder,
-  }) : super(
-          labelBuilder: label == null ? null : (context) => label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-        );
-}
+import 'field_tile.dart';
+import 'picker_field.dart';
 
 const String _defaultFormat = 'yyyy年';
 
-/// [builder] 构建组件为年份选择框的 [FormField]
-class TxYearPickerFormField extends TxPickerFormField<int, String> {
-  TxYearPickerFormField({
+/// 年份选择框
+class TxYearPickerField extends TxPickerField<int, String> {
+  TxYearPickerField({
     super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
+    super.focusNode,
     super.decoration,
     super.onChanged,
-    super.required,
+    super.enabled,
     super.hintText,
+    super.textAlign,
     int? initialYear,
     int? minimumYear,
     int? maximumYear,
     String? format,
     String? titleText,
     super.controller,
-    super.focusNode,
     super.undoController,
     super.keyboardType,
     super.textInputAction,
     super.textCapitalization,
     super.style,
     super.strutStyle,
-    super.textAlign,
     super.textAlignVertical,
     super.textDirection,
     super.showCursor,
@@ -133,7 +44,7 @@ class TxYearPickerFormField extends TxPickerFormField<int, String> {
     super.maxLength,
     super.maxLengthEnforcement,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
     super.cursorWidth,
@@ -158,6 +69,7 @@ class TxYearPickerFormField extends TxPickerFormField<int, String> {
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
@@ -178,19 +90,16 @@ class TxYearPickerFormField extends TxPickerFormField<int, String> {
         );
 }
 
-/// field 为年份选择框表单的 [TxPickerFormFieldTile]
-class TxYearPickerFormFieldTile extends TxPickerFormFieldTile<int, String> {
-  TxYearPickerFormFieldTile({
+/// field 为年份选择框的 [TxFieldTile]
+class TxYearPickerFieldTile extends TxPickerFieldTile<int, String> {
+  TxYearPickerFieldTile({
     super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
+    super.focusNode,
     super.decoration,
     super.onChanged,
-    super.required,
+    super.enabled,
     super.hintText,
+    super.textAlign,
     int? initialYear,
     int? minimumYear,
     int? maximumYear,
@@ -216,14 +125,12 @@ class TxYearPickerFormFieldTile extends TxPickerFormFieldTile<int, String> {
     super.minVerticalPadding,
     super.dense,
     super.controller,
-    super.focusNode,
     super.undoController,
     super.keyboardType,
     super.textInputAction,
     super.textCapitalization,
     super.style,
     super.strutStyle,
-    super.textAlign,
     super.textAlignVertical,
     super.textDirection,
     super.showCursor,
@@ -241,7 +148,7 @@ class TxYearPickerFormFieldTile extends TxPickerFormFieldTile<int, String> {
     super.maxLength,
     super.maxLengthEnforcement,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
     super.cursorWidth,
@@ -266,6 +173,7 @@ class TxYearPickerFormFieldTile extends TxPickerFormFieldTile<int, String> {
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,

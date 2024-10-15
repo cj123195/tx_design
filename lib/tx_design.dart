@@ -1,7 +1,8 @@
 library tx_design;
 
 export 'extensions.dart';
-export 'form.dart';
+export 'fields.dart';
+export 'form.dart' hide CheckboxFormField;
 export 'mixins.dart';
 export 'paintings.dart';
 export 'theme_extensions.dart';

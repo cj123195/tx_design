@@ -1,105 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../field/field.dart';
-import '../field/multi_picker_field.dart';
 import '../utils/basic_types.dart';
 import '../widgets/multi_picker_bottom_sheet.dart';
-import 'common_text_form_field.dart';
+import 'common_text_field.dart';
+import 'field.dart';
+import 'field_tile.dart';
 
-export '../utils/basic_types.dart' show ValueMapper;
-export '../widgets/multi_picker_bottom_sheet.dart' show MultiPickerItemBuilder;
-
-/// 多选Form组件
-@Deprecated(
-  'Use TxMultiPickerFormFieldTile instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class MultiPickerFormField<T, V> extends TxMultiPickerFormFieldTile {
-  @Deprecated(
-    'Use TxMultiPickerFormFieldTile instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  MultiPickerFormField({
-    required List<T> sources,
-    required super.labelMapper,
-    super.valueMapper,
-    super.enabledMapper,
-    int? minPickNumber,
-    int? maxPickNumber,
-    Set<V>? initialValue,
-    Set<T>? initialData,
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    Color? backgroundColor,
-    Axis? direction,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.controller,
-    super.focusNode,
-    super.decoration,
-    super.keyboardType,
-    super.textCapitalization,
-    super.textInputAction,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.textAlignVertical,
-    super.autofocus,
-    super.readOnly,
-    super.maxLines,
-    super.minLines,
-    super.maxLength,
-    super.onChanged,
-    super.onEditingComplete,
-    super.inputFormatters,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
-    super.expands,
-    super.onTapOutside,
-    super.onFieldSubmitted,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorColor,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.scrollController,
-    super.enableIMEPersonalizedLearning,
-    super.mouseCursor,
-    super.contextMenuBuilder,
-  }) : super(
-          source: sources,
-          minCount: minPickNumber,
-          maxCount: maxPickNumber,
-          initialValue: initialValue?.toList(),
-          initialData: initialData?.toList(),
-          labelBuilder: label == null ? null : (context) => label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-        );
-}
+typedef MultiPickVoidCallback<T> = Future<List<T>?> Function(
+  BuildContext context,
+  List<T>? initialValue,
+);
 
 /// 处理多选框输入内容变更事件
 void _onInputChanged<T>(
@@ -128,20 +38,11 @@ Future<void> _onTap<T>(
   }
 }
 
-/// [builder] 构建组件为多项选择框的 [FormField]
-class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
-  TxMultiPickerFormField({
+/// 多项选择框
+class TxMultiPickerField<T, V> extends TxCommonTextField<List<T>> {
+  TxMultiPickerField({
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
-    super.key,
-    super.onSaved,
-    FormFieldValidator<List<T>>? validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.decoration,
-    super.onChanged,
-    super.required,
     ValueMapper<T, V?>? valueMapper,
     IndexedValueMapper<T, bool>? enabledMapper,
     List<T>? initialData,
@@ -149,7 +50,11 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     int? minCount,
     int? maxCount,
     String splitCharacter = '、',
+    super.key,
     super.focusNode,
+    super.decoration,
+    super.onChanged,
+    super.enabled,
     String? hintText,
     super.textAlign,
     super.controller,
@@ -177,7 +82,7 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     super.maxLength,
     super.maxLengthEnforcement,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
     super.cursorWidth,
@@ -202,13 +107,19 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-  }) : super(
+  })  : assert(readOnly == true || T == String),
+        assert(
+          readOnly == true || enabled == false || T == String,
+          '当选择框允许输入且可操作时，数据源类型 T 必须为 String',
+        ),
+        super(
           onTap: (field) => _onTap(
             field,
             (context, value) => showMultiPickerBottomSheet<T, T>(
@@ -231,30 +142,22 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
           ),
           displayTextMapper: (context, val) =>
               val.map((e) => labelMapper(e)).join(splitCharacter),
-          initialValue: TxMultiPickerField.initData<T, V>(
-              source, initialData, initialValue, valueMapper),
+          initialValue:
+              initData<T, V>(source, initialData, initialValue, valueMapper),
           hintText: hintText ??
               (readOnly == true ? '请选择' : '请选择或输入，以$splitCharacter分隔'),
-          validator: (val) =>
-              generateValidator(val, validator, required, minCount, maxCount),
         );
 
-  TxMultiPickerFormField.custom({
+  ///自定义选择框
+  TxMultiPickerField.custom({
     required MultiPickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
+    String splitCharacter = '、',
     super.key,
-    super.onSaved,
-    FormFieldValidator<List<T>>? validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
+    super.focusNode,
     super.decoration,
     super.onChanged,
-    super.required,
-    String splitCharacter = '、',
-    int? minCount,
-    int? maxCount,
-    super.focusNode,
+    super.enabled,
     String? hintText,
     super.textAlign,
     super.controller,
@@ -283,7 +186,7 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     super.maxLength,
     super.maxLengthEnforcement,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
     super.cursorWidth,
@@ -308,13 +211,22 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-  }) : super(
+  })  : assert(
+          enabled != true || onPickTap != null,
+          '当 enabled 为 true 即选择框为可操作状态时，onPickTap 不能为空',
+        ),
+        assert(
+          readOnly == true || T is String,
+          '当 displayTextMapper 为 null 时，T 必须为 String 类型',
+        ),
+        super(
           onTap: (field) => _onTap(field, onPickTap!),
           onInputChanged: (field, text) => _onInputChanged<T>(
             field,
@@ -324,59 +236,39 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
           ),
           hintText: hintText ??
               (readOnly == true ? '请选择' : '请选择或输入，以$splitCharacter分隔'),
-          validator: (val) =>
-              generateValidator(val, validator, required, minCount, maxCount),
         );
 
-  /// 根据当前表单值 [value]、传入验证器 [validator]、 是否必填 [required]、最小选择数量
-  /// [minCount]、最大选择 数量 [maxCount] 生成默认验证器法。
-  static String? generateValidator<T>(
-    List<T>? value,
-    FormFieldValidator<List<T>>? validator,
-    bool? required,
-    int? minCount,
-    int? maxCount,
+  /// 通过传入数据源 [source]、[D] 类型初始数据列表 [initialData]、[V] 类型初始值列表
+  /// [initialValue]以及值生成器 [valueMapper] 生成 [D]类型列表初始化数据的方法。
+  static List<D>? initData<D, V>(
+    List<D> source,
+    List<D>? initialData,
+    List<V>? initialValue,
+    ValueMapper<D, V?>? valueMapper,
   ) {
-    if (required == true && (value == null || value.isEmpty)) {
-      return '请选择';
-    }
-
-    if (validator != null) {
-      final String? errorText = validator(value);
-      if (errorText != null) {
-        return errorText;
-      }
-    }
-
-    /// 如果最小数量不为空，判断已选数量是否小于最小数量
-    if (minCount != null && (value?.length ?? 0) < minCount) {
-      return '请至少选择$minCount项';
-    }
-
-    /// 如果最小数量不为空，判断已选数量是否小于最小数量
-    if (maxCount != null && (value?.length ?? 0) > maxCount) {
-      return '最多可选择$maxCount项';
-    }
-
-    return null;
+    return initialData ??
+        (initialValue == null
+            ? null
+            : valueMapper == null
+                ? initialValue as List<D>
+                : source
+                    .where((s) => initialValue.contains(valueMapper(s)))
+                    .toList());
   }
 }
 
-/// field 为多项选择框表单的 [TxCommonTextFormFieldTile]
-class TxMultiPickerFormFieldTile<T, V>
-    extends TxCommonTextFormFieldTile<List<T>> {
-  TxMultiPickerFormFieldTile({
+/// field 为多项选择框的 [TxFieldTile]
+class TxMultiPickerFieldTile<T, V> extends TxCommonTextFieldTile<List<T>> {
+  TxMultiPickerFieldTile({
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
     super.key,
-    super.onSaved,
-    FormFieldValidator<List<T>>? validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
+    super.focusNode,
     super.decoration,
     super.onChanged,
-    super.required,
+    super.enabled,
+    String? hintText,
+    super.textAlign,
     ValueMapper<T, V?>? valueMapper,
     IndexedValueMapper<T, bool>? enabledMapper,
     List<T>? initialData,
@@ -384,9 +276,25 @@ class TxMultiPickerFormFieldTile<T, V>
     int? minCount,
     int? maxCount,
     String splitCharacter = '、',
-    super.focusNode,
-    String? hintText,
-    super.textAlign,
+    super.labelBuilder,
+    super.labelText,
+    super.padding,
+    super.actionsBuilder,
+    super.labelStyle,
+    super.horizontalGap,
+    super.tileColor,
+    super.layoutDirection,
+    super.trailingBuilder,
+    super.leading,
+    super.visualDensity,
+    super.shape,
+    super.iconColor,
+    super.textColor,
+    super.leadingAndTrailingTextStyle,
+    super.minLeadingWidth,
+    super.minLabelWidth,
+    super.minVerticalPadding,
+    super.dense,
     super.controller,
     super.undoController,
     super.keyboardType,
@@ -412,7 +320,7 @@ class TxMultiPickerFormFieldTile<T, V>
     super.maxLength,
     super.maxLengthEnforcement,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
     super.cursorWidth,
@@ -437,31 +345,13 @@ class TxMultiPickerFormFieldTile<T, V>
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-    super.labelBuilder,
-    super.labelText,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.tileColor,
-    super.layoutDirection,
-    super.trailingBuilder,
-    super.leading,
-    super.visualDensity,
-    super.shape,
-    super.iconColor,
-    super.textColor,
-    super.leadingAndTrailingTextStyle,
-    super.minLeadingWidth,
-    super.minLabelWidth,
-    super.minVerticalPadding,
-    super.dense,
   }) : super(
           onTap: (field) => _onTap(
             field,
@@ -489,30 +379,42 @@ class TxMultiPickerFormFieldTile<T, V>
               source, initialData, initialValue, valueMapper),
           hintText: hintText ??
               (readOnly == true ? '请选择' : '请选择或输入，以$splitCharacter分隔'),
-          validator: (val) => TxMultiPickerFormField.generateValidator(
-              val, validator, required, minCount, maxCount),
         );
 
-  TxMultiPickerFormFieldTile.custom({
+  TxMultiPickerFieldTile.custom({
     required MultiPickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
     super.key,
-    super.onSaved,
-    FormFieldValidator<List<T>>? validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
+    super.focusNode,
     super.decoration,
     super.onChanged,
-    super.required,
-    String splitCharacter = '、',
-    int? minCount,
-    int? maxCount,
-    super.focusNode,
+    super.enabled,
     String? hintText,
     super.textAlign,
+    String splitCharacter = '、',
+    super.labelBuilder,
+    super.labelText,
+    super.padding,
+    super.actionsBuilder,
+    super.labelStyle,
+    super.horizontalGap,
+    super.tileColor,
+    super.layoutDirection,
+    super.trailingBuilder,
+    super.leading,
+    super.visualDensity,
+    super.shape,
+    super.iconColor,
+    super.textColor,
+    super.leadingAndTrailingTextStyle,
+    super.minLeadingWidth,
+    super.minLabelWidth,
+    super.minVerticalPadding,
+    super.dense,
     super.controller,
-    super.initialValue,
+    ValueMapper<T, V?>? valueMapper,
+    List<T>? initialData,
+    List<V>? initialValue,
     super.undoController,
     super.keyboardType,
     super.textInputAction,
@@ -537,7 +439,7 @@ class TxMultiPickerFormFieldTile<T, V>
     super.maxLength,
     super.maxLengthEnforcement,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
     super.cursorWidth,
@@ -562,31 +464,13 @@ class TxMultiPickerFormFieldTile<T, V>
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-    super.labelBuilder,
-    super.labelText,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.tileColor,
-    super.layoutDirection,
-    super.trailingBuilder,
-    super.leading,
-    super.visualDensity,
-    super.shape,
-    super.iconColor,
-    super.textColor,
-    super.leadingAndTrailingTextStyle,
-    super.minLeadingWidth,
-    super.minLabelWidth,
-    super.minVerticalPadding,
-    super.dense,
   }) : super(
           onTap: (field) => _onTap(field, onPickTap!),
           onInputChanged: (field, text) => _onInputChanged<T>(
@@ -597,7 +481,5 @@ class TxMultiPickerFormFieldTile<T, V>
           ),
           hintText: hintText ??
               (readOnly == true ? '请选择' : '请选择或输入，以$splitCharacter分隔'),
-          validator: (val) => TxMultiPickerFormField.generateValidator(
-              val, validator, required, minCount, maxCount),
         );
 }

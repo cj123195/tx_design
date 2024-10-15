@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 
+import '../field/checkbox_field.dart';
+import '../field/multi_picker_field.dart';
+import '../utils/basic_types.dart';
 import 'form_field.dart';
+import 'form_field_tile.dart';
+import 'multi_picker_form_field.dart';
+import 'wrap_form_field.dart';
 
 /// Checkbox多选Form组件
-class CheckboxFormField<T, V> extends TxMultiPickerFormFieldItem<T, V> {
+///
+@Deprecated(
+  'Use TxCheckboxFormFieldTile instead. '
+  'This feature was deprecated after v0.3.0.',
+)
+class CheckboxFormField<T, V> extends TxCheckboxFormFieldTile<T, V> {
+  @Deprecated(
+    'Use TxCheckboxFormFieldTile instead. '
+    'This feature was deprecated after v0.3.0.',
+  )
   CheckboxFormField({
     required super.labelMapper,
-    required super.sources,
+    required List<T> sources,
     super.initialData,
     super.valueMapper,
     super.enabledMapper,
-    super.inputEnabledMapper,
-    super.dataMapper,
-    super.minPickNumber,
-    super.maxPickNumber,
+    int? minPickNumber,
+    int? maxPickNumber,
     super.onChanged,
     super.key,
     super.onSaved,
@@ -23,86 +36,242 @@ class CheckboxFormField<T, V> extends TxMultiPickerFormFieldItem<T, V> {
     super.autovalidateMode,
     super.restorationId,
     super.required,
-    super.label,
+    Widget? label,
     super.labelText,
-    super.backgroundColor,
-    super.direction,
+    Color? backgroundColor,
+    Axis? direction,
     super.padding,
-    List<Widget>? actions,
+    super.actionsBuilder,
     super.labelStyle,
-    super.starStyle,
     super.horizontalGap,
     super.minLabelWidth,
   }) : super(
-          builder: (field) {
-            void onChangedHandler(bool? value, T data) {
-              Set<T>? list = field.value;
-              if (value == true) {
-                (list ??= <T>{}).add(data);
-              } else {
-                list!.remove(data);
-              }
-              field.didChange(list);
-              if (onChanged != null) {
-                onChanged(list);
-              }
-            }
-
-            final List<Widget> children = sources == null
-                ? []
-                : List.generate(
-                    sources.length,
-                    (index) => _CheckboxItem(
-                      key:
-                          ValueKey('CheckboxFormItem-$index-${sources[index]}'),
-                      label: labelMapper(sources[index]),
-                      value: field.value?.contains(sources[index]) == true,
-                      enabled: enabledMapper?.call(sources[index]),
-                      onChanged: (value) =>
-                          onChangedHandler(value, sources[index]),
-                    ),
-                  );
-
-            return Wrap(children: children);
-          },
-          actionsBuilder: (field) => actions,
+          labelBuilder: label == null ? null : (context) => label,
+          source: sources,
+          minCount: minPickNumber,
+          maxCount: maxPickNumber,
+          layoutDirection: direction,
+          tileColor: backgroundColor,
         );
 }
 
-class _CheckboxItem<T> extends StatelessWidget {
-  const _CheckboxItem({
-    required this.label,
-    required this.value,
-    required this.enabled,
-    required this.onChanged,
+/// [builder] 构建的组件为 [TxCheckboxField] 的 [TxWrapFormField]
+class TxCheckboxFormField<T, V> extends TxFormField<List<T>> {
+  TxCheckboxFormField({
+    required List<T> source,
+    required ValueMapper<T, String> labelMapper,
+    ValueMapper<T, V?>? valueMapper,
+    IndexedValueMapper<T, bool>? enabledMapper,
+    List<T>? initialData,
+    List<V>? initialValue,
+    int? minCount,
+    int? maxCount,
+    double? spacing,
+    double? runSpacing,
+    WrapAlignment? alignment,
+    WrapAlignment? runAlignment,
+    WrapCrossAlignment? crossAxisAlignment,
+    FocusNode? focusNode,
     super.key,
-  });
+    super.onSaved,
+    FormFieldValidator<List<T>>? validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    super.decoration,
+    super.onChanged,
+    super.required,
+    MouseCursor? mouseCursor,
+    Color? textColor,
+    Color? activeColor,
+    MaterialStateProperty<Color?>? fillColor,
+    Color? checkColor,
+    Color? hoverColor,
+    MaterialStateProperty<Color?>? overlayColor,
+    double? splashRadius,
+    MaterialTapTargetSize? materialTapTargetSize,
+    IndexedValueMapper<T, bool>? errorMapper,
+    ListTileControlAffinity? controlAffinity,
+    EdgeInsetsGeometry? checkboxPadding,
+    IndexedValueMapper<T, bool>? tristateMapper,
+    OutlinedBorder? checkboxShape,
+    IndexedValueMapper<T, String>? checkboxSemanticLabelMapper,
+    BorderSide? checkboxSide,
+    ShapeBorder? checkboxCellShape,
+    TextStyle? labelStyle,
+  }) : super(
+          builder: (field) {
+            return UnmanagedRestorationScope(
+              bucket: field.bucket,
+              child: TxCheckboxField(
+                source: source,
+                labelMapper: labelMapper,
+                valueMapper: valueMapper,
+                enabledMapper: enabledMapper,
+                initialData: field.value,
+                minCount: minCount,
+                maxCount: maxCount,
+                onChanged: field.didChange,
+                runSpacing: runSpacing,
+                spacing: spacing,
+                decoration: field.effectiveDecoration,
+                alignment: alignment,
+                runAlignment: runAlignment,
+                crossAxisAlignment: crossAxisAlignment,
+                focusNode: focusNode,
+                enabled: enabled,
+                mouseCursor: mouseCursor,
+                activeColor: activeColor,
+                fillColor: fillColor,
+                checkColor: checkColor,
+                hoverColor: hoverColor,
+                overlayColor: overlayColor,
+                splashRadius: splashRadius,
+                materialTapTargetSize: materialTapTargetSize,
+                errorMapper: errorMapper,
+                controlAffinity: controlAffinity,
+                checkboxPadding: checkboxPadding,
+                tristateMapper: tristateMapper,
+                checkboxShape: checkboxShape,
+                checkboxSemanticLabelMapper: checkboxSemanticLabelMapper,
+                checkboxSide: checkboxSide,
+                checkboxCellShape: checkboxCellShape,
+                textColor: textColor,
+                labelStyle: labelStyle,
+              ),
+            );
+          },
+          initialValue: TxMultiPickerField.initData<T, V>(
+            source,
+            initialData,
+            initialValue,
+            valueMapper,
+          ),
+          validator: (value) => TxMultiPickerFormField.generateValidator<T>(
+            value,
+            validator,
+            required,
+            minCount,
+            maxCount,
+          ),
+        );
+}
 
-  final String label;
-  final bool value;
-  final ValueChanged<bool?>? onChanged;
-  final bool? enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(4.0),
-      onTap: onChanged != null ? () => onChanged!(!value) : null,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 8.0, right: 4.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(label),
-            Checkbox(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              visualDensity: VisualDensity.compact,
-              value: value,
-              onChanged: onChanged,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+/// field 为 [TxCheckboxFormField] 的 [TxWrapFormFieldTile]
+class TxCheckboxFormFieldTile<T, V> extends TxFormFieldTile<List<T>> {
+  TxCheckboxFormFieldTile({
+    required List<T> source,
+    required ValueMapper<T, String> labelMapper,
+    ValueMapper<T, V?>? valueMapper,
+    IndexedValueMapper<T, bool>? enabledMapper,
+    List<T>? initialData,
+    List<V>? initialValue,
+    int? minCount,
+    int? maxCount,
+    double? spacing,
+    double? runSpacing,
+    WrapAlignment? alignment,
+    WrapAlignment? runAlignment,
+    WrapCrossAlignment? crossAxisAlignment,
+    FocusNode? focusNode,
+    super.key,
+    super.onSaved,
+    FormFieldValidator<List<T>>? validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    super.decoration,
+    super.onChanged,
+    super.required,
+    MouseCursor? mouseCursor,
+    Color? checkboxTextColor,
+    Color? activeColor,
+    MaterialStateProperty<Color?>? fillColor,
+    Color? checkColor,
+    Color? hoverColor,
+    MaterialStateProperty<Color?>? overlayColor,
+    double? splashRadius,
+    MaterialTapTargetSize? materialTapTargetSize,
+    IndexedValueMapper<T, bool>? errorMapper,
+    ListTileControlAffinity? controlAffinity,
+    EdgeInsetsGeometry? checkboxPadding,
+    IndexedValueMapper<T, bool>? tristateMapper,
+    OutlinedBorder? checkboxShape,
+    IndexedValueMapper<T, String>? checkboxSemanticLabelMapper,
+    BorderSide? checkboxSide,
+    ShapeBorder? checkboxCellShape,
+    TextStyle? checkboxLabelStyle,
+    super.labelBuilder,
+    super.labelText,
+    super.padding,
+    super.actionsBuilder,
+    super.labelStyle,
+    super.horizontalGap,
+    super.tileColor,
+    super.layoutDirection,
+    super.trailingBuilder,
+    super.leading,
+    super.visualDensity,
+    super.shape,
+    super.iconColor,
+    super.textColor,
+    super.leadingAndTrailingTextStyle,
+    super.onTap,
+    super.minLeadingWidth,
+    super.minLabelWidth,
+    super.minVerticalPadding,
+    super.dense,
+  }) : super(
+          fieldBuilder: (field) {
+            return TxCheckboxField(
+              source: source,
+              labelMapper: labelMapper,
+              valueMapper: valueMapper,
+              enabledMapper: enabledMapper,
+              initialData: field.value,
+              minCount: minCount,
+              maxCount: maxCount,
+              onChanged: field.didChange,
+              runSpacing: runSpacing,
+              spacing: spacing,
+              decoration: field.effectiveDecoration,
+              alignment: alignment,
+              runAlignment: runAlignment,
+              crossAxisAlignment: crossAxisAlignment,
+              focusNode: focusNode,
+              enabled: enabled,
+              mouseCursor: mouseCursor,
+              activeColor: activeColor,
+              fillColor: fillColor,
+              checkColor: checkColor,
+              hoverColor: hoverColor,
+              overlayColor: overlayColor,
+              splashRadius: splashRadius,
+              materialTapTargetSize: materialTapTargetSize,
+              errorMapper: errorMapper,
+              controlAffinity: controlAffinity,
+              checkboxPadding: checkboxPadding,
+              tristateMapper: tristateMapper,
+              checkboxShape: checkboxShape,
+              checkboxSemanticLabelMapper: checkboxSemanticLabelMapper,
+              checkboxSide: checkboxSide,
+              checkboxCellShape: checkboxCellShape,
+              textColor: checkboxTextColor,
+              labelStyle: checkboxLabelStyle,
+            );
+          },
+          initialValue: TxMultiPickerField.initData<T, V>(
+            source,
+            initialData,
+            initialValue,
+            valueMapper,
+          ),
+          validator: (value) => TxMultiPickerFormField.generateValidator<T>(
+            value,
+            validator,
+            required,
+            minCount,
+            maxCount,
+          ),
+        );
 }

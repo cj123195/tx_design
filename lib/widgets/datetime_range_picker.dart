@@ -77,8 +77,8 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
   late FocusNode _endNode;
 
   /// 当前时间
-  late DateTime? _startDate;
-  late DateTime? _endDate;
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   /// 计算结束时间最小可选择时间
   DateTime? get _minimumEndDatetime {
@@ -174,8 +174,16 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
 
   @override
   void initState() {
-    _startDate = widget.initialDatetimeRange?.start;
-    _endDate = widget.initialDatetimeRange?.end;
+    if (widget.initialDatetimeRange == null) {
+      final now = DateTime.now();
+      if ((widget.lastDate == null || now.isBefore(widget.lastDate!)) &&
+          (widget.firstDate == null || now.isAfter(widget.firstDate!))) {
+        _startDate = now;
+      }
+    } else {
+      _startDate = widget.initialDatetimeRange!.start;
+      _endDate = widget.initialDatetimeRange!.end;
+    }
     _startController = TextEditingController(text: _startDate?.format(_format));
     _endController = TextEditingController(text: _endDate?.format(_format));
     _startNode = FocusNode();
@@ -270,7 +278,18 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
     } else {
       minimum = _minimumStartDatetime;
       maximum = _maximumStartDatetime;
-      initialDatetime = _startDate ?? maximum ?? minimum;
+      if (_startDate != null) {
+        initialDatetime = _startDate;
+      } else {
+        final now = DateTime.now();
+        if (_endDate == null &&
+            now.isBefore(maximum!) &&
+            now.isAfter(minimum!)) {
+          initialDatetime = now;
+        } else {
+          initialDatetime = maximum ?? minimum;
+        }
+      }
     }
     final Widget datePicker = Padding(
       padding: spacingTheme?.verticalLargest ??
@@ -289,7 +308,7 @@ class _DatetimeRangePickerState extends State<DatetimeRangePicker> {
         minimumDate: minimum,
         maximumYear: maximum?.year,
         minimumYear: minimum?.year ?? 1970,
-        initialDateTime: initialDatetime,
+        initialDateTime: initialDatetime ?? DateTime.now(),
       ),
     );
 

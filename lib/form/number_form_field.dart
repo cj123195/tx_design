@@ -1,52 +1,62 @@
-import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
-import '../localizations.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../field/field.dart';
+import '../field/number_field.dart';
+import '../form.dart';
 import 'form_field.dart';
 
 /// 数字输入Form表单
-class NumberFormField extends TxTextFormFieldItem<String> {
+@Deprecated(
+  'Use TxNumberFormFieldTile instead. '
+  'This feature was deprecated after v0.3.0.',
+)
+class NumberFormField<T extends num> extends TxNumberFormFieldTile<T> {
+  @Deprecated(
+    'Use TxNumberFormFieldTile instead. '
+    'This feature was deprecated after v0.3.0.',
+  )
   NumberFormField({
-    num? maximumValue, // 最大值
-    num? minimumValue = 0, // 最小值
-    bool showOperateButton = false, // 是否显示操作按钮
-    num? difference, // 自增或自减时的差值，showOperateButton为true时生效
+    T? maximumValue, // 最大值
+    T? minimumValue, // 最小值
+    bool? showOperateButton, // 是否显示操作按钮
+    T? difference, // 自增或自减时的差值，showOperateButton为true时生效
     super.key,
-    FormFieldSetter<num>? onSaved,
-    FormFieldValidator<num>? validator,
-    num? initialValue,
+    super.onSaved,
+    super.validator,
+    super.initialValue,
     super.enabled,
     super.autovalidateMode,
     super.restorationId,
     super.required,
-    super.label,
+    Widget? label,
     super.labelText,
-    super.backgroundColor,
-    super.direction,
+    Color? backgroundColor,
+    Axis? direction,
     super.padding,
-    List<Widget>? actions,
+    super.actionsBuilder,
     super.labelStyle,
-    super.starStyle,
     super.horizontalGap,
     super.minLabelWidth,
     super.controller,
-    super.prefixIconMergeMode,
-    super.suffixIconMergeMode,
     super.focusNode,
     super.decoration,
-    super.keyboardType = TextInputType.number,
     super.textCapitalization,
     super.textInputAction,
     super.style,
     super.strutStyle,
     super.textDirection,
-    TextAlign? textAlign,
+    super.textAlign,
     super.textAlignVertical,
     super.autofocus,
-    super.readonly,
+    super.readOnly,
     super.maxLines,
     super.minLines,
     super.maxLength,
-    ValueChanged<num?>? onChanged,
+    super.onChanged,
     super.onTap,
     super.onEditingComplete,
     super.inputFormatters,
@@ -77,77 +87,390 @@ class NumberFormField extends TxTextFormFieldItem<String> {
     super.mouseCursor,
     super.contextMenuBuilder,
   }) : super(
-          textAlign: textAlign ?? (showOperateButton ? TextAlign.center : null),
-          labelMapper: (String data) => data,
-          dataMapper: (String? data) {
-            if (data == null) {
-              return '0';
-            }
-            return data;
+          maxValue: maximumValue,
+          minValue: minimumValue,
+          autodecrement: showOperateButton,
+          autodecrementDifference: difference,
+          labelBuilder: label == null ? null : (context) => label,
+          tileColor: backgroundColor,
+          layoutDirection: direction,
+        );
+}
+
+/// [builder] 构建组件为文本输入框的 [FormField]
+class TxNumberFormField<T extends num> extends TxFormField<T> {
+  TxNumberFormField({
+    super.key,
+    super.onSaved,
+    FormFieldValidator<T>? validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    super.decoration,
+    super.onChanged,
+    super.required,
+    super.initialValue,
+    String? hintText = '请输入',
+    T? maxValue,
+    T? minValue,
+    bool? autodecrement,
+    T? autodecrementDifference,
+    ValueMapper<String, T>? format,
+    TextEditingController? controller,
+    FocusNode? focusNode,
+    TextInputType? keyboardType,
+    TextCapitalization? textCapitalization,
+    TextInputAction? textInputAction,
+    TextStyle? style,
+    StrutStyle? strutStyle,
+    TextDirection? textDirection,
+    TextAlign? textAlign,
+    TextAlignVertical? textAlignVertical,
+    bool? autofocus,
+    bool? readOnly,
+    bool? showCursor,
+    String? obscuringCharacter,
+    bool? obscureText,
+    bool? autocorrect,
+    SmartDashesType? smartDashesType,
+    SmartQuotesType? smartQuotesType,
+    bool? enableSuggestions,
+    MaxLengthEnforcement? maxLengthEnforcement,
+    int? maxLines,
+    int? minLines,
+    bool? expands,
+    int? maxLength,
+    ValueChanged<TxFieldState<T>>? onTap,
+    bool? onTapAlwaysCalled,
+    TapRegionCallback? onTapOutside,
+    VoidCallback? onEditingComplete,
+    ValueChanged<String>? onFieldSubmitted,
+    List<TextInputFormatter>? inputFormatters,
+    double? cursorWidth,
+    double? cursorHeight,
+    Radius? cursorRadius,
+    Color? cursorColor,
+    Color? cursorErrorColor,
+    Brightness? keyboardAppearance,
+    EdgeInsets? scrollPadding,
+    bool? enableInteractiveSelection,
+    TextSelectionControls? selectionControls,
+    InputCounterWidgetBuilder? buildCounter,
+    ScrollPhysics? scrollPhysics,
+    Iterable<String>? autofillHints,
+    ScrollController? scrollController,
+    bool? enableIMEPersonalizedLearning,
+    MouseCursor? mouseCursor,
+    EditableTextContextMenuBuilder? contextMenuBuilder,
+    SpellCheckConfiguration? spellCheckConfiguration,
+    TextMagnifierConfiguration? magnifierConfiguration,
+    UndoHistoryController? undoController,
+    AppPrivateCommandCallback? onAppPrivateCommand,
+    bool? cursorOpacityAnimates,
+    ui.BoxHeightStyle? selectionHeightStyle,
+    ui.BoxWidthStyle? selectionWidthStyle,
+    DragStartBehavior? dragStartBehavior,
+    ContentInsertionConfiguration? contentInsertionConfiguration,
+    MaterialStatesController? statesController,
+    Clip? clipBehavior,
+    bool? scribbleEnabled,
+    bool? canRequestFocus,
+  }) : super(
+          builder: (field) {
+            return TxNumberField<T>(
+              hintText: hintText,
+              minValue: minValue,
+              maxValue: maxValue,
+              autodecrement: autodecrement,
+              autodecrementDifference: autodecrementDifference,
+              format: format,
+              restorationId: restorationId,
+              controller: controller,
+              focusNode: focusNode,
+              decoration: field.effectiveDecoration,
+              initialValue: field.value,
+              textInputAction: textInputAction,
+              style: style,
+              strutStyle: strutStyle,
+              textAlign: textAlign,
+              textAlignVertical: textAlignVertical,
+              textDirection: textDirection,
+              textCapitalization: textCapitalization,
+              autofocus: autofocus,
+              statesController: statesController,
+              readOnly: readOnly,
+              showCursor: showCursor,
+              obscuringCharacter: obscuringCharacter,
+              obscureText: obscureText,
+              autocorrect: autocorrect,
+              smartDashesType: smartDashesType,
+              smartQuotesType: smartQuotesType,
+              enableSuggestions: enableSuggestions,
+              maxLengthEnforcement: maxLengthEnforcement,
+              maxLines: maxLines,
+              minLines: minLines,
+              expands: expands,
+              maxLength: maxLength,
+              onChanged: field.didChange,
+              onTap: onTap,
+              onTapAlwaysCalled: onTapAlwaysCalled,
+              onTapOutside: onTapOutside,
+              onEditingComplete: onEditingComplete,
+              onSubmitted: onFieldSubmitted,
+              inputFormatters: inputFormatters,
+              enabled: enabled,
+              cursorWidth: cursorWidth,
+              cursorHeight: cursorHeight,
+              cursorRadius: cursorRadius,
+              cursorColor: cursorColor,
+              cursorErrorColor: cursorErrorColor,
+              scrollPadding: scrollPadding,
+              scrollPhysics: scrollPhysics,
+              keyboardAppearance: keyboardAppearance,
+              enableInteractiveSelection: enableInteractiveSelection,
+              selectionControls: selectionControls,
+              buildCounter: buildCounter,
+              autofillHints: autofillHints,
+              scrollController: scrollController,
+              enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+              mouseCursor: mouseCursor,
+              contextMenuBuilder: contextMenuBuilder,
+              spellCheckConfiguration: spellCheckConfiguration,
+              magnifierConfiguration: magnifierConfiguration,
+              undoController: undoController,
+              onAppPrivateCommand: onAppPrivateCommand,
+              cursorOpacityAnimates: cursorOpacityAnimates,
+              selectionHeightStyle: selectionHeightStyle,
+              selectionWidthStyle: selectionWidthStyle,
+              dragStartBehavior: dragStartBehavior,
+              contentInsertionConfiguration: contentInsertionConfiguration,
+              clipBehavior: clipBehavior,
+              scribbleEnabled: scribbleEnabled,
+              canRequestFocus: canRequestFocus,
+            );
           },
-          onChanged: onChanged == null
-              ? null
-              : (val) => onChanged(val == null ? null : num.tryParse(val)),
-          initialValue: initialValue?.toString(),
-          onSaved: onSaved == null
-              ? null
-              : (val) => onSaved(val == null ? null : num.tryParse(val)),
-          validator: validator == null
-              ? null
-              : (val) => validator(val == null ? null : num.tryParse(val)),
-          defaultValidator: (context, val) {
-            final num? value = val == null ? null : num.tryParse(val);
-            if (value == null) {
-              return required == true
-                  ? TxLocalizations.of(context).textFormFieldHint
-                  : null;
+          validator: (value) {
+            if (required == true && value == null) {
+              return '请输入';
             }
-            if (minimumValue != null && value < minimumValue) {
-              return TxLocalizations.of(context).minimumNumberLimitLabel(value);
+
+            if (validator != null) {
+              final String? errorText = validator(value);
+              if (errorText != null) {
+                return errorText;
+              }
             }
-            if (maximumValue != null && value > maximumValue) {
-              return TxLocalizations.of(context).maximumNumberLimitLabel(value);
+
+            /// 如果最小值不为空，判断输入值是否小于最小值
+            if (minValue != null && value! < minValue) {
+              return '输入值需大于或等于$minValue';
             }
+
+            /// 如果最小数量不为空，判断已选数量是否小于最小数量
+            if (maxValue != null && value! > maxValue) {
+              return '输入值需小于或等于$maxValue';
+            }
+
             return null;
           },
-          defaultDecorationBuilder: showOperateButton
-              ? (field) {
-                  void onChangedHandler(num? value) {
-                    field.didChange(value.toString());
-                    if (onChanged != null) {
-                      onChanged(value);
-                    }
-                  }
+        );
+}
 
-                  final num value = field.value == null
-                      ? 0
-                      : (num.tryParse(field.value!) ?? 0);
-                  final bool canAdd =
-                      maximumValue == null || value < maximumValue;
-                  final Widget suffixIcon = IconButton(
-                    onPressed:
-                        canAdd ? () => onChangedHandler(value + 1) : null,
-                    icon: const Icon(Icons.add),
-                    visualDensity: VisualDensity.compact,
-                  );
+/// field 为文本输入框表单的 [TxCommonTextFormFieldTile]
+class TxNumberFormFieldTile<T extends num> extends TxFormFieldTile<T> {
+  TxNumberFormFieldTile({
+    super.key,
+    super.onSaved,
+    FormFieldValidator<T>? validator,
+    super.enabled,
+    super.autovalidateMode,
+    super.restorationId,
+    super.decoration,
+    super.onChanged,
+    super.required,
+    super.initialValue,
+    String? hintText = '请输入',
+    T? maxValue,
+    T? minValue,
+    bool? autodecrement,
+    T? autodecrementDifference,
+    ValueMapper<String, T>? format,
+    TextEditingController? controller,
+    FocusNode? focusNode,
+    TextInputType? keyboardType,
+    TextCapitalization? textCapitalization,
+    TextInputAction? textInputAction,
+    TextStyle? style,
+    StrutStyle? strutStyle,
+    TextDirection? textDirection,
+    TextAlign? textAlign,
+    TextAlignVertical? textAlignVertical,
+    bool? autofocus,
+    bool? readOnly,
+    bool? showCursor,
+    String? obscuringCharacter,
+    bool? obscureText,
+    bool? autocorrect,
+    SmartDashesType? smartDashesType,
+    SmartQuotesType? smartQuotesType,
+    bool? enableSuggestions,
+    MaxLengthEnforcement? maxLengthEnforcement,
+    int? maxLines,
+    int? minLines,
+    bool? expands,
+    int? maxLength,
+    ValueChanged<TxFieldState<T>>? onTap,
+    bool? onTapAlwaysCalled,
+    TapRegionCallback? onTapOutside,
+    VoidCallback? onEditingComplete,
+    ValueChanged<String>? onFieldSubmitted,
+    List<TextInputFormatter>? inputFormatters,
+    double? cursorWidth,
+    double? cursorHeight,
+    Radius? cursorRadius,
+    Color? cursorColor,
+    Color? cursorErrorColor,
+    Brightness? keyboardAppearance,
+    EdgeInsets? scrollPadding,
+    bool? enableInteractiveSelection,
+    TextSelectionControls? selectionControls,
+    InputCounterWidgetBuilder? buildCounter,
+    ScrollPhysics? scrollPhysics,
+    Iterable<String>? autofillHints,
+    ScrollController? scrollController,
+    bool? enableIMEPersonalizedLearning,
+    MouseCursor? mouseCursor,
+    EditableTextContextMenuBuilder? contextMenuBuilder,
+    SpellCheckConfiguration? spellCheckConfiguration,
+    TextMagnifierConfiguration? magnifierConfiguration,
+    UndoHistoryController? undoController,
+    AppPrivateCommandCallback? onAppPrivateCommand,
+    bool? cursorOpacityAnimates,
+    ui.BoxHeightStyle? selectionHeightStyle,
+    ui.BoxWidthStyle? selectionWidthStyle,
+    DragStartBehavior? dragStartBehavior,
+    ContentInsertionConfiguration? contentInsertionConfiguration,
+    MaterialStatesController? statesController,
+    Clip? clipBehavior,
+    bool? scribbleEnabled,
+    bool? canRequestFocus,
+    super.labelBuilder,
+    super.labelText,
+    super.padding,
+    super.actionsBuilder,
+    super.labelStyle,
+    super.horizontalGap,
+    super.tileColor,
+    super.layoutDirection,
+    super.trailingBuilder,
+    super.leading,
+    super.visualDensity,
+    super.shape,
+    super.iconColor,
+    super.textColor,
+    super.leadingAndTrailingTextStyle,
+    super.minLeadingWidth,
+    super.minLabelWidth,
+    super.minVerticalPadding,
+    super.dense,
+  }) : super(
+          fieldBuilder: (field) => TxNumberFormField<T>(
+            minValue: minValue,
+            maxValue: maxValue,
+            autodecrement: autodecrement,
+            autodecrementDifference: autodecrementDifference,
+            format: format,
+            initialValue: field.value,
+            enabled: enabled,
+            autovalidateMode: autovalidateMode,
+            restorationId: restorationId,
+            controller: controller,
+            focusNode: focusNode,
+            decoration: field.effectiveDecoration,
+            textInputAction: textInputAction,
+            style: style,
+            strutStyle: strutStyle,
+            textAlign: textAlign,
+            textAlignVertical: textAlignVertical,
+            textDirection: textDirection,
+            textCapitalization: textCapitalization,
+            autofocus: autofocus,
+            statesController: statesController,
+            readOnly: readOnly,
+            showCursor: showCursor,
+            obscuringCharacter: obscuringCharacter,
+            obscureText: obscureText,
+            autocorrect: autocorrect,
+            smartDashesType: smartDashesType,
+            smartQuotesType: smartQuotesType,
+            enableSuggestions: enableSuggestions,
+            maxLengthEnforcement: maxLengthEnforcement,
+            maxLines: maxLines,
+            minLines: minLines,
+            expands: expands,
+            maxLength: maxLength,
+            onChanged: field.didChange,
+            onTap: onTap,
+            onTapAlwaysCalled: onTapAlwaysCalled,
+            onTapOutside: onTapOutside,
+            onEditingComplete: onEditingComplete,
+            onFieldSubmitted: onFieldSubmitted,
+            inputFormatters: inputFormatters,
+            cursorWidth: cursorWidth,
+            cursorHeight: cursorHeight,
+            cursorRadius: cursorRadius,
+            cursorColor: cursorColor,
+            cursorErrorColor: cursorErrorColor,
+            scrollPadding: scrollPadding,
+            scrollPhysics: scrollPhysics,
+            keyboardAppearance: keyboardAppearance,
+            enableInteractiveSelection: enableInteractiveSelection,
+            selectionControls: selectionControls,
+            buildCounter: buildCounter,
+            autofillHints: autofillHints,
+            scrollController: scrollController,
+            enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+            mouseCursor: mouseCursor,
+            contextMenuBuilder: contextMenuBuilder,
+            spellCheckConfiguration: spellCheckConfiguration,
+            magnifierConfiguration: magnifierConfiguration,
+            undoController: undoController,
+            onAppPrivateCommand: onAppPrivateCommand,
+            cursorOpacityAnimates: cursorOpacityAnimates,
+            selectionHeightStyle: selectionHeightStyle,
+            selectionWidthStyle: selectionWidthStyle,
+            dragStartBehavior: dragStartBehavior,
+            contentInsertionConfiguration: contentInsertionConfiguration,
+            clipBehavior: clipBehavior,
+            scribbleEnabled: scribbleEnabled,
+            canRequestFocus: canRequestFocus,
+            onSaved: onSaved,
+            validator: validator,
+            required: required,
+          ),
+          validator: (value) {
+            if (required == true && value == null) {
+              return '请输入';
+            }
 
-                  final bool canRemove =
-                      minimumValue == null || value > minimumValue;
-                  final Widget prefixIcon = IconButton(
-                    onPressed:
-                        canRemove ? () => onChangedHandler(value - 1) : null,
-                    icon: const Icon(Icons.remove),
-                    visualDensity: VisualDensity.compact,
-                  );
+            if (validator != null) {
+              final String? errorText = validator(value);
+              if (errorText != null) {
+                return errorText;
+              }
+            }
 
-                  return InputDecoration(
-                    suffixIcon: suffixIcon,
-                    prefixIcon: prefixIcon,
-                    hintText:
-                        TxLocalizations.of(field.context).textFormFieldHint,
-                  );
-                }
-              : null,
-          actionsBuilder: (field) => actions,
+            /// 如果最小值不为空，判断输入值是否小于最小值
+            if (minValue != null && value! < minValue) {
+              return '输入值需大于或等于$minValue';
+            }
+
+            /// 如果最小数量不为空，判断已选数量是否小于最小数量
+            if (maxValue != null && value! > maxValue) {
+              return '输入值需小于或等于$maxValue';
+            }
+
+            return null;
+          },
         );
 }

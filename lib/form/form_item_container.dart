@@ -6,7 +6,9 @@ import 'package:flutter/rendering.dart';
 import 'form_item_theme.dart';
 
 /// 表单项容器组件
+@Deprecated('This feature was deprecated after v0.3.0.')
 class FormItemContainer extends StatelessWidget {
+  @Deprecated('This feature was deprecated after v0.3.0.')
   const FormItemContainer({
     required this.formField,
     super.key,

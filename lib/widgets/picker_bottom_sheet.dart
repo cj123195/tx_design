@@ -28,9 +28,9 @@ class _PickerContent<T> extends StatefulWidget {
     bool? showSearchField,
   }) : showSearchField = showSearchField ?? sources.length > 30;
 
-  final ValueMapper<T, String> labelMapper;
+  final ValueMapper<T, String?> labelMapper;
   final ValueMapper<T, String>? subtitleMapper;
-  final ValueMapper<T, bool>? enabledMapper;
+  final bool Function(int index, T item)? enabledMapper;
   final ValueMapper<T, bool>? inputEnabledMapper;
   final ValueMapper<T, bool>? dataMapper;
   final List<T> sources;
@@ -51,7 +51,7 @@ class _PickerContentState<T> extends State<_PickerContent<T>> {
     if (query?.isNotEmpty == true) {
       return widget.sources
           .where((e) =>
-              widget.labelMapper(e).contains(query!) ||
+              widget.labelMapper(e)?.contains(query!) == true ||
               widget.subtitleMapper?.call(e).contains(query!) == true)
           .toList();
     }
@@ -87,14 +87,17 @@ class _PickerContentState<T> extends State<_PickerContent<T>> {
     } else {
       result = ListView.separated(
         itemBuilder: (context, index) => RadioListTile<T>(
-          title: Text(widget.labelMapper(_filterSource[index])),
           value: _filterSource[index],
           groupValue: initialData,
-          onChanged: widget.enabledMapper?.call(_filterSource[index]) == false
-              ? null
-              : (val) => _onChanged(_filterSource[index]),
+          onChanged:
+              widget.enabledMapper?.call(index, _filterSource[index]) == false
+                  ? null
+                  : (val) => _onChanged(_filterSource[index]),
+          title: Text(widget.labelMapper(_filterSource[index]) ?? ''),
+          contentPadding: EdgeInsets.zero,
         ),
-        separatorBuilder: (context, index) => const Divider(height: 0),
+        separatorBuilder: (context, index) =>
+            const Divider(height: 0, thickness: 0.5),
         itemCount: _filterSource.length,
       );
     }
@@ -123,13 +126,13 @@ class _PickerContentState<T> extends State<_PickerContent<T>> {
 Future<T?> showPickerBottomSheet<T, V>(
   BuildContext context, {
   required List<T> sources,
-  required ValueMapper<T, String> labelMapper,
+  required ValueMapper<T, String?> labelMapper,
   String? title,
   T? initialData,
   V? initialValue,
   ValueMapper<T, V>? valueMapper,
   ValueMapper<T, String>? subtitleMapper,
-  ValueMapper<T, bool>? enabledMapper,
+  bool Function(int index, T item)? enabledMapper,
   ValueMapper<T, bool>? inputEnabledMapper,
   ValueMapper<T, bool>? dataMapper,
   PickerItemBuilder<T>? pickerItemBuilder,

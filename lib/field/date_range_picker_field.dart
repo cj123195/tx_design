@@ -1,77 +1,22 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_range_extension.dart';
-import '../utils/basic_types.dart';
 import '../widgets/date_range_picker.dart';
-import 'picker_form_field.dart';
-
-/// 日期范围选择组件
-@Deprecated(
-  'Use TxDateRangePickerFormFieldTile instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class DateRangePickerFormField extends TxDateRangePickerFormFieldTile {
-  @Deprecated(
-    'Use TxDateRangePickerFormFieldTile instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  DateRangePickerFormField({
-    super.format,
-    super.firstDate,
-    super.lastDate,
-    super.helpText,
-    super.fieldStartHintText,
-    super.fieldEndHintText,
-    super.quickChoices,
-    super.key,
-    super.onSaved,
-    super.validator,
-    DateTimeRange? initialValue,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    Color? backgroundColor,
-    Axis? direction,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    InputDecoration decoration = const InputDecoration(),
-    TextStyle? style,
-    StrutStyle? strutStyle,
-    TextDirection? textDirection,
-    TextAlign textAlign = TextAlign.center,
-    TextAlignVertical? textAlignVertical,
-    EditableTextContextMenuBuilder? contextMenuBuilder,
-    ValueChanged<DateTimeRange?>? onChanged,
-    PickerFuture<DateTimeRange?>? onTap,
-  }) : super(
-          initialDateRange: initialValue,
-          labelBuilder: label == null ? null : (context) => label,
-          layoutDirection: direction,
-        );
-}
+import 'field_tile.dart';
+import 'picker_field.dart';
 
 const String _defaultFormat = 'yyyy/MM/dd\t——\tyyyy/MM/dd';
 
-/// builder 构建组件为日期范围选择框的 [FormField]
-class TxDateRangePickerFormField
-    extends TxPickerFormField<DateTimeRange, String> {
-  TxDateRangePickerFormField({
+/// 日期范围选择框
+class TxDateRangePickerField extends TxPickerField<DateTimeRange, String> {
+  TxDateRangePickerField({
     super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
+    super.focusNode,
     super.decoration,
     super.onChanged,
-    super.required,
+    super.enabled,
     super.hintText,
+    super.textAlign,
     DateTimeRange? initialDateRange,
     DateTime? firstDate,
     DateTime? lastDate,
@@ -85,14 +30,12 @@ class TxDateRangePickerFormField
     ],
     String? format,
     super.controller,
-    super.focusNode,
     super.undoController,
     super.keyboardType,
     super.textInputAction,
     super.textCapitalization,
     super.style,
     super.strutStyle,
-    super.textAlign,
     super.textAlignVertical,
     super.textDirection,
     super.showCursor,
@@ -110,7 +53,7 @@ class TxDateRangePickerFormField
     super.maxLength,
     super.maxLengthEnforcement,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
     super.cursorWidth,
@@ -135,6 +78,7 @@ class TxDateRangePickerFormField
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
@@ -158,20 +102,17 @@ class TxDateRangePickerFormField
         );
 }
 
-/// field 为日期范围选择框表单的 [TxPickerFormFieldTile]
-class TxDateRangePickerFormFieldTile
-    extends TxPickerFormFieldTile<DateTimeRange, DateTimeRange> {
-  TxDateRangePickerFormFieldTile({
+/// field 为日期范围选择框的 [TxFieldTile]
+class TxDateRangePickerFieldTile
+    extends TxPickerFieldTile<DateTimeRange, String> {
+  TxDateRangePickerFieldTile({
     super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
+    super.focusNode,
     super.decoration,
     super.onChanged,
-    super.required,
+    super.enabled,
     super.hintText,
+    super.textAlign,
     DateTimeRange? initialDateRange,
     DateTime? firstDate,
     DateTime? lastDate,
@@ -204,14 +145,12 @@ class TxDateRangePickerFormFieldTile
     super.minVerticalPadding,
     super.dense,
     super.controller,
-    super.focusNode,
     super.undoController,
     super.keyboardType,
     super.textInputAction,
     super.textCapitalization,
     super.style,
     super.strutStyle,
-    super.textAlign,
     super.textAlignVertical,
     super.textDirection,
     super.showCursor,
@@ -229,7 +168,7 @@ class TxDateRangePickerFormFieldTile
     super.maxLength,
     super.maxLengthEnforcement,
     super.onEditingComplete,
-    super.onFieldSubmitted,
+    super.onSubmitted,
     super.onAppPrivateCommand,
     super.inputFormatters,
     super.cursorWidth,
@@ -254,6 +193,7 @@ class TxDateRangePickerFormFieldTile
     super.autofillHints,
     super.contentInsertionConfiguration,
     super.clipBehavior,
+    super.restorationId,
     super.scribbleEnabled,
     super.enableIMEPersonalizedLearning,
     super.contextMenuBuilder,
