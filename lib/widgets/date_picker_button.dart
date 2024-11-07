@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
+import 'date_picker.dart';
 import 'date_picker_button_theme.dart';
 
 const String _kFormat = 'M-d';
@@ -12,8 +13,8 @@ class TxDatePickerButton extends StatefulWidget {
   const TxDatePickerButton({
     super.key,
     this.initialDate,
-    this.firstDate,
-    this.lastDate,
+    this.minimumDate,
+    this.maximumDate,
     this.onDateSelect,
     this.showWeekday,
     this.buttonStyle,
@@ -26,10 +27,10 @@ class TxDatePickerButton extends StatefulWidget {
   final DateTime? initialDate;
 
   /// 可选择的最早时间
-  final DateTime? firstDate;
+  final DateTime? minimumDate;
 
   /// 可选择的最晚时间
-  final DateTime? lastDate;
+  final DateTime? maximumDate;
 
   /// 日期选择回调
   final ValueChanged<DateTime>? onDateSelect;
@@ -59,16 +60,16 @@ class _TxDatePickerButtonState extends State<TxDatePickerButton> {
   Future<void> _showDateSelect() async {
     final TxDatePickerButtonThemeData buttonTheme =
         TxDatePickerButtonTheme.of(context);
-    final DateTime firstDate =
-        widget.firstDate ?? buttonTheme.firstDate ?? DateTime(1970);
-    final DateTime lastDate =
-        widget.lastDate ?? buttonTheme.lastDate ?? DateTime.now();
+    final DateTime minimumDate =
+        widget.minimumDate ?? buttonTheme.minimumDate ?? DateTime(1970);
+    final DateTime maximumDate =
+        widget.maximumDate ?? buttonTheme.maximumDate ?? DateTime.now();
 
-    final res = await showDatePicker(
-      context: context,
+    final res = await showCupertinoDatePicker(
+      context,
       initialDate: _selectDate,
-      firstDate: firstDate,
-      lastDate: lastDate,
+      minimumDate: minimumDate,
+      maximumDate: maximumDate,
     );
     if (res != null) {
       setState(() {

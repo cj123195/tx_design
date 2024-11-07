@@ -50,6 +50,7 @@ class TxMultiPickerField<T, V> extends TxCommonTextField<List<T>> {
     int? minCount,
     int? maxCount,
     String splitCharacter = '、',
+    super.clearable,
     super.key,
     super.focusNode,
     super.decoration,
@@ -153,6 +154,7 @@ class TxMultiPickerField<T, V> extends TxCommonTextField<List<T>> {
     required MultiPickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
     String splitCharacter = '、',
+    super.clearable,
     super.key,
     super.focusNode,
     super.decoration,
@@ -262,6 +264,7 @@ class TxMultiPickerFieldTile<T, V> extends TxCommonTextFieldTile<List<T>> {
   TxMultiPickerFieldTile({
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
+    super.clearable,
     super.key,
     super.focusNode,
     super.decoration,
@@ -384,6 +387,7 @@ class TxMultiPickerFieldTile<T, V> extends TxCommonTextFieldTile<List<T>> {
   TxMultiPickerFieldTile.custom({
     required MultiPickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
+    super.clearable,
     super.key,
     super.focusNode,
     super.decoration,

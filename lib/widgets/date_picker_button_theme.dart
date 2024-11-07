@@ -9,30 +9,30 @@ import 'date_picker_button.dart';
 class TxDatePickerButtonThemeData
     extends ThemeExtension<TxDatePickerButtonThemeData> {
   const TxDatePickerButtonThemeData({
-    this.firstDate,
-    this.lastDate,
+    this.minimumDate,
+    this.maximumDate,
     this.showWeekDay,
     this.buttonStyle,
     this.format,
   });
 
-  final DateTime? firstDate;
-  final DateTime? lastDate;
+  final DateTime? minimumDate;
+  final DateTime? maximumDate;
   final bool? showWeekDay;
   final ButtonStyle? buttonStyle;
   final String? format;
 
   @override
   ThemeExtension<TxDatePickerButtonThemeData> copyWith({
-    DateTime? firstDate,
-    DateTime? lastDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     bool? showWeekDay,
     ButtonStyle? buttonStyle,
     String? format,
   }) {
     return TxDatePickerButtonThemeData(
-      firstDate: firstDate ?? this.firstDate,
-      lastDate: lastDate ?? this.lastDate,
+      minimumDate: minimumDate ?? this.minimumDate,
+      maximumDate: maximumDate ?? this.maximumDate,
       showWeekDay: showWeekDay ?? this.showWeekDay,
       buttonStyle: buttonStyle ?? this.buttonStyle,
       format: format ?? this.format,

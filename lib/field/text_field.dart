@@ -3,6 +3,7 @@ import 'common_text_field.dart';
 /// 文本输入框
 class TxTextField extends TxCommonTextField<String> {
   TxTextField({
+    super.clearable,
     super.key,
     super.focusNode,
     super.decoration,
@@ -77,6 +78,7 @@ class TxTextField extends TxCommonTextField<String> {
 /// field 为文本输入框的 [TxCommonTextFieldTile]
 class TxTextFieldTile extends TxCommonTextFieldTile<String> {
   TxTextFieldTile({
+    super.clearable,
     super.key,
     super.focusNode,
     super.decoration,

@@ -17,8 +17,8 @@ class DateRangePickerFormField extends TxDateRangePickerFormFieldTile {
   )
   DateRangePickerFormField({
     super.format,
-    super.firstDate,
-    super.lastDate,
+    super.minimumDate,
+    super.maximumDate,
     super.helpText,
     super.fieldStartHintText,
     super.fieldEndHintText,
@@ -56,7 +56,7 @@ class DateRangePickerFormField extends TxDateRangePickerFormFieldTile {
         );
 }
 
-const String _defaultFormat = 'yyyy/MM/dd\t——\tyyyy/MM/dd';
+const String _defaultFormat = 'yyyy/MM/dd\t—\tyyyy/MM/dd';
 
 /// builder 构建组件为日期范围选择框的 [FormField]
 class TxDateRangePickerFormField
@@ -73,8 +73,8 @@ class TxDateRangePickerFormField
     super.required,
     super.hintText,
     DateTimeRange? initialDateRange,
-    DateTime? firstDate,
-    DateTime? lastDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     String? helpText,
     String? fieldStartHintText,
     String? fieldEndHintText,
@@ -143,10 +143,10 @@ class TxDateRangePickerFormField
     super.magnifierConfiguration,
   }) : super.custom(
           initialValue: initialDateRange,
-          onPickTap: (context, range) => showDateRangePickerDialog(
+          onPickTap: (context, range) => showCupertinoDateRangePicker(
             context,
-            firstDate: firstDate,
-            lastDate: lastDate,
+            minimumDate: minimumDate,
+            maximumDate: maximumDate,
             initialDateRange: range,
             helpText: helpText,
             quickChoices: quickChoices,
@@ -173,8 +173,8 @@ class TxDateRangePickerFormFieldTile
     super.required,
     super.hintText,
     DateTimeRange? initialDateRange,
-    DateTime? firstDate,
-    DateTime? lastDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     String? helpText,
     String? fieldStartHintText,
     String? fieldEndHintText,
@@ -262,10 +262,10 @@ class TxDateRangePickerFormFieldTile
     super.magnifierConfiguration,
   }) : super.custom(
           initialValue: initialDateRange,
-          onPickTap: (context, range) => showDateRangePickerDialog(
+          onPickTap: (context, range) => showCupertinoDateRangePicker(
             context,
-            firstDate: firstDate,
-            lastDate: lastDate,
+            minimumDate: minimumDate,
+            maximumDate: maximumDate,
             initialDateRange: range,
             helpText: helpText,
             quickChoices: quickChoices,

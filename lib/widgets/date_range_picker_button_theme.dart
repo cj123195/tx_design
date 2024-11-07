@@ -10,27 +10,27 @@ import 'date_range_picker_button.dart';
 class TxDateRangePickerButtonThemeData
     extends ThemeExtension<TxDateRangePickerButtonThemeData> {
   const TxDateRangePickerButtonThemeData({
-    this.firstDate,
-    this.lastDate,
+    this.minimumDate,
+    this.maximumDate,
     this.buttonStyle,
     this.format,
   });
 
-  final DateTime? firstDate;
-  final DateTime? lastDate;
+  final DateTime? minimumDate;
+  final DateTime? maximumDate;
   final ButtonStyle? buttonStyle;
   final String? format;
 
   @override
   ThemeExtension<TxDateRangePickerButtonThemeData> copyWith({
-    DateTime? firstDate,
-    DateTime? lastDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     ButtonStyle? buttonStyle,
     String? format,
   }) {
     return TxDateRangePickerButtonThemeData(
-      firstDate: firstDate ?? this.firstDate,
-      lastDate: lastDate ?? this.lastDate,
+      minimumDate: minimumDate ?? this.minimumDate,
+      maximumDate: maximumDate ?? this.maximumDate,
       buttonStyle: buttonStyle ?? this.buttonStyle,
       format: format ?? this.format,
     );

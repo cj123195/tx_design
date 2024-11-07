@@ -5,6 +5,7 @@ import 'common_text_form_field.dart';
 /// [builder] 构建组件为文本输入框的 [TxCommonTextFormField]
 class TxTextFormField extends TxCommonTextFormField<String> {
   TxTextFormField({
+    super.clearable,
     super.key,
     super.onSaved,
     FormFieldValidator<String>? validator,
@@ -93,6 +94,7 @@ class TxTextFormField extends TxCommonTextFormField<String> {
 /// field 为文本输入框表单的 [TxCommonTextFormFieldTile]
 class TxTextFormFieldTile extends TxCommonTextFormFieldTile<String> {
   TxTextFormFieldTile({
+    super.clearable,
     super.key,
     super.onSaved,
     FormFieldValidator<String>? validator,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_range_extension.dart';
-import '../widgets/datetime_range_picker.dart';
+import '../widgets/date_range_picker.dart';
 import 'picker_form_field.dart';
 
-const String _defaultFormat = 'yyyy/MM/dd HH:mm\t——\tyyyy/MM/dd HH:mm';
+const String _defaultFormat = 'yyyy/MM/dd HH:mm\t—\tyyyy/MM/dd HH:mm';
 
 /// 日期+时间范围选择组件
 @Deprecated(
@@ -18,8 +18,8 @@ class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormFieldTile {
   )
   DatetimeRangePickerFormField({
     super.format = 'yyyy-MM-dd HH:mm',
-    super.firstDate,
-    super.lastDate,
+    super.minimumDate,
+    super.maximumDate,
     super.helpText,
     super.key,
     super.required,
@@ -69,8 +69,8 @@ class TxDatetimeRangePickerFormField
     super.required,
     super.hintText,
     DateTimeRange? initialDatetimeRange,
-    DateTime? firstDate,
-    DateTime? lastDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     String? helpText,
     String? titleText,
     String? format,
@@ -133,13 +133,13 @@ class TxDatetimeRangePickerFormField
     super.magnifierConfiguration,
   }) : super.custom(
           initialValue: initialDatetimeRange,
-          onPickTap: (context, range) => showDatetimeRangePicker(
+          onPickTap: (context, range) => showCupertinoDatetimeRangePicker(
             context,
-            firstDate: firstDate,
-            lastDate: lastDate,
+            minimumDate: minimumDate,
+            maximumDate: maximumDate,
             initialDatetimeRange: range,
-            noticeText: helpText,
-            title: titleText,
+            helpText: helpText,
+            titleText: titleText,
           ),
           displayTextMapper: (context, range) =>
               range.format(format ?? _defaultFormat),
@@ -161,8 +161,8 @@ class TxDatetimeRangePickerFormFieldTile
     super.required,
     super.hintText,
     DateTimeRange? initialDatetimeRange,
-    DateTime? firstDate,
-    DateTime? lastDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     String? helpText,
     String? titleText,
     String? format,
@@ -244,13 +244,13 @@ class TxDatetimeRangePickerFormFieldTile
     super.magnifierConfiguration,
   }) : super.custom(
           initialValue: initialDatetimeRange,
-          onPickTap: (context, range) => showDatetimeRangePicker(
+          onPickTap: (context, range) => showCupertinoDatetimeRangePicker(
             context,
-            firstDate: firstDate,
-            lastDate: lastDate,
+            minimumDate: minimumDate,
+            maximumDate: maximumDate,
             initialDatetimeRange: range,
-            noticeText: helpText,
-            title: titleText,
+            helpText: helpText,
+            titleText: titleText,
           ),
           displayTextMapper: (context, range) =>
               range.format(format ?? _defaultFormat),

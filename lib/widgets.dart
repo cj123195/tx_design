@@ -17,7 +17,6 @@ export 'widgets/date_picker_button_theme.dart';
 export 'widgets/date_range_picker.dart';
 export 'widgets/date_range_picker_button.dart';
 export 'widgets/date_range_picker_button_theme.dart';
-export 'widgets/datetime_range_picker.dart';
 export 'widgets/detail.dart';
 export 'widgets/detail_theme.dart';
 export 'widgets/dialog.dart';

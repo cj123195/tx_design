@@ -25,6 +25,13 @@ extension TimeOfDayExtension on TimeOfDay {
     return minute > time.minute;
   }
 
+  /// 判断时间差
+  Duration difference(TimeOfDay other) {
+    final Duration hoursDuration = Duration(hours: hour - other.hour);
+    final Duration minutesDuration = Duration(minutes: minute - other.hour);
+    return hoursDuration + minutesDuration;
+  }
+
   /// 是否为夜晚时间
   ///
   /// [sunrise] 日出时间，默认值为 TimeOfDay(hour: 6, minute: 0)

@@ -1,13 +1,16 @@
-import '../extensions/datetime_extension.dart';
-import '../widgets/date_picker.dart';
-import 'field_tile.dart';
+import 'package:flutter/material.dart';
+
+import '../widgets/date_range_picker.dart';
 import 'picker_field.dart';
 
-const String _defaultFormat = 'yyyy/MM/dd HH:mm';
+export '../widgets/date_range_picker.dart' show TimeRange;
 
-/// 日期时间选择框
-class TxDatetimePickerField extends TxPickerField<DateTime, String> {
-  TxDatetimePickerField({
+String _defaultFormat(BuildContext context, TimeRange timeRange) =>
+    '${timeRange.start.format(context)}\t-\t${timeRange.end.format(context)}';
+
+/// 时间段选择框
+class TxTimeRangePickerField extends TxPickerField<TimeRange, TimeRange> {
+  TxTimeRangePickerField({
     super.key,
     super.focusNode,
     super.decoration,
@@ -15,14 +18,13 @@ class TxDatetimePickerField extends TxPickerField<DateTime, String> {
     super.enabled,
     super.hintText,
     super.textAlign,
-    String? initialDatetimeStr,
-    DateTime? initialDatetime,
-    DateTime? minimumDate,
-    DateTime? maximumDate,
-    int? minimumYear,
-    int? maximumYear,
-    String? format,
-    String? titleText,
+    TimeRange? initialTimeRange,
+    TimeOfDay? minimumTime,
+    TimeOfDay? maximumTime,
+    String? helpText,
+    String? fieldStartHintText,
+    String? fieldEndHintText,
+    String Function(BuildContext context, TimeRange timeRange)? format,
     super.controller,
     super.undoController,
     super.keyboardType,
@@ -80,27 +82,24 @@ class TxDatetimePickerField extends TxPickerField<DateTime, String> {
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
   }) : super.custom(
-          initialValue: initialDatetime ??
-              (initialDatetimeStr == null
-                  ? null
-                  : DateTime.tryParse(initialDatetimeStr)),
-          onPickTap: (context, date) => showCupertinoDatetimePicker(
+          initialValue: initialTimeRange,
+          onPickTap: (context, range) => showCupertinoTimeRangePicker(
             context,
-            initialDateTime: date,
-            titleText: titleText,
-            minimumDate: minimumDate,
-            maximumDate: maximumDate,
-            minimumYear: minimumYear,
-            maximumYear: maximumYear,
+            minimumTime: minimumTime,
+            maximumTime: maximumTime,
+            initialTimeRange: range,
+            helpText: helpText,
+            fieldEndHintText: fieldEndHintText,
+            fieldStartHintText: fieldStartHintText,
           ),
-          displayTextMapper: (context, datetime) =>
-              datetime.format(format ?? _defaultFormat),
+          displayTextMapper: format ?? _defaultFormat,
         );
 }
 
-/// field 为日期时间选择框的 [TxFieldTile]
-class TxDatetimePickerFieldTile extends TxPickerFieldTile<DateTime, String> {
-  TxDatetimePickerFieldTile({
+/// field 为日期范围选择框的 [TxPickerFieldTile]
+class TxTimeRangePickerFieldTile
+    extends TxPickerFieldTile<TimeRange, TimeRange> {
+  TxTimeRangePickerFieldTile({
     super.key,
     super.focusNode,
     super.decoration,
@@ -108,14 +107,13 @@ class TxDatetimePickerFieldTile extends TxPickerFieldTile<DateTime, String> {
     super.enabled,
     super.hintText,
     super.textAlign,
-    String? initialDatetimeStr,
-    DateTime? initialDatetime,
-    DateTime? minimumDate,
-    DateTime? maximumDate,
-    int? minimumYear,
-    int? maximumYear,
-    String? format,
-    String? titleText,
+    TimeRange? initialTimeRange,
+    TimeOfDay? minimumTime,
+    TimeOfDay? maximumTime,
+    String? helpText,
+    String? fieldStartHintText,
+    String? fieldEndHintText,
+    String Function(BuildContext context, TimeRange timeRange)? format,
     super.labelBuilder,
     super.labelText,
     super.padding,
@@ -192,20 +190,16 @@ class TxDatetimePickerFieldTile extends TxPickerFieldTile<DateTime, String> {
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
   }) : super.custom(
-          initialValue: initialDatetime ??
-              (initialDatetimeStr == null
-                  ? null
-                  : DateTime.tryParse(initialDatetimeStr)),
-          onPickTap: (context, date) => showCupertinoDatetimePicker(
+          initialValue: initialTimeRange,
+          onPickTap: (context, range) => showCupertinoTimeRangePicker(
             context,
-            initialDateTime: date,
-            titleText: titleText ?? labelText,
-            minimumDate: minimumDate,
-            maximumDate: maximumDate,
-            minimumYear: minimumYear,
-            maximumYear: maximumYear,
+            minimumTime: minimumTime,
+            maximumTime: maximumTime,
+            initialTimeRange: range,
+            helpText: helpText,
+            fieldEndHintText: fieldEndHintText,
+            fieldStartHintText: fieldStartHintText,
           ),
-          displayTextMapper: (context, datetime) =>
-              datetime.format(format ?? _defaultFormat),
+          displayTextMapper: format ?? _defaultFormat,
         );
 }

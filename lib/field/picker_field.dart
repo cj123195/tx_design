@@ -37,6 +37,7 @@ class TxPickerField<T, V> extends TxCommonTextField<T> {
   TxPickerField({
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
+    super.clearable,
     ValueMapper<T, V?>? valueMapper,
     IndexedValueMapper<T, bool>? enabledMapper,
     T? initialData,
@@ -139,6 +140,7 @@ class TxPickerField<T, V> extends TxCommonTextField<T> {
   TxPickerField.custom({
     required PickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
+    super.clearable,
     super.key,
     super.focusNode,
     super.decoration,
@@ -255,6 +257,7 @@ class TxPickerFieldTile<T, V> extends TxCommonTextFieldTile<T> {
     super.decoration,
     super.onChanged,
     super.enabled,
+    super.clearable,
     String? hintText,
     super.textAlign,
     ValueMapper<T, V?>? valueMapper,
@@ -366,6 +369,7 @@ class TxPickerFieldTile<T, V> extends TxCommonTextFieldTile<T> {
   TxPickerFieldTile.custom({
     required PickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
+    super.clearable,
     super.key,
     super.focusNode,
     super.decoration,

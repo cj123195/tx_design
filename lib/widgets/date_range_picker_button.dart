@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
 import '../localizations.dart';
+import 'date_range_picker.dart';
 import 'date_range_picker_button_theme.dart';
 
 const String _defaultFormat = 'yyyy/MM/dd';
@@ -15,8 +16,8 @@ class TxDateRangePickerButton extends StatefulWidget {
     this.style,
     this.format,
     this.icon = const Icon(Icons.calendar_month, size: 16.0),
-    this.firstDate,
-    this.lastDate,
+    this.minimumDate,
+    this.maximumDate,
   });
 
   /// 初始选择时间区间
@@ -35,10 +36,10 @@ class TxDateRangePickerButton extends StatefulWidget {
   final Widget? icon;
 
   /// 最早可选择时间
-  final DateTime? firstDate;
+  final DateTime? minimumDate;
 
   /// 最早可选择时间
-  final DateTime? lastDate;
+  final DateTime? maximumDate;
 
   @override
   State<TxDateRangePickerButton> createState() =>
@@ -53,10 +54,10 @@ class _TxDateRangePickerButtonState extends State<TxDateRangePickerButton> {
     final TxDateRangePickerButtonThemeData buttonTheme =
         TxDateRangePickerButtonTheme.of(context);
 
-    final res = await showDateRangePicker(
-      context: context,
-      firstDate: widget.firstDate ?? buttonTheme.firstDate ?? DateTime(1970),
-      lastDate: widget.lastDate ?? buttonTheme.lastDate ?? DateTime.now(),
+    final res = await showCupertinoDateRangePicker(
+      context,
+      minimumDate: widget.minimumDate ?? buttonTheme.minimumDate,
+      maximumDate: widget.maximumDate ?? buttonTheme.maximumDate,
       initialDateRange: _range,
     );
     if (res != null && res != _range) {

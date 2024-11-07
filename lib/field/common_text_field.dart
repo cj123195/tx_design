@@ -20,6 +20,7 @@ typedef ContextValueMapper<T, V> = V Function(BuildContext context, T value);
 class TxCommonTextField<T> extends TxField<T> {
   TxCommonTextField({
     required this.displayTextMapper,
+    this.clearable,
     this.controller,
     super.key,
     super.initialValue,
@@ -88,15 +89,9 @@ class TxCommonTextField<T> extends TxField<T> {
     bool? canRequestFocus,
     InputValueChanged<T>? onInputChanged,
   })  : assert(controller == null || initialValue == null),
+        assert(T == String || readOnly == true || onInputChanged != null),
         super(builder: (field) {
           final state = field as TxCommonTextFieldState<T>;
-
-          void onChangedHandler(String value) {
-            field.didChange(value as T);
-            if (onChanged != null) {
-              onChanged(value as T);
-            }
-          }
 
           void onTapOutsideHandler(PointerDownEvent event) {
             if (onTapOutside != null) {
@@ -135,7 +130,7 @@ class TxCommonTextField<T> extends TxField<T> {
             maxLength: maxLength,
             maxLengthEnforcement: maxLengthEnforcement,
             onChanged: onInputChanged == null
-                ? onChangedHandler
+                ? (value) => field.didChange(value as T)
                 : (value) => onInputChanged(state, value),
             onEditingComplete: onEditingComplete,
             onSubmitted: onSubmitted,
@@ -178,11 +173,86 @@ class TxCommonTextField<T> extends TxField<T> {
           );
         });
 
+  const TxCommonTextField.custom({
+    required super.builder,
+    required this.displayTextMapper,
+    this.clearable,
+    this.controller,
+    super.key,
+    super.initialValue,
+    super.focusNode,
+    super.decoration,
+    super.onChanged,
+    super.enabled,
+    super.hintText,
+    super.textAlign,
+    TextInputType? keyboardType,
+    TextCapitalization? textCapitalization,
+    TextInputAction? textInputAction,
+    TextStyle? style,
+    StrutStyle? strutStyle,
+    TextDirection? textDirection,
+    TextAlignVertical? textAlignVertical,
+    bool? autofocus,
+    bool? readOnly,
+    bool? showCursor,
+    String? obscuringCharacter,
+    bool? obscureText,
+    bool? autocorrect,
+    SmartDashesType? smartDashesType,
+    SmartQuotesType? smartQuotesType,
+    bool? enableSuggestions,
+    MaxLengthEnforcement? maxLengthEnforcement,
+    int? maxLines,
+    int? minLines,
+    bool? expands,
+    int? maxLength,
+    bool? onTapAlwaysCalled,
+    TapRegionCallback? onTapOutside,
+    VoidCallback? onEditingComplete,
+    ValueChanged<String>? onSubmitted,
+    List<TextInputFormatter>? inputFormatters,
+    double? cursorWidth,
+    double? cursorHeight,
+    Radius? cursorRadius,
+    Color? cursorColor,
+    Color? cursorErrorColor,
+    Brightness? keyboardAppearance,
+    EdgeInsets? scrollPadding,
+    bool? enableInteractiveSelection,
+    TextSelectionControls? selectionControls,
+    ValueChanged<TxFieldState<T>>? onTap,
+    InputCounterWidgetBuilder? buildCounter,
+    ScrollPhysics? scrollPhysics,
+    Iterable<String>? autofillHints,
+    ScrollController? scrollController,
+    bool? enableIMEPersonalizedLearning,
+    MouseCursor? mouseCursor,
+    EditableTextContextMenuBuilder? contextMenuBuilder,
+    SpellCheckConfiguration? spellCheckConfiguration,
+    TextMagnifierConfiguration? magnifierConfiguration,
+    UndoHistoryController? undoController,
+    AppPrivateCommandCallback? onAppPrivateCommand,
+    bool? cursorOpacityAnimates,
+    ui.BoxHeightStyle? selectionHeightStyle,
+    ui.BoxWidthStyle? selectionWidthStyle,
+    DragStartBehavior? dragStartBehavior,
+    ContentInsertionConfiguration? contentInsertionConfiguration,
+    MaterialStatesController? statesController,
+    Clip? clipBehavior,
+    String? restorationId,
+    bool? scribbleEnabled,
+    bool? canRequestFocus,
+  }) : assert(controller == null || initialValue == null);
+
   /// 参考 [TextField.controller]
   final TextEditingController? controller;
 
   /// 输入框显示的文字生成器
   final ContextValueMapper<T, String> displayTextMapper;
+
+  /// 输入内容是否可清除
+  final bool? clearable;
 
   static Widget _defaultContextMenuBuilder(
     BuildContext context,
@@ -197,68 +267,27 @@ class TxCommonTextField<T> extends TxField<T> {
   TxCommonTextFieldState<T> createState() => TxCommonTextFieldState<T>();
 }
 
-class TxCommonTextFieldState<T> extends TxFieldState<T> {
-  TextEditingController? _controller;
-
-  TextEditingController? get controller => widget.controller ?? _controller;
-
-  String get displayText {
-    if (value == null) {
-      return '';
-    }
-    return widget.displayTextMapper(context, value as T);
-  }
-
+class TxCommonTextFieldState<T> extends TxFieldState<T>
+    with _TextEditingControllerMixin<T> {
   @override
   TxCommonTextField<T> get widget => super.widget as TxCommonTextField<T>;
 
   @override
-  void initState() {
-    super.initState();
-    if (widget.controller == null) {
-      _controller = TextEditingController(text: displayText);
-    }
-  }
+  bool? get _clearable => widget.clearable;
 
   @override
-  void didUpdateWidget(covariant TxCommonTextField<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.controller == null) {
-      if (oldWidget.controller != null) {
-        _controller =
-            TextEditingController.fromValue(oldWidget.controller!.value);
-      } else {
-        if (widget.initialValue == null && _controller!.text.isNotEmpty) {
-          _controller!.clear();
-        } else {
-          final String text = displayText;
-          if (text != _controller!.text) {
-            _controller!.text = text;
-          }
-        }
-      }
-    } else if (oldWidget.controller == null) {
-      _controller!.dispose();
-      _controller = null;
-    }
-  }
+  ContextValueMapper<T, String> get _displayTextMapper =>
+      widget.displayTextMapper;
 
   @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.builder(this);
-  }
+  TextEditingController? get _widgetController => widget.controller;
 }
 
 /// 输入框样式的 [TxFieldTile]
 class TxCommonTextFieldTile<T> extends TxFieldTile<T> {
   TxCommonTextFieldTile({
     required this.displayTextMapper,
+    this.clearable,
     super.key,
     super.initialValue,
     super.focusNode,
@@ -346,15 +375,9 @@ class TxCommonTextFieldTile<T> extends TxFieldTile<T> {
     InputValueChanged<T>? onInputChanged,
     ValueChanged<TxFieldState<T>>? onTap,
   })  : assert(controller == null || initialValue == null),
+        assert(T == String || readOnly == true || onInputChanged != null),
         super(fieldBuilder: (field) {
           final state = field as TxCommonTextFieldTileState<T>;
-
-          void onChangedHandler(String value) {
-            field.didChange(value as T);
-            if (onChanged != null) {
-              onChanged(value as T);
-            }
-          }
 
           void onTapOutsideHandler(PointerDownEvent event) {
             if (onTapOutside != null) {
@@ -393,7 +416,7 @@ class TxCommonTextFieldTile<T> extends TxFieldTile<T> {
             maxLength: maxLength,
             maxLengthEnforcement: maxLengthEnforcement,
             onChanged: onInputChanged == null
-                ? onChangedHandler
+                ? (value) => field.didChange(value as T)
                 : (value) => onInputChanged(state, value),
             onEditingComplete: onEditingComplete,
             onSubmitted: onSubmitted,
@@ -436,45 +459,180 @@ class TxCommonTextFieldTile<T> extends TxFieldTile<T> {
           );
         });
 
+  const TxCommonTextFieldTile.custom({
+    required super.fieldBuilder,
+    required this.displayTextMapper,
+    this.clearable,
+    super.key,
+    super.initialValue,
+    super.focusNode,
+    super.decoration,
+    super.onChanged,
+    super.hintText,
+    super.textAlign,
+    super.labelBuilder,
+    super.labelText,
+    super.padding,
+    super.actionsBuilder,
+    super.labelStyle,
+    super.horizontalGap,
+    super.tileColor,
+    super.layoutDirection,
+    super.trailingBuilder,
+    super.leading,
+    super.visualDensity,
+    super.shape,
+    super.iconColor,
+    super.textColor,
+    super.leadingAndTrailingTextStyle,
+    super.enabled,
+    super.minLeadingWidth,
+    super.minLabelWidth,
+    super.minVerticalPadding,
+    super.dense,
+    this.controller,
+    TextInputType? keyboardType,
+    TextCapitalization? textCapitalization,
+    TextInputAction? textInputAction,
+    TextStyle? style,
+    StrutStyle? strutStyle,
+    TextDirection? textDirection,
+    TextAlignVertical? textAlignVertical,
+    bool? autofocus,
+    bool? readOnly,
+    bool? showCursor,
+    String? obscuringCharacter,
+    bool? obscureText,
+    bool? autocorrect,
+    SmartDashesType? smartDashesType,
+    SmartQuotesType? smartQuotesType,
+    bool? enableSuggestions,
+    MaxLengthEnforcement? maxLengthEnforcement,
+    int? maxLines,
+    int? minLines,
+    bool? expands,
+    int? maxLength,
+    bool? onTapAlwaysCalled,
+    TapRegionCallback? onTapOutside,
+    VoidCallback? onEditingComplete,
+    ValueChanged<String>? onSubmitted,
+    List<TextInputFormatter>? inputFormatters,
+    double? cursorWidth,
+    double? cursorHeight,
+    Radius? cursorRadius,
+    Color? cursorColor,
+    Color? cursorErrorColor,
+    Brightness? keyboardAppearance,
+    EdgeInsets? scrollPadding,
+    bool? enableInteractiveSelection,
+    TextSelectionControls? selectionControls,
+    InputCounterWidgetBuilder? buildCounter,
+    ScrollPhysics? scrollPhysics,
+    Iterable<String>? autofillHints,
+    ScrollController? scrollController,
+    bool? enableIMEPersonalizedLearning,
+    MouseCursor? mouseCursor,
+    EditableTextContextMenuBuilder? contextMenuBuilder,
+    SpellCheckConfiguration? spellCheckConfiguration,
+    TextMagnifierConfiguration? magnifierConfiguration,
+    UndoHistoryController? undoController,
+    AppPrivateCommandCallback? onAppPrivateCommand,
+    bool? cursorOpacityAnimates,
+    ui.BoxHeightStyle? selectionHeightStyle,
+    ui.BoxWidthStyle? selectionWidthStyle,
+    DragStartBehavior? dragStartBehavior,
+    ContentInsertionConfiguration? contentInsertionConfiguration,
+    MaterialStatesController? statesController,
+    Clip? clipBehavior,
+    String? restorationId,
+    bool? scribbleEnabled,
+    bool? canRequestFocus,
+    InputValueChanged<T>? onInputChanged,
+    ValueChanged<TxFieldState<T>>? onTap,
+  }) : assert(controller == null || initialValue == null);
+
   /// 参考 [TextField.controller]
   final TextEditingController? controller;
 
   /// 输入框显示的文字生成器
   final ContextValueMapper<T, String> displayTextMapper;
 
+  /// 输入内容是否可清除
+  final bool? clearable;
+
   @override
   TxCommonTextFieldTileState<T> createState() =>
       TxCommonTextFieldTileState<T>();
 }
 
-class TxCommonTextFieldTileState<T> extends TxFieldState<T> {
+class TxCommonTextFieldTileState<T> extends TxFieldState<T>
+    with _TextEditingControllerMixin<T> {
+  @override
+  TxCommonTextFieldTile<T> get widget =>
+      super.widget as TxCommonTextFieldTile<T>;
+
+  @override
+  ContextValueMapper<T, String> get _displayTextMapper =>
+      widget.displayTextMapper;
+
+  @override
+  TextEditingController? get _widgetController => widget.controller;
+
+  @override
+  bool? get _clearable => widget.clearable;
+}
+
+mixin _TextEditingControllerMixin<T> on TxFieldState<T> {
+  TextEditingController? get _widgetController;
+
   TextEditingController? _controller;
 
-  TextEditingController? get controller => widget.controller ?? _controller;
+  TextEditingController? get controller => _widgetController ?? _controller;
+
+  ContextValueMapper<T, String> get _displayTextMapper;
 
   String get displayText {
     if (value == null) {
       return '';
     }
-    return widget.displayTextMapper(context, value as T);
+    return _displayTextMapper(context, value as T);
+  }
+
+  bool? get _clearable;
+
+  @override
+  InputDecoration get effectiveDecoration {
+    InputDecoration decoration = super.effectiveDecoration;
+    if (_clearable != false && isEmpty) {
+      final clearButton = IconButton(
+        onPressed: () => didChange(null),
+        icon: const Icon(Icons.clear, size: 16.0),
+      );
+      decoration = decoration.copyWith(
+        suffixIcon: decoration.suffixIcon == null
+            ? clearButton
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [decoration.suffixIcon!, clearButton],
+              ),
+      );
+    }
+    return decoration;
   }
 
   @override
   void didChange(T? value) {
     super.didChange(value);
+
     if (displayText != controller?.text) {
       controller?.text = displayText;
     }
   }
 
   @override
-  TxCommonTextFieldTile<T> get widget =>
-      super.widget as TxCommonTextFieldTile<T>;
-
-  @override
   void initState() {
     super.initState();
-    if (widget.controller == null) {
+    if (_widgetController == null) {
       _controller = TextEditingController(text: displayText);
     }
   }
@@ -482,7 +640,7 @@ class TxCommonTextFieldTileState<T> extends TxFieldState<T> {
   @override
   void didUpdateWidget(covariant TxCommonTextField<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.controller == null) {
+    if (_widgetController == null) {
       if (oldWidget.controller != null) {
         _controller =
             TextEditingController.fromValue(oldWidget.controller!.value);

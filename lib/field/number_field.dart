@@ -1,11 +1,14 @@
-import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
-import '../utils/basic_types.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'common_text_field.dart';
 
 /// 数字输入框
-class TxNumberField<T extends num> extends TxCommonTextField<T> {
+class TxNumberField extends TxCommonTextField<num> {
   TxNumberField({
+    bool? clearable,
     super.key,
     super.initialValue,
     super.focusNode,
@@ -15,9 +18,10 @@ class TxNumberField<T extends num> extends TxCommonTextField<T> {
     super.hintText = '请输入',
     this.maxValue,
     this.minValue,
-    bool? autodecrement,
-    this.autodecrementDifference,
-    ValueMapper<String, T>? format,
+    bool? stepped,
+    this.step,
+    int? precision,
+    bool? stepStrictly,
     super.controller,
     super.undoController,
     super.textInputAction,
@@ -45,7 +49,7 @@ class TxNumberField<T extends num> extends TxCommonTextField<T> {
     super.onEditingComplete,
     super.onSubmitted,
     super.onAppPrivateCommand,
-    super.inputFormatters,
+    List<TextInputFormatter>? inputFormatters,
     super.cursorWidth,
     super.cursorHeight,
     super.cursorRadius,
@@ -76,53 +80,53 @@ class TxNumberField<T extends num> extends TxCommonTextField<T> {
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-  })  : autodecrement = autodecrement ?? false,
+  })  : stepped = stepped ?? false,
         super(
+          clearable: clearable ?? false,
           displayTextMapper: (context, val) => val.toString(),
           keyboardType: TextInputType.number,
-          textAlign:
-              textAlign ?? (autodecrement == true ? TextAlign.center : null),
-          onInputChanged: (field, val) => field.didChange(val.isEmpty
-              ? null
-              : format == null
-                  ? _format(val)
-                  : format(val)),
+          textAlign: textAlign ?? (stepped == true ? TextAlign.center : null),
+          onInputChanged: (field, val) => field.didChange(num.tryParse(val)),
+          inputFormatters: [
+            ...?inputFormatters,
+            NumberInputFormatter(
+              min: minValue,
+              max: maxValue,
+              precision: precision,
+              step: step,
+              stepStrictly: stepStrictly,
+            ),
+          ],
         );
 
-  static T? _format<T extends num>(String val) => T == int
-      ? int.tryParse(val, radix: 10) as T
-      : T == double
-          ? double.tryParse(val) as T
-          : num.tryParse(val) as T;
-
   /// 可输入的最大值
-  final T? maxValue;
+  final num? maxValue;
 
   /// 可输入的最小值
-  final T? minValue;
+  final num? minValue;
 
-  /// 是否允许自增自减
+  /// 是否允许步进
   ///
   /// 值为 true 时，输入框前后会显示加减按钮
   ///
   /// 默认值为 false
-  final bool autodecrement;
+  final bool stepped;
 
-  /// 每一次自增自减的差值
-  final T? autodecrementDifference;
+  /// 步进值
+  final num? step;
 
   @override
-  TxCommonTextFieldState<T> createState() => _TxNumberFieldState<T>();
+  TxCommonTextFieldState<num> createState() => _TxNumberFieldState();
 }
 
-class _TxNumberFieldState<T extends num> extends TxCommonTextFieldState<T> {
+class _TxNumberFieldState extends TxCommonTextFieldState<num> {
   @override
-  TxNumberField<T> get widget => super.widget as TxNumberField<T>;
+  TxNumberField get widget => super.widget as TxNumberField;
 
   @override
   InputDecoration get effectiveDecoration {
-    if (widget.autodecrement == true) {
-      void changeValue(T value) {
+    if (widget.stepped == true) {
+      void changeValue(num value) {
         controller?.text = value.toString();
         didChange(value);
       }
@@ -132,14 +136,13 @@ class _TxNumberFieldState<T extends num> extends TxCommonTextFieldState<T> {
         padding: EdgeInsets.zero,
       );
 
-      final T effectiveValue = (value ?? 0) as T;
-      final T diff = (widget.autodecrementDifference ?? 1) as T;
+      final num effectiveValue = value ?? 0;
+      final num diff = widget.step ?? 1;
 
       final bool canAdd =
           widget.maxValue == null || effectiveValue < widget.maxValue!;
       final Widget suffixIcon = IconButton(
-        onPressed:
-            canAdd ? () => changeValue((effectiveValue + diff) as T) : null,
+        onPressed: canAdd ? () => changeValue(effectiveValue + diff) : null,
         icon: const Icon(Icons.add),
         style: style,
       );
@@ -147,8 +150,7 @@ class _TxNumberFieldState<T extends num> extends TxCommonTextFieldState<T> {
       final bool canRemove =
           widget.minValue == null || effectiveValue > widget.minValue!;
       final Widget prefixIcon = IconButton(
-        onPressed:
-            canRemove ? () => changeValue((effectiveValue + diff) as T) : null,
+        onPressed: canRemove ? () => changeValue(effectiveValue + diff) : null,
         icon: const Icon(Icons.remove),
         style: style,
       );
@@ -164,8 +166,9 @@ class _TxNumberFieldState<T extends num> extends TxCommonTextFieldState<T> {
 }
 
 /// field 为文本输入框的 [TxCommonTextFieldTile]
-class TxNumberFieldTile<T extends num> extends TxCommonTextFieldTile<T> {
+class TxNumberFieldTile extends TxCommonTextFieldTile<num> {
   TxNumberFieldTile({
+    bool? clearable,
     super.key,
     super.initialValue,
     super.focusNode,
@@ -175,9 +178,10 @@ class TxNumberFieldTile<T extends num> extends TxCommonTextFieldTile<T> {
     super.hintText = '请输入',
     this.maxValue,
     this.minValue,
-    bool? autodecrement,
-    this.autodecrementDifference,
-    ValueMapper<String, T>? format,
+    bool? stepped,
+    this.step,
+    int? precision,
+    bool? stepStrictly,
     super.labelBuilder,
     super.labelText,
     super.padding,
@@ -225,7 +229,7 @@ class TxNumberFieldTile<T extends num> extends TxCommonTextFieldTile<T> {
     super.onEditingComplete,
     super.onSubmitted,
     super.onAppPrivateCommand,
-    super.inputFormatters,
+    List<TextInputFormatter>? inputFormatters,
     super.cursorWidth,
     super.cursorHeight,
     super.cursorRadius,
@@ -255,54 +259,53 @@ class TxNumberFieldTile<T extends num> extends TxCommonTextFieldTile<T> {
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-  })  : autodecrement = autodecrement ?? false,
+  })  : stepped = stepped ?? false,
         super(
+          clearable: clearable ?? false,
           displayTextMapper: (context, val) => val.toString(),
           keyboardType: TextInputType.number,
-          textAlign:
-              textAlign ?? (autodecrement == true ? TextAlign.center : null),
-          onInputChanged: (field, val) => field.didChange(val.isEmpty
-              ? null
-              : format == null
-                  ? _format(val)
-                  : format(val)),
+          textAlign: textAlign ?? (stepped == true ? TextAlign.center : null),
+          onInputChanged: (field, val) => field.didChange(num.tryParse(val)),
+          inputFormatters: [
+            ...?inputFormatters,
+            NumberInputFormatter(
+              min: minValue,
+              max: maxValue,
+              precision: precision,
+              step: step,
+              stepStrictly: stepStrictly,
+            ),
+          ],
         );
 
-  static T? _format<T extends num>(String val) => T == int
-      ? int.tryParse(val, radix: 10) as T
-      : T == double
-          ? double.tryParse(val) as T
-          : num.tryParse(val) as T;
-
   /// 可输入的最大值
-  final T? maxValue;
+  final num? maxValue;
 
   /// 可输入的最小值
-  final T? minValue;
+  final num? minValue;
 
-  /// 是否允许自增自减
+  /// 是否允许步进
   ///
   /// 值为 true 时，输入框前后会显示加减按钮
   ///
   /// 默认值为 false
-  final bool autodecrement;
+  final bool stepped;
 
-  /// 每一次自增自减的差值
-  final T? autodecrementDifference;
+  /// 步进值
+  final num? step;
 
   @override
-  TxCommonTextFieldTileState<T> createState() => _TxNumberFieldTileState<T>();
+  TxCommonTextFieldTileState<num> createState() => _TxNumberFieldTileState();
 }
 
-class _TxNumberFieldTileState<T extends num>
-    extends TxCommonTextFieldTileState<T> {
+class _TxNumberFieldTileState extends TxCommonTextFieldTileState<num> {
   @override
-  TxNumberFieldTile<T> get widget => super.widget as TxNumberFieldTile<T>;
+  TxNumberFieldTile get widget => super.widget as TxNumberFieldTile;
 
   @override
   InputDecoration get effectiveDecoration {
-    if (widget.autodecrement == true) {
-      void changeValue(T value) {
+    if (widget.stepped == true) {
+      void changeValue(num value) {
         controller?.text = value.toString();
         didChange(value);
       }
@@ -312,14 +315,13 @@ class _TxNumberFieldTileState<T extends num>
         padding: EdgeInsets.zero,
       );
 
-      final T effectiveValue = (value ?? 0) as T;
-      final T diff = (widget.autodecrementDifference ?? 1) as T;
+      final num effectiveValue = value ?? 0;
+      final num diff = widget.step ?? 1;
 
       final bool canAdd =
           widget.maxValue == null || effectiveValue < widget.maxValue!;
       final Widget suffixIcon = IconButton(
-        onPressed:
-            canAdd ? () => changeValue((effectiveValue + diff) as T) : null,
+        onPressed: canAdd ? () => changeValue(effectiveValue + diff) : null,
         icon: const Icon(Icons.add),
         style: style,
       );
@@ -327,8 +329,7 @@ class _TxNumberFieldTileState<T extends num>
       final bool canRemove =
           widget.minValue == null || effectiveValue > widget.minValue!;
       final Widget prefixIcon = IconButton(
-        onPressed:
-            canRemove ? () => changeValue((effectiveValue + diff) as T) : null,
+        onPressed: canRemove ? () => changeValue(effectiveValue + diff) : null,
         icon: const Icon(Icons.remove),
         style: style,
       );
@@ -340,5 +341,98 @@ class _TxNumberFieldTileState<T extends num>
     }
 
     return super.effectiveDecoration;
+  }
+}
+
+class NumberInputFormatter extends TextInputFormatter {
+  NumberInputFormatter({
+    this.min,
+    this.max,
+    num? step,
+    this.precision,
+    bool? stepStrictly,
+  })  : step = step ?? 1,
+        assert(
+          precision == null || precision > 0,
+          'precision 的值必须是一个非负整数',
+        ),
+        assert(
+          min == null || max == null || min <= max,
+          'min 必须小于或等于 max',
+        ),
+        stepStrictly = stepStrictly ?? false;
+
+  /// 最小可输入值
+  final num? min;
+
+  /// 最大可输入值
+  final num? max;
+
+  /// 步进值
+  ///
+  /// 默认值为 1。
+  final num step;
+
+  /// 输入精度
+  final int? precision;
+
+  /// 是否严格步进
+  ///
+  /// 值为 true 且 [step] 不为 null 时则只能输入 [step] 的倍数。
+  final bool stepStrictly;
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    assert(
+      min == null ||
+          max == null ||
+          !stepStrictly ||
+          (min! % step == 0 && max! % step == 0),
+      '当严格步进时，min 和 max 都应是 step 的整数倍',
+    );
+    assert(
+      precision == null ||
+          !step.toString().contains('.') ||
+          precision! >= step.toString().split('.').length,
+      '当 step 和 precision 均不为 null 时，precision 并且不能小于 step 的小数位数',
+    );
+
+    num? value = num.tryParse(newValue.text);
+    if (value == null) {
+      return const TextEditingValue();
+    }
+
+    if (min != null && value < min!) {
+      value = min!;
+    }
+
+    if (max != null && value > max!) {
+      value = max!;
+    }
+
+    if (stepStrictly && value % step != 0) {
+      value = (value ~/ step) * step;
+    }
+
+    final String text = precision == null
+        ? value.toString()
+        : value.toStringAsFixed(precision!);
+    return TextEditingValue(
+      text: text,
+      selection: newValue.selection.copyWith(
+        baseOffset: math.min(newValue.selection.start, text.length),
+        extentOffset: math.min(newValue.selection.end, text.length),
+      ),
+      composing: !newValue.composing.isCollapsed &&
+              text.length > newValue.composing.start
+          ? TextRange(
+              start: newValue.composing.start,
+              end: math.min(newValue.composing.end, text.length),
+            )
+          : TextRange.empty,
+    );
   }
 }

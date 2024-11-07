@@ -4,16 +4,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../field/common_text_field.dart';
 import '../field/field.dart';
+import '../field/password_field.dart';
 import 'form_field.dart';
 import 'form_field_tile.dart';
 
 /// 通用 [builder] 构建组件为输入框样式的 [FormField]
-class TxCommonTextFormField<T> extends TxFormField<T> {
-  TxCommonTextFormField({
-    required ContextValueMapper<T, String> displayTextMapper,
-    InputValueChanged<T>? onInputChanged,
+class TxPasswordFormField extends TxFormField<String> {
+  TxPasswordFormField({
     super.key,
     super.onSaved,
     super.validator,
@@ -24,7 +22,7 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
     super.onChanged,
     super.required,
     super.initialValue,
-    bool? clearable,
+    bool? switchEnabled,
     TextEditingController? controller,
     FocusNode? focusNode,
     TextInputType? keyboardType,
@@ -49,7 +47,7 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
     int? minLines,
     bool? expands,
     int? maxLength,
-    ValueChanged<TxFieldState<T>>? onTap,
+    ValueChanged<TxFieldState<String>>? onTap,
     bool? onTapAlwaysCalled,
     TapRegionCallback? onTapOutside,
     VoidCallback? onEditingComplete,
@@ -85,33 +83,13 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
     bool? scribbleEnabled,
     bool? canRequestFocus,
     String? hintText,
-  })  : assert(initialValue == null || controller == null),
-        assert(controller == null || T == String),
-        assert(obscuringCharacter == null || obscuringCharacter.length == 1),
-        assert(maxLines == null || maxLines > 0),
-        assert(minLines == null || minLines > 0),
-        assert(
-          (maxLines == null) || (minLines == null) || (maxLines >= minLines),
-          "minLines can't be greater than maxLines",
-        ),
-        assert(
-          expands != true || (maxLines == null && minLines == null),
-          'minLines and maxLines must be null when expands is true.',
-        ),
-        assert(obscureText != true || maxLines == 1,
-            'Obscured fields cannot be multiline.'),
-        assert(maxLength == null ||
-            maxLength == TextField.noMaxLength ||
-            maxLength > 0),
-        super(
-          builder: (TxFormFieldState<T> field) {
+  }) : super(
+          builder: (TxFormFieldState<String> field) {
             return UnmanagedRestorationScope(
               bucket: field.bucket,
-              child: TxCommonTextField<T>(
-                clearable: clearable,
+              child: TxPasswordField(
+                switchEnabled: switchEnabled,
                 hintText: hintText,
-                displayTextMapper: displayTextMapper,
-                onInputChanged: onInputChanged,
                 initialValue: field.value,
                 controller: controller,
                 focusNode: focusNode,
@@ -183,10 +161,8 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
 }
 
 /// 通用 field 构建组件为输入框样式的 [TxFormFieldTile]
-class TxCommonTextFormFieldTile<T> extends TxFormFieldTile<T> {
-  TxCommonTextFormFieldTile({
-    required ContextValueMapper<T, String> displayTextMapper,
-    InputValueChanged<T>? onInputChanged,
+class TxPasswordFormFieldTile extends TxFormFieldTile<String> {
+  TxPasswordFormFieldTile({
     super.key,
     super.onSaved,
     super.validator,
@@ -197,7 +173,7 @@ class TxCommonTextFormFieldTile<T> extends TxFormFieldTile<T> {
     super.onChanged,
     super.required,
     super.initialValue,
-    bool? clearable,
+    bool? switchEnabled,
     String? hintText,
     TextEditingController? controller,
     FocusNode? focusNode,
@@ -223,7 +199,7 @@ class TxCommonTextFormFieldTile<T> extends TxFormFieldTile<T> {
     int? minLines,
     bool? expands,
     int? maxLength,
-    ValueChanged<TxFieldState<T>>? onTap,
+    ValueChanged<TxFieldState<String>>? onTap,
     bool? onTapAlwaysCalled,
     TapRegionCallback? onTapOutside,
     VoidCallback? onEditingComplete,
@@ -278,30 +254,11 @@ class TxCommonTextFormFieldTile<T> extends TxFormFieldTile<T> {
     super.minVerticalPadding,
     super.dense,
   })  : assert(initialValue == null || controller == null),
-        assert(controller == null || T == String),
-        assert(obscuringCharacter == null || obscuringCharacter.length == 1),
-        assert(maxLines == null || maxLines > 0),
-        assert(minLines == null || minLines > 0),
-        assert(
-          (maxLines == null) || (minLines == null) || (maxLines >= minLines),
-          "minLines can't be greater than maxLines",
-        ),
-        assert(
-          expands != true || (maxLines == null && minLines == null),
-          'minLines and maxLines must be null when expands is true.',
-        ),
-        assert(obscureText != true || maxLines == 1,
-            'Obscured fields cannot be multiline.'),
-        assert(maxLength == null ||
-            maxLength == TextField.noMaxLength ||
-            maxLength > 0),
         super(
           fieldBuilder: (field) {
-            return TxCommonTextField<T>(
-              clearable: clearable,
+            return TxPasswordField(
+              switchEnabled: switchEnabled,
               hintText: hintText,
-              displayTextMapper: displayTextMapper,
-              onInputChanged: onInputChanged,
               initialValue: field.value,
               controller: controller,
               focusNode: focusNode,

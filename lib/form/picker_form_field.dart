@@ -121,6 +121,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
   TxPickerFormField({
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
+    super.clearable,
     super.key,
     super.onSaved,
     FormFieldValidator<T>? validator,
@@ -222,6 +223,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
   TxPickerFormField.custom({
     required PickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
+    super.clearable,
     super.key,
     super.onSaved,
     FormFieldValidator<T>? validator,
@@ -325,6 +327,7 @@ class TxPickerFormFieldTile<T, V> extends TxCommonTextFormFieldTile<T> {
   TxPickerFormFieldTile({
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
+    super.clearable,
     super.key,
     super.onSaved,
     FormFieldValidator<T>? validator,
@@ -446,6 +449,7 @@ class TxPickerFormFieldTile<T, V> extends TxCommonTextFormFieldTile<T> {
   TxPickerFormFieldTile.custom({
     required PickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
+    super.clearable,
     super.key,
     super.onSaved,
     FormFieldValidator<T>? validator,

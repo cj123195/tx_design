@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
 import '../localizations.dart';
+import 'date_picker.dart';
 
 /// 日期选择栏
 class TxDatePickerBar extends StatefulWidget implements PreferredSizeWidget {
@@ -10,8 +11,8 @@ class TxDatePickerBar extends StatefulWidget implements PreferredSizeWidget {
     this.initialDate,
     this.onDateChange,
     this.format,
-    this.firstDate,
-    this.lastDate,
+    this.minimumDate,
+    this.maximumDate,
   });
 
   /// 初始日期
@@ -24,10 +25,10 @@ class TxDatePickerBar extends StatefulWidget implements PreferredSizeWidget {
   final String? format;
 
   /// 最早可选日期
-  final DateTime? firstDate;
+  final DateTime? minimumDate;
 
   /// 最晚可选日期
-  final DateTime? lastDate;
+  final DateTime? maximumDate;
 
   @override
   State<TxDatePickerBar> createState() => _TxDatePickerBar();
@@ -48,11 +49,11 @@ class _TxDatePickerBar extends State<TxDatePickerBar> {
 
   /// 选择日期
   Future<void> _showDatePicker() async {
-    final DateTime? date = await showDatePicker(
-      context: context,
+    final DateTime? date = await showCupertinoDatePicker(
+      context,
       initialDate: _date,
-      firstDate: widget.firstDate ?? DateTime(1970),
-      lastDate: widget.lastDate ?? DateTime.now().addYears(3),
+      minimumDate: widget.minimumDate ?? DateTime(1970),
+      maximumDate: widget.maximumDate ?? DateTime.now().addYears(3),
     );
     if (date != null) {
       _onDateSelected(date);

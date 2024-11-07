@@ -5,7 +5,7 @@ import '../widgets/date_range_picker.dart';
 import 'field_tile.dart';
 import 'picker_field.dart';
 
-const String _defaultFormat = 'yyyy/MM/dd\t——\tyyyy/MM/dd';
+const String _defaultFormat = 'yyyy/MM/dd\t—\tyyyy/MM/dd';
 
 /// 日期范围选择框
 class TxDateRangePickerField extends TxPickerField<DateTimeRange, String> {
@@ -18,8 +18,8 @@ class TxDateRangePickerField extends TxPickerField<DateTimeRange, String> {
     super.hintText,
     super.textAlign,
     DateTimeRange? initialDateRange,
-    DateTime? firstDate,
-    DateTime? lastDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     String? helpText,
     String? fieldStartHintText,
     String? fieldEndHintText,
@@ -87,10 +87,10 @@ class TxDateRangePickerField extends TxPickerField<DateTimeRange, String> {
     super.magnifierConfiguration,
   }) : super.custom(
           initialValue: initialDateRange,
-          onPickTap: (context, range) => showDateRangePickerDialog(
+          onPickTap: (context, range) => showCupertinoDateRangePicker(
             context,
-            firstDate: firstDate,
-            lastDate: lastDate,
+            minimumDate: minimumDate,
+            maximumDate: maximumDate,
             initialDateRange: range,
             helpText: helpText,
             quickChoices: quickChoices,
@@ -114,8 +114,8 @@ class TxDateRangePickerFieldTile
     super.hintText,
     super.textAlign,
     DateTimeRange? initialDateRange,
-    DateTime? firstDate,
-    DateTime? lastDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     String? helpText,
     String? fieldStartHintText,
     String? fieldEndHintText,
@@ -202,10 +202,10 @@ class TxDateRangePickerFieldTile
     super.magnifierConfiguration,
   }) : super.custom(
           initialValue: initialDateRange,
-          onPickTap: (context, range) => showDateRangePickerDialog(
+          onPickTap: (context, range) => showCupertinoDateRangePicker(
             context,
-            firstDate: firstDate,
-            lastDate: lastDate,
+            minimumDate: minimumDate,
+            maximumDate: maximumDate,
             initialDateRange: range,
             helpText: helpText,
             quickChoices: quickChoices,
