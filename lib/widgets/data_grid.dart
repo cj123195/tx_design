@@ -39,6 +39,7 @@ class TxDataGrid extends StatelessWidget {
     EdgeInsetsGeometry? rowPadding,
     Decoration? rowDecoration,
     double? columnSpacing,
+    int? contentMaxLines,
   })  : assert(columnNum > 0),
         rows = columnNum == 1
             ? TxCell.fromMap(
@@ -53,6 +54,7 @@ class TxDataGrid extends StatelessWidget {
                 labelTextStyle: labelTextStyle,
                 contentTextStyle: contentTextStyle,
                 contentTextAlign: contentTextAlign,
+                contentMaxLines: contentMaxLines,
               )
             : TxDataRow.fromMap(
                 data,
@@ -68,6 +70,7 @@ class TxDataGrid extends StatelessWidget {
                 labelTextStyle: labelTextStyle,
                 contentTextStyle: contentTextStyle,
                 contentTextAlign: contentTextAlign,
+                contentMaxLines: contentMaxLines,
               );
 
   /// 创建由[data]参数派生出的描述数据表的小组件。
@@ -224,6 +227,7 @@ class TxDataRow extends StatelessWidget {
     EdgeInsetsGeometry? padding,
     Decoration? decoration,
     double? spacing,
+    int? contentMaxLines,
   }) {
     final List<Widget> cells = TxCell.fromMap(
       data,
@@ -238,6 +242,7 @@ class TxDataRow extends StatelessWidget {
       contentTextStyle: contentTextStyle,
       contentTextAlign: contentTextAlign,
       padding: EdgeInsets.zero,
+      contentMaxLines: contentMaxLines,
     );
 
     final int last = cells.length;
