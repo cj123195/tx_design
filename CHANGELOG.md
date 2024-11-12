@@ -1,3 +1,7 @@
+# 0.2.12
+* Add contentMaxLines parameter to TxDataGrid.fromMap constructor and TxDataRow.fromMap method.
+* Fix issue that TxCell widget did not calculate the height correctly..
+
 # 0.2.11
 * Fix the issue that TxDataRow.fromMap displaying incorrectly.
 * Delete charts.
