@@ -553,7 +553,8 @@ class _RenderCell extends RenderBox
     if (content == null) {
       return result;
     }
-    return math.max(result, content!.getMinIntrinsicHeight(width));
+    final labelWidth = label!.getMinIntrinsicWidth(result);
+    return math.max(result, content!.getMinIntrinsicHeight(width - labelWidth));
   }
 
   @override
