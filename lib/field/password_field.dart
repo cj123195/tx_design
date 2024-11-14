@@ -11,6 +11,7 @@ class TxPasswordField extends TxCommonTextField<String> {
   TxPasswordField({
     this.switchEnabled,
     super.key,
+    super.clearable,
     super.focusNode,
     super.decoration,
     super.onChanged,
@@ -189,6 +190,7 @@ class _TxPasswordFieldState extends TxCommonTextFieldState<String>
 class TxPasswordFieldTile extends TxCommonTextFieldTile<String> {
   TxPasswordFieldTile({
     this.switchEnabled,
+    super.clearable,
     super.key,
     super.initialValue,
     super.focusNode,

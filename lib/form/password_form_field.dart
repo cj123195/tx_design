@@ -22,6 +22,7 @@ class TxPasswordFormField extends TxFormField<String> {
     super.onChanged,
     super.required,
     super.initialValue,
+    bool? clearable,
     bool? switchEnabled,
     TextEditingController? controller,
     FocusNode? focusNode,
@@ -88,6 +89,7 @@ class TxPasswordFormField extends TxFormField<String> {
             return UnmanagedRestorationScope(
               bucket: field.bucket,
               child: TxPasswordField(
+                clearable: clearable,
                 switchEnabled: switchEnabled,
                 hintText: hintText,
                 initialValue: field.value,
@@ -173,6 +175,7 @@ class TxPasswordFormFieldTile extends TxFormFieldTile<String> {
     super.onChanged,
     super.required,
     super.initialValue,
+    bool? clearable,
     bool? switchEnabled,
     String? hintText,
     TextEditingController? controller,
@@ -257,6 +260,7 @@ class TxPasswordFormFieldTile extends TxFormFieldTile<String> {
         super(
           fieldBuilder: (field) {
             return TxPasswordField(
+              clearable: clearable,
               switchEnabled: switchEnabled,
               hintText: hintText,
               initialValue: field.value,
