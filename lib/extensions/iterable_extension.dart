@@ -1,3 +1,5 @@
+import '../form.dart';
+
 const String kTreeIdKey = 'id';
 const String kTreePidKey = 'pid';
 const String kTreeChildrenKey = 'children';
@@ -10,6 +12,49 @@ extension IterableExtension<E> on Iterable<E> {
       }
     }
     return null;
+  }
+
+  E? getInitialData<V>({
+    E? initialData,
+    V? initialValue,
+    ValueMapper<E, V>? valueMapper,
+  }) {
+    if (initialData != null) {
+      return initialData;
+    }
+
+    if (initialValue == null) {
+      return null;
+    }
+
+    for (E data in this) {
+      if ((valueMapper == null ? data : valueMapper(data)) == initialValue) {
+        return data;
+      }
+    }
+    return null;
+  }
+
+  List<E>? getInitialList<V>({
+    List<E>? initialData,
+    List<V>? initialValue,
+    ValueMapper<E, V>? valueMapper,
+  }) {
+    if (initialData != null) {
+      return initialData;
+    }
+
+    if (initialValue == null) {
+      return null;
+    }
+
+    final List<E> result = [];
+    for (E data in this) {
+      if ((valueMapper == null ? data : valueMapper(data)) == initialValue) {
+        result.add(data);
+      }
+    }
+    return result;
   }
 }
 

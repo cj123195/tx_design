@@ -93,7 +93,7 @@ class TxCascadePicker<D, V> extends StatefulWidget {
   final ListTileThemeData? listTheme;
 
   /// 初始值
-  final String? initialValue;
+  final V? initialValue;
 
   /// 初始选择的数据
   final D? initialData;
@@ -107,22 +107,11 @@ class TxCascadePicker<D, V> extends StatefulWidget {
   /// 数据变更回调
   final ValueChanged<D>? onChanged;
 
-  D? get _initialData {
-    if (initialData != null) {
-      return initialData!;
-    }
-
-    if (initialValue == null) {
-      return null;
-    }
-
-    for (D data in datasource) {
-      if (valueMapper(data) == initialValue) {
-        return data;
-      }
-    }
-    return null;
-  }
+  D? get _initialData => datasource.getInitialData<V>(
+        initialData: initialData,
+        initialValue: initialValue,
+        valueMapper: valueMapper,
+      );
 
   @override
   State<TxCascadePicker> createState() => _TxCascadePickerState<D, V>();
@@ -229,39 +218,49 @@ class _TxCascadePickerState<D, V> extends State<TxCascadePicker<D, V>> {
       ),
     );
 
+    final List<Widget> items = List.generate(
+      children.length,
+      (index) {
+        final data = children[index];
+        final V value = widget.valueMapper(data);
+        final bool selected = _nodes.indexWhere((node) =>
+                node == null ? false : widget.valueMapper(node) == value) !=
+            -1;
+        if (widget.itemBuilder != null) {
+          return widget.itemBuilder!(
+            context,
+            index,
+            data,
+            selected,
+            selected ? null : () => _onDataSelect(data),
+          );
+        }
+        return ListTile(
+          selected: selected,
+          dense: true,
+          trailing: selected
+              ? Icon(
+                  Icons.done,
+                  color: Theme.of(context).colorScheme.primary,
+                )
+              : null,
+          title: Text(widget.labelMapper(data) ?? ''),
+          onTap: selected ? null : () => _onDataSelect(data),
+        );
+      },
+    );
+
     return Column(
       children: [
         tabBar,
-        ...List.generate(
-          children.length,
-          (index) {
-            final data = children[index];
-            final V value = widget.valueMapper(data);
-            final bool selected = _nodes.indexWhere((node) =>
-                    node == null ? false : widget.valueMapper(node) == value) !=
-                -1;
-            if (widget.itemBuilder != null) {
-              return widget.itemBuilder!(
-                context,
-                index,
-                data,
-                selected,
-                selected ? null : () => _onDataSelect(data),
-              );
-            }
-            return ListTile(
-              selected: selected,
-              trailing: selected
-                  ? Icon(
-                      Icons.done,
-                      color: Theme.of(context).colorScheme.primary,
-                    )
-                  : null,
-              title: Text(widget.labelMapper(data) ?? ''),
-              onTap: selected ? null : () => _onDataSelect(data),
-            );
-          },
-        )
+        Expanded(
+          child: SingleChildScrollView(
+            child: ListTileTheme(
+              data: widget.listTheme,
+              child: Column(children: items),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -307,4 +306,160 @@ class _TabBarState extends State<_TabBar> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return widget.builder(_controller);
   }
+}
+
+/// 弹出级联选择器
+Future<D?> showCascadePicker<D, V>({
+  required BuildContext context,
+  required List<D> datasource,
+  required ValueMapper<D, String?> labelMapper,
+  required ValueMapper<D, V>? valueMapper,
+  required ValueMapper<D, List<D>?> childrenMapper,
+  V? initialValue,
+  D? initialData,
+  SelectableWidgetBuilder<D>? itemBuilder,
+  IndexedDataWidgetBuilder<D?>? tabItemBuilder,
+  ListTileThemeData? listTheme,
+  String? placeholder,
+  bool? isParentNodeSelectable,
+  String? title,
+}) async {
+  D? result = datasource.getInitialData<V>(
+    initialValue: initialValue,
+    initialData: initialData,
+    valueMapper: valueMapper,
+  );
+  return showDefaultBottomSheet<D>(
+    context,
+    title: title ?? '请选择',
+    contentBuilder: (context) {
+      return TxCascadePicker<D, V>(
+        datasource: datasource,
+        labelMapper: labelMapper,
+        valueMapper: valueMapper,
+        childrenMapper: childrenMapper,
+        initialData: initialData,
+        itemBuilder: itemBuilder,
+        tabItemBuilder: tabItemBuilder,
+        listTheme: listTheme,
+        placeholder: placeholder,
+        isParentNodeSelectable: isParentNodeSelectable,
+        onChanged: (val) {
+          if (isParentNodeSelectable == true) {
+            result = val;
+          } else {
+            Navigator.pop(context, val);
+          }
+        },
+      );
+    },
+    showConfirmButton: isParentNodeSelectable == true,
+    onConfirm: () => Navigator.pop(context, result),
+    actionsPosition: ActionsPosition.footer,
+  );
+}
+
+/// 弹出数据为 Map 列表类型级联选择器
+Future<Map?> showMapListCascadePicker<V>({
+  required BuildContext context,
+  required List<Map> datasource,
+  String? valueKey,
+  String labelKey = _kLabelKey,
+  String idKey = kTreeIdKey,
+  String pidKey = kTreePidKey,
+  String childrenKey = kTreeChildrenKey,
+  V? initialValue,
+  Map? initialData,
+  SelectableWidgetBuilder<Map>? itemBuilder,
+  IndexedDataWidgetBuilder<Map?>? tabItemBuilder,
+  ListTileThemeData? listTheme,
+  String? placeholder,
+  bool? isParentNodeSelectable,
+  String? title,
+}) async {
+  Map? result = datasource.getInitialData<V>(
+    initialValue: initialValue,
+    initialData: initialData,
+    valueMapper: (data) => data[valueKey ?? idKey],
+  );
+  return showDefaultBottomSheet<Map>(
+    context,
+    title: title ?? '请选择',
+    contentBuilder: (context) {
+      return TxCascadePicker<Map, V>.fromMapList(
+        datasource: datasource,
+        labelKey: labelKey,
+        valueKey: valueKey,
+        idKey: idKey,
+        pidKey: pidKey,
+        childrenKey: childrenKey,
+        initialData: initialData,
+        itemBuilder: itemBuilder,
+        tabItemBuilder: tabItemBuilder,
+        listTheme: listTheme,
+        placeholder: placeholder,
+        isParentNodeSelectable: isParentNodeSelectable,
+        onChanged: (val) {
+          if (isParentNodeSelectable == true) {
+            result = val;
+          } else {
+            Navigator.pop(context, val);
+          }
+        },
+      );
+    },
+    showConfirmButton: isParentNodeSelectable == true,
+    onConfirm: () => Navigator.pop(context, result),
+    actionsPosition: ActionsPosition.footer,
+  );
+}
+
+/// 弹出数据为 Map 树类型级联选择器
+Future<Map?> showMapTreeCascadePicker<V>({
+  required BuildContext context,
+  required List<Map> datasource,
+  String labelKey = _kLabelKey,
+  String valueKey = kTreeIdKey,
+  String childrenKey = kTreeChildrenKey,
+  V? initialValue,
+  Map? initialData,
+  SelectableWidgetBuilder<Map>? itemBuilder,
+  IndexedDataWidgetBuilder<Map?>? tabItemBuilder,
+  ListTileThemeData? listTheme,
+  String? placeholder,
+  bool? isParentNodeSelectable,
+  String? title,
+}) async {
+  Map? result = datasource.getInitialData<V>(
+    initialValue: initialValue,
+    initialData: initialData,
+    valueMapper: (data) => data[valueKey],
+  );
+  return showDefaultBottomSheet<Map>(
+    context,
+    title: title ?? '请选择',
+    contentBuilder: (context) {
+      return TxCascadePicker<Map, V>.fromMapTree(
+        datasource: datasource,
+        labelKey: labelKey,
+        valueKey: valueKey,
+        childrenKey: childrenKey,
+        initialData: initialData,
+        itemBuilder: itemBuilder,
+        tabItemBuilder: tabItemBuilder,
+        listTheme: listTheme,
+        placeholder: placeholder,
+        isParentNodeSelectable: isParentNodeSelectable,
+        onChanged: (val) {
+          if (isParentNodeSelectable == true) {
+            result = val;
+          } else {
+            Navigator.pop(context, val);
+          }
+        },
+      );
+    },
+    showConfirmButton: isParentNodeSelectable == true,
+    onConfirm: () => Navigator.pop(context, result),
+  );
 }
