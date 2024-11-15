@@ -89,11 +89,36 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final list = [
+    {'id': '1'},
+    {'id': '11', 'pid': '1'},
+    {'id': '12', 'pid': '1'},
+    {'id': '111', 'pid': '11'},
+    {'id': '112', 'pid': '11'},
+    {'id': '121', 'pid': '12'},
+    {'id': '122', 'pid': '12'},
+    {'id': '2'},
+    {'id': '21', 'pid': '2'},
+    {'id': '22', 'pid': '2'},
+    {'id': '211', 'pid': '21'},
+    {'id': '212', 'pid': '21'},
+    {'id': '221', 'pid': '22'},
+    {'id': '222', 'pid': '22'},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Tx Design')),
-      body: FormView(),
+      body: ElevatedButton(
+        onPressed: () async {
+          final res = await showMapListCascadePicker(
+              context: context, datasource: list, labelKey: 'id');
+          print(res);
+        },
+        child: Text('选择数据'),
+      ),
+      // body: FormView(),
     );
   }
 }
