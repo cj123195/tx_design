@@ -88,7 +88,7 @@ class TxButtonBar extends StatelessWidget {
   /// 如果为空，它将默认为 64.0 个逻辑像素。
   final double? buttonMinWidth;
 
-  /// 定义 [ButtonBar] 是否应使用最小大小约束或填充来调整自身大小。
+  /// 定义 [OverflowBar] 是否应使用最小大小约束或填充来调整自身大小。
   ///
   /// 覆盖周围的 [ButtonThemeData.layoutBehavior]。
   ///

@@ -154,6 +154,9 @@ abstract class TxLocalizations {
   /// datetime range picker.
   String get dateRangeDateSeparator;
 
+  /// Label for operation column of Table
+  String get tableOperationColumnLabel;
+
   /// Label for take photo choice on image picker.
   String get photographTileLabel;
 
@@ -434,6 +437,9 @@ class DefaultTxLocalizations implements TxLocalizations {
   String get dateRangeDateSeparator => '-';
 
   @override
+  String get tableOperationColumnLabel => 'Operation';
+
+  @override
   String get captureTileLabel => 'Capture';
 
   @override
@@ -666,6 +672,9 @@ class ZhTxLocalizations implements TxLocalizations {
 
   @override
   String get dateRangeDateSeparator => '至';
+
+  @override
+  String get tableOperationColumnLabel => '操作';
 
   @override
   String get captureTileLabel => '拍摄';

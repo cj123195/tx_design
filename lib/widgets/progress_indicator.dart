@@ -219,7 +219,7 @@ class _TxLinearGradientProgressIndicatorState
         ProgressIndicatorTheme.of(context);
     final Color trackColor = widget.backgroundColor ??
         indicatorTheme.linearTrackColor ??
-        Theme.of(context).colorScheme.background;
+        Theme.of(context).colorScheme.surface;
     final double minHeight =
         widget.minHeight ?? indicatorTheme.linearMinHeight ?? 4.0;
     final TextStyle textStyle =

@@ -5,6 +5,72 @@ import 'package:flutter/services.dart';
 
 import 'common_text_field.dart';
 
+Widget _suffixIcon(
+  num? value,
+  num? step,
+  num? max,
+  TextEditingController? controller,
+  ValueChanged<num?> didChange,
+) {
+  void changeValue(num value) {
+    controller?.text = value.toString();
+    didChange(value);
+  }
+
+  final num effectiveValue = value ?? 0;
+  final num diff = step ?? 1;
+
+  final bool canAdd = max == null || effectiveValue < max;
+  final Widget suffixIcon = IconButton(
+    onPressed: canAdd ? () => changeValue(effectiveValue + diff) : null,
+    icon: const Icon(Icons.add),
+  );
+
+  return suffixIcon;
+}
+
+Widget _prefixIcon(
+  num? value,
+  num? step,
+  num? min,
+  TextEditingController? controller,
+  ValueChanged<num?> didChange,
+) {
+  void changeValue(num value) {
+    controller?.text = value.toString();
+    didChange(value);
+  }
+
+  final num effectiveValue = value ?? 0;
+  final num diff = step ?? 1;
+
+  final bool canRemove = min == null || effectiveValue > min;
+  final Widget prefixIcon = IconButton(
+    onPressed: canRemove ? () => changeValue(effectiveValue + diff) : null,
+    icon: const Icon(Icons.remove),
+  );
+
+  return prefixIcon;
+}
+
+InputDecoration _decoration(
+    InputDecoration decoration, num? min, num? max, int? precision) {
+  String? helperText = decoration.helperText;
+  if (min != null || max != null) {
+    final String text = (max != null && min != null)
+        ? '输入值应大于等于$min且小于等于$max'
+        : max != null
+            ? '输入值应小于等于$max'
+            : '输入值应大于等于$min';
+    helperText = '${helperText == null ? '' : '$helperText，'}$text';
+  }
+  if (precision != null) {
+    helperText = '${helperText == null ? '' : '$helperText，'}结果保留'
+        '${precision == 0 ? '整数' : '$precision位小数'}';
+  }
+  return decoration.copyWith(helperText: helperText);
+}
+
 /// 数字输入框
 class TxNumberField extends TxCommonTextField<num> {
   TxNumberField({
@@ -15,175 +81,17 @@ class TxNumberField extends TxCommonTextField<num> {
     super.decoration,
     super.onChanged,
     super.enabled,
-    super.hintText = '请输入',
+    String? hintText,
     this.maxValue,
     this.minValue,
     bool? stepped,
     this.step,
-    int? precision,
+    this.precision,
     bool? stepStrictly,
-    super.controller,
-    super.undoController,
-    super.textInputAction,
-    super.textCapitalization,
-    super.style,
-    super.strutStyle,
-    TextAlign? textAlign,
-    super.textAlignVertical,
-    super.textDirection,
-    super.readOnly,
-    super.showCursor,
-    super.autofocus,
-    super.statesController,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLines,
-    super.minLines,
-    super.expands,
-    super.maxLength,
-    super.maxLengthEnforcement,
-    super.onEditingComplete,
-    super.onSubmitted,
-    super.onAppPrivateCommand,
-    List<TextInputFormatter>? inputFormatters,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorOpacityAnimates,
-    super.cursorColor,
-    super.cursorErrorColor,
-    super.selectionHeightStyle,
-    super.selectionWidthStyle,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.dragStartBehavior,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.onTap,
-    super.onTapAlwaysCalled,
-    super.onTapOutside,
-    super.mouseCursor,
-    super.buildCounter,
-    super.scrollController,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.contentInsertionConfiguration,
-    super.clipBehavior,
-    super.restorationId,
-    super.scribbleEnabled,
-    super.enableIMEPersonalizedLearning,
-    super.contextMenuBuilder,
-    super.canRequestFocus,
-    super.spellCheckConfiguration,
-    super.magnifierConfiguration,
-  })  : stepped = stepped ?? false,
-        super(
-          clearable: clearable ?? false,
-          displayTextMapper: (context, val) => val.toString(),
-          keyboardType: TextInputType.number,
-          textAlign: textAlign ?? (stepped == true ? TextAlign.center : null),
-          onInputChanged: (field, val) => field.didChange(num.tryParse(val)),
-          inputFormatters: [
-            ...?inputFormatters,
-            NumberInputFormatter(
-              min: minValue,
-              max: maxValue,
-              precision: precision,
-              step: step,
-              stepStrictly: stepStrictly,
-            ),
-          ],
-        );
-
-  /// 可输入的最大值
-  final num? maxValue;
-
-  /// 可输入的最小值
-  final num? minValue;
-
-  /// 是否允许步进
-  ///
-  /// 值为 true 时，输入框前后会显示加减按钮
-  ///
-  /// 默认值为 false
-  final bool stepped;
-
-  /// 步进值
-  final num? step;
-
-  @override
-  TxCommonTextFieldState<num> createState() => _TxNumberFieldState();
-}
-
-class _TxNumberFieldState extends TxCommonTextFieldState<num> {
-  @override
-  TxNumberField get widget => super.widget as TxNumberField;
-
-  @override
-  InputDecoration get effectiveDecoration {
-    if (widget.stepped == true) {
-      void changeValue(num value) {
-        controller?.text = value.toString();
-        didChange(value);
-      }
-
-      final ButtonStyle style = IconButton.styleFrom(
-        visualDensity: VisualDensity.compact,
-        padding: EdgeInsets.zero,
-      );
-
-      final num effectiveValue = value ?? 0;
-      final num diff = widget.step ?? 1;
-
-      final bool canAdd =
-          widget.maxValue == null || effectiveValue < widget.maxValue!;
-      final Widget suffixIcon = IconButton(
-        onPressed: canAdd ? () => changeValue(effectiveValue + diff) : null,
-        icon: const Icon(Icons.add),
-        style: style,
-      );
-
-      final bool canRemove =
-          widget.minValue == null || effectiveValue > widget.minValue!;
-      final Widget prefixIcon = IconButton(
-        onPressed: canRemove ? () => changeValue(effectiveValue + diff) : null,
-        icon: const Icon(Icons.remove),
-        style: style,
-      );
-
-      return super.effectiveDecoration.copyWith(
-            suffixIcon: suffixIcon,
-            prefixIcon: prefixIcon,
-          );
-    }
-
-    return super.effectiveDecoration;
-  }
-}
-
-/// field 为文本输入框的 [TxCommonTextFieldTile]
-class TxNumberFieldTile extends TxCommonTextFieldTile<num> {
-  TxNumberFieldTile({
-    bool? clearable,
-    super.key,
-    super.initialValue,
-    super.focusNode,
-    super.decoration,
-    super.onChanged,
-    super.enabled,
-    super.hintText = '请输入',
-    this.maxValue,
-    this.minValue,
-    bool? stepped,
-    this.step,
-    int? precision,
-    bool? stepStrictly,
-    super.labelBuilder,
+    super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -202,6 +110,8 @@ class TxNumberFieldTile extends TxCommonTextFieldTile<num> {
     super.minLabelWidth,
     super.minVerticalPadding,
     super.dense,
+    super.colon,
+    super.focusColor,
     super.controller,
     super.undoController,
     super.textInputAction,
@@ -259,13 +169,21 @@ class TxNumberFieldTile extends TxCommonTextFieldTile<num> {
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
-  })  : stepped = stepped ?? false,
+  })  : assert(step == null || step > 0),
+        stepped = stepped ?? false,
+        stepStrictly = stepStrictly ?? false,
         super(
+          hintText: hintText ?? '请输入',
           clearable: clearable ?? false,
           displayTextMapper: (context, val) => val.toString(),
           keyboardType: TextInputType.number,
           textAlign: textAlign ?? (stepped == true ? TextAlign.center : null),
-          onInputChanged: (field, val) => field.didChange(num.tryParse(val)),
+          onInputChanged: (field, val) {
+            final num? number = num.tryParse(val);
+            if (number != field.value) {
+              (field as TxCommonTextFieldState).setValue(number);
+            }
+          },
           inputFormatters: [
             ...?inputFormatters,
             NumberInputFormatter(
@@ -294,53 +212,113 @@ class TxNumberFieldTile extends TxCommonTextFieldTile<num> {
   /// 步进值
   final num? step;
 
+  /// 精度
+  final int? precision;
+
+  /// 是否严格步进
+  ///
+  /// 值为 true，输入值必须为 [step] 的整数倍。
+  final bool stepStrictly;
+
   @override
-  TxCommonTextFieldTileState<num> createState() => _TxNumberFieldTileState();
+  TxCommonTextFieldState<num> createState() => _TxNumberFieldState();
 }
 
-class _TxNumberFieldTileState extends TxCommonTextFieldTileState<num> {
-  @override
-  TxNumberFieldTile get widget => super.widget as TxNumberFieldTile;
+class _TxNumberFieldState extends TxCommonTextFieldState<num> {
+  FocusNode? _focusNode;
 
   @override
-  InputDecoration get effectiveDecoration {
-    if (widget.stepped == true) {
-      void changeValue(num value) {
-        controller?.text = value.toString();
-        didChange(value);
+  FocusNode? get focusNode => widget.focusNode ?? _focusNode;
+
+  void _formatText() {
+    if (!focusNode!.hasFocus) {
+      final step = widget.step ?? 1;
+      if (value != null && value! % step != 0) {
+        num number = (value! ~/ step) * step;
+        if (widget.minValue != null && number < widget.minValue!) {
+          number += step;
+        }
+        didChange(number);
       }
-
-      final ButtonStyle style = IconButton.styleFrom(
-        visualDensity: VisualDensity.compact,
-        padding: EdgeInsets.zero,
-      );
-
-      final num effectiveValue = value ?? 0;
-      final num diff = widget.step ?? 1;
-
-      final bool canAdd =
-          widget.maxValue == null || effectiveValue < widget.maxValue!;
-      final Widget suffixIcon = IconButton(
-        onPressed: canAdd ? () => changeValue(effectiveValue + diff) : null,
-        icon: const Icon(Icons.add),
-        style: style,
-      );
-
-      final bool canRemove =
-          widget.minValue == null || effectiveValue > widget.minValue!;
-      final Widget prefixIcon = IconButton(
-        onPressed: canRemove ? () => changeValue(effectiveValue + diff) : null,
-        icon: const Icon(Icons.remove),
-        style: style,
-      );
-
-      return super.effectiveDecoration.copyWith(
-            suffixIcon: suffixIcon,
-            prefixIcon: prefixIcon,
-          );
     }
+  }
 
-    return super.effectiveDecoration;
+  @override
+  void initState() {
+    if (widget.stepped && widget.stepStrictly == true) {
+      if (widget.focusNode == null) {
+        _focusNode = FocusNode();
+      }
+      focusNode!.addListener(_formatText);
+    }
+    super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant TxNumberField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.focusNode != oldWidget.focusNode ||
+        widget.stepped != oldWidget.stepped ||
+        widget.stepStrictly != oldWidget.stepStrictly) {
+      (oldWidget.focusNode ?? _focusNode)?.removeListener(_formatText);
+      if (widget.stepped && widget.stepStrictly) {
+        if (widget.focusNode == null) {
+          _focusNode = FocusNode();
+        }
+        (widget.focusNode ?? _focusNode)!.addListener(_formatText);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    focusNode?.removeListener(_formatText);
+    if (_focusNode != null) {
+      _focusNode!.unfocus();
+      _focusNode!.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  InputDecoration get effectiveDecoration => _decoration(
+        super.effectiveDecoration,
+        widget.minValue,
+        widget.maxValue,
+        widget.precision,
+      );
+
+  @override
+  TxNumberField get widget => super.widget as TxNumberField;
+
+  @override
+  List<Widget>? get suffixIcons {
+    final List<Widget> result = [...?super.suffixIcons];
+    if (widget.stepped == true) {
+      result.add(_suffixIcon(
+        value,
+        widget.step,
+        widget.maxValue,
+        controller,
+        didChange,
+      ));
+    }
+    return result;
+  }
+
+  @override
+  List<Widget>? get prefixIcons {
+    final List<Widget> result = [...?super.prefixIcons];
+    if (widget.stepped == true) {
+      result.add(_prefixIcon(
+        value,
+        widget.step,
+        widget.minValue,
+        controller,
+        didChange,
+      ));
+    }
+    return result;
   }
 }
 
@@ -353,8 +331,8 @@ class NumberInputFormatter extends TextInputFormatter {
     bool? stepStrictly,
   })  : step = step ?? 1,
         assert(
-          precision == null || precision > 0,
-          'precision 的值必须是一个非负整数',
+          precision == null || precision >= 0,
+          'precision 精度必须为非负整数',
         ),
         assert(
           min == null || max == null || min <= max,
@@ -393,33 +371,34 @@ class NumberInputFormatter extends TextInputFormatter {
           (min! % step == 0 && max! % step == 0),
       '当严格步进时，min 和 max 都应是 step 的整数倍',
     );
-    assert(
-      precision == null ||
-          !step.toString().contains('.') ||
-          precision! >= step.toString().split('.').length,
-      '当 step 和 precision 均不为 null 时，precision 并且不能小于 step 的小数位数',
-    );
 
-    num? value = num.tryParse(newValue.text);
+    String text = newValue.text;
+    final num? value = num.tryParse(text);
     if (value == null) {
       return const TextEditingValue();
     }
 
     if (min != null && value < min!) {
-      value = min!;
+      return oldValue;
     }
 
     if (max != null && value > max!) {
-      value = max!;
+      return oldValue;
     }
 
     if (stepStrictly && value % step != 0) {
-      value = (value ~/ step) * step;
+      text = ((value ~/ step) * step).toString();
     }
 
-    final String text = precision == null
-        ? value.toString()
-        : value.toStringAsFixed(precision!);
+    if (precision != null && text.contains('.')) {
+      final list = text.split('.');
+      final int decimalLength = list.last.length;
+      final int integerLength = list.first.length;
+      if (decimalLength > precision!) {
+        text = text.substring(0, integerLength + 1 + precision!);
+      }
+    }
+
     return TextEditingValue(
       text: text,
       selection: newValue.selection.copyWith(

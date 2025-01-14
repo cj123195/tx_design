@@ -656,7 +656,7 @@ class _SimplePickerBottomSheet<T> extends StatelessWidget {
 
     return Material(
       shape: RoundedRectangleBorder(borderRadius: borderRadius),
-      surfaceTintColor: theme.colorScheme.background,
+      surfaceTintColor: theme.colorScheme.surface,
       color: theme.colorScheme.surface,
       elevation: 1,
       child: Column(

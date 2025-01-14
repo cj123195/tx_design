@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../extensions/iterable_extension.dart';
+import '../field/field.dart';
 import '../localizations.dart';
 import '../utils/basic_types.dart';
+import '../widgets/tile.dart';
 import 'form_item_container.dart';
 import 'form_item_theme.dart';
 
@@ -90,11 +92,42 @@ class TxFormField<T> extends FormField<T> {
     this.decoration,
     this.onChanged,
     bool? required,
+    bool? bordered,
     @Deprecated('This feature was deprecated after v0.3.0.')
     this.defaultValidator,
-  }) : super(
+    this.labelText,
+    this.label,
+    TextStyle? labelStyle,
+    TextAlign? labelTextAlign,
+    TextOverflow? labelOverflow,
+    Color? tileColor,
+    Axis? layoutDirection,
+    EdgeInsetsGeometry? padding,
+    FieldActionsBuilder<T>? actionsBuilder,
+    FieldBuilder<T>? trailingBuilder,
+    Widget? leading,
+    double? horizontalGap,
+    VisualDensity? visualDensity,
+    ShapeBorder? shape,
+    Color? iconColor,
+    Color? textColor,
+    TextStyle? leadingAndTrailingTextStyle,
+    VoidCallback? onTap,
+    double? minLeadingWidth,
+    double? minLabelWidth,
+    double? minVerticalPadding,
+    bool? dense,
+    bool? colon,
+    Color? focusColor,
+  })  : required = required ?? false,
+        super(
           enabled: enabled ?? decoration?.enabled ?? true,
-          builder: (field) => builder(field as TxFormFieldState<T>),
+          builder: (field) {
+            return UnmanagedRestorationScope(
+              bucket: field.bucket,
+              child: builder(field as TxFormFieldState<T>),
+            );
+          },
         );
 
   /// 值变更回调
@@ -106,6 +139,15 @@ class TxFormField<T> extends FormField<T> {
   ///
   /// 指定 null 可完全删除修饰（包括修饰引入的额外填充，以节省标签空间）。
   final InputDecoration? decoration;
+
+  /// 标题文字
+  final String? labelText;
+
+  /// 参考 [TxTile.label]
+  final Widget? label;
+
+  /// 是否必填
+  final bool required;
 
   @Deprecated('This feature was deprecated after v0.3.0.')
   final String? Function(BuildContext context, T? value)? defaultValidator;
@@ -122,6 +164,31 @@ class TxFormFieldState<T> extends FormFieldState<T> {
   InputDecoration get effectiveDecoration {
     return (widget.decoration ?? const InputDecoration())
         .copyWith(errorText: errorText);
+  }
+
+  /// 最终生效的 label
+  Widget? get effectiveLabel {
+    if (!widget.required) {
+      return widget.label ??
+          (widget.labelText != null ? Text(widget.labelText!) : null);
+    }
+    final InlineSpan? labelSpan = widget.label != null
+        ? WidgetSpan(
+            child: widget.label!,
+            alignment: PlaceholderAlignment.top,
+          )
+        : widget.labelText != null
+            ? TextSpan(text: widget.labelText)
+            : null;
+    const TextSpan starSpan = TextSpan(
+      text: '*\t',
+      style: TextStyle(color: Colors.red),
+    );
+    return Text.rich(
+      TextSpan(
+        children: [starSpan, if (labelSpan != null) labelSpan],
+      ),
+    );
   }
 
   /// 选择项变更回调
@@ -157,9 +224,12 @@ class TxFormFieldItem<T> extends TxFormField<T> {
     super.autovalidateMode,
     super.restorationId,
     super.defaultValidator,
+    super.bordered,
     bool? required,
     Widget? label,
     String? labelText,
+    TextAlign? labelTextAlign,
+    TextOverflow? labelOverflow,
     Color? backgroundColor,
     Axis? direction,
     EdgeInsetsGeometry? padding,
@@ -244,6 +314,8 @@ class TxPickerFormFieldItem<T, V> extends TxFormFieldItem<T> {
     super.required,
     super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.backgroundColor,
     super.direction,
     super.padding,
@@ -319,6 +391,8 @@ class TxMultiPickerFormFieldItem<T, V> extends TxFormFieldItem<Set<T>> {
     super.required,
     super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.backgroundColor,
     super.direction,
     super.padding,
@@ -392,8 +466,11 @@ class TxTextFormFieldItem<T> extends TxFormFieldItem<T> {
     super.restorationId,
     super.defaultValidator,
     super.required,
+    super.bordered,
     super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.backgroundColor,
     super.direction,
     super.padding,
@@ -712,6 +789,8 @@ class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
     super.required,
     super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.backgroundColor,
     super.direction,
     super.padding,
@@ -732,6 +811,7 @@ class TxPickerTextFormField<T, V> extends TxTextFormFieldItem<T> {
     super.strutStyle,
     super.textDirection,
     super.textAlign,
+    super.bordered,
     super.textAlignVertical,
     super.autofocus,
     bool? readonly,

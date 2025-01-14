@@ -2,15 +2,17 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'field_tile.dart';
+import 'tile.dart';
 
-/// 与 [TxFieldTileTheme] 一起使用来定义后代 [TxFieldTile] 小部件的默认属性值。
+/// 与 [TxTileTheme] 一起使用来定义后代 [TxTile] 小部件的默认属性值。
 ///
-/// 有关详细信息，请参阅各个 [TxFieldTile] 属性。
+/// 有关详细信息，请参阅各个 [TxTile] 属性。
 @immutable
-class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
-  const TxFieldTileThemeData({
+class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
+  const TxTileThemeData({
     this.labelStyle,
+    this.labelTextAlign,
+    this.labelOverflow,
     this.padding,
     this.horizontalGap,
     this.tileColor,
@@ -24,54 +26,70 @@ class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
     this.visualDensity,
     this.minLabelWidth,
     this.minVerticalPadding,
+    this.colon,
+    this.focusColor,
   });
 
-  /// 覆盖 [TxFieldTile.tileColor] 的默认值。
+  /// 覆盖 [TxTile.tileColor] 的默认值。
   final Color? tileColor;
 
-  /// 覆盖 [TxFieldTile.labelStyle] 的默认值。
+  /// 覆盖 [TxTile.labelStyle] 的默认值。
   final TextStyle? labelStyle;
 
-  /// 覆盖 [TxFieldTile.padding] 的默认值。
+  /// 覆盖 [TxTile.labelTextAlign] 的默认值。
+  final TextAlign? labelTextAlign;
+
+  /// 覆盖 [TxTile.labelOverflow] 的默认值。
+  final TextOverflow? labelOverflow;
+
+  /// 覆盖 [TxTile.padding] 的默认值。
   final EdgeInsetsGeometry? padding;
 
-  /// 覆盖 [TxFieldTile.layoutDirection] 的默认值。
+  /// 覆盖 [TxTile.layoutDirection] 的默认值。
   final Axis? layoutDirection;
 
-  /// 覆盖 [TxFieldTile.horizontalGap] 的默认值。
+  /// 覆盖 [TxTile.horizontalGap] 的默认值。
   final double? horizontalGap;
 
-  /// 覆盖 [TxFieldTile.dense] 的默认值。
+  /// 覆盖 [TxTile.dense] 的默认值。
   final bool? dense;
 
-  /// 覆盖 [TxFieldTile.shape] 的默认值。
+  /// 覆盖 [TxTile.shape] 的默认值。
   final ShapeBorder? shape;
 
-  /// 覆盖 [TxFieldTile.iconColor] 的默认值。
+  /// 覆盖 [TxTile.iconColor] 的默认值。
   final Color? iconColor;
 
-  /// 覆盖 [TxFieldTile.textColor] 的默认值。
+  /// 覆盖 [TxTile.textColor] 的默认值。
   final Color? textColor;
 
-  /// 覆盖 [TxFieldTile.leadingAndTrailingTextStyle] 的默认值。
+  /// 覆盖 [TxTile.leadingAndTrailingTextStyle] 的默认值。
   final TextStyle? leadingAndTrailingTextStyle;
 
-  /// 覆盖 [TxFieldTile.minLeadingWidth] 的默认值。
+  /// 覆盖 [TxTile.minLeadingWidth] 的默认值。
   final double? minLeadingWidth;
 
-  /// 覆盖 [TxFieldTile.visualDensity] 的默认值。
-  final VisualDensity? visualDensity;
-
-  /// 覆盖 [TxFieldTile.minLabelWidth] 的默认值。
-  final double? minLabelWidth;
-
-  /// 覆盖 [TxFieldTile.minVerticalPadding] 的默认值。
+  /// 覆盖 [TxTile.minVerticalPadding] 的默认值。
   final double? minVerticalPadding;
 
+  /// 覆盖 [TxTile.visualDensity] 的默认值。
+  final VisualDensity? visualDensity;
+
+  /// 覆盖 [TxTile.minLabelWidth] 的默认值。
+  final double? minLabelWidth;
+
+  /// 覆盖 [TxTile.colon] 的默认值。
+  final bool? colon;
+
+  /// 覆盖 [TxTile.focusColor] 的默认值。
+  final Color? focusColor;
+
   @override
-  ThemeExtension<TxFieldTileThemeData> copyWith({
+  ThemeExtension<TxTileThemeData> copyWith({
     Color? tileColor,
     TextStyle? labelStyle,
+    TextAlign? labelTextAlign,
+    TextOverflow? labelOverflow,
     EdgeInsetsGeometry? padding,
     Axis? layoutDirection,
     double? horizontalGap,
@@ -84,10 +102,14 @@ class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
     double? minLabelWidth,
     double? minVerticalPadding,
     VisualDensity? visualDensity,
+    bool? colon,
+    Color? focusColor,
   }) {
-    return TxFieldTileThemeData(
+    return TxTileThemeData(
       tileColor: tileColor ?? this.tileColor,
       labelStyle: labelStyle ?? this.labelStyle,
+      labelTextAlign: labelTextAlign ?? this.labelTextAlign,
+      labelOverflow: labelOverflow ?? this.labelOverflow,
       padding: padding ?? this.padding,
       layoutDirection: layoutDirection ?? this.layoutDirection,
       horizontalGap: horizontalGap ?? this.horizontalGap,
@@ -98,24 +120,28 @@ class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
       leadingAndTrailingTextStyle:
           leadingAndTrailingTextStyle ?? this.leadingAndTrailingTextStyle,
       minLeadingWidth: minLeadingWidth ?? this.minLeadingWidth,
+      minVerticalPadding: minVerticalPadding ?? this.minVerticalPadding,
       visualDensity: visualDensity ?? this.visualDensity,
       minLabelWidth: minLabelWidth ?? this.minLabelWidth,
-      minVerticalPadding: minVerticalPadding ?? this.minVerticalPadding,
+      colon: colon ?? this.colon,
+      focusColor: focusColor ?? this.focusColor,
     );
   }
 
   @override
-  ThemeExtension<TxFieldTileThemeData> lerp(
-    ThemeExtension<TxFieldTileThemeData>? other,
+  ThemeExtension<TxTileThemeData> lerp(
+    ThemeExtension<TxTileThemeData>? other,
     double t,
   ) {
-    if (other is! TxFieldTileThemeData) {
+    if (other is! TxTileThemeData) {
       return this;
     }
 
-    return TxFieldTileThemeData(
+    return TxTileThemeData(
       tileColor: Color.lerp(tileColor, other.tileColor, t),
       labelStyle: TextStyle.lerp(labelStyle, other.labelStyle, t),
+      labelTextAlign: t < 0.5 ? labelTextAlign : other.labelTextAlign,
+      labelOverflow: t < 0.5 ? labelOverflow : other.labelOverflow,
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t),
       layoutDirection: t < 0.5 ? layoutDirection : other.layoutDirection,
       horizontalGap: lerpDouble(horizontalGap, other.horizontalGap, t),
@@ -133,6 +159,8 @@ class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
       minVerticalPadding:
           lerpDouble(minVerticalPadding, other.minVerticalPadding, t),
       visualDensity: t < 0.5 ? visualDensity : other.visualDensity,
+      colon: t < 0.5 ? colon : other.colon,
+      focusColor: Color.lerp(focusColor, other.focusColor, t),
     );
   }
 
@@ -142,6 +170,8 @@ class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
         shape,
         tileColor,
         labelStyle,
+        labelTextAlign,
+        labelOverflow,
         iconColor,
         textColor,
         padding,
@@ -152,6 +182,8 @@ class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
         minLabelWidth,
         minVerticalPadding,
         visualDensity,
+        colon,
+        focusColor,
       );
 
   @override
@@ -162,11 +194,13 @@ class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is TxFieldTileThemeData &&
+    return other is TxTileThemeData &&
         other.dense == dense &&
         other.shape == shape &&
         other.tileColor == tileColor &&
         other.labelStyle == labelStyle &&
+        other.labelTextAlign == labelTextAlign &&
+        other.labelOverflow == labelOverflow &&
         other.iconColor == iconColor &&
         other.padding == padding &&
         other.layoutDirection == layoutDirection &&
@@ -176,35 +210,37 @@ class TxFieldTileThemeData extends ThemeExtension<TxFieldTileThemeData> {
         other.minLeadingWidth == minLeadingWidth &&
         other.minLabelWidth == minLabelWidth &&
         other.minVerticalPadding == minVerticalPadding &&
-        other.visualDensity == visualDensity;
+        other.visualDensity == visualDensity &&
+        other.colon == colon &&
+        other.focusColor == focusColor;
   }
 }
 
-/// 一个继承的小部件，它在此小部件的子树中定义 [TxFieldTile] 的颜色和样式参数。
+/// 一个继承的小部件，它在此小部件的子树中定义 [TxTile] 的颜色和样式参数。
 ///
-/// 此处指定的值用于未指定显式非空值的 [TxFieldTile] 属性。
-class TxFieldTileTheme extends InheritedWidget {
-  /// 创建一个日期选择按钮主题，该主题定义后代 [TxFieldTile] 的颜色和样式参数。
-  const TxFieldTileTheme({
-    required super.child,
+/// 此处指定的值用于未指定显式非空值的 [TxTile] 属性。
+class TxTileTheme extends InheritedWidget {
+  /// 创建一个日期选择按钮主题，该主题定义后代 [TxTile] 的颜色和样式参数。
+  const TxTileTheme({
     required this.data,
+    required super.child,
     super.key,
   });
 
-  final TxFieldTileThemeData data;
+  final TxTileThemeData data;
 
   /// 包含给定上下文的此类的最近实例的 [data] 属性。
   ///
-  /// 如果没有祖先，则返回 [ThemeData.extension<TxFieldTileThemeData>()]。
-  /// 如果它也为null，则返回默认[TxFieldTileThemeData]
-  static TxFieldTileThemeData of(BuildContext context) {
-    final TxFieldTileTheme? txDatePickerButtonTheme =
-        context.dependOnInheritedWidgetOfExactType<TxFieldTileTheme>();
+  /// 如果没有祖先，则返回 [ThemeData.extension<TxTileThemeData>()]。
+  /// 如果它也为null，则返回默认[TxTileThemeData]
+  static TxTileThemeData of(BuildContext context) {
+    final TxTileTheme? txDatePickerButtonTheme =
+        context.dependOnInheritedWidgetOfExactType<TxTileTheme>();
     return txDatePickerButtonTheme?.data ??
-        Theme.of(context).extension<TxFieldTileThemeData>() ??
-        const TxFieldTileThemeData();
+        Theme.of(context).extension<TxTileThemeData>() ??
+        const TxTileThemeData();
   }
 
   @override
-  bool updateShouldNotify(TxFieldTileTheme oldWidget) => data != oldWidget.data;
+  bool updateShouldNotify(TxTileTheme oldWidget) => data != oldWidget.data;
 }

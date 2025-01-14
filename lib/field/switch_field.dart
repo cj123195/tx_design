@@ -2,91 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'field.dart';
-import 'field_tile.dart';
 
-/// 开关操作框
+/// Switch 切换
 class TxSwitchField extends TxField<bool> {
   TxSwitchField({
-    super.key,
-    super.initialValue,
-    super.decoration,
-    super.focusNode,
-    super.enabled,
-    super.onChanged,
-    super.hintText,
-    super.textAlign,
-    Color? activeColor,
-    Color? activeTrackColor,
-    Color? inactiveThumbColor,
-    Color? inactiveTrackColor,
-    ImageProvider? activeThumbImage,
-    ImageErrorListener? onActiveThumbImageError,
-    ImageProvider? inactiveThumbImage,
-    ImageErrorListener? onInactiveThumbImageError,
-    MaterialStateProperty<Color?>? thumbColor,
-    MaterialStateProperty<Color?>? trackColor,
-    MaterialStateProperty<Color?>? trackOutlineColor,
-    MaterialStateProperty<double?>? trackOutlineWidth,
-    MaterialStateProperty<Icon?>? thumbIcon,
-    MaterialTapTargetSize? materialTapTargetSize,
-    DragStartBehavior? dragStartBehavior,
-    MouseCursor? mouseCursor,
-    MaterialStateProperty<Color?>? overlayColor,
-    double? splashRadius,
-    Color? focusColor,
-    ValueChanged<bool>? onFocusChange,
-    bool? autofocus,
-    Color? hoverColor,
-    bool? applyCupertinoTheme,
-  }) : super(
-          builder: (field) {
-            final AlignmentGeometry align = switch (textAlign) {
-              null => AlignmentDirectional.centerStart,
-              TextAlign.left => Alignment.centerLeft,
-              TextAlign.right => Alignment.centerRight,
-              TextAlign.center => AlignmentDirectional.center,
-              TextAlign.justify => AlignmentDirectional.center,
-              TextAlign.start => AlignmentDirectional.centerStart,
-              TextAlign.end => AlignmentDirectional.centerEnd,
-            };
-
-            return Align(
-              alignment: align,
-              child: Switch.adaptive(
-                value: field.value ?? false,
-                onChanged: field.didChange,
-                activeColor: activeColor,
-                activeTrackColor: activeTrackColor,
-                inactiveThumbColor: inactiveThumbColor,
-                activeThumbImage: activeThumbImage,
-                onActiveThumbImageError: onActiveThumbImageError,
-                inactiveThumbImage: inactiveThumbImage,
-                onInactiveThumbImageError: onInactiveThumbImageError,
-                materialTapTargetSize:
-                    materialTapTargetSize ?? MaterialTapTargetSize.shrinkWrap,
-                thumbColor: thumbColor,
-                trackColor: trackColor,
-                trackOutlineColor: trackOutlineColor,
-                trackOutlineWidth: trackOutlineWidth,
-                thumbIcon: thumbIcon,
-                dragStartBehavior: dragStartBehavior ?? DragStartBehavior.start,
-                mouseCursor: mouseCursor,
-                focusColor: focusColor,
-                hoverColor: hoverColor,
-                overlayColor: overlayColor,
-                splashRadius: splashRadius,
-                focusNode: focusNode,
-                autofocus: autofocus ?? false,
-                applyCupertinoTheme: applyCupertinoTheme,
-              ),
-            );
-          },
-        );
-}
-
-/// field 为 [TxSwitchField] 的 [TxFieldTile]。
-class TxSwitchFieldTile extends TxFieldTile {
-  TxSwitchFieldTile({
     super.key,
     super.initialValue,
     super.decoration,
@@ -113,14 +32,15 @@ class TxSwitchFieldTile extends TxFieldTile {
     MouseCursor? mouseCursor,
     MaterialStateProperty<Color?>? overlayColor,
     double? splashRadius,
-    Color? focusColor,
     ValueChanged<bool>? onFocusChange,
     bool? autofocus,
     Color? hoverColor,
     bool? applyCupertinoTheme,
     TextDirection? textDirection,
-    super.labelBuilder,
+    super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -136,11 +56,13 @@ class TxSwitchFieldTile extends TxFieldTile {
     super.onTap,
     super.minLeadingWidth,
     super.dense,
+    super.colon,
+    super.focusColor,
     super.minLabelWidth,
     super.minVerticalPadding,
-  }) : super(
+  }) : super.decorated(
           layoutDirection: Axis.horizontal,
-          fieldBuilder: (field) {
+          builder: (field) {
             final AlignmentGeometry align = switch (textAlign) {
               null => AlignmentDirectional.centerStart,
               TextAlign.left => Alignment.centerLeft,

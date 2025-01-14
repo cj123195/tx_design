@@ -7,7 +7,7 @@ import 'text_form_field.dart';
   'Use TxTextFormFieldTile instead. '
   'This feature was deprecated after v0.3.0.',
 )
-class InputFormField extends TxTextFormFieldTile {
+class InputFormField extends TxTextFormField {
   @Deprecated(
     'Use TxTextFormFieldTile instead. '
     'This feature was deprecated after v0.3.0.',
@@ -23,6 +23,8 @@ class InputFormField extends TxTextFormFieldTile {
     super.required,
     Widget? label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     Color? backgroundColor,
     Axis? direction,
     super.padding,
@@ -40,6 +42,7 @@ class InputFormField extends TxTextFormFieldTile {
     super.strutStyle,
     super.textDirection,
     super.textAlign,
+    super.bordered,
     super.textAlignVertical,
     super.autofocus,
     super.readOnly,
@@ -77,7 +80,7 @@ class InputFormField extends TxTextFormFieldTile {
     super.mouseCursor,
     super.contextMenuBuilder,
   }) : super(
-          labelBuilder: label == null ? null : (context) => label,
+          label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
         );

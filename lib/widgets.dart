@@ -50,6 +50,8 @@ export 'widgets/status_indicator.dart';
 export 'widgets/status_indicator_theme.dart';
 export 'widgets/tab_bar.dart';
 export 'widgets/text_button.dart';
+export 'widgets/tile.dart';
+export 'widgets/tile_theme.dart';
 export 'widgets/tip.dart';
 export 'widgets/tip_theme.dart';
 export 'widgets/toast.dart';

@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 
 import '../field/field.dart';
 import '../field/number_field.dart';
-import '../form.dart';
 import 'form_field.dart';
 
 /// 数字输入Form表单
@@ -14,7 +13,7 @@ import 'form_field.dart';
   'Use TxNumberFormFieldTile instead. '
   'This feature was deprecated after v0.3.0.',
 )
-class NumberFormField extends TxNumberFormFieldTile {
+class NumberFormField extends TxNumberFormField {
   @Deprecated(
     'Use TxNumberFormFieldTile instead. '
     'This feature was deprecated after v0.3.0.',
@@ -34,6 +33,8 @@ class NumberFormField extends TxNumberFormFieldTile {
     super.required,
     Widget? label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     Color? backgroundColor,
     Axis? direction,
     super.padding,
@@ -50,6 +51,7 @@ class NumberFormField extends TxNumberFormFieldTile {
     super.strutStyle,
     super.textDirection,
     super.textAlign,
+    super.bordered,
     super.textAlignVertical,
     super.autofocus,
     super.readOnly,
@@ -91,15 +93,16 @@ class NumberFormField extends TxNumberFormFieldTile {
           minValue: minimumValue,
           stepped: showOperateButton,
           step: difference,
-          labelBuilder: label == null ? null : (context) => label,
+          label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
         );
 }
 
-/// [builder] 构建组件为文本输入框的 [FormField]
+/// 数字输入框表单
 class TxNumberFormField extends TxFormField<num> {
   TxNumberFormField({
+    bool? clearable,
     super.key,
     super.onSaved,
     FormFieldValidator<num>? validator,
@@ -110,8 +113,8 @@ class TxNumberFormField extends TxFormField<num> {
     super.onChanged,
     super.required,
     super.initialValue,
-    bool? clearable,
-    String? hintText = '请输入',
+    super.bordered,
+    String? hintText,
     num? maxValue,
     num? minValue,
     bool? stepped,
@@ -177,194 +180,10 @@ class TxNumberFormField extends TxFormField<num> {
     Clip? clipBehavior,
     bool? scribbleEnabled,
     bool? canRequestFocus,
-  }) : super(
-          builder: (field) {
-            return UnmanagedRestorationScope(
-              bucket: field.bucket,
-              child: TxNumberField(
-                clearable: clearable,
-                hintText: hintText,
-                minValue: minValue,
-                maxValue: maxValue,
-                stepped: stepped,
-                step: step,
-                stepStrictly: stepStrictly,
-                precision: precision,
-                restorationId: restorationId,
-                controller: controller,
-                focusNode: focusNode,
-                decoration: field.effectiveDecoration,
-                initialValue: field.value,
-                textInputAction: textInputAction,
-                style: style,
-                strutStyle: strutStyle,
-                textAlign: textAlign,
-                textAlignVertical: textAlignVertical,
-                textDirection: textDirection,
-                textCapitalization: textCapitalization,
-                autofocus: autofocus,
-                statesController: statesController,
-                readOnly: readOnly,
-                showCursor: showCursor,
-                obscuringCharacter: obscuringCharacter,
-                obscureText: obscureText,
-                autocorrect: autocorrect,
-                smartDashesType: smartDashesType,
-                smartQuotesType: smartQuotesType,
-                enableSuggestions: enableSuggestions,
-                maxLengthEnforcement: maxLengthEnforcement,
-                maxLines: maxLines,
-                minLines: minLines,
-                expands: expands,
-                maxLength: maxLength,
-                onChanged: field.didChange,
-                onTap: onTap,
-                onTapAlwaysCalled: onTapAlwaysCalled,
-                onTapOutside: onTapOutside,
-                onEditingComplete: onEditingComplete,
-                onSubmitted: onFieldSubmitted,
-                inputFormatters: inputFormatters,
-                enabled: enabled,
-                cursorWidth: cursorWidth,
-                cursorHeight: cursorHeight,
-                cursorRadius: cursorRadius,
-                cursorColor: cursorColor,
-                cursorErrorColor: cursorErrorColor,
-                scrollPadding: scrollPadding,
-                scrollPhysics: scrollPhysics,
-                keyboardAppearance: keyboardAppearance,
-                enableInteractiveSelection: enableInteractiveSelection,
-                selectionControls: selectionControls,
-                buildCounter: buildCounter,
-                autofillHints: autofillHints,
-                scrollController: scrollController,
-                enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
-                mouseCursor: mouseCursor,
-                contextMenuBuilder: contextMenuBuilder,
-                spellCheckConfiguration: spellCheckConfiguration,
-                magnifierConfiguration: magnifierConfiguration,
-                undoController: undoController,
-                onAppPrivateCommand: onAppPrivateCommand,
-                cursorOpacityAnimates: cursorOpacityAnimates,
-                selectionHeightStyle: selectionHeightStyle,
-                selectionWidthStyle: selectionWidthStyle,
-                dragStartBehavior: dragStartBehavior,
-                contentInsertionConfiguration: contentInsertionConfiguration,
-                clipBehavior: clipBehavior,
-                scribbleEnabled: scribbleEnabled,
-                canRequestFocus: canRequestFocus,
-              ),
-            );
-          },
-          validator: (value) {
-            if (required == true && value == null) {
-              return '请输入';
-            }
-
-            if (validator != null) {
-              final String? errorText = validator(value);
-              if (errorText != null) {
-                return errorText;
-              }
-            }
-
-            /// 如果最小值不为空，判断输入值是否小于最小值
-            if (minValue != null && value! < minValue) {
-              return '输入值需大于或等于$minValue';
-            }
-
-            /// 如果最小数量不为空，判断已选数量是否小于最小数量
-            if (maxValue != null && value! > maxValue) {
-              return '输入值需小于或等于$maxValue';
-            }
-
-            return null;
-          },
-        );
-}
-
-/// field 为文本输入框表单的 [TxCommonTextFormFieldTile]
-class TxNumberFormFieldTile extends TxFormFieldTile<num> {
-  TxNumberFormFieldTile({
-    bool? clearable,
-    super.key,
-    super.onSaved,
-    FormFieldValidator<num>? validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.decoration,
-    super.onChanged,
-    super.required,
-    super.initialValue,
-    String? hintText = '请输入',
-    num? maxValue,
-    num? minValue,
-    bool? stepped,
-    num? step,
-    int? precision,
-    bool? stepStrictly,
-    TextEditingController? controller,
-    FocusNode? focusNode,
-    TextInputType? keyboardType,
-    TextCapitalization? textCapitalization,
-    TextInputAction? textInputAction,
-    TextStyle? style,
-    StrutStyle? strutStyle,
-    TextDirection? textDirection,
-    TextAlign? textAlign,
-    TextAlignVertical? textAlignVertical,
-    bool? autofocus,
-    bool? readOnly,
-    bool? showCursor,
-    String? obscuringCharacter,
-    bool? obscureText,
-    bool? autocorrect,
-    SmartDashesType? smartDashesType,
-    SmartQuotesType? smartQuotesType,
-    bool? enableSuggestions,
-    MaxLengthEnforcement? maxLengthEnforcement,
-    int? maxLines,
-    int? minLines,
-    bool? expands,
-    int? maxLength,
-    ValueChanged<TxFieldState<num>>? onTap,
-    bool? onTapAlwaysCalled,
-    TapRegionCallback? onTapOutside,
-    VoidCallback? onEditingComplete,
-    ValueChanged<String>? onFieldSubmitted,
-    List<TextInputFormatter>? inputFormatters,
-    double? cursorWidth,
-    double? cursorHeight,
-    Radius? cursorRadius,
-    Color? cursorColor,
-    Color? cursorErrorColor,
-    Brightness? keyboardAppearance,
-    EdgeInsets? scrollPadding,
-    bool? enableInteractiveSelection,
-    TextSelectionControls? selectionControls,
-    InputCounterWidgetBuilder? buildCounter,
-    ScrollPhysics? scrollPhysics,
-    Iterable<String>? autofillHints,
-    ScrollController? scrollController,
-    bool? enableIMEPersonalizedLearning,
-    MouseCursor? mouseCursor,
-    EditableTextContextMenuBuilder? contextMenuBuilder,
-    SpellCheckConfiguration? spellCheckConfiguration,
-    TextMagnifierConfiguration? magnifierConfiguration,
-    UndoHistoryController? undoController,
-    AppPrivateCommandCallback? onAppPrivateCommand,
-    bool? cursorOpacityAnimates,
-    ui.BoxHeightStyle? selectionHeightStyle,
-    ui.BoxWidthStyle? selectionWidthStyle,
-    DragStartBehavior? dragStartBehavior,
-    ContentInsertionConfiguration? contentInsertionConfiguration,
-    MaterialStatesController? statesController,
-    Clip? clipBehavior,
-    bool? scribbleEnabled,
-    bool? canRequestFocus,
-    super.labelBuilder,
+    super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -382,8 +201,10 @@ class TxNumberFormFieldTile extends TxFormFieldTile<num> {
     super.minLabelWidth,
     super.minVerticalPadding,
     super.dense,
+    super.colon,
+    super.focusColor,
   }) : super(
-          fieldBuilder: (field) => TxNumberFormField(
+          builder: (field) => TxNumberField(
             clearable: clearable,
             minValue: minValue,
             maxValue: maxValue,
@@ -393,7 +214,6 @@ class TxNumberFormFieldTile extends TxFormFieldTile<num> {
             precision: precision,
             initialValue: field.value,
             enabled: enabled,
-            autovalidateMode: autovalidateMode,
             restorationId: restorationId,
             controller: controller,
             focusNode: focusNode,
@@ -425,7 +245,6 @@ class TxNumberFormFieldTile extends TxFormFieldTile<num> {
             onTapAlwaysCalled: onTapAlwaysCalled,
             onTapOutside: onTapOutside,
             onEditingComplete: onEditingComplete,
-            onFieldSubmitted: onFieldSubmitted,
             inputFormatters: inputFormatters,
             cursorWidth: cursorWidth,
             cursorHeight: cursorHeight,
@@ -455,9 +274,27 @@ class TxNumberFormFieldTile extends TxFormFieldTile<num> {
             clipBehavior: clipBehavior,
             scribbleEnabled: scribbleEnabled,
             canRequestFocus: canRequestFocus,
-            onSaved: onSaved,
-            validator: validator,
-            required: required,
+            label: field.effectiveLabel,
+            labelTextAlign: labelTextAlign,
+            padding: padding,
+            actionsBuilder: actionsBuilder,
+            trailingBuilder: trailingBuilder,
+            labelStyle: labelStyle,
+            horizontalGap: horizontalGap,
+            tileColor: tileColor,
+            layoutDirection: layoutDirection,
+            leading: leading,
+            visualDensity: visualDensity,
+            shape: shape,
+            iconColor: iconColor,
+            textColor: textColor,
+            leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
+            minLeadingWidth: minLeadingWidth,
+            minLabelWidth: minLabelWidth,
+            minVerticalPadding: minVerticalPadding,
+            dense: dense,
+            colon: colon,
+            focusColor: focusColor,
           ),
           validator: (value) {
             if (required == true && value == null) {

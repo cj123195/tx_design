@@ -3,115 +3,45 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-import 'field.dart';
-import 'field_tile_theme.dart';
+import 'tile_theme.dart';
 
-typedef LabelBuilder = Widget Function(TextStyle style);
+class _IndividualOverrides extends MaterialStateProperty<Color?> {
+  _IndividualOverrides({
+    this.explicitColor,
+    this.enabledColor,
+    this.focusColor,
+    this.disabledColor,
+  });
 
-typedef FieldTileActionsBuilder<T> = List<Widget> Function(
-  TxFieldState<T> field,
-);
-
-class TxFieldTile<T> extends TxField<T> {
-  const TxFieldTile({
-    required FieldBuilder<T> fieldBuilder,
-    super.key,
-    super.initialValue,
-    super.decoration,
-    super.focusNode,
-    super.enabled,
-    super.onChanged,
-    super.hintText,
-    super.textAlign,
-    this.labelText,
-    this.labelBuilder,
-    this.labelStyle,
-    this.tileColor,
-    this.layoutDirection,
-    this.padding,
-    this.actionsBuilder,
-    this.trailingBuilder,
-    this.leading,
-    this.horizontalGap,
-    this.visualDensity,
-    this.shape,
-    this.iconColor,
-    this.textColor,
-    this.leadingAndTrailingTextStyle,
-    this.onTap,
-    this.minLeadingWidth,
-    this.minLabelWidth,
-    this.minVerticalPadding,
-    this.dense,
-  }) : super(builder: fieldBuilder);
-
-  final String? labelText;
-  final LabelBuilder? labelBuilder;
-  final TextStyle? labelStyle;
-  final Color? tileColor;
-  final Axis? layoutDirection;
-  final EdgeInsetsGeometry? padding;
-  final FieldTileActionsBuilder<T>? actionsBuilder;
-  final FieldBuilder<T>? trailingBuilder;
-  final Widget? leading;
-  final double? horizontalGap;
-  final VisualDensity? visualDensity;
-  final ShapeBorder? shape;
-  final Color? iconColor;
-  final Color? textColor;
-  final TextStyle? leadingAndTrailingTextStyle;
-  final GestureTapCallback? onTap;
-  final double? minLeadingWidth;
-  final double? minLabelWidth;
-  final double? minVerticalPadding;
-  final bool? dense;
+  final Color? explicitColor;
+  final Color? enabledColor;
+  final Color? focusColor;
+  final Color? disabledColor;
 
   @override
-  State<TxField<T>> createState() => _TxFieldTileState();
-}
-
-class _TxFieldTileState<T> extends TxFieldState<T> {
-  @override
-  TxFieldTile<T> get widget => super.widget as TxFieldTile<T>;
-
-  @override
-  Widget build(BuildContext context) {
-    return TxTile(
-      field: super.build(context),
-      labelBuilder: widget.labelBuilder,
-      labelText: widget.labelText,
-      padding: widget.padding,
-      actions:
-          widget.actionsBuilder == null ? null : widget.actionsBuilder!(this),
-      trailing:
-          widget.trailingBuilder == null ? null : widget.trailingBuilder!(this),
-      labelStyle: widget.labelStyle,
-      horizontalGap: widget.horizontalGap,
-      tileColor: widget.tileColor,
-      layoutDirection: widget.layoutDirection,
-      leading: widget.leading,
-      visualDensity: widget.visualDensity,
-      shape: widget.shape,
-      iconColor: widget.iconColor,
-      textColor: widget.textColor,
-      leadingAndTrailingTextStyle: widget.leadingAndTrailingTextStyle,
-      enabled: isEnabled,
-      onTap: widget.onTap,
-      minLeadingWidth: widget.minLeadingWidth,
-      minLabelWidth: widget.minLabelWidth,
-      dense: widget.dense,
-      minVerticalPadding: widget.minVerticalPadding,
-    );
+  Color? resolve(Set<MaterialState> states) {
+    if (explicitColor is MaterialStateColor) {
+      return MaterialStateProperty.resolveAs<Color?>(explicitColor, states);
+    }
+    if (states.contains(MaterialState.disabled)) {
+      return disabledColor;
+    }
+    if (states.contains(MaterialState.focused)) {
+      return focusColor;
+    }
+    return enabledColor;
   }
 }
 
 /// 一个域组件布局容器
 class TxTile extends StatelessWidget {
-  const TxTile({
-    required this.field,
+  TxTile({
+    required this.content,
     super.key,
-    this.labelBuilder,
-    this.labelText,
+    Widget? label,
+    String? labelText,
+    this.labelTextAlign,
+    this.labelOverflow,
     this.padding,
     this.actions,
     this.labelStyle,
@@ -131,38 +61,40 @@ class TxTile extends StatelessWidget {
     this.dense,
     this.minLabelWidth,
     this.minVerticalPadding,
+    this.colon,
+    this.focused = false,
+    this.focusColor,
   })  : assert(
-          labelBuilder == null || labelText == null,
-          'labelBuilder 和 labelText 最多指定一个',
+          label == null || labelText == null,
+          'label 和 labelText 最多指定一个',
         ),
         assert(
           actions == null || trailing == null,
           'actions 和 trailing 最多指定一个',
-        );
+        ),
+        label = label ?? (labelText == null ? null : Text(labelText));
 
-  /// 表单项
-  final Widget field;
-
-  /// 描述输入字段的可选文本。
-  ///
-  /// 如果需要更详细的标签，可以考虑使用 [labelBuilder]。
-  /// [labelBuilder] 和 [labelText] 只能指定一个。
-  final String? labelText;
+  /// 内容
+  final Widget content;
 
   /// 描述输入字段的可选小部件。
-  ///
-  /// 只能指定 [labelBuilder] 和 [labelText] 之一。
-  final LabelBuilder? labelBuilder;
+  final Widget? label;
 
-  /// [labelText] 与 [labelBuilder] 文字样式
+  /// [label] 文字样式
   ///
   /// 默认值为[TextTheme.labelLarge]
   final TextStyle? labelStyle;
 
+  /// [label] 文字的对齐方式
+  final TextAlign? labelTextAlign;
+
+  /// [label] 文字溢出处理方式
+  final TextOverflow? labelOverflow;
+
   /// 背景颜色
   final Color? tileColor;
 
-  /// [labelBuilder]与表单框排列的方向
+  /// [label]与表单框排列的方向
   ///
   /// [Axis.vertical] 纵向
   /// [Axis.horizontal] 横向
@@ -174,7 +106,7 @@ class TxTile extends StatelessWidget {
 
   /// 操作按钮
   ///
-  /// 当 [layoutDirection] 为 [Axis.horizontal] 时显示在 [field] 之后；
+  /// 当 [layoutDirection] 为 [Axis.horizontal] 时显示在 [content] 之后；
   /// 当 [layoutDirection] 为 [Axis.vertical] 时显示在标题栏尾部，
   /// 参考 [ListTile.trailing] 的位置。
   ///
@@ -191,7 +123,7 @@ class TxTile extends StatelessWidget {
   /// 参考 [ListTile.leading]
   final Widget? leading;
 
-  /// [labelBuilder]、[field]、[trailing] 间距
+  /// [label]、[content]、[trailing] 间距
   ///
   /// 仅当[layoutDirection]为[Axis.horizontal]时生效
   final double? horizontalGap;
@@ -220,26 +152,64 @@ class TxTile extends StatelessWidget {
   /// 参考 [ListTile.minLeadingWidth]
   final double? minLeadingWidth;
 
-  /// 限制 [labelBuilder] 或 [labelText] 的最小宽度。
+  /// 限制 [label] 的最小宽度。
   final double? minLabelWidth;
 
-  /// 最小垂直方向内边距。
+  /// 最小纵向内边距。
   final double? minVerticalPadding;
 
   /// 参考 [ListTile.dense]
   final bool? dense;
 
+  /// 是否显示冒号
+  final bool? colon;
+
+  /// 是否选中
+  final bool focused;
+
+  /// 选中的文字和图标颜色
+  final Color? focusColor;
+
   @override
   Widget build(BuildContext context) {
-    final TxFieldTileThemeData tileTheme = TxFieldTileTheme.of(context);
-    final TxFieldTileThemeData defaults = _FieldTileDefaultsM3(context);
+    final ThemeData theme = Theme.of(context);
+    final TxTileThemeData tileTheme = TxTileTheme.of(context);
+    final TxTileThemeData defaults = _FieldTileDefaultsM3(context);
+
+    final Set<MaterialState> states = <MaterialState>{
+      if (!enabled) MaterialState.disabled,
+      if (focused) MaterialState.focused,
+    };
+
+    Color? resolveColor(
+      Color? explicitColor,
+      Color? focusColor,
+      Color? enabledColor, [
+      Color? disabledColor,
+    ]) {
+      return _IndividualOverrides(
+        explicitColor: explicitColor,
+        focusColor: focusColor,
+        enabledColor: enabledColor,
+        disabledColor: disabledColor,
+      ).resolve(states);
+    }
+
+    final Color? effectiveIconColor = resolveColor(
+            iconColor, focusColor, iconColor) ??
+        resolveColor(
+            tileTheme.iconColor, tileTheme.focusColor, tileTheme.iconColor) ??
+        resolveColor(defaults.iconColor, defaults.focusColor,
+            defaults.iconColor, theme.disabledColor);
+    final Color? effectiveColor = resolveColor(
+            textColor, focusColor, textColor) ??
+        resolveColor(
+            tileTheme.textColor, tileTheme.focusColor, tileTheme.textColor) ??
+        resolveColor(defaults.textColor, defaults.focusColor,
+            defaults.textColor, theme.disabledColor);
 
     final Color? effectiveTileColor =
         tileColor ?? tileTheme.tileColor ?? defaults.tileColor;
-    final Color? effectiveTextColor =
-        textColor ?? tileTheme.textColor ?? defaults.textColor;
-    final Color? effectiveIconColor =
-        iconColor ?? tileTheme.iconColor ?? defaults.iconColor;
     final EdgeInsetsGeometry effectivePadding =
         padding ?? tileTheme.padding ?? defaults.padding!;
     final double effectiveHorizontalGap =
@@ -264,6 +234,7 @@ class TxTile extends StatelessWidget {
 
     TextStyle effectiveLabelStyle =
         labelStyle ?? tileTheme.labelStyle ?? defaults.labelStyle!;
+
     effectiveLabelStyle = effectiveLabelStyle.copyWith(
       color: textColor,
       fontSize: effectiveDense
@@ -272,25 +243,31 @@ class TxTile extends StatelessWidget {
               : effectiveLabelStyle.fontSize! * 0.9
           : null,
     );
-    final Widget? labelWidget = labelBuilder == null && labelText == null
+    final TextAlign? effectiveLabelTextAlign =
+        labelTextAlign ?? tileTheme.labelTextAlign ?? defaults.labelTextAlign;
+    final TextOverflow effectiveLabelOverflow =
+        labelOverflow ?? tileTheme.labelOverflow ?? defaults.labelOverflow!;
+    final Widget? labelWidget = label == null
         ? null
         : DefaultTextStyle(
             style: effectiveLabelStyle,
-            child: labelBuilder?.call(effectiveLabelStyle) ?? Text(labelText!),
+            textAlign: effectiveLabelTextAlign,
+            overflow: effectiveLabelOverflow,
+            child: label!,
           );
 
     final IconThemeData iconThemeData =
-        IconThemeData(color: effectiveIconColor);
+        IconThemeData(color: effectiveIconColor, size: 20.0);
     final IconButtonThemeData iconButtonThemeData = IconButtonThemeData(
       style: IconButton.styleFrom(foregroundColor: effectiveIconColor),
     );
 
     TextStyle? leadingAndTrailingStyle;
-    if (leading != null || trailing != null) {
+    if (leading != null || trailing != null || actions?.isNotEmpty == true) {
       leadingAndTrailingStyle = leadingAndTrailingTextStyle ??
           tileTheme.leadingAndTrailingTextStyle ??
           defaults.leadingAndTrailingTextStyle!;
-      final Color? leadingAndTrailingTextColor = effectiveTextColor;
+      final Color? leadingAndTrailingTextColor = effectiveColor;
       leadingAndTrailingStyle = leadingAndTrailingStyle.copyWith(
         color: leadingAndTrailingTextColor,
         fontSize: effectiveDense
@@ -342,19 +319,15 @@ class TxTile extends StatelessWidget {
                 child: _FieldTile(
                   isVertical: isVertical,
                   leading: leadingIcon,
-                  field: field,
-                  labelBuilder: labelWidget,
+                  content: content,
+                  label: labelWidget,
                   trailing: trailingIcon,
                   isDense: effectiveDense,
                   visualDensity: effectiveVisualDensity,
-                  titleBaselineType: effectiveLabelStyle.textBaseline ??
-                      defaults.labelStyle!.textBaseline!,
-                  subtitleBaselineType: effectiveLabelStyle.textBaseline ??
-                      defaults.labelStyle!.textBaseline!,
                   horizontalTitleGap: effectiveHorizontalGap,
-                  minVerticalPadding: effectiveMinVerticalPadding,
                   minLeadingWidth: effectiveMinLeadingWidth,
                   minLabelWidth: effectiveMinLabelWidth,
+                  minVerticalPadding: effectiveMinVerticalPadding,
                 ),
               ),
             ),
@@ -368,32 +341,30 @@ class TxTile extends StatelessWidget {
 /// 标识_FieldTileElement的子项。
 enum _FieldTileSlot {
   leading,
-  labelBuilder,
-  field,
+  label,
+  content,
   trailing,
 }
 
 class _FieldTile
     extends SlottedMultiChildRenderObjectWidget<_FieldTileSlot, RenderBox> {
   const _FieldTile({
-    required this.field,
+    required this.content,
     required this.isVertical,
     required this.isDense,
     required this.visualDensity,
     required this.horizontalTitleGap,
     required this.minLeadingWidth,
     required this.minLabelWidth,
-    required this.titleBaselineType,
     required this.minVerticalPadding,
-    this.subtitleBaselineType,
     this.leading,
-    this.labelBuilder,
+    this.label,
     this.trailing,
   });
 
   final Widget? leading;
-  final Widget field;
-  final Widget? labelBuilder;
+  final Widget content;
+  final Widget? label;
   final Widget? trailing;
   final bool isVertical;
   final bool isDense;
@@ -401,8 +372,6 @@ class _FieldTile
   final double horizontalTitleGap;
   final double minLeadingWidth;
   final double minLabelWidth;
-  final TextBaseline titleBaselineType;
-  final TextBaseline? subtitleBaselineType;
   final double minVerticalPadding;
 
   @override
@@ -413,10 +382,10 @@ class _FieldTile
     switch (slot) {
       case _FieldTileSlot.leading:
         return leading;
-      case _FieldTileSlot.labelBuilder:
-        return labelBuilder;
-      case _FieldTileSlot.field:
-        return field;
+      case _FieldTileSlot.label:
+        return label;
+      case _FieldTileSlot.content:
+        return content;
       case _FieldTileSlot.trailing:
         return trailing;
     }
@@ -431,8 +400,6 @@ class _FieldTile
       horizontalTitleGap: horizontalTitleGap,
       minLeadingWidth: minLeadingWidth,
       minLabelWidth: minLabelWidth,
-      titleBaselineType: titleBaselineType,
-      subtitleBaselineType: subtitleBaselineType,
       minVerticalPadding: minVerticalPadding,
     );
   }
@@ -443,8 +410,6 @@ class _FieldTile
       ..isVertical = isVertical
       ..isDense = isDense
       ..visualDensity = visualDensity
-      ..titleBaselineType = titleBaselineType
-      ..subtitleBaselineType = subtitleBaselineType
       ..horizontalTitleGap = horizontalTitleGap
       ..minLeadingWidth = minLeadingWidth
       ..minLabelWidth = minLabelWidth
@@ -461,24 +426,20 @@ class _RenderFieldTile extends RenderBox
     required double horizontalTitleGap,
     required double minLeadingWidth,
     required double minLabelWidth,
-    required TextBaseline titleBaselineType,
     required double minVerticalPadding,
-    TextBaseline? subtitleBaselineType,
   })  : _isDense = isDense,
         _visualDensity = visualDensity,
         _isVertical = isVertical,
         _horizontalTitleGap = horizontalTitleGap,
         _minLeadingWidth = minLeadingWidth,
         _minLabelWidth = minLabelWidth,
-        _titleBaselineType = titleBaselineType,
-        _minVerticalPadding = minVerticalPadding,
-        _subtitleBaselineType = subtitleBaselineType;
+        _minVerticalPadding = minVerticalPadding;
 
   RenderBox? get leading => childForSlot(_FieldTileSlot.leading);
 
-  RenderBox? get labelBuilder => childForSlot(_FieldTileSlot.labelBuilder);
+  RenderBox? get label => childForSlot(_FieldTileSlot.label);
 
-  RenderBox? get field => childForSlot(_FieldTileSlot.field);
+  RenderBox? get content => childForSlot(_FieldTileSlot.content);
 
   RenderBox? get trailing => childForSlot(_FieldTileSlot.trailing);
 
@@ -487,8 +448,8 @@ class _RenderFieldTile extends RenderBox
   Iterable<RenderBox> get children {
     return <RenderBox>[
       if (leading != null) leading!,
-      if (labelBuilder != null) labelBuilder!,
-      if (field != null) field!,
+      if (label != null) label!,
+      if (content != null) content!,
       if (trailing != null) trailing!,
     ];
   }
@@ -562,28 +523,6 @@ class _RenderFieldTile extends RenderBox
     markNeedsLayout();
   }
 
-  TextBaseline get titleBaselineType => _titleBaselineType;
-  TextBaseline _titleBaselineType;
-
-  set titleBaselineType(TextBaseline value) {
-    if (_titleBaselineType == value) {
-      return;
-    }
-    _titleBaselineType = value;
-    markNeedsLayout();
-  }
-
-  TextBaseline? get subtitleBaselineType => _subtitleBaselineType;
-  TextBaseline? _subtitleBaselineType;
-
-  set subtitleBaselineType(TextBaseline? value) {
-    if (_subtitleBaselineType == value) {
-      return;
-    }
-    _subtitleBaselineType = value;
-    markNeedsLayout();
-  }
-
   double get minVerticalPadding => _minVerticalPadding;
   double _minVerticalPadding;
 
@@ -606,6 +545,8 @@ class _RenderFieldTile extends RenderBox
     return box == null ? 0.0 : box.getMaxIntrinsicWidth(height);
   }
 
+  static const double _verticalGap = 8.0;
+
   @override
   double computeMinIntrinsicWidth(double height) {
     final double leadingWidth = leading != null
@@ -613,18 +554,18 @@ class _RenderFieldTile extends RenderBox
             _effectiveHorizontalTitleGap
         : 0.0;
 
-    final double labelWidth = labelBuilder != null
-        ? math.max(labelBuilder!.getMinIntrinsicWidth(height), _minLabelWidth)
+    final double labelWidth = label != null
+        ? math.max(label!.getMinIntrinsicWidth(height), _minLabelWidth)
         : 0.0;
 
     final double minWith =
         leadingWidth + labelWidth + _maxWidth(trailing, height);
 
-    final double fieldWidth = _minWidth(field, height);
+    final double contentWidth = _minWidth(content, height);
 
     return isVertical
-        ? math.max(minWith, fieldWidth)
-        : minWith + fieldWidth + _effectiveHorizontalTitleGap;
+        ? math.max(minWith, contentWidth)
+        : minWith + contentWidth + _effectiveHorizontalTitleGap;
   }
 
   @override
@@ -634,42 +575,27 @@ class _RenderFieldTile extends RenderBox
             _effectiveHorizontalTitleGap
         : 0.0;
 
-    final double labelWidth = labelBuilder != null
-        ? math.max(labelBuilder!.getMaxIntrinsicWidth(height), _minLabelWidth)
+    final double labelWidth = label != null
+        ? math.max(label!.getMaxIntrinsicWidth(height), _minLabelWidth)
         : 0.0;
 
     final double maxWidth =
         leadingWidth + labelWidth + _maxWidth(trailing, height);
 
-    final double fieldWidth = _maxWidth(field, height);
+    final double contentWidth = _maxWidth(content, height);
 
     return isVertical
-        ? math.max(maxWidth, fieldWidth)
-        : maxWidth + fieldWidth + _effectiveHorizontalTitleGap;
-  }
-
-  double get _defaultTileHeight {
-    final bool hasLabel = labelBuilder != null;
-    final bool isOneLine = !_isVertical || !hasLabel;
-
-    final Offset baseDensity = visualDensity.baseSizeAdjustment;
-    if (isOneLine) {
-      return (isDense ? 48.0 : 56.0) + baseDensity.dy;
-    }
-    return (isDense ? 64.0 : 72.0) + baseDensity.dy;
+        ? math.max(maxWidth, contentWidth)
+        : maxWidth + contentWidth + _effectiveHorizontalTitleGap;
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    final double labelHeight =
-        labelBuilder?.getMinIntrinsicHeight(width) ?? 0.0;
-    final double fieldHeight = field!.getMinIntrinsicHeight(width);
-    return math.max(
-      _defaultTileHeight,
-      _isVertical
-          ? labelHeight + fieldHeight
-          : math.max(labelHeight, fieldHeight),
-    );
+    final double labelHeight = label?.getMinIntrinsicHeight(width) ?? 0.0;
+    final double contentHeight = content!.getMinIntrinsicHeight(width);
+    return _isVertical
+        ? labelHeight + contentHeight
+        : math.max(labelHeight, contentHeight);
   }
 
   @override
@@ -679,13 +605,10 @@ class _RenderFieldTile extends RenderBox
 
   @override
   double computeDistanceToActualBaseline(TextBaseline baseline) {
-    assert(field != null);
-    final BoxParentData parentData = field!.parentData! as BoxParentData;
-    return parentData.offset.dy + field!.getDistanceToActualBaseline(baseline)!;
-  }
-
-  static double? _boxBaseline(RenderBox box, TextBaseline baseline) {
-    return box.getDistanceToBaseline(baseline);
+    assert(content != null);
+    final BoxParentData parentData = content!.parentData! as BoxParentData;
+    return parentData.offset.dy +
+        content!.getDistanceToActualBaseline(baseline)!;
   }
 
   static Size _layoutBox(RenderBox? box, BoxConstraints constraints) {
@@ -713,13 +636,16 @@ class _RenderFieldTile extends RenderBox
     return Size.zero;
   }
 
-// All of the dimensions below were taken from the Material Design spec:
-// https://material.io/design/components/lists.html#specs
+  double _computeY(double maxHeight, double height) {
+    final double diff = (maxHeight - height) / 2;
+    return math.min(16.0, diff);
+  }
+
   @override
   void performLayout() {
     final BoxConstraints constraints = this.constraints;
     final bool hasLeading = leading != null;
-    final bool hasLabel = labelBuilder != null;
+    final bool hasLabel = label != null;
     final bool hasTrailing = trailing != null;
     final bool isTwoLine = hasLabel && _isVertical;
     final bool isOneLine = !_isVertical || !hasLabel;
@@ -760,20 +686,19 @@ class _RenderFieldTile extends RenderBox
         : 0.0;
 
     final BoxConstraints labelConstraints;
-    final BoxConstraints fieldConstraints;
+    final BoxConstraints contentConstraints;
     if (isTwoLine) {
       labelConstraints = looseConstraints.tighten(
         width: tileWidth - labelStart - adjustedTrailingWidth,
       );
-      fieldConstraints = looseConstraints.tighten(width: tileWidth);
+      contentConstraints = looseConstraints.tighten(width: tileWidth);
     } else {
       final labelWidth = math.max(
-        labelBuilder?.getMaxIntrinsicWidth(maxIconHeightConstraint.maxHeight) ??
-            0.0,
+        label?.getMaxIntrinsicWidth(maxIconHeightConstraint.maxHeight) ?? 0.0,
         _minLabelWidth,
       );
       labelConstraints = BoxConstraints(maxWidth: labelWidth);
-      fieldConstraints = looseConstraints.tighten(
+      contentConstraints = looseConstraints.tighten(
         width: tileWidth -
             labelStart -
             adjustedTrailingWidth -
@@ -781,113 +706,43 @@ class _RenderFieldTile extends RenderBox
       );
     }
 
-    final Size fieldSize = _layoutBox(field, fieldConstraints);
-    final Size labelSize = _layoutBox(labelBuilder, labelConstraints);
+    final Size contentSize = _layoutBox(content, contentConstraints);
+    final Size labelSize = _layoutBox(label, labelConstraints);
 
-    final double fieldStart = isOneLine
+    final double contentStart = isOneLine
         ? hasLabel
             ? labelStart + labelSize.width + _effectiveHorizontalTitleGap
             : labelStart
         : 0.0;
 
-    double? titleBaseline;
-    double? subtitleBaseline;
-    if (isTwoLine) {
-      titleBaseline = isDense ? 28.0 : 32.0;
-      subtitleBaseline = isDense ? 48.0 : 52.0;
-    } else {
-      assert(isOneLine);
-    }
+    double tileHeight = math.max(
+        math.max(labelSize.height, leadingSize.height), trailingSize.height);
 
-    final double defaultTileHeight = _defaultTileHeight;
-
-    double tileHeight;
-    double fieldY;
+    double contentY;
     double? labelY;
     final double leadingY;
     final double trailingY;
     if (isOneLine) {
-      tileHeight = math.max(
-          defaultTileHeight, fieldSize.height + 2.0 * _minVerticalPadding);
-      fieldY = (tileHeight - fieldSize.height) / 2.0;
-      if (tileHeight > 72.0) {
-        double maxHeight = labelSize.height > leadingSize.height &&
-                labelSize.height > trailingSize.height
-            ? labelSize.height
-            : leadingSize.height > trailingSize.height
-                ? leadingSize.height
-                : trailingSize.height;
-        maxHeight = math.max(36.0, maxHeight);
-        labelY = math.min((maxHeight - labelSize.height) / 2, 16.0) +
-            _minVerticalPadding;
-        leadingY = math.min((maxHeight - leadingSize.height) / 2, 16.0) +
-            _minVerticalPadding;
-        trailingY = math.min((maxHeight - trailingSize.height) / 2, 16.0) +
-            _minVerticalPadding;
-      } else {
-        labelY = (tileHeight - labelSize.height) / 2.0;
-        leadingY = (tileHeight - leadingSize.height) / 2.0;
-        trailingY = (tileHeight - trailingSize.height) / 2.0;
-      }
+      tileHeight = math.max(tileHeight, contentSize.height);
+      contentY = _computeY(tileHeight, contentSize.height);
+      labelY = _computeY(tileHeight, labelSize.height);
+      leadingY = _computeY(tileHeight, leadingSize.height);
+      trailingY = _computeY(tileHeight, trailingSize.height);
     } else {
-      assert(subtitleBaselineType != null);
-      fieldY = subtitleBaseline! -
-          _boxBaseline(field!, subtitleBaselineType!)! +
-          visualDensity.vertical * 2.0;
-      double titleY;
-      double titleHeight;
-      double titleOverlap;
-      if (labelSize.height > leadingSize.height &&
-          labelSize.height > trailingSize.height) {
-        titleHeight = labelSize.height;
-        titleY =
-            titleBaseline! - _boxBaseline(labelBuilder!, titleBaselineType)!;
-        titleOverlap = titleY + labelSize.height - fieldY;
-      } else if (leadingSize.height > trailingSize.height) {
-        titleHeight = leadingSize.height;
-        titleY = titleBaseline! - _boxBaseline(leading!, titleBaselineType)!;
-        titleOverlap = titleY + leadingSize.height - fieldY;
-      } else {
-        titleHeight = trailingSize.height;
-        titleY = titleBaseline! - _boxBaseline(trailing!, titleBaselineType)!;
-        titleOverlap = titleY + trailingSize.height - fieldY;
-      }
-
-      tileHeight = defaultTileHeight;
-
-      if (titleOverlap > 0.0) {
-        titleY -= titleOverlap / 2.0;
-        fieldY += titleOverlap / 2.0;
-      }
-
-// If the title or subtitle overflow tileHeight then punt: title
-// and subtitle are arranged in a column, tileHeight = column height plus
-// _minVerticalPadding on top and bottom.
-      if (titleY < _minVerticalPadding ||
-          (fieldY + fieldSize.height + _minVerticalPadding) > tileHeight) {
-        tileHeight = titleHeight + fieldSize.height + 2.0 * _minVerticalPadding;
-        titleY = _minVerticalPadding;
-        fieldY = titleHeight + _minVerticalPadding;
-        if (titleHeight == labelSize.height) {
-          tileHeight += 4.0;
-          fieldY += 4.0;
-        }
-      }
-
-      labelY = math.min((titleHeight - labelSize.height) / 2, 16.0) + titleY;
-      leadingY =
-          math.min((titleHeight - leadingSize.height) / 2, 16.0) + titleY;
-      trailingY =
-          math.min((titleHeight - trailingSize.height) / 2, 16.0) + titleY;
+      labelY = _computeY(tileHeight, labelSize.height);
+      leadingY = _computeY(tileHeight, leadingSize.height);
+      trailingY = _computeY(tileHeight, trailingSize.height);
+      contentY = tileHeight + _verticalGap + visualDensity.vertical * 2.0;
+      tileHeight = contentY + contentSize.height;
     }
 
     if (hasLeading) {
       _positionBox(leading!, Offset(0.0, leadingY));
     }
     if (hasLabel) {
-      _positionBox(labelBuilder!, Offset(labelStart, labelY));
+      _positionBox(label!, Offset(labelStart, labelY));
     }
-    _positionBox(field!, Offset(fieldStart, fieldY));
+    _positionBox(content!, Offset(contentStart, contentY));
     if (hasTrailing) {
       _positionBox(
           trailing!, Offset(tileWidth - trailingSize.width, trailingY));
@@ -908,8 +763,8 @@ class _RenderFieldTile extends RenderBox
     }
 
     doPaint(leading);
-    doPaint(labelBuilder);
-    doPaint(field);
+    doPaint(label);
+    doPaint(content);
     doPaint(trailing);
   }
 
@@ -936,18 +791,19 @@ class _RenderFieldTile extends RenderBox
   }
 }
 
-class _FieldTileDefaultsM3 extends TxFieldTileThemeData {
+class _FieldTileDefaultsM3 extends TxTileThemeData {
   _FieldTileDefaultsM3(this.context)
       : super(
-          padding: EdgeInsets.zero,
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
           minLeadingWidth: 0,
           shape: const RoundedRectangleBorder(),
           horizontalGap: 8.0,
           layoutDirection: Axis.vertical,
           dense: false,
           visualDensity: VisualDensity.comfortable,
-          minVerticalPadding: 0,
           minLabelWidth: 0,
+          labelOverflow: TextOverflow.ellipsis,
+          minVerticalPadding: 0,
         );
 
   final BuildContext context;
@@ -959,8 +815,10 @@ class _FieldTileDefaultsM3 extends TxFieldTileThemeData {
   Color? get tileColor => Colors.transparent;
 
   @override
-  TextStyle? get labelStyle =>
-      _textTheme.titleMedium!.copyWith(color: _colors.onSurface);
+  TextStyle? get labelStyle => _textTheme.labelLarge!.copyWith(
+        color: _colors.onSurfaceVariant,
+        fontWeight: FontWeight.w500,
+      );
 
   @override
   TextStyle? get leadingAndTrailingTextStyle =>

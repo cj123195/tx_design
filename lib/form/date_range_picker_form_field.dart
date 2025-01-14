@@ -10,7 +10,7 @@ import 'picker_form_field.dart';
   'Use TxDateRangePickerFormFieldTile instead. '
   'This feature was deprecated after v0.3.0.',
 )
-class DateRangePickerFormField extends TxDateRangePickerFormFieldTile {
+class DateRangePickerFormField extends TxDateRangePickerFormField {
   @Deprecated(
     'Use TxDateRangePickerFormFieldTile instead. '
     'This feature was deprecated after v0.3.0.',
@@ -33,6 +33,8 @@ class DateRangePickerFormField extends TxDateRangePickerFormFieldTile {
     super.required,
     Widget? label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     Color? backgroundColor,
     Axis? direction,
     super.padding,
@@ -51,16 +53,16 @@ class DateRangePickerFormField extends TxDateRangePickerFormFieldTile {
     PickerFuture<DateTimeRange?>? onTap,
   }) : super(
           initialDateRange: initialValue,
-          labelBuilder: label == null ? null : (context) => label,
+          label: label,
           layoutDirection: direction,
         );
 }
 
 const String _defaultFormat = 'yyyy/MM/dd\t—\tyyyy/MM/dd';
 
-/// builder 构建组件为日期范围选择框的 [FormField]
+/// 日期范围选择框表单
 class TxDateRangePickerFormField
-    extends TxPickerFormField<DateTimeRange, String> {
+    extends TxPickerFormField<DateTimeRange, DateTimeRange> {
   TxDateRangePickerFormField({
     super.key,
     super.onSaved,
@@ -84,108 +86,10 @@ class TxDateRangePickerFormField
       DateRangeYearQuickChoice(),
     ],
     String? format,
-    super.controller,
-    super.focusNode,
-    super.undoController,
-    super.keyboardType,
-    super.textInputAction,
-    super.textCapitalization,
-    super.style,
-    super.strutStyle,
-    super.textAlign,
-    super.textAlignVertical,
-    super.textDirection,
-    super.showCursor,
-    super.autofocus,
-    super.statesController,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLines,
-    super.minLines,
-    super.expands,
-    super.maxLength,
-    super.maxLengthEnforcement,
-    super.onEditingComplete,
-    super.onFieldSubmitted,
-    super.onAppPrivateCommand,
-    super.inputFormatters,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorOpacityAnimates,
-    super.cursorColor,
-    super.cursorErrorColor,
-    super.selectionHeightStyle,
-    super.selectionWidthStyle,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.dragStartBehavior,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.onTapAlwaysCalled,
-    super.onTapOutside,
-    super.mouseCursor,
-    super.buildCounter,
-    super.scrollController,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.contentInsertionConfiguration,
-    super.clipBehavior,
-    super.scribbleEnabled,
-    super.enableIMEPersonalizedLearning,
-    super.contextMenuBuilder,
-    super.canRequestFocus,
-    super.spellCheckConfiguration,
-    super.magnifierConfiguration,
-  }) : super.custom(
-          initialValue: initialDateRange,
-          onPickTap: (context, range) => showCupertinoDateRangePicker(
-            context,
-            minimumDate: minimumDate,
-            maximumDate: maximumDate,
-            initialDateRange: range,
-            helpText: helpText,
-            quickChoices: quickChoices,
-            fieldEndHintText: fieldEndHintText,
-            fieldStartHintText: fieldStartHintText,
-          ),
-          displayTextMapper: (context, range) =>
-              range.format(format ?? _defaultFormat),
-        );
-}
-
-/// field 为日期范围选择框表单的 [TxPickerFormFieldTile]
-class TxDateRangePickerFormFieldTile
-    extends TxPickerFormFieldTile<DateTimeRange, DateTimeRange> {
-  TxDateRangePickerFormFieldTile({
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.decoration,
-    super.onChanged,
-    super.required,
-    super.hintText,
-    DateTimeRange? initialDateRange,
-    DateTime? minimumDate,
-    DateTime? maximumDate,
-    String? helpText,
-    String? fieldStartHintText,
-    String? fieldEndHintText,
-    List<DateRangeQuickChoice>? quickChoices = const [
-      DateRangeMonthQuickChoice(),
-      DateRangeMonthQuickChoice(value: 6),
-      DateRangeYearQuickChoice(),
-    ],
-    String? format,
-    super.labelBuilder,
+    super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -203,6 +107,8 @@ class TxDateRangePickerFormFieldTile
     super.minLabelWidth,
     super.minVerticalPadding,
     super.dense,
+    super.colon,
+    super.focusColor,
     super.controller,
     super.focusNode,
     super.undoController,
@@ -212,6 +118,7 @@ class TxDateRangePickerFormFieldTile
     super.style,
     super.strutStyle,
     super.textAlign,
+    super.bordered,
     super.textAlignVertical,
     super.textDirection,
     super.showCursor,

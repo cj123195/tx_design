@@ -1,11 +1,10 @@
 import '../extensions/datetime_extension.dart';
 import '../widgets/date_picker.dart';
-import 'field_tile.dart';
 import 'picker_field.dart';
 
 const String _defaultFormat = 'yyyy-MM-dd';
 
-/// 日期选择框
+/// 内容为日期选择框的 TxTile
 class TxDatePickerField extends TxPickerField<DateTime, String> {
   TxDatePickerField({
     super.key,
@@ -15,6 +14,7 @@ class TxDatePickerField extends TxPickerField<DateTime, String> {
     super.enabled,
     super.hintText,
     super.textAlign,
+    super.bordered,
     String? initialDateStr,
     DateTime? initialDate,
     DateTime? minimumDate,
@@ -23,101 +23,10 @@ class TxDatePickerField extends TxPickerField<DateTime, String> {
     int? maximumYear,
     String? format,
     String? titleText,
-    super.controller,
-    super.undoController,
-    super.keyboardType,
-    super.textInputAction,
-    super.textCapitalization,
-    super.style,
-    super.strutStyle,
-    super.textAlignVertical,
-    super.textDirection,
-    super.showCursor,
-    super.autofocus,
-    super.statesController,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLines,
-    super.minLines,
-    super.expands,
-    super.maxLength,
-    super.maxLengthEnforcement,
-    super.onEditingComplete,
-    super.onSubmitted,
-    super.onAppPrivateCommand,
-    super.inputFormatters,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorOpacityAnimates,
-    super.cursorColor,
-    super.cursorErrorColor,
-    super.selectionHeightStyle,
-    super.selectionWidthStyle,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.dragStartBehavior,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.onTapAlwaysCalled,
-    super.onTapOutside,
-    super.mouseCursor,
-    super.buildCounter,
-    super.scrollController,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.contentInsertionConfiguration,
-    super.clipBehavior,
-    super.restorationId,
-    super.scribbleEnabled,
-    super.enableIMEPersonalizedLearning,
-    super.contextMenuBuilder,
-    super.canRequestFocus,
-    super.spellCheckConfiguration,
-    super.magnifierConfiguration,
-  }) : super.custom(
-          initialValue: initialDate ??
-              (initialDateStr == null
-                  ? null
-                  : DateTime.tryParse(initialDateStr)),
-          onPickTap: (context, date) => showCupertinoDatePicker(
-            context,
-            initialDate: date,
-            titleText: titleText,
-            minimumDate: minimumDate,
-            maximumDate: maximumDate,
-            minimumYear: minimumYear,
-            maximumYear: maximumYear,
-          ),
-          displayTextMapper: (context, date) =>
-              date.format(format ?? _defaultFormat),
-        );
-}
-
-/// field 为日期选择框的 [TxFieldTile]
-class TxDatePickerFieldTile extends TxPickerFieldTile<DateTime, String> {
-  TxDatePickerFieldTile({
-    super.key,
-    super.focusNode,
-    super.decoration,
-    super.onChanged,
-    super.enabled,
-    super.hintText,
-    super.textAlign,
-    String? initialDateStr,
-    DateTime? initialDate,
-    DateTime? minimumDate,
-    DateTime? maximumDate,
-    int? minimumYear,
-    int? maximumYear,
-    String? format,
-    String? titleText,
-    super.labelBuilder,
+    super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -133,8 +42,9 @@ class TxDatePickerFieldTile extends TxPickerFieldTile<DateTime, String> {
     super.leadingAndTrailingTextStyle,
     super.minLeadingWidth,
     super.minLabelWidth,
-    super.minVerticalPadding,
     super.dense,
+    super.colon,
+    super.focusColor,
     super.controller,
     super.undoController,
     super.keyboardType,

@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../utils/basic_types.dart';
-import '../widgets/radio_cell.dart';
 import 'picker_field.dart';
 import 'wrap_field.dart';
 
 /// Radio 单项选择框
 class TxRadioField<T, V> extends TxWrapField<T> {
-  /// 创建一个默认的复选域
-  ///
-  /// [source] 和 [labelMapper] 必传
   TxRadioField({
     required List<T> source,
     required ValueMapper<T, String> labelMapper,
@@ -22,109 +18,17 @@ class TxRadioField<T, V> extends TxWrapField<T> {
     IndexedValueMapper<T, bool>? enabledMapper,
     T? initialData,
     V? initialValue,
-    super.runSpacing,
-    super.spacing,
+    double? runSpacing,
+    double? spacing,
     super.alignment,
     super.runAlignment,
     super.crossAxisAlignment,
-    MouseCursor? mouseCursor,
-    Color? activeColor,
-    MaterialStateProperty<Color?>? fillColor,
-    Color? focusColor,
-    Color? hoverColor,
-    MaterialStateProperty<Color?>? overlayColor,
-    double? splashRadius,
-    MaterialTapTargetSize? materialTapTargetSize,
-    IndexedValueMapper<T, bool>? toggleableMapper,
-    ListTileControlAffinity? controlAffinity,
-    EdgeInsetsGeometry? cellPadding,
-    ShapeBorder? cellShape,
-    TextStyle? labelStyle,
-    Color? textColor,
-    bool? useCupertinoCheckmarkStyle,
-  }) : super(
-          itemBuilder: (context, index, data, onChanged) {
-            final item = source[index];
-
-            final bool effectiveEnabled = enabled != false &&
-                (enabledMapper == null ? true : enabledMapper(index, item));
-
-            void onChangedHandler(T? val) {
-              if (val != null && val != data) {
-                onChanged(val);
-              }
-            }
-
-            return TxRadioCell<T>(
-              label: Text(labelMapper(item)),
-              value: item,
-              groupValue: data,
-              onChanged: effectiveEnabled ? onChangedHandler : null,
-              mouseCursor: mouseCursor,
-              activeColor: activeColor,
-              fillColor: fillColor,
-              focusColor: focusColor,
-              hoverColor: hoverColor,
-              overlayColor: overlayColor,
-              splashRadius: splashRadius,
-              materialTapTargetSize: materialTapTargetSize,
-              controlAffinity: controlAffinity,
-              padding: cellPadding,
-              toggleable: toggleableMapper == null
-                  ? null
-                  : toggleableMapper(index, item),
-              useCupertinoCheckmarkStyle: useCupertinoCheckmarkStyle,
-              shape: cellShape,
-              labelStyle: labelStyle,
-              textColor: textColor,
-            );
-          },
-          itemCount: source.length,
-          initialValue: TxPickerField.initData<T, V>(
-            source,
-            initialData,
-            initialValue,
-            valueMapper,
-          ),
-        );
-}
-
-/// field 为 Radio 单项选择框的 [TxWrapFieldTile]
-class TxRadioFieldTile<T, V> extends TxWrapFieldTile<T> {
-  TxRadioFieldTile({
-    required List<T> source,
-    required ValueMapper<T, String> labelMapper,
-    super.key,
-    super.decoration,
-    super.focusNode,
-    super.enabled,
-    super.onChanged,
-    ValueMapper<T, V?>? valueMapper,
-    IndexedValueMapper<T, bool>? enabledMapper,
-    T? initialData,
-    V? initialValue,
-    super.runSpacing,
-    super.spacing,
-    super.alignment,
-    super.runAlignment,
-    super.crossAxisAlignment,
-    MouseCursor? mouseCursor,
-    Color? activeColor,
-    MaterialStateProperty<Color?>? fillColor,
-    Color? focusColor,
-    Color? hoverColor,
-    MaterialStateProperty<Color?>? overlayColor,
-    double? splashRadius,
-    MaterialTapTargetSize? materialTapTargetSize,
-    IndexedValueMapper<T, bool>? toggleableMapper,
-    ListTileControlAffinity? controlAffinity,
-    EdgeInsetsGeometry? cellPadding,
-    ShapeBorder? cellShape,
-    TextStyle? cellLabelStyle,
-    Color? cellTextColor,
-    bool? useCupertinoCheckmarkStyle,
-    super.labelBuilder,
+    IndexedValueMapper<T, Widget>? avatarBuilder,
+    IndexedValueMapper<T, String>? tooltipMapper,
+    super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -143,41 +47,22 @@ class TxRadioFieldTile<T, V> extends TxWrapFieldTile<T> {
     super.minLabelWidth,
     super.minVerticalPadding,
     super.dense,
+    super.colon,
+    super.focusColor,
   }) : super(
-          itemBuilder: (context, index, data, onChanged) {
+          runSpacing: runSpacing ?? 8.0,
+          spacing: spacing ?? 8.0,
+          itemBuilder: (field, index, data, onChanged) {
             final item = source[index];
-
-            final bool effectiveEnabled = enabled != false &&
-                (enabledMapper == null ? true : enabledMapper(index, item));
-
-            void onChangedHandler(T? val) {
-              if (val != null && val != data) {
-                onChanged(val);
-              }
-            }
-
-            return TxRadioCell<T>(
-              label: Text(labelMapper(item)),
-              value: item,
-              groupValue: data,
-              onChanged: effectiveEnabled ? onChangedHandler : null,
-              mouseCursor: mouseCursor,
-              activeColor: activeColor,
-              fillColor: fillColor,
-              focusColor: focusColor,
-              hoverColor: hoverColor,
-              overlayColor: overlayColor,
-              splashRadius: splashRadius,
-              materialTapTargetSize: materialTapTargetSize,
-              controlAffinity: controlAffinity,
-              padding: cellPadding,
-              toggleable: toggleableMapper == null
-                  ? null
-                  : toggleableMapper(index, item),
-              useCupertinoCheckmarkStyle: useCupertinoCheckmarkStyle,
-              shape: cellShape,
-              labelStyle: cellLabelStyle,
-              textColor: cellTextColor,
+            return _ChipItem<T>(
+              index: index,
+              item: item,
+              selected: field.value == item,
+              labelMapper: labelMapper,
+              enabled: field.isEnabled,
+              onChanged: field.didChange,
+              enabledMapper: enabledMapper,
+              avatarBuilder: avatarBuilder,
             );
           },
           itemCount: source.length,
@@ -188,4 +73,59 @@ class TxRadioFieldTile<T, V> extends TxWrapFieldTile<T> {
             valueMapper,
           ),
         );
+}
+
+class _ChipItem<T> extends StatelessWidget {
+  const _ChipItem({
+    required this.index,
+    required this.item,
+    required this.selected,
+    required this.labelMapper,
+    required this.enabled,
+    required this.onChanged,
+    this.enabledMapper,
+    this.avatarBuilder,
+    this.tooltipMapper,
+    super.key,
+  });
+
+  final int index;
+  final T item;
+  final bool selected;
+  final ValueMapper<T, String> labelMapper;
+  final IndexedValueMapper<T, bool>? enabledMapper;
+  final IndexedValueMapper<T, Widget>? avatarBuilder;
+  final IndexedValueMapper<T, String>? tooltipMapper;
+  final bool enabled;
+  final ValueChanged<T> onChanged;
+
+  void onChangedHandler(bool? val) {
+    if (!selected) {
+      onChanged(item);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool effectiveEnabled = enabled != false &&
+        (enabledMapper == null ? true : enabledMapper!(index, item));
+
+    final OutlinedBorder shape = ChipTheme.of(context).shape ??
+        StadiumBorder(
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+        );
+
+    return ChoiceChip(
+      label: Text(labelMapper(item)),
+      avatar: avatarBuilder == null ? null : avatarBuilder!(index, item),
+      onSelected: effectiveEnabled ? onChangedHandler : null,
+      selected: selected,
+      tooltip: tooltipMapper == null ? null : tooltipMapper!(index, item),
+      shape: shape,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      showCheckmark: false,
+    );
+  }
 }

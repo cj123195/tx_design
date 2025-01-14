@@ -11,7 +11,7 @@ const String _defaultFormat = 'yyyy/MM/dd HH:mm\t—\tyyyy/MM/dd HH:mm';
   'Use TxDatetimeRangePickerFormFieldTile instead. '
   'This feature was deprecated after v0.3.0.',
 )
-class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormFieldTile {
+class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormField {
   @Deprecated(
     'Use TxDatetimeRangePickerFormFieldTile instead. '
     'This feature was deprecated after v0.3.0.',
@@ -25,6 +25,8 @@ class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormFieldTile {
     super.required,
     Widget? label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     Color? backgroundColor,
     Axis? direction,
     super.padding,
@@ -43,20 +45,21 @@ class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormFieldTile {
     super.strutStyle,
     super.textDirection,
     super.textAlign,
+    super.bordered,
     super.textAlignVertical,
     super.contextMenuBuilder,
     super.onChanged,
   }) : super(
-          labelBuilder: label == null ? null : (context) => label,
+          label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
           initialDatetimeRange: initialValue,
         );
 }
 
-/// [builder] 构建组件为日期时间范围选择框的 [FormField]
+/// 日期时间范围选择框表单
 class TxDatetimeRangePickerFormField
-    extends TxPickerFormField<DateTimeRange, String> {
+    extends TxPickerFormField<DateTimeRange, DateTimeRange> {
   TxDatetimeRangePickerFormField({
     super.key,
     super.onSaved,
@@ -74,100 +77,10 @@ class TxDatetimeRangePickerFormField
     String? helpText,
     String? titleText,
     String? format,
-    super.controller,
-    super.focusNode,
-    super.undoController,
-    super.keyboardType,
-    super.textInputAction,
-    super.textCapitalization,
-    super.style,
-    super.strutStyle,
-    super.textAlign,
-    super.textAlignVertical,
-    super.textDirection,
-    super.showCursor,
-    super.autofocus,
-    super.statesController,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLines,
-    super.minLines,
-    super.expands,
-    super.maxLength,
-    super.maxLengthEnforcement,
-    super.onEditingComplete,
-    super.onFieldSubmitted,
-    super.onAppPrivateCommand,
-    super.inputFormatters,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorOpacityAnimates,
-    super.cursorColor,
-    super.cursorErrorColor,
-    super.selectionHeightStyle,
-    super.selectionWidthStyle,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.dragStartBehavior,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.onTapAlwaysCalled,
-    super.onTapOutside,
-    super.mouseCursor,
-    super.buildCounter,
-    super.scrollController,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.contentInsertionConfiguration,
-    super.clipBehavior,
-    super.scribbleEnabled,
-    super.enableIMEPersonalizedLearning,
-    super.contextMenuBuilder,
-    super.canRequestFocus,
-    super.spellCheckConfiguration,
-    super.magnifierConfiguration,
-  }) : super.custom(
-          initialValue: initialDatetimeRange,
-          onPickTap: (context, range) => showCupertinoDatetimeRangePicker(
-            context,
-            minimumDate: minimumDate,
-            maximumDate: maximumDate,
-            initialDatetimeRange: range,
-            helpText: helpText,
-            titleText: titleText,
-          ),
-          displayTextMapper: (context, range) =>
-              range.format(format ?? _defaultFormat),
-        );
-}
-
-/// field 为日期时间范围选择框表单的 [TxPickerFormFieldTile]
-class TxDatetimeRangePickerFormFieldTile
-    extends TxPickerFormFieldTile<DateTimeRange, DateTimeRange> {
-  TxDatetimeRangePickerFormFieldTile({
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.decoration,
-    super.onChanged,
-    super.required,
-    super.hintText,
-    DateTimeRange? initialDatetimeRange,
-    DateTime? minimumDate,
-    DateTime? maximumDate,
-    String? helpText,
-    String? titleText,
-    String? format,
-    super.labelBuilder,
+    super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -185,6 +98,8 @@ class TxDatetimeRangePickerFormFieldTile
     super.minLabelWidth,
     super.minVerticalPadding,
     super.dense,
+    super.colon,
+    super.focusColor,
     super.controller,
     super.focusNode,
     super.undoController,
@@ -194,6 +109,7 @@ class TxDatetimeRangePickerFormFieldTile
     super.style,
     super.strutStyle,
     super.textAlign,
+    super.bordered,
     super.textAlignVertical,
     super.textDirection,
     super.showCursor,

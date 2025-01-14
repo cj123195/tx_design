@@ -223,7 +223,7 @@ class TxPanel extends StatelessWidget {
   /// 当 [selected] 为 false 时，定义 `Panel` 的背景颜色。
   ///
   /// 当值为 null 时，[panelColor] 设置为 [CardTheme.color]如果它不为空，
-  /// 如果它为空则为[ColorScheme.background]。
+  /// 如果它为空则为[ColorScheme.surface]。
   final Color? panelColor;
 
   /// 定义当 [selected] 为true时面板的背景颜色

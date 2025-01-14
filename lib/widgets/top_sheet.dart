@@ -9,7 +9,7 @@ import 'top_sheet_theme.dart';
 
 const Duration _topSheetEnterDuration = Duration(milliseconds: 250);
 const Duration _topSheetExitDuration = Duration(milliseconds: 200);
-const Curve _modalTopSheetCurve = decelerateEasing;
+const Curve _modalTopSheetCurve = Easing.legacyDecelerate;
 const double _minFlingVelocity = 700.0;
 const double _closeProgressThreshold = 0.5;
 const double _defaultScrollControlDisabledMaxHeightRatio = 9.0 / 16.0;

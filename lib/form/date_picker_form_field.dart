@@ -11,7 +11,7 @@ const String _defaultFormat = 'yyyy-MM-dd';
   'Use TxDatePickerFormFieldTile instead. '
   'This feature was deprecated after v0.3.0.',
 )
-class DatePickerFormField extends TxDatePickerFormFieldTile {
+class DatePickerFormField extends TxDatePickerFormField {
   @Deprecated(
     'Use TxDatePickerFormFieldTile instead. '
     'This feature was deprecated after v0.3.0.',
@@ -33,6 +33,8 @@ class DatePickerFormField extends TxDatePickerFormFieldTile {
     super.required,
     Widget? label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     Color? backgroundColor,
     Axis? direction,
     super.padding,
@@ -50,6 +52,7 @@ class DatePickerFormField extends TxDatePickerFormFieldTile {
     super.strutStyle,
     super.textDirection,
     super.textAlign,
+    super.bordered,
     super.textAlignVertical,
     super.autofocus,
     super.maxLines,
@@ -85,7 +88,7 @@ class DatePickerFormField extends TxDatePickerFormFieldTile {
     super.mouseCursor,
     super.contextMenuBuilder,
   }) : super(
-          labelBuilder: label == null ? null : (context) => label,
+          label: label,
           layoutDirection: direction,
           tileColor: backgroundColor,
           minimumDate: minimumDate,
@@ -93,7 +96,7 @@ class DatePickerFormField extends TxDatePickerFormFieldTile {
         );
 }
 
-/// builder 构建组件为日期选择框的 [FormField]
+/// 日期选择框表单
 class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
   TxDatePickerFormField({
     super.key,
@@ -114,106 +117,10 @@ class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
     int? maximumYear,
     String? format,
     String? titleText,
-    super.controller,
-    super.focusNode,
-    super.undoController,
-    super.keyboardType,
-    super.textInputAction,
-    super.textCapitalization,
-    super.style,
-    super.strutStyle,
-    super.textAlign,
-    super.textAlignVertical,
-    super.textDirection,
-    super.showCursor,
-    super.autofocus,
-    super.statesController,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLines,
-    super.minLines,
-    super.expands,
-    super.maxLength,
-    super.maxLengthEnforcement,
-    super.onEditingComplete,
-    super.onFieldSubmitted,
-    super.onAppPrivateCommand,
-    super.inputFormatters,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorOpacityAnimates,
-    super.cursorColor,
-    super.cursorErrorColor,
-    super.selectionHeightStyle,
-    super.selectionWidthStyle,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.dragStartBehavior,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.onTapAlwaysCalled,
-    super.onTapOutside,
-    super.mouseCursor,
-    super.buildCounter,
-    super.scrollController,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.contentInsertionConfiguration,
-    super.clipBehavior,
-    super.scribbleEnabled,
-    super.enableIMEPersonalizedLearning,
-    super.contextMenuBuilder,
-    super.canRequestFocus,
-    super.spellCheckConfiguration,
-    super.magnifierConfiguration,
-  }) : super.custom(
-          initialValue: initialDate ??
-              (initialDateStr == null
-                  ? null
-                  : DateTime.tryParse(initialDateStr)),
-          onPickTap: (context, date) => showCupertinoDatePicker(
-            context,
-            initialDate: date,
-            titleText: titleText,
-            minimumDate: minimumDate,
-            maximumDate: maximumDate,
-            minimumYear: minimumYear,
-            maximumYear: maximumYear,
-          ),
-          displayTextMapper: (context, date) =>
-              date.format(format ?? _defaultFormat),
-        );
-}
-
-/// field 为日期选择框表单的 [TxPickerFormFieldTile]
-class TxDatePickerFormFieldTile
-    extends TxPickerFormFieldTile<DateTime, String> {
-  TxDatePickerFormFieldTile({
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.decoration,
-    super.onChanged,
-    super.required,
-    super.hintText,
-    String? initialDateStr,
-    DateTime? initialDate,
-    DateTime? minimumDate,
-    DateTime? maximumDate,
-    int? minimumYear,
-    int? maximumYear,
-    String? format,
-    String? titleText,
-    super.labelBuilder,
+    super.label,
     super.labelText,
+    super.labelTextAlign,
+    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -231,6 +138,8 @@ class TxDatePickerFormFieldTile
     super.minLabelWidth,
     super.minVerticalPadding,
     super.dense,
+    super.colon,
+    super.focusColor,
     super.controller,
     super.focusNode,
     super.undoController,
@@ -240,6 +149,7 @@ class TxDatePickerFormFieldTile
     super.style,
     super.strutStyle,
     super.textAlign,
+    super.bordered,
     super.textAlignVertical,
     super.textDirection,
     super.showCursor,

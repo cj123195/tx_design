@@ -8,17 +8,31 @@ import 'field.dart';
 /// 有关详细信息，请参阅各个 [TxField] 属性。
 @immutable
 class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
-  const TxFieldThemeData({this.inputDecorationTheme});
+  const TxFieldThemeData({
+    this.textAlign,
+    this.inputDecorationTheme,
+    this.bordered,
+  });
 
   /// 覆盖 [TxField.decoration] 的默认值。
   final InputDecorationTheme? inputDecorationTheme;
 
+  /// 覆盖 [TxField.textAlign] 的默认值。
+  final TextAlign? textAlign;
+
+  /// 覆盖 [TxField.bordered] 的默认值。
+  final bool? bordered;
+
   @override
   ThemeExtension<TxFieldThemeData> copyWith({
+    TextAlign? textAlign,
     InputDecorationTheme? inputDecorationTheme,
+    bool? bordered,
   }) {
     return TxFieldThemeData(
       inputDecorationTheme: inputDecorationTheme ?? this.inputDecorationTheme,
+      textAlign: textAlign ?? this.textAlign,
+      bordered: bordered ?? this.bordered,
     );
   }
 
@@ -31,25 +45,21 @@ class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
       return this;
     }
 
-    final InputDecorationTheme? a = inputDecorationTheme;
+    final InputDecorationTheme? a = this.inputDecorationTheme;
     final InputDecorationTheme? b = other.inputDecorationTheme;
 
+    InputDecorationTheme? inputDecorationTheme;
     if (a == null) {
-      return TxFieldThemeData(inputDecorationTheme: b);
-    }
-
-    if (b == null) {
-      return TxFieldThemeData(inputDecorationTheme: a);
-    }
-
-    final Duration? hintFadeDuration = a.hintFadeDuration == null
-        ? b.hintFadeDuration
-        : b.hintFadeDuration == null
-            ? a.hintFadeDuration
-            : lerpDuration(a.hintFadeDuration!, b.hintFadeDuration!, t);
-
-    return TxFieldThemeData(
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme = b;
+    } else if (b == null) {
+      inputDecorationTheme = a;
+    } else {
+      final Duration? hintFadeDuration = a.hintFadeDuration == null
+          ? b.hintFadeDuration
+          : b.hintFadeDuration == null
+              ? a.hintFadeDuration
+              : lerpDuration(a.hintFadeDuration!, b.hintFadeDuration!, t);
+      inputDecorationTheme = InputDecorationTheme(
         labelStyle: TextStyle.lerp(a.labelStyle, b.labelStyle, t),
         floatingLabelStyle:
             TextStyle.lerp(a.floatingLabelStyle, b.floatingLabelStyle, t),
@@ -93,7 +103,13 @@ class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
         alignLabelWithHint:
             t < 0.5 ? a.alignLabelWithHint : b.alignLabelWithHint,
         constraints: BoxConstraints.lerp(a.constraints, b.constraints, t),
-      ),
+      );
+    }
+
+    return TxFieldThemeData(
+      inputDecorationTheme: inputDecorationTheme,
+      textAlign: t < 0.5 ? textAlign : other.textAlign,
+      bordered: t < 0.5 ? bordered : other.bordered,
     );
   }
 
@@ -106,7 +122,7 @@ class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
   }
 
   @override
-  int get hashCode => inputDecorationTheme.hashCode;
+  int get hashCode => Object.hash(inputDecorationTheme, textAlign, bordered);
 
   @override
   bool operator ==(Object other) {
@@ -117,7 +133,9 @@ class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
       return false;
     }
     return other is TxFieldThemeData &&
-        other.inputDecorationTheme == inputDecorationTheme;
+        other.inputDecorationTheme == inputDecorationTheme &&
+        other.textAlign == textAlign &&
+        other.bordered == bordered;
   }
 }
 
@@ -127,8 +145,8 @@ class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
 class TxFieldTheme extends InheritedWidget {
   /// 创建一个日期选择按钮主题，该主题定义后代 [TxField] 的颜色和样式参数。
   const TxFieldTheme({
-    required super.child,
     required this.data,
+    required super.child,
     super.key,
   });
 

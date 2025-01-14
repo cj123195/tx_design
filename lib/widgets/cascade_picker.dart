@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../tx_design.dart';
 
-const String _kLabelKey = 'label';
+const String kLabelKey = 'label';
 
 /// 级联选择器
 class TxCascadePicker<D, V> extends StatefulWidget {
@@ -28,10 +28,10 @@ class TxCascadePicker<D, V> extends StatefulWidget {
     required List<Map> datasource,
     required this.onChanged,
     String? valueKey,
-    String labelKey = _kLabelKey,
-    String idKey = kTreeIdKey,
-    String pidKey = kTreePidKey,
-    String childrenKey = kTreeChildrenKey,
+    String? labelKey,
+    String? idKey,
+    String? pidKey,
+    String? childrenKey,
     super.key,
     this.itemBuilder,
     this.tabItemBuilder,
@@ -41,21 +41,28 @@ class TxCascadePicker<D, V> extends StatefulWidget {
     this.placeholder,
     bool? isParentNodeSelectable,
   })  : datasource = datasource
-            .toTree(idKey: idKey, pidKey: pidKey, childrenKey: childrenKey)
+            .toTree(
+              idKey: idKey ?? kTreeIdKey,
+              pidKey: pidKey ?? kTreePidKey,
+              childrenKey: childrenKey ?? kTreeChildrenKey,
+            )
             .toList() as List<D>,
-        labelMapper = ((data) => (data as Map)[labelKey] as String?),
-        valueMapper = ((data) => (data as Map)[valueKey ?? idKey] as V),
+        labelMapper =
+            ((data) => (data as Map)[labelKey ?? kLabelKey] as String?),
+        valueMapper =
+            ((data) => (data as Map)[valueKey ?? idKey ?? kTreeIdKey] as V),
         childrenMapper = ((data) =>
-            ((data as Map)[childrenKey] as List?)?.cast<Map>() as List<D>?),
+            ((data as Map)[childrenKey ?? kTreeChildrenKey] as List?)
+                ?.cast<Map>() as List<D>?),
         isParentNodeSelectable = isParentNodeSelectable ?? false;
 
   /// 通过给定树型数据创建一个级联选择器
   TxCascadePicker.fromMapTree({
     required List<Map> datasource,
     required this.onChanged,
-    String labelKey = _kLabelKey,
-    String valueKey = kTreeIdKey,
-    String childrenKey = kTreeChildrenKey,
+    String? labelKey,
+    String? valueKey,
+    String? childrenKey,
     super.key,
     this.itemBuilder,
     this.tabItemBuilder,
@@ -65,10 +72,12 @@ class TxCascadePicker<D, V> extends StatefulWidget {
     this.placeholder,
     bool? isParentNodeSelectable,
   })  : datasource = datasource as List<D>,
-        labelMapper = ((data) => (data as Map)[labelKey] as String?),
-        valueMapper = ((data) => (data as Map)[valueKey] as V),
+        labelMapper =
+            ((data) => (data as Map)[labelKey ?? kLabelKey] as String?),
+        valueMapper = ((data) => (data as Map)[valueKey ?? kTreeIdKey] as V),
         childrenMapper = ((data) =>
-            ((data as Map)[childrenKey] as List?)?.cast<Map>() as List<D>?),
+            ((data as Map)[childrenKey ?? kTreeChildrenKey] as List?)
+                ?.cast<Map>() as List<D>?),
         isParentNodeSelectable = isParentNodeSelectable ?? false;
 
   /// 数据源
@@ -364,10 +373,10 @@ Future<Map?> showMapListCascadePicker<V>({
   required BuildContext context,
   required List<Map> datasource,
   String? valueKey,
-  String labelKey = _kLabelKey,
-  String idKey = kTreeIdKey,
-  String pidKey = kTreePidKey,
-  String childrenKey = kTreeChildrenKey,
+  String? labelKey,
+  String? idKey,
+  String? pidKey,
+  String? childrenKey,
   V? initialValue,
   Map? initialData,
   SelectableWidgetBuilder<Map>? itemBuilder,
@@ -418,9 +427,9 @@ Future<Map?> showMapListCascadePicker<V>({
 Future<Map?> showMapTreeCascadePicker<V>({
   required BuildContext context,
   required List<Map> datasource,
-  String labelKey = _kLabelKey,
-  String valueKey = kTreeIdKey,
-  String childrenKey = kTreeChildrenKey,
+  String? labelKey,
+  String? valueKey,
+  String? childrenKey,
   V? initialValue,
   Map? initialData,
   SelectableWidgetBuilder<Map>? itemBuilder,
