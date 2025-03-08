@@ -4,12 +4,12 @@ import 'text_form_field.dart';
 
 /// 文本输入Form表单
 @Deprecated(
-  'Use TxTextFormFieldTile instead. '
+  'Use TxTextFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class InputFormField extends TxTextFormField {
   @Deprecated(
-    'Use TxTextFormFieldTile instead. '
+    'Use TxTextFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   InputFormField({
@@ -26,7 +26,7 @@ class InputFormField extends TxTextFormField {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -45,7 +45,7 @@ class InputFormField extends TxTextFormField {
     super.bordered,
     super.textAlignVertical,
     super.autofocus,
-    super.readOnly,
+    bool? readonly,
     super.maxLines,
     super.minLines,
     super.maxLength,
@@ -83,5 +83,6 @@ class InputFormField extends TxTextFormField {
           label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
+          readOnly: readonly,
         );
 }

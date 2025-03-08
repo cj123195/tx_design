@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../field/chip_field.dart';
-import '../field/multi_picker_field.dart';
 import '../utils/basic_types.dart';
-import 'form_field.dart';
 import 'multi_picker_form_field.dart';
+import 'wrap_field.dart';
 
 /// Chip 多选 Form 表单
-class TxChipFormField<T, V> extends TxFormField<List<T>> {
+class TxChipFormField<T, V> extends TxWrapFormField<List<T>> {
   TxChipFormField({
     required List<T> source,
     required ValueMapper<T, String> labelMapper,
@@ -22,7 +20,7 @@ class TxChipFormField<T, V> extends TxFormField<List<T>> {
     WrapAlignment? alignment,
     WrapAlignment? runAlignment,
     WrapCrossAlignment? crossAxisAlignment,
-    FocusNode? focusNode,
+    super.focusNode,
     super.key,
     super.onSaved,
     FormFieldValidator<List<T>>? validator,
@@ -60,50 +58,26 @@ class TxChipFormField<T, V> extends TxFormField<List<T>> {
     super.colon,
     super.focusColor,
   }) : super(
-          builder: (field) {
-            return TxChipField(
-              source: source,
-              valueMapper: valueMapper,
-              enabledMapper: enabledMapper,
-              initialData: field.value,
-              minCount: minCount,
-              maxCount: maxCount,
-              onChanged: field.didChange,
-              runSpacing: runSpacing,
-              spacing: spacing,
-              decoration: field.effectiveDecoration,
-              alignment: alignment,
-              runAlignment: runAlignment,
-              crossAxisAlignment: crossAxisAlignment,
-              focusNode: focusNode,
-              enabled: enabled,
-              labelMapper: labelMapper,
-              tooltipMapper: tooltipMapper,
-              avatarBuilder: avatarBuilder,
-              visualDensity: visualDensity,
-              label: field.effectiveLabel,
-              labelTextAlign: labelTextAlign,
-              padding: padding,
-              actionsBuilder: actionsBuilder,
-              trailingBuilder: trailingBuilder,
-              labelStyle: labelStyle,
-              horizontalGap: horizontalGap,
-              tileColor: tileColor,
-              layoutDirection: layoutDirection,
-              leading: leading,
-              shape: shape,
-              iconColor: iconColor,
-              textColor: textColor,
-              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-              minLeadingWidth: minLeadingWidth,
-              minLabelWidth: minLabelWidth,
-              minVerticalPadding: minVerticalPadding,
-              dense: dense,
-              colon: colon,
-              focusColor: focusColor,
-            );
-          },
-          initialValue: TxMultiPickerField.initData<T, V>(
+          runSpacing: runSpacing ?? 8.0,
+          spacing: spacing ?? 8.0,
+          alignment: alignment,
+          runAlignment: runAlignment,
+          crossAxisAlignment: crossAxisAlignment,
+          itemBuilder: (field, index, data, onChanged) => _ChipItem(
+            index: index,
+            item: source[index],
+            data: data,
+            labelMapper: labelMapper,
+            enabled: field.isEnabled,
+            onChanged: field.didChange,
+            enabledMapper: enabledMapper,
+            avatarBuilder: avatarBuilder,
+            minCount: minCount,
+            maxCount: maxCount,
+            tooltipMapper: tooltipMapper,
+          ),
+          itemCount: source.length,
+          initialValue: TxMultiPickerFormField.initData<T, V>(
             source,
             initialData,
             initialValue,
@@ -117,4 +91,75 @@ class TxChipFormField<T, V> extends TxFormField<List<T>> {
             maxCount,
           ),
         );
+}
+
+class _ChipItem<T> extends StatelessWidget {
+  const _ChipItem({
+    required this.index,
+    required this.item,
+    required this.data,
+    required this.labelMapper,
+    required this.enabled,
+    required this.onChanged,
+    this.enabledMapper,
+    this.avatarBuilder,
+    this.minCount,
+    this.maxCount,
+    super.key,
+    this.tooltipMapper,
+  });
+
+  final int index;
+  final T item;
+  final List<T>? data;
+  final ValueMapper<T, String> labelMapper;
+  final IndexedValueMapper<T, bool>? enabledMapper;
+  final IndexedValueMapper<T, Widget>? avatarBuilder;
+  final int? minCount;
+  final int? maxCount;
+  final bool enabled;
+  final ValueChanged<List<T>?> onChanged;
+  final IndexedValueMapper<T, String>? tooltipMapper;
+
+  void onChangedHandler(bool? val) {
+    if (val == true && data?.contains(item) != true) {
+      onChanged([...?data, item]);
+    } else if (val != true && data?.contains(item) == true) {
+      onChanged([...data!]..remove(item));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool selected = data == null ? false : data!.contains(item);
+    bool effectiveEnabled = enabled != false &&
+        (enabledMapper == null ? true : enabledMapper!(index, item));
+    if (minCount != null) {
+      effectiveEnabled =
+          effectiveEnabled && (!selected || data!.length > minCount!);
+    }
+
+    if (maxCount != null) {
+      effectiveEnabled =
+          effectiveEnabled && (selected || (data?.length ?? 0) < maxCount!);
+    }
+
+    final OutlinedBorder shape = ChipTheme.of(context).shape ??
+        StadiumBorder(
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+        );
+
+    return ChoiceChip(
+      label: Text(labelMapper(item)),
+      avatar: avatarBuilder == null ? null : avatarBuilder!(index, item),
+      onSelected: effectiveEnabled ? onChangedHandler : null,
+      selected: selected,
+      tooltip: tooltipMapper == null ? null : tooltipMapper!(index, item),
+      shape: shape,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      showCheckmark: false,
+    );
+  }
 }

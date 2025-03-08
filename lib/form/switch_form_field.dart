@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../field/switch_field.dart';
 import 'form_field.dart';
 
 /// Switch 表单组件。
@@ -66,56 +65,46 @@ class TxSwitchFormField extends TxFormField<bool> {
     super.minLabelWidth,
     super.minVerticalPadding,
   }) : super(
-          layoutDirection: Axis.horizontal,
           builder: (field) {
-            return TxSwitchField(
-              textAlign: textAlign,
-              initialValue: field.value,
-              onChanged: field.didChange,
-              activeColor: activeColor,
-              activeTrackColor: activeTrackColor,
-              inactiveThumbColor: inactiveThumbColor,
-              activeThumbImage: activeThumbImage,
-              onActiveThumbImageError: onActiveThumbImageError,
-              inactiveThumbImage: inactiveThumbImage,
-              onInactiveThumbImageError: onInactiveThumbImageError,
-              materialTapTargetSize: materialTapTargetSize,
-              thumbColor: thumbColor,
-              trackColor: trackColor,
-              trackOutlineColor: trackOutlineColor,
-              trackOutlineWidth: trackOutlineWidth,
-              thumbIcon: thumbIcon,
-              dragStartBehavior: dragStartBehavior,
-              mouseCursor: mouseCursor,
-              focusColor: focusColor,
-              hoverColor: hoverColor,
-              overlayColor: overlayColor,
-              splashRadius: splashRadius,
-              focusNode: focusNode,
-              onFocusChange: onFocusChange,
-              autofocus: autofocus,
-              applyCupertinoTheme: applyCupertinoTheme,
-              enabled: enabled,
-              decoration: field.effectiveDecoration,
-              label: field.effectiveLabel,
-              labelTextAlign: labelTextAlign,
-              padding: padding,
-              actionsBuilder: actionsBuilder,
-              trailingBuilder: trailingBuilder,
-              labelStyle: labelStyle,
-              horizontalGap: horizontalGap,
-              tileColor: tileColor,
-              leading: leading,
-              visualDensity: visualDensity,
-              shape: shape,
-              iconColor: iconColor,
-              textColor: textColor,
-              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-              minLeadingWidth: minLeadingWidth,
-              minLabelWidth: minLabelWidth,
-              minVerticalPadding: minVerticalPadding,
-              dense: dense,
-              colon: colon,
+            final AlignmentGeometry align = switch (textAlign) {
+              null => AlignmentDirectional.centerStart,
+              TextAlign.left => Alignment.centerLeft,
+              TextAlign.right => Alignment.centerRight,
+              TextAlign.center => AlignmentDirectional.center,
+              TextAlign.justify => AlignmentDirectional.center,
+              TextAlign.start => AlignmentDirectional.centerStart,
+              TextAlign.end => AlignmentDirectional.centerEnd,
+            };
+
+            return Align(
+              alignment: align,
+              child: Switch.adaptive(
+                value: field.value ?? false,
+                onChanged: field.didChange,
+                activeColor: activeColor,
+                activeTrackColor: activeTrackColor,
+                inactiveThumbColor: inactiveThumbColor,
+                activeThumbImage: activeThumbImage,
+                onActiveThumbImageError: onActiveThumbImageError,
+                inactiveThumbImage: inactiveThumbImage,
+                onInactiveThumbImageError: onInactiveThumbImageError,
+                materialTapTargetSize:
+                    materialTapTargetSize ?? MaterialTapTargetSize.shrinkWrap,
+                thumbColor: thumbColor,
+                trackColor: trackColor,
+                trackOutlineColor: trackOutlineColor,
+                trackOutlineWidth: trackOutlineWidth,
+                thumbIcon: thumbIcon,
+                dragStartBehavior: dragStartBehavior ?? DragStartBehavior.start,
+                mouseCursor: mouseCursor,
+                focusColor: focusColor,
+                hoverColor: hoverColor,
+                overlayColor: overlayColor,
+                splashRadius: splashRadius,
+                focusNode: focusNode,
+                autofocus: autofocus ?? false,
+                applyCupertinoTheme: applyCupertinoTheme,
+              ),
             );
           },
           validator: (bool? val) {

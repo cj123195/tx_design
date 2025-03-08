@@ -236,7 +236,7 @@ class TxTile extends StatelessWidget {
         labelStyle ?? tileTheme.labelStyle ?? defaults.labelStyle!;
 
     effectiveLabelStyle = effectiveLabelStyle.copyWith(
-      color: textColor,
+      color: effectiveColor,
       fontSize: effectiveDense
           ? effectiveLabelStyle.fontSize == null
               ? 13.0
@@ -545,7 +545,7 @@ class _RenderFieldTile extends RenderBox
     return box == null ? 0.0 : box.getMaxIntrinsicWidth(height);
   }
 
-  static const double _verticalGap = 8.0;
+  static const double _verticalGap = 4.0;
 
   @override
   double computeMinIntrinsicWidth(double height) {
@@ -812,12 +812,15 @@ class _FieldTileDefaultsM3 extends TxTileThemeData {
   late final TextTheme _textTheme = _theme.textTheme;
 
   @override
+  Color? get textColor => _colors.onSurface;
+
+  @override
   Color? get tileColor => Colors.transparent;
 
   @override
   TextStyle? get labelStyle => _textTheme.labelLarge!.copyWith(
-        color: _colors.onSurfaceVariant,
         fontWeight: FontWeight.w500,
+        color: _colors.onSurface,
       );
 
   @override

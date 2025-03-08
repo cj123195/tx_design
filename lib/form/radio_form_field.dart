@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../field/picker_field.dart';
-import '../field/radio_field.dart';
-import '../form.dart';
 import '../utils/basic_types.dart';
-import 'form_field.dart';
+import 'picker_form_field.dart';
+import 'wrap_field.dart';
 
 /// Radio单选Form 组件
 @Deprecated(
-  'Use TxRadioFormFieldTile instead. '
+  'Use TxRadioFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class RadioFormField<T, V> extends TxRadioFormField<T, V> {
   @Deprecated(
-    'Use TxRadioFormFieldTile instead. '
+    'Use TxRadioFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   RadioFormField({
@@ -36,7 +34,7 @@ class RadioFormField<T, V> extends TxRadioFormField<T, V> {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -51,7 +49,7 @@ class RadioFormField<T, V> extends TxRadioFormField<T, V> {
 }
 
 /// 单项选择框表单
-class TxRadioFormField<T, V> extends TxFormField<T> {
+class TxRadioFormField<T, V> extends TxWrapFormField<T> {
   TxRadioFormField({
     required List<T> source,
     required ValueMapper<T, String> labelMapper,
@@ -102,46 +100,26 @@ class TxRadioFormField<T, V> extends TxFormField<T> {
     super.colon,
     super.focusColor,
   }) : super(
-          builder: (field) => TxRadioField(
-            source: source,
-            labelMapper: labelMapper,
-            valueMapper: valueMapper,
-            enabledMapper: enabledMapper,
-            initialData: field.value,
-            onChanged: field.didChange,
-            runSpacing: runSpacing,
-            spacing: spacing,
-            decoration: field.effectiveDecoration,
-            alignment: alignment,
-            runAlignment: runAlignment,
-            crossAxisAlignment: crossAxisAlignment,
-            focusNode: focusNode,
-            enabled: enabled,
-            avatarBuilder: avatarBuilder,
-            tooltipMapper: tooltipMapper,
-            visualDensity: visualDensity,
-            label: field.effectiveLabel,
-            labelTextAlign: labelTextAlign,
-            padding: padding,
-            actionsBuilder: actionsBuilder,
-            trailingBuilder: trailingBuilder,
-            labelStyle: labelStyle,
-            horizontalGap: horizontalGap,
-            tileColor: tileColor,
-            layoutDirection: layoutDirection,
-            leading: leading,
-            shape: shape,
-            iconColor: iconColor,
-            textColor: textColor,
-            leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-            minLeadingWidth: minLeadingWidth,
-            minLabelWidth: minLabelWidth,
-            minVerticalPadding: minVerticalPadding,
-            dense: dense,
-            colon: colon,
-            focusColor: focusColor,
-          ),
-          initialValue: TxPickerField.initData<T, V>(
+          runSpacing: runSpacing ?? 8.0,
+          spacing: spacing ?? 8.0,
+          alignment: alignment ?? WrapAlignment.end,
+          runAlignment: runAlignment ?? WrapAlignment.end,
+          crossAxisAlignment: crossAxisAlignment ?? WrapCrossAlignment.end,
+          itemBuilder: (field, index, data, onChanged) {
+            final item = source[index];
+            return _ChipItem<T>(
+              index: index,
+              item: item,
+              selected: field.value == item,
+              labelMapper: labelMapper,
+              enabled: field.isEnabled,
+              onChanged: field.didChange,
+              enabledMapper: enabledMapper,
+              avatarBuilder: avatarBuilder,
+            );
+          },
+          itemCount: source.length,
+          initialValue: TxPickerFormField.initData<T, V>(
             source,
             initialData,
             initialValue,
@@ -153,4 +131,59 @@ class TxRadioFormField<T, V> extends TxFormField<T> {
             required,
           ),
         );
+}
+
+class _ChipItem<T> extends StatelessWidget {
+  const _ChipItem({
+    required this.index,
+    required this.item,
+    required this.selected,
+    required this.labelMapper,
+    required this.enabled,
+    required this.onChanged,
+    this.enabledMapper,
+    this.avatarBuilder,
+    this.tooltipMapper,
+    super.key,
+  });
+
+  final int index;
+  final T item;
+  final bool selected;
+  final ValueMapper<T, String> labelMapper;
+  final IndexedValueMapper<T, bool>? enabledMapper;
+  final IndexedValueMapper<T, Widget>? avatarBuilder;
+  final IndexedValueMapper<T, String>? tooltipMapper;
+  final bool enabled;
+  final ValueChanged<T> onChanged;
+
+  void onChangedHandler(bool? val) {
+    if (!selected) {
+      onChanged(item);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool effectiveEnabled = enabled != false &&
+        (enabledMapper == null ? true : enabledMapper!(index, item));
+
+    final OutlinedBorder shape = ChipTheme.of(context).shape ??
+        StadiumBorder(
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+        );
+
+    return ChoiceChip(
+      label: Text(labelMapper(item)),
+      avatar: avatarBuilder == null ? null : avatarBuilder!(index, item),
+      onSelected: effectiveEnabled ? onChangedHandler : null,
+      selected: selected,
+      tooltip: tooltipMapper == null ? null : tooltipMapper!(index, item),
+      shape: shape,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      showCheckmark: false,
+    );
+  }
 }

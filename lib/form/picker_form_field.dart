@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 
-import '../field/field.dart';
-import '../field/picker_field.dart';
 import '../utils/basic_types.dart';
 import '../widgets/picker_bottom_sheet.dart';
 import 'common_text_form_field.dart';
+import 'form_field.dart';
 
 export '../utils/basic_types.dart' show ValueMapper;
 export '../widgets/picker_bottom_sheet.dart' show PickerItemBuilder;
 
 /// 单选Form组件
 @Deprecated(
-  'Use TxPickerFormFieldTile instead. '
+  'Use TxPickerFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class PickerFormField<T, V> extends TxPickerFormField<T, V> {
   @Deprecated(
-    'Use TxPickerFormFieldTile instead. '
+    'Use TxPickerFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   PickerFormField({
@@ -29,7 +28,7 @@ class PickerFormField<T, V> extends TxPickerFormField<T, V> {
     super.key,
     super.onSaved,
     super.validator,
-    super.enabled,
+    bool? readonly,
     super.autovalidateMode,
     super.restorationId,
     super.required,
@@ -38,7 +37,7 @@ class PickerFormField<T, V> extends TxPickerFormField<T, V> {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -95,11 +94,18 @@ class PickerFormField<T, V> extends TxPickerFormField<T, V> {
           label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
+          enabled: readonly,
         );
 }
 
+typedef PickVoidCallback<T> = Future<T?> Function(
+  BuildContext context,
+  T? initialValue,
+);
+
 /// 处理多选框输入内容变更事件
-void _onInputChanged<T>(TxFieldState<T> field, String? text, bool? readOnly) {
+void _onInputChanged<T>(
+    TxFormFieldState<T> field, String? text, bool? readOnly) {
   if (readOnly != true) {
     if (text != field.value) {
       field.didChange(text as T?);
@@ -109,7 +115,7 @@ void _onInputChanged<T>(TxFieldState<T> field, String? text, bool? readOnly) {
 
 /// 处理输入框点击事件
 Future<void> _onTap<T>(
-  TxFieldState<T> field,
+  TxFormFieldState<T> field,
   PickVoidCallback<T> onPick,
 ) async {
   final res = await onPick(field.context, field.value);
@@ -183,6 +189,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,
@@ -222,9 +229,9 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.colon,
     super.focusColor,
   }) : super(
-          initialValue: TxPickerField.initData<T, V>(
-              source, initialData, initialValue, valueMapper),
-          onTap: (field) => _onTap(
+          initialValue:
+              initData<T, V>(source, initialData, initialValue, valueMapper),
+          onFieldTap: (field) => _onTap(
             field,
             (context, value) => showPickerBottomSheet<T, T>(
               context,
@@ -233,6 +240,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
                   : <T>{...source, if (field.value != null) field.value!}
                       .toList(),
               labelMapper: labelMapper,
+              valueMapper: (v) => v,
               initialValue: value,
               enabledMapper: enabledMapper,
             ),
@@ -287,6 +295,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.minLines,
     super.expands,
     super.maxLength,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.onEditingComplete,
@@ -345,7 +354,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.focusColor,
     super.colon,
   }) : super(
-          onTap: (field) => _onTap(field, onPickTap!),
+          onFieldTap: (field) => _onTap(field, onPickTap!),
           onInputChanged: (field, text) =>
               _onInputChanged<T>(field, text, readOnly),
           hintText: hintText ?? (readOnly == true ? '请选择' : '请选择或输入'),
@@ -371,4 +380,40 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
 
     return null;
   }
+
+  /// 通过传入数据源 [source]、[D] 类型初始数据 [initialData]、[V] 类型初始值
+  /// [initialValue]以及值生成器 [valueMapper] 生成 [D] 类型初始化数据的方法。
+  static D? initData<D, V>(
+    List<D> source,
+    D? initialData,
+    V? initialValue,
+    ValueMapper<D, V?>? valueMapper,
+  ) {
+    if (initialData != null) {
+      return initialData;
+    }
+    if (initialValue == null) {
+      return null;
+    }
+    if (valueMapper == null) {
+      return initialValue as D;
+    }
+    for (D item in source) {
+      if (initialValue == valueMapper(item)) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  @override
+  TxCommonTextFormFieldState<T> createState() => _TxPickerFormFieldState();
+}
+
+class _TxPickerFormFieldState<T> extends TxCommonTextFormFieldState<T> {
+  @override
+  List<Widget>? get suffixIcons => [
+        ...?super.suffixIcons,
+        if (isEnabled) const Icon(Icons.keyboard_arrow_right),
+      ];
 }

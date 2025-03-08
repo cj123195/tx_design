@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'field.dart';
+import 'form_field.dart';
 
 typedef WrapWidgetBuilder<T> = Widget Function(
-  TxFieldState<T> field,
+  TxFormFieldState<T> field,
   int index,
   T? initialValue,
   ValueChanged<T> onChanged,
@@ -12,15 +12,20 @@ typedef WrapWidgetBuilder<T> = Widget Function(
 /// Wrap 布局选择框组件。
 ///
 /// 通常用于多个选择组件，如 Checkbox、Radio、Chip 等。
-class TxWrapField<T> extends TxField<T> {
-  TxWrapField({
+class TxWrapFormField<T> extends TxFormField<T> {
+  TxWrapFormField({
     required WrapWidgetBuilder<T> itemBuilder,
     required int itemCount,
     super.initialValue,
+    super.onSaved,
+    super.validator,
+    super.autovalidateMode = AutovalidateMode.onUserInteraction,
+    super.restorationId,
     super.onChanged,
     super.decoration,
     super.focusNode,
     super.enabled,
+    super.required,
     super.bordered,
     double? spacing,
     double? runSpacing,

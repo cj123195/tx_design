@@ -8,12 +8,12 @@ const String _defaultFormat = 'yyyy-MM-dd';
 
 /// 日期选择Form组件
 @Deprecated(
-  'Use TxDatePickerFormFieldTile instead. '
+  'Use TxDatePickerFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class DatePickerFormField extends TxDatePickerFormField {
   @Deprecated(
-    'Use TxDatePickerFormFieldTile instead. '
+    'Use TxDatePickerFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   DatePickerFormField({
@@ -27,7 +27,7 @@ class DatePickerFormField extends TxDatePickerFormField {
     super.key,
     super.onSaved,
     super.validator,
-    super.enabled,
+    bool? readonly,
     super.autovalidateMode,
     super.restorationId,
     super.required,
@@ -36,7 +36,7 @@ class DatePickerFormField extends TxDatePickerFormField {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -93,6 +93,7 @@ class DatePickerFormField extends TxDatePickerFormField {
           tileColor: backgroundColor,
           minimumDate: minimumDate,
           maximumDate: maximumDate,
+          enabled: readonly,
         );
 }
 
@@ -183,6 +184,7 @@ class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,

@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 
-import '../field/field.dart';
-import '../field/multi_picker_field.dart';
 import '../utils/basic_types.dart';
 import '../widgets/multi_picker_bottom_sheet.dart';
 import 'common_text_form_field.dart';
+import 'form_field.dart';
 
 export '../utils/basic_types.dart' show ValueMapper;
 export '../widgets/multi_picker_bottom_sheet.dart' show MultiPickerItemBuilder;
 
 /// 多选Form组件
 @Deprecated(
-  'Use TxMultiPickerFormFieldTile instead. '
+  'Use TxMultiPickerFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class MultiPickerFormField<T, V> extends TxMultiPickerFormField {
   @Deprecated(
-    'Use TxMultiPickerFormFieldTile instead. '
+    'Use TxMultiPickerFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   MultiPickerFormField({
@@ -31,7 +30,7 @@ class MultiPickerFormField<T, V> extends TxMultiPickerFormField {
     super.key,
     super.onSaved,
     super.validator,
-    super.enabled,
+    bool? readonly,
     super.autovalidateMode,
     super.restorationId,
     super.required,
@@ -40,7 +39,7 @@ class MultiPickerFormField<T, V> extends TxMultiPickerFormField {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -101,12 +100,18 @@ class MultiPickerFormField<T, V> extends TxMultiPickerFormField {
           label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
+          enabled: readonly,
         );
 }
 
+typedef MultiPickVoidCallback<T> = Future<List<T>?> Function(
+  BuildContext context,
+  List<T>? initialValue,
+);
+
 /// 处理多选框输入内容变更事件
 void _onInputChanged<T>(
-  TxFieldState<List<T>> field,
+  TxFormFieldState<List<T>> field,
   String? text,
   bool? readOnly,
   String splitCharacter,
@@ -121,7 +126,7 @@ void _onInputChanged<T>(
 
 /// 处理输入框点击事件
 Future<void> _onTap<T>(
-  TxFieldState<List<T>> field,
+  TxFormFieldState<List<T>> field,
   MultiPickVoidCallback<T> onPick,
 ) async {
   final res = await onPick(field.context, field.value);
@@ -198,6 +203,7 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,
@@ -237,7 +243,7 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     super.colon,
     super.focusColor,
   }) : super(
-          onTap: (field) => _onTap(
+          onFieldTap: (field) => _onTap(
             field,
             (context, value) => showMultiPickerBottomSheet<T, T>(
               context,
@@ -259,8 +265,8 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
           ),
           displayTextMapper: (context, val) =>
               val.map((e) => labelMapper(e)).join(splitCharacter),
-          initialValue: TxMultiPickerField.initData<T, V>(
-              source, initialData, initialValue, valueMapper),
+          initialValue:
+              initData<T, V>(source, initialData, initialValue, valueMapper),
           hintText: hintText ??
               (readOnly == true ? '请选择' : '请选择或输入，以$splitCharacter分隔'),
           validator: (val) =>
@@ -369,7 +375,7 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     super.colon,
     super.focusColor,
   }) : super(
-          onTap: (field) => _onTap(field, onPickTap!),
+          onFieldTap: (field) => _onTap(field, onPickTap!),
           onInputChanged: (field, text) => _onInputChanged<T>(
             field,
             text,
@@ -414,5 +420,23 @@ class TxMultiPickerFormField<T, V> extends TxCommonTextFormField<List<T>> {
     }
 
     return null;
+  }
+
+  /// 通过传入数据源 [source]、[D] 类型初始数据列表 [initialData]、[V] 类型初始值列表
+  /// [initialValue]以及值生成器 [valueMapper] 生成 [D]类型列表初始化数据的方法。
+  static List<D>? initData<D, V>(
+    List<D> source,
+    List<D>? initialData,
+    List<V>? initialValue,
+    ValueMapper<D, V?>? valueMapper,
+  ) {
+    return initialData ??
+        (initialValue == null
+            ? null
+            : valueMapper == null
+                ? initialValue as List<D>
+                : source
+                    .where((s) => initialValue.contains(valueMapper(s)))
+                    .toList());
   }
 }

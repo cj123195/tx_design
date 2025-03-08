@@ -2,101 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../extensions/iterable_extension.dart';
-import '../field/field.dart';
 import '../localizations.dart';
 import '../utils/basic_types.dart';
 import '../widgets/tile.dart';
+import 'form_field_theme.dart';
 import 'form_item_container.dart';
 import 'form_item_theme.dart';
 
 typedef TxFormFieldBuilder<T> = Widget Function(TxFormFieldState<T> field);
 
-// @Deprecated('This feature was deprecated after v0.3.0.')
-// class TxFormField<T> extends FormField<T> {
-//   @Deprecated('This feature was deprecated after v0.3.0.')
-//   const TxFormField({
-//     required super.builder,
-//     super.key,
-//     super.onSaved,
-//     super.validator,
-//     super.initialValue,
-//     bool? enabled,
-//     super.autovalidateMode,
-//     super.restorationId,
-//     this.defaultValidator,
-//   }) : super(enabled: enabled ?? true);
-//
-//   final String? Function(BuildContext context, T? value)? defaultValidator;
-//
-//   @override
-//   TxFormFieldState<T> createState() => TxFormFieldState<T>();
-// }
+typedef FieldActionsBuilder<T> = List<Widget> Function(
+  TxFormFieldState<T> field,
+);
 
-// @Deprecated('This feature was deprecated after v0.3.0.')
-// class TxFormFieldState<T> extends FormFieldState<T> {
-//   @override
-//   TxFormField<T> get widget => super.widget as TxFormField<T>;
-//
-//   final RestorableStringN _defaultErrorText = RestorableStringN(null);
-//
-//   @override
-//   String? get errorText => _defaultErrorText.value ?? super.errorText;
-//
-//   @override
-//   bool get hasError => _defaultErrorText.value != null || super.hasError;
-//
-//   @override
-//   void initState() {
-//     if (widget.initialValue != null) {
-//       setValue(widget.initialValue);
-//     }
-//     super.initState();
-//   }
-//
-//   @override
-//   bool validate() {
-//     _validate();
-//     return super.validate();
-//   }
-//
-//   void _validate() {
-//     if (widget.defaultValidator != null) {
-//       _defaultErrorText.value = widget.defaultValidator!(context, value);
-//     }
-//   }
-//
-//   @override
-//   void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
-//     registerForRestoration(_defaultErrorText, 'default_error_text');
-//     super.restoreState(oldBucket, initialRestore);
-//   }
-//
-//   @override
-//   void didUpdateWidget(covariant TxFormField<T> oldWidget) {
-//     if (widget.initialValue != value) {
-//       setValue(widget.initialValue);
-//     }
-//     super.didUpdateWidget(oldWidget);
-//   }
-// }
+const BorderRadius _kBorderRadius = BorderRadius.all(Radius.circular(10.0));
+
+/// 域组件
+///
+/// 通常用于包装一个输入或者选择组件
 class TxFormField<T> extends FormField<T> {
+  /// 创建一个输入框组件
   TxFormField({
     required TxFormFieldBuilder<T> builder,
     super.key,
+    super.initialValue,
     super.onSaved,
     super.validator,
-    super.initialValue,
-    bool? enabled,
-    super.autovalidateMode,
+    super.autovalidateMode = AutovalidateMode.onUserInteraction,
     super.restorationId,
     this.decoration,
+    bool? enabled,
     this.onChanged,
-    bool? required,
-    bool? bordered,
-    @Deprecated('This feature was deprecated after v0.3.0.')
-    this.defaultValidator,
+    this.hintText,
+    this.textAlign,
+    this.bordered,
     this.labelText,
     this.label,
+    @Deprecated('This feature was deprecated after v0.3.0.')
+    this.defaultValidator,
+    bool? required,
     TextStyle? labelStyle,
     TextAlign? labelTextAlign,
     TextOverflow? labelOverflow,
@@ -104,7 +48,7 @@ class TxFormField<T> extends FormField<T> {
     Axis? layoutDirection,
     EdgeInsetsGeometry? padding,
     FieldActionsBuilder<T>? actionsBuilder,
-    FieldBuilder<T>? trailingBuilder,
+    TxFormFieldBuilder<T>? trailingBuilder,
     Widget? leading,
     double? horizontalGap,
     VisualDensity? visualDensity,
@@ -112,7 +56,7 @@ class TxFormField<T> extends FormField<T> {
     Color? iconColor,
     Color? textColor,
     TextStyle? leadingAndTrailingTextStyle,
-    VoidCallback? onTap,
+    GestureTapCallback? onTap,
     double? minLeadingWidth,
     double? minLabelWidth,
     double? minVerticalPadding,
@@ -121,13 +65,140 @@ class TxFormField<T> extends FormField<T> {
     Color? focusColor,
   })  : required = required ?? false,
         super(
-          enabled: enabled ?? decoration?.enabled ?? true,
           builder: (field) {
-            return UnmanagedRestorationScope(
-              bucket: field.bucket,
-              child: builder(field as TxFormFieldState<T>),
+            final TxFormFieldState<T> state = field as TxFormFieldState<T>;
+
+            final ThemeData theme = Theme.of(field.context);
+            return TxTile(
+              content: builder(state),
+              label: label,
+              labelText:
+                  labelText == null || labelText.isEmpty ? null : labelText,
+              labelTextAlign: labelTextAlign,
+              padding: padding,
+              actions: actionsBuilder == null ? null : actionsBuilder(field),
+              trailing: trailingBuilder == null ? null : trailingBuilder(field),
+              labelStyle: labelStyle ??
+                  theme.textTheme.labelLarge!.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
+              horizontalGap: horizontalGap,
+              tileColor: tileColor,
+              layoutDirection: layoutDirection,
+              leading: leading,
+              visualDensity: visualDensity,
+              shape: shape,
+              iconColor: iconColor,
+              textColor: textColor,
+              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
+              enabled: field.isEnabled,
+              onTap: onTap,
+              minLeadingWidth: minLeadingWidth,
+              minLabelWidth: minLabelWidth,
+              dense: dense,
+              colon: colon,
+              focusColor: focusColor,
             );
           },
+          enabled: enabled ?? decoration?.enabled ?? true,
+        );
+
+  TxFormField.decorated({
+    required TxFormFieldBuilder<T> builder,
+    FocusNode? focusNode,
+    bool? canRequestFocus,
+    super.key,
+    super.initialValue,
+    super.onSaved,
+    super.validator,
+    super.autovalidateMode = AutovalidateMode.onUserInteraction,
+    super.restorationId,
+    this.decoration,
+    bool? enabled,
+    this.onChanged,
+    this.hintText,
+    this.textAlign,
+    this.bordered,
+    this.labelText,
+    this.label,
+    @Deprecated('This feature was deprecated after v0.3.0.')
+    this.defaultValidator,
+    bool? required,
+    TextStyle? labelStyle,
+    TextAlign? labelTextAlign,
+    TextOverflow? labelOverflow,
+    Color? tileColor,
+    Axis layoutDirection = Axis.horizontal,
+    EdgeInsetsGeometry? padding,
+    FieldActionsBuilder<T>? actionsBuilder,
+    TxFormFieldBuilder<T>? trailingBuilder,
+    Widget? leading,
+    double? horizontalGap,
+    VisualDensity? visualDensity,
+    ShapeBorder? shape,
+    Color? iconColor,
+    Color? textColor,
+    TextStyle? leadingAndTrailingTextStyle,
+    GestureTapCallback? onTap,
+    double? minLeadingWidth,
+    double? minLabelWidth,
+    double? minVerticalPadding,
+    bool? dense,
+    bool? colon,
+    Color? focusColor,
+  })  : required = required ?? false,
+        super(
+          builder: (field) {
+            final TxFormFieldState<T> state = field as TxFormFieldState<T>;
+
+            final TextAlign effectiveTextAlign = textAlign ??
+                (layoutDirection == Axis.horizontal
+                    ? TextAlign.right
+                    : TextAlign.left);
+
+            final EdgeInsetsGeometry? contentPadding = state
+                    .effectiveDecoration.contentPadding ??
+                (layoutDirection == Axis.horizontal ? EdgeInsets.zero : null);
+
+            return TxTile(
+              content: TxFieldDecorator(
+                focusNode: focusNode,
+                canRequestFocus: canRequestFocus ?? true,
+                enabled: state.isEnabled,
+                decoration: state.effectiveDecoration.copyWith(
+                  contentPadding: contentPadding,
+                ),
+                textAlign: effectiveTextAlign,
+                isEmpty: state.isEmpty,
+                child: builder(state),
+              ),
+              label: label,
+              labelText: labelText,
+              labelTextAlign: labelTextAlign,
+              padding: padding,
+              actions: actionsBuilder == null ? null : actionsBuilder(field),
+              trailing: trailingBuilder == null ? null : trailingBuilder(field),
+              labelStyle: labelStyle,
+              horizontalGap: horizontalGap,
+              tileColor: tileColor,
+              layoutDirection: layoutDirection,
+              leading: leading,
+              visualDensity: visualDensity,
+              shape: shape,
+              iconColor: iconColor,
+              textColor: textColor,
+              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
+              enabled: field.isEnabled,
+              onTap: onTap,
+              minLeadingWidth: minLeadingWidth,
+              minLabelWidth: minLabelWidth,
+              minVerticalPadding: minVerticalPadding,
+              dense: dense,
+              colon: colon,
+              focusColor: focusColor,
+            );
+          },
+          enabled: enabled ?? decoration?.enabled ?? true,
         );
 
   /// 值变更回调
@@ -139,6 +210,17 @@ class TxFormField<T> extends FormField<T> {
   ///
   /// 指定 null 可完全删除修饰（包括修饰引入的额外填充，以节省标签空间）。
   final InputDecoration? decoration;
+
+  /// 提示文字
+  ///
+  /// 当 [decoration] 的 hintText属性 为空时会使用此值代替。
+  final String? hintText;
+
+  /// 文字对齐方向
+  final TextAlign? textAlign;
+
+  /// 是否显示边框
+  final bool? bordered;
 
   /// 标题文字
   final String? labelText;
@@ -153,18 +235,12 @@ class TxFormField<T> extends FormField<T> {
   final String? Function(BuildContext context, T? value)? defaultValidator;
 
   @override
-  TxFormFieldState<T> createState() => TxFormFieldState<T>();
+  FormFieldState<T> createState() => TxFormFieldState<T>();
 }
 
 class TxFormFieldState<T> extends FormFieldState<T> {
   @override
   TxFormField<T> get widget => super.widget as TxFormField<T>;
-
-  /// 最终生效的装饰器
-  InputDecoration get effectiveDecoration {
-    return (widget.decoration ?? const InputDecoration())
-        .copyWith(errorText: errorText);
-  }
 
   /// 最终生效的 label
   Widget? get effectiveLabel {
@@ -191,12 +267,136 @@ class TxFormFieldState<T> extends FormFieldState<T> {
     );
   }
 
+  bool get isEnabled => widget.enabled;
+
+  bool get isEmpty => value == null;
+
+  /// 头部图标
+  List<Widget>? get prefixIcons => null;
+
+  /// 尾部图标
+  List<Widget>? get suffixIcons => null;
+
+  /// 最终生效的装饰器
+  InputDecoration get effectiveDecoration {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final TxFormFieldThemeData fieldTheme = TxFormFieldTheme.of(context);
+    final TxFormFieldThemeData defaults = _TxFieldThemeDefaultsM3(context);
+
+    final InputDecorationTheme inputDecorationTheme =
+        fieldTheme.inputDecorationTheme ?? defaults.inputDecorationTheme!;
+    final String? hintText =
+        isEnabled ? (widget.decoration?.hintText ?? widget.hintText) : '';
+    InputDecoration decoration = widget.decoration ?? const InputDecoration();
+    final BoxConstraints? constraints =
+        decoration.isDense == true ? const BoxConstraints(minHeight: 44) : null;
+
+    final IconThemeData iconThemeData = IconThemeData(color: theme.hintColor);
+    final IconButtonThemeData iconButtonThemeData = IconButtonThemeData(
+      style: IconButton.styleFrom(
+        visualDensity: VisualDensity.compact,
+        padding: EdgeInsets.zero,
+      ),
+    );
+
+    final List<Widget> preIcons = prefixIcons ?? [];
+    if (decoration.prefixIcon != null) {
+      preIcons.insert(0, decoration.prefixIcon!);
+    }
+    Widget? prefixIcon;
+    if (preIcons.isNotEmpty) {
+      prefixIcon = IconTheme.merge(
+        data: iconThemeData,
+        child: IconButtonTheme(
+          data: iconButtonThemeData,
+          child: preIcons.length == 1
+              ? preIcons[0]
+              : Row(mainAxisSize: MainAxisSize.min, children: preIcons),
+        ),
+      );
+    }
+
+    final List<Widget> sufIcons = suffixIcons ?? [];
+    if (decoration.suffixIcon != null) {
+      sufIcons.add(decoration.suffixIcon!);
+    }
+    Widget? suffixIcon;
+    if (sufIcons.isNotEmpty) {
+      suffixIcon = IconTheme.merge(
+        data: iconThemeData,
+        child: IconButtonTheme(
+          data: iconButtonThemeData,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: sufIcons,
+          ),
+        ),
+      );
+    }
+
+    decoration = decoration.copyWith(
+      enabled: isEnabled,
+      hintText: hintText,
+      prefixIconConstraints: decoration.prefixIconConstraints ?? constraints,
+      suffixIconConstraints: decoration.suffixIconConstraints ?? constraints,
+      prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
+      errorText: errorText,
+    );
+
+    final bool bordered =
+        widget.bordered ?? fieldTheme.bordered ?? defaults.bordered!;
+    if (bordered) {
+      InputBorder? border = decoration.border ??
+          decoration.enabledBorder ??
+          decoration.focusedBorder ??
+          decoration.disabledBorder ??
+          decoration.errorBorder ??
+          decoration.focusedErrorBorder;
+
+      final BorderSide borderSide =
+          (border == null || border == InputBorder.none)
+              ? inputDecorationTheme.outlineBorder!
+              : border.borderSide;
+
+      if (border == null || !border.isOutline) {
+        border = OutlineInputBorder(
+          borderSide: borderSide,
+          borderRadius: _kBorderRadius,
+        );
+      }
+
+      InputBorder resolveBorder([Color? color]) {
+        return border!.copyWith(borderSide: borderSide.copyWith(color: color));
+      }
+
+      final InputBorder inputBorder = decoration.border ?? resolveBorder();
+      final InputBorder focusedBorder =
+          decoration.focusedBorder ?? resolveBorder(colorScheme.primary);
+      final InputBorder disabledBorder = decoration.disabledBorder ??
+          resolveBorder(colorScheme.outline.withOpacity(0.3));
+      final InputBorder errorBorder =
+          decoration.errorBorder ?? resolveBorder(colorScheme.error);
+      decoration = decoration.copyWith(
+        border: inputBorder,
+        enabledBorder: decoration.enabledBorder ?? inputBorder,
+        disabledBorder: disabledBorder,
+        focusedBorder: focusedBorder,
+        errorBorder: errorBorder,
+        focusedErrorBorder: decoration.focusedErrorBorder ?? errorBorder,
+        contentPadding: decoration.contentPadding ?? const EdgeInsets.all(12.0),
+      );
+    }
+
+    return decoration.applyDefaults(inputDecorationTheme);
+  }
+
   /// 选择项变更回调
   @override
-  @mustCallSuper
   void didChange(T? value) {
     super.didChange(value);
-
     if (widget.onChanged != null) {
       widget.onChanged!(value);
     }
@@ -209,6 +409,139 @@ class TxFormFieldState<T> extends FormFieldState<T> {
     }
     super.didUpdateWidget(oldWidget);
   }
+}
+
+/// 装饰器容器
+class TxFieldDecorator extends StatefulWidget {
+  /// 创建一个装饰器容器
+  const TxFieldDecorator({
+    required this.focusNode,
+    required this.canRequestFocus,
+    required this.enabled,
+    required this.decoration,
+    required this.textAlign,
+    required this.isEmpty,
+    required this.child,
+    super.key,
+  });
+
+  /// 焦点
+  final FocusNode? focusNode;
+
+  /// 是否允许请求焦点
+  final bool canRequestFocus;
+
+  /// 是否可用
+  final bool enabled;
+
+  /// 装饰器
+  final InputDecoration decoration;
+
+  /// 文字对齐方式
+  final TextAlign? textAlign;
+
+  /// 是否为空
+  final bool isEmpty;
+
+  /// 子组件
+  final Widget child;
+
+  @override
+  State<TxFieldDecorator> createState() => _TxFieldDecoratorState();
+}
+
+class _TxFieldDecoratorState extends State<TxFieldDecorator> {
+  FocusNode? _focusNode;
+
+  FocusNode get effectiveFocusNode =>
+      widget.focusNode ?? (_focusNode ??= FocusNode());
+
+  bool get _canRequestFocus {
+    final NavigationMode mode =
+        MediaQuery.maybeNavigationModeOf(context) ?? NavigationMode.traditional;
+    switch (mode) {
+      case NavigationMode.traditional:
+        return widget.canRequestFocus && widget.enabled;
+      case NavigationMode.directional:
+        return true;
+    }
+  }
+
+  void _handleFocusChanged() {
+    setState(() {
+      // Rebuild the widget on focus change to show/hide the text selection
+      // highlight.
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    effectiveFocusNode.canRequestFocus =
+        widget.canRequestFocus && widget.enabled;
+    effectiveFocusNode.addListener(_handleFocusChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    effectiveFocusNode.canRequestFocus = _canRequestFocus;
+  }
+
+  @override
+  void didUpdateWidget(covariant TxFieldDecorator oldWidget) {
+    effectiveFocusNode.canRequestFocus = _canRequestFocus;
+
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    effectiveFocusNode.removeListener(_handleFocusChanged);
+    _focusNode?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      focusNode: effectiveFocusNode,
+      child: InputDecorator(
+        decoration: widget.decoration,
+        textAlign: widget.textAlign,
+        isFocused: effectiveFocusNode.hasFocus,
+        isEmpty: widget.isEmpty,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+class _TxFieldThemeDefaultsM3 extends TxFormFieldThemeData {
+  _TxFieldThemeDefaultsM3(BuildContext context)
+      : theme = Theme.of(context),
+        super(bordered: false);
+
+  final ThemeData theme;
+
+  @override
+  InputDecorationTheme? get inputDecorationTheme =>
+      theme.inputDecorationTheme.copyWith(
+        isDense: true,
+        outlineBorder: BorderSide(color: theme.colorScheme.outlineVariant),
+        hintStyle: theme.textTheme.bodyMedium!.copyWith(
+          color: MaterialStateColor.resolveWith((states) =>
+              states.contains(MaterialState.disabled)
+                  ? theme.disabledColor
+                  : theme.hintColor),
+        ),
+        enabledBorder: InputBorder.none,
+        border: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        focusedErrorBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+      );
 }
 
 @Deprecated('This feature was deprecated after v0.3.0.')

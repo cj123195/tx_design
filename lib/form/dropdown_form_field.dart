@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../field/dropdown_field.dart';
-import '../field/picker_field.dart';
 import '../utils/basic_types.dart';
 import 'form_field.dart';
 import 'picker_form_field.dart';
 
 /// 下拉选择Form组件
 @Deprecated(
-  'Use TxDropdownFormFieldTile instead. '
+  'Use TxDropdownFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class DropdownFormField<T, V> extends TxDropdownFormField<T, V> {
   @Deprecated(
-    'Use TxDropdownFormFieldTile instead. '
+    'Use TxDropdownFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   DropdownFormField({
@@ -27,7 +25,7 @@ class DropdownFormField<T, V> extends TxDropdownFormField<T, V> {
     super.onChanged,
     super.onSaved,
     super.validator,
-    super.enabled,
+    bool? readonly,
     super.autovalidateMode = AutovalidateMode.disabled,
     super.labelText,
     super.labelTextAlign,
@@ -36,7 +34,7 @@ class DropdownFormField<T, V> extends TxDropdownFormField<T, V> {
     super.required,
     Color? backgroundColor,
     super.labelStyle,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.horizontalGap,
     super.minLabelWidth,
@@ -65,6 +63,7 @@ class DropdownFormField<T, V> extends TxDropdownFormField<T, V> {
           label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
+          enabled: readonly,
         );
 }
 
@@ -134,66 +133,51 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     super.minLabelWidth,
     super.minVerticalPadding,
   }) : super(
-          initialValue: TxPickerField.initData(
+          initialValue: TxPickerFormField.initData(
             source,
             initialData,
             initialValue,
             valueMapper,
           ),
           builder: (field) {
-            return TxDropdownField<T, V>(
-              source: source,
-              labelMapper: labelMapper,
-              valueMapper: valueMapper,
-              enabledMapper: enabledMapper,
-              hintText: hintText,
-              textAlign: textAlign,
-              enabled: enabled,
+            return DropdownButtonFormField<T>(
+              items: List.generate(
+                source.length,
+                (i) {
+                  final T item = source[i];
+                  return DropdownMenuItem<T>(
+                    value: item,
+                    alignment: alignment,
+                    enabled:
+                        enabledMapper == null ? true : enabledMapper(i, item),
+                    child: Text(labelMapper(item) ?? ''),
+                  );
+                },
+              ),
               selectedItemBuilder: selectedItemBuilder,
-              initialData: field.value,
+              value: field.value,
               hint: hint,
-              bordered: bordered,
               onChanged: field.didChange,
               onTap: onTap,
-              elevation: elevation,
+              elevation: elevation ?? 0,
               style: style,
               icon: icon,
               iconDisabledColor: iconDisabledColor,
               iconEnabledColor: iconEnabledColor,
-              iconSize: iconSize,
-              isDense: isDense,
-              isExpanded: isExpanded,
+              iconSize: iconSize ?? 24.0,
+              isDense: isDense ?? true,
+              isExpanded: isExpanded ?? false,
               itemHeight: itemHeight,
               focusColor: focusColor,
               focusNode: focusNode,
-              autofocus: autofocus,
+              autofocus: autofocus ?? false,
               dropdownColor: dropdownColor,
               decoration: field.effectiveDecoration,
               menuMaxHeight: menuMaxHeight,
               enableFeedback: enableFeedback,
               alignment: alignment,
               borderRadius: borderRadius,
-              menuPadding: menuPadding,
-              label: field.effectiveLabel,
-              labelTextAlign: labelTextAlign,
-              padding: padding,
-              actionsBuilder: actionsBuilder,
-              trailingBuilder: trailingBuilder,
-              labelStyle: labelStyle,
-              horizontalGap: horizontalGap,
-              tileColor: tileColor,
-              layoutDirection: layoutDirection,
-              leading: leading,
-              visualDensity: visualDensity,
-              shape: shape,
-              iconColor: iconColor,
-              textColor: textColor,
-              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-              minLeadingWidth: minLeadingWidth,
-              minLabelWidth: minLabelWidth,
-              minVerticalPadding: minVerticalPadding,
-              dense: dense,
-              colon: colon,
+              padding: menuPadding,
             );
           },
           validator: (val) =>
@@ -260,55 +244,32 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     super.minVerticalPadding,
   }) : super(
           builder: (field) {
-            return TxDropdownField<T, V>.custom(
+            return DropdownButtonFormField<T>(
               items: items,
-              hintText: hintText,
-              textAlign: textAlign,
-              enabled: enabled,
               selectedItemBuilder: selectedItemBuilder,
-              initialValue: field.value,
+              value: field.value,
               hint: hint,
               onChanged: field.didChange,
               onTap: onTap,
-              elevation: elevation,
+              elevation: elevation ?? 0,
               style: style,
               icon: icon,
               iconDisabledColor: iconDisabledColor,
               iconEnabledColor: iconEnabledColor,
-              iconSize: iconSize,
-              isDense: isDense,
-              isExpanded: isExpanded,
+              iconSize: iconSize ?? 24.0,
+              isDense: isDense ?? true,
+              isExpanded: isExpanded ?? false,
               itemHeight: itemHeight,
               focusColor: focusColor,
               focusNode: focusNode,
-              autofocus: autofocus,
+              autofocus: autofocus ?? false,
               dropdownColor: dropdownColor,
               decoration: field.effectiveDecoration,
               menuMaxHeight: menuMaxHeight,
               enableFeedback: enableFeedback,
               alignment: alignment,
               borderRadius: borderRadius,
-              menuPadding: menuPadding,
-              label: field.effectiveLabel,
-              labelTextAlign: labelTextAlign,
-              padding: padding,
-              actionsBuilder: actionsBuilder,
-              trailingBuilder: trailingBuilder,
-              labelStyle: labelStyle,
-              horizontalGap: horizontalGap,
-              tileColor: tileColor,
-              layoutDirection: layoutDirection,
-              leading: leading,
-              visualDensity: visualDensity,
-              shape: shape,
-              iconColor: iconColor,
-              textColor: textColor,
-              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-              minLeadingWidth: minLeadingWidth,
-              minLabelWidth: minLabelWidth,
-              minVerticalPadding: minVerticalPadding,
-              dense: dense,
-              colon: colon,
+              padding: menuPadding,
             );
           },
           validator: (val) =>

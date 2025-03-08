@@ -6,12 +6,12 @@ import 'picker_form_field.dart';
 
 /// 时间选择Form组件
 @Deprecated(
-  'Use TxTimePickerFormFieldTile instead. '
+  'Use TxTimePickerFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class TimePickerFormField extends TxTimePickerFormField {
   @Deprecated(
-    'Use TxTimePickerFormFieldTile instead. '
+    'Use TxTimePickerFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   TimePickerFormField({
@@ -23,7 +23,7 @@ class TimePickerFormField extends TxTimePickerFormField {
     super.key,
     super.onSaved,
     super.validator,
-    super.enabled,
+    bool? readonly,
     super.autovalidateMode,
     super.restorationId,
     super.required,
@@ -32,7 +32,7 @@ class TimePickerFormField extends TxTimePickerFormField {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -87,6 +87,7 @@ class TimePickerFormField extends TxTimePickerFormField {
           label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
+          enabled: readonly,
         );
 }
 
@@ -174,6 +175,7 @@ class TxTimePickerFormField extends TxPickerFormField<TimeOfDay, String> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,

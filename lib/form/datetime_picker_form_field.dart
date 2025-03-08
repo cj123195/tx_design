@@ -6,12 +6,12 @@ import 'picker_form_field.dart';
 
 /// 日期+时间选择组件
 @Deprecated(
-  'Use TxDateRangePickerFormFieldTile instead. '
+  'Use TxDateRangePickerFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class DatetimePickerFormField extends TxDatetimePickerFormField {
   @Deprecated(
-    'Use TxDateRangePickerFormFieldTile instead. '
+    'Use TxDateRangePickerFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   DatetimePickerFormField({
@@ -25,7 +25,7 @@ class DatetimePickerFormField extends TxDatetimePickerFormField {
     super.key,
     super.onSaved,
     super.validator,
-    super.enabled,
+    bool? readonly,
     super.autovalidateMode,
     super.restorationId,
     super.required,
@@ -34,7 +34,7 @@ class DatetimePickerFormField extends TxDatetimePickerFormField {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -91,6 +91,7 @@ class DatetimePickerFormField extends TxDatetimePickerFormField {
           tileColor: backgroundColor,
           minimumDate: minimumDate,
           maximumDate: maximumDate,
+          enabled: readonly,
         );
 }
 
@@ -183,6 +184,7 @@ class TxDatetimePickerFormField extends TxPickerFormField<DateTime, String> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,

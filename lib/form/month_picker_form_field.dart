@@ -6,12 +6,12 @@ import 'picker_form_field.dart';
 
 /// 月份选择 Form 组件
 @Deprecated(
-  'Use TxMonthPickerFormFieldTile instead. '
+  'Use TxMonthPickerFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class MonthPickerFormField extends TxMonthPickerFormField {
   @Deprecated(
-    'Use TxMonthPickerFormFieldTile instead. '
+    'Use TxMonthPickerFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   MonthPickerFormField({
@@ -25,7 +25,6 @@ class MonthPickerFormField extends TxMonthPickerFormField {
     super.key,
     super.onSaved,
     super.validator,
-    super.enabled,
     super.autovalidateMode,
     super.restorationId,
     super.required,
@@ -34,7 +33,7 @@ class MonthPickerFormField extends TxMonthPickerFormField {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -85,10 +84,12 @@ class MonthPickerFormField extends TxMonthPickerFormField {
     super.enableIMEPersonalizedLearning,
     super.mouseCursor,
     super.contextMenuBuilder,
+    bool? readonly,
   }) : super(
           label: label,
           tileColor: backgroundColor,
           layoutDirection: direction,
+          enabled: readonly,
         );
 }
 
@@ -181,6 +182,7 @@ class TxMonthPickerFormField extends TxPickerFormField<DateTime, String> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,

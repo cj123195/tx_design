@@ -1,47 +1,42 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'field.dart';
+import 'form_field.dart';
 
-/// 与 [TxFieldTheme] 一起使用来定义后代 [TxField] 小部件的默认属性值。
+/// [TxFormFieldTheme] 一起使用来定义后代 [TxFormField] 小部件的默认属性值。
 ///
-/// 有关详细信息，请参阅各个 [TxField] 属性。
+/// 有关详细信息，请参阅各个 [TxFormField] 属性。
 @immutable
-class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
-  const TxFieldThemeData({
-    this.textAlign,
+class TxFormFieldThemeData extends ThemeExtension<TxFormFieldThemeData> {
+  const TxFormFieldThemeData({
     this.inputDecorationTheme,
     this.bordered,
   });
 
-  /// 覆盖 [TxField.decoration] 的默认值。
+  /// 覆盖 [TxFormField.decoration] 的默认值。
   final InputDecorationTheme? inputDecorationTheme;
 
-  /// 覆盖 [TxField.textAlign] 的默认值。
-  final TextAlign? textAlign;
-
-  /// 覆盖 [TxField.bordered] 的默认值。
+  /// 覆盖 [TxFormField.bordered] 的默认值。
   final bool? bordered;
 
   @override
-  ThemeExtension<TxFieldThemeData> copyWith({
+  ThemeExtension<TxFormFieldThemeData> copyWith({
     TextAlign? textAlign,
     InputDecorationTheme? inputDecorationTheme,
     bool? bordered,
   }) {
-    return TxFieldThemeData(
+    return TxFormFieldThemeData(
       inputDecorationTheme: inputDecorationTheme ?? this.inputDecorationTheme,
-      textAlign: textAlign ?? this.textAlign,
       bordered: bordered ?? this.bordered,
     );
   }
 
   @override
-  ThemeExtension<TxFieldThemeData> lerp(
-    ThemeExtension<TxFieldThemeData>? other,
+  ThemeExtension<TxFormFieldThemeData> lerp(
+    ThemeExtension<TxFormFieldThemeData>? other,
     double t,
   ) {
-    if (other is! TxFieldThemeData) {
+    if (other is! TxFormFieldThemeData) {
       return this;
     }
 
@@ -106,9 +101,8 @@ class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
       );
     }
 
-    return TxFieldThemeData(
+    return TxFormFieldThemeData(
       inputDecorationTheme: inputDecorationTheme,
-      textAlign: t < 0.5 ? textAlign : other.textAlign,
       bordered: t < 0.5 ? bordered : other.bordered,
     );
   }
@@ -122,7 +116,7 @@ class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
   }
 
   @override
-  int get hashCode => Object.hash(inputDecorationTheme, textAlign, bordered);
+  int get hashCode => Object.hash(inputDecorationTheme, bordered);
 
   @override
   bool operator ==(Object other) {
@@ -132,38 +126,37 @@ class TxFieldThemeData extends ThemeExtension<TxFieldThemeData> {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is TxFieldThemeData &&
+    return other is TxFormFieldThemeData &&
         other.inputDecorationTheme == inputDecorationTheme &&
-        other.textAlign == textAlign &&
         other.bordered == bordered;
   }
 }
 
-/// 一个继承的小部件，它在此小部件的子树中定义 [TxField] 的颜色和样式参数。
+/// 一个继承的小部件，它在此小部件的子树中定义 [TxFormField] 的颜色和样式参数。
 ///
-/// 此处指定的值用于未指定显式非空值的 [TxField] 属性。
-class TxFieldTheme extends InheritedWidget {
-  /// 创建一个日期选择按钮主题，该主题定义后代 [TxField] 的颜色和样式参数。
-  const TxFieldTheme({
+/// 此处指定的值用于未指定显式非空值的 [TxFormField] 属性。
+class TxFormFieldTheme extends InheritedWidget {
+  /// 创建一个日期选择按钮主题，该主题定义后代 [TxFormField] 的颜色和样式参数。
+  const TxFormFieldTheme({
     required this.data,
     required super.child,
     super.key,
   });
 
-  final TxFieldThemeData data;
+  final TxFormFieldThemeData data;
 
   /// 包含给定上下文的此类的最近实例的 [data] 属性。
   ///
-  /// 如果没有祖先，则返回 [ThemeData.extension<TxFieldThemeData>()]。
-  /// 如果它也为null，则返回默认[TxFieldThemeData]
-  static TxFieldThemeData of(BuildContext context) {
-    final TxFieldTheme? txDatePickerButtonTheme =
-        context.dependOnInheritedWidgetOfExactType<TxFieldTheme>();
+  /// 如果没有祖先，则返回 [ThemeData.extension<TxFormFieldThemeData>()]。
+  /// 如果它也为null，则返回默认[TxFormFieldThemeData]
+  static TxFormFieldThemeData of(BuildContext context) {
+    final TxFormFieldTheme? txDatePickerButtonTheme =
+        context.dependOnInheritedWidgetOfExactType<TxFormFieldTheme>();
     return txDatePickerButtonTheme?.data ??
-        Theme.of(context).extension<TxFieldThemeData>() ??
-        const TxFieldThemeData();
+        Theme.of(context).extension<TxFormFieldThemeData>() ??
+        const TxFormFieldThemeData();
   }
 
   @override
-  bool updateShouldNotify(TxFieldTheme oldWidget) => data != oldWidget.data;
+  bool updateShouldNotify(TxFormFieldTheme oldWidget) => data != oldWidget.data;
 }

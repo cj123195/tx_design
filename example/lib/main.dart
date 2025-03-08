@@ -132,8 +132,6 @@ class FormView extends StatefulWidget {
 }
 
 class _FormViewState extends State<FormView> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   final Map form = {'text': 'text'};
 
   @override
@@ -150,195 +148,193 @@ class _FormViewState extends State<FormView> {
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TxCascadePickerFormField.fromMapList(
-                    labelText: '级联选择',
-                    source: FormView.sources2,
-                    labelKey: 'id',
-                    onChanged: (val) => form['cascadeValue'] = val,
-                    initialData: form['cascadeValue'],
-                    required: true,
-                    bordered: true,
-                  ),
-                  TxTextFormField(
-                    initialValue: form['text'],
-                    labelText: '文字输入',
-                    onChanged: (val) => form['text'] = val,
-                    required: true,
-                  ),
-                  TxPickerFormField(
-                    labelText: '单项选择',
-                    source: FormView.sources,
-                    labelMapper: (val) => val,
-                    onChanged: (val) => form['pickerValue'] = val,
-                    initialValue: form['pickerValue'],
-                    required: true,
-                  ),
-                  TxDatePickerFormField(
-                    labelText: '日期选择器',
-                    minimumDate: DateTime(2024),
-                    maximumDate: DateTime(2025),
-                    onChanged: (date) => form['date'] = date,
-                    maximumYear: 2025,
-                    initialDate: form['date'],
-                    format: 'yyyy/MM/dd',
-                    titleText: '日期选择器',
-                    required: true,
-                    validator: (date) {
-                      if (date!.isBefore(DateTime.now())) {
-                        return '请选择大于今日的日期';
-                      }
-                      return null;
-                    },
-                  ),
-                  TxDatetimePickerFormField(
-                    labelText: '日期时间选择器',
-                    minimumDate: DateTime(2024),
-                    maximumDate: DateTime(2025),
-                    onChanged: (date) => form['datetime'] = date,
-                    maximumYear: 2024,
-                    initialDatetime: form['datetime'],
-                    titleText: '日期时间选择器',
-                    required: true,
-                    validator: (date) {
-                      if (date!.isBefore(DateTime.now())) {
-                        return '请选择大于今日的日期';
-                      }
-                      return null;
-                    },
-                  ),
-                  TxDateRangePickerFormField(
-                    labelText: '日期区间选择',
-                    minimumDate: DateTime(2024),
-                    maximumDate: DateTime(2025),
-                    onChanged: (date) => form['dateRange'] = date,
-                    initialDateRange: form['dateRange'],
-                    helpText: '请选择本年时间',
-                    required: true,
-                  ),
-                  TxDatetimeRangePickerFormField(
-                    labelText: '日期时间区间选择',
-                    minimumDate: DateTime(2024),
-                    maximumDate: DateTime(2025),
-                    onChanged: (date) => form['datetimeRange'] = date,
-                    initialDatetimeRange: form['datetimeRange'],
-                    helpText: '请选择本年时间',
-                    required: true,
-                  ),
-                  TxTimeRangePickerFormField(
-                    labelText: '时间段选择',
-                    minimumTime: const TimeOfDay(hour: 10, minute: 5),
-                    maximumTime: const TimeOfDay(hour: 20, minute: 5),
-                    onChanged: (date) => form['timeRange'] = date,
-                    initialTimeRange: form['timeRange'],
-                    helpText: '请选择时间',
-                    required: true,
-                  ),
-                  TxDropdownFormField(
-                    labelText: '下拉选择',
-                    source: FormView.sources,
-                    labelMapper: (val) => val,
-                    onChanged: (val) => form['dropdown'] = val,
-                    initialValue: form['dropdown'],
-                    required: true,
-                  ),
-                  TxMonthPickerFormField(
-                    labelText: '月份选择',
-                    minimumMonth: DateTime(2024),
-                    maximumMonth: DateTime(2025),
-                    onChanged: (month) => form['month'] = month,
-                    maximumYear: 2024,
-                    initialMonth: form['month'],
-                    titleText: '月份选择',
-                    required: true,
-                  ),
-                  TxMultiPickerFormField<String, String>(
-                    source: FormView.sources,
-                    labelMapper: (val) => val,
-                    labelText: '多项选择',
-                    minCount: 1,
-                    maxCount: 2,
-                    required: true,
-                    onChanged: (val) => form['multiPickerValue'] = val,
-                    initialData: form['multiPickerValue'],
-                  ),
-                  TxNumberFormField(
-                    onChanged: (val) => form['number'] = val,
-                    initialValue: form['number'],
-                    labelText: '数字输入',
-                    required: true,
-                    minValue: 12,
-                    maxValue: 100,
-                    stepped: true,
-                  ),
-                  TxRadioFormField<String, String>(
-                    source: FormView.sources,
-                    initialValue: form['radioValue'],
-                    labelText: 'Radio 单选',
-                    required: true,
-                    onChanged: (val) => form['radioValue'] = val,
-                    labelMapper: (val) => val,
-                  ),
-                  TxChipFormField<String, String>(
-                    onChanged: (val) => form['chipValue'] = val,
-                    initialData: form['chipValue'],
-                    source: FormView.sources,
-                    labelMapper: (val) => val,
-                    labelText: 'Chip 选择',
-                    // required: true,
-                    minCount: 1,
-                    maxCount: 2,
-                    required: true,
-                  ),
-                  TxSwitchFormField(
-                    onChanged: (val) => form['switchValue'] = val,
-                    initialValue: form['switchValue'],
-                    labelText: 'Switch 开关',
-                    required: true,
-                  ),
-                  TxArrayFormField<String>.builder(
-                    itemBuilder: (field, index, data, actions) => ListTile(
-                      title: TxTextField(
-                        initialValue: data,
-                        onChanged: (val) => field.value![index] = val ?? '',
-                      ),
-                      trailing: actions == null
-                          ? null
-                          : Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: actions,
-                            ),
-                    ),
-                    defaultValue: (index) => '',
-                    labelText: '自增组件',
-                    onChanged: (val) => form['autoIncrement'] = val,
-                    initialValue: form['autoIncrement'],
-                    limit: 3,
-                    required: true,
-                  ),
-                  TxTimePickerFormField(
-                    labelText: '时间选择',
-                    minimumTime: const TimeOfDay(hour: 6, minute: 0),
-                    maximumTime: const TimeOfDay(hour: 18, minute: 0),
-                    onChanged: (time) => form['time'] = time,
-                    initialTime: form['time'],
-                    titleText: '时间选择',
-                    required: true,
-                  ),
-                  TxYearPickerFormField(
-                    labelText: '年份选择',
-                    minimumYear: 2000,
-                    onChanged: (year) => form['year'] = year,
-                    maximumYear: 2023,
-                    initialYear: form['year'],
-                    titleText: '年份选择',
-                    required: true,
-                  ),
-                ],
-              ),
+            child: Column(
+              children: [
+                TxCascadePickerFormField.fromMapList(
+                  labelText: '级联选择',
+                  source: FormView.sources2,
+                  labelKey: 'id',
+                  onChanged: (val) => form['cascadeValue'] = val,
+                  initialData: form['cascadeValue'],
+                  required: true,
+                  // bordered: true,
+                  // decoration: InputDecoration(filled: true),
+                ),
+                // TxTextFormField(
+                //   initialValue: form['text'],
+                //   labelText: '文字输入',
+                //   onChanged: (val) => form['text'] = val,
+                //   required: true,
+                // ),
+                // TxPickerFormField(
+                //   labelText: '单项选择',
+                //   source: FormView.sources,
+                //   labelMapper: (val) => val,
+                //   onChanged: (val) => form['pickerValue'] = val,
+                //   initialValue: form['pickerValue'],
+                //   required: true,
+                // ),
+                // TxDatePickerFormField(
+                //   labelText: '日期选择器',
+                //   minimumDate: DateTime(2024),
+                //   maximumDate: DateTime(2025),
+                //   onChanged: (date) => form['date'] = date,
+                //   maximumYear: 2025,
+                //   initialDate: form['date'],
+                //   format: 'yyyy/MM/dd',
+                //   titleText: '日期选择器',
+                //   required: true,
+                //   validator: (date) {
+                //     if (date!.isBefore(DateTime.now())) {
+                //       return '请选择大于今日的日期';
+                //     }
+                //     return null;
+                //   },
+                // ),
+                // TxDatetimePickerFormField(
+                //   labelText: '日期时间选择器',
+                //   minimumDate: DateTime(2024),
+                //   maximumDate: DateTime(2025),
+                //   onChanged: (date) => form['datetime'] = date,
+                //   maximumYear: 2024,
+                //   initialDatetime: form['datetime'],
+                //   titleText: '日期时间选择器',
+                //   required: true,
+                //   validator: (date) {
+                //     if (date!.isBefore(DateTime.now())) {
+                //       return '请选择大于今日的日期';
+                //     }
+                //     return null;
+                //   },
+                // ),
+                // TxDateRangePickerFormField(
+                //   labelText: '日期区间选择',
+                //   minimumDate: DateTime(2024),
+                //   maximumDate: DateTime(2025),
+                //   onChanged: (date) => form['dateRange'] = date,
+                //   initialDateRange: form['dateRange'],
+                //   helpText: '请选择本年时间',
+                //   required: true,
+                // ),
+                // TxDatetimeRangePickerFormField(
+                //   labelText: '日期时间区间选择',
+                //   minimumDate: DateTime(2024),
+                //   maximumDate: DateTime(2025),
+                //   onChanged: (date) => form['datetimeRange'] = date,
+                //   initialDatetimeRange: form['datetimeRange'],
+                //   helpText: '请选择本年时间',
+                //   required: true,
+                // ),
+                // TxTimeRangePickerFormField(
+                //   labelText: '时间段选择',
+                //   minimumTime: const TimeOfDay(hour: 10, minute: 5),
+                //   maximumTime: const TimeOfDay(hour: 20, minute: 5),
+                //   onChanged: (date) => form['timeRange'] = date,
+                //   initialTimeRange: form['timeRange'],
+                //   helpText: '请选择时间',
+                //   required: true,
+                // ),
+                // TxDropdownFormField(
+                //   labelText: '下拉选择',
+                //   source: FormView.sources,
+                //   labelMapper: (val) => val,
+                //   onChanged: (val) => form['dropdown'] = val,
+                //   initialValue: form['dropdown'],
+                //   required: true,
+                // ),
+                // TxMonthPickerFormField(
+                //   labelText: '月份选择',
+                //   minimumMonth: DateTime(2024),
+                //   maximumMonth: DateTime(2025),
+                //   onChanged: (month) => form['month'] = month,
+                //   maximumYear: 2024,
+                //   initialMonth: form['month'],
+                //   titleText: '月份选择',
+                //   required: true,
+                // ),
+                // TxMultiPickerFormField<String, String>(
+                //   source: FormView.sources,
+                //   labelMapper: (val) => val,
+                //   labelText: '多项选择',
+                //   minCount: 1,
+                //   maxCount: 2,
+                //   required: true,
+                //   onChanged: (val) => form['multiPickerValue'] = val,
+                //   initialData: form['multiPickerValue'],
+                // ),
+                // TxNumberFormField(
+                //   onChanged: (val) => form['number'] = val,
+                //   initialValue: form['number'],
+                //   labelText: '数字输入',
+                //   required: true,
+                //   minValue: 12,
+                //   maxValue: 100,
+                //   stepped: true,
+                // ),
+                // TxRadioFormField<String, String>(
+                //   source: FormView.sources,
+                //   initialValue: form['radioValue'],
+                //   labelText: 'Radio 单选',
+                //   required: true,
+                //   onChanged: (val) => form['radioValue'] = val,
+                //   labelMapper: (val) => val,
+                // ),
+                // TxChipFormField<String, String>(
+                //   onChanged: (val) => form['chipValue'] = val,
+                //   initialData: form['chipValue'],
+                //   source: FormView.sources,
+                //   labelMapper: (val) => val,
+                //   labelText: 'Chip 选择',
+                //   // required: true,
+                //   minCount: 1,
+                //   maxCount: 2,
+                //   required: true,
+                // ),
+                // TxSwitchFormField(
+                //   onChanged: (val) => form['switchValue'] = val,
+                //   initialValue: form['switchValue'],
+                //   labelText: 'Switch 开关',
+                //   required: true,
+                // ),
+                // TxArrayFormField<String>.builder(
+                //   itemBuilder: (field, index, data, actions) => ListTile(
+                //     title: TxTextField(
+                //       initialValue: data,
+                //       onChanged: (val) => field.value![index] = val ?? '',
+                //     ),
+                //     trailing: actions == null
+                //         ? null
+                //         : Row(
+                //             mainAxisSize: MainAxisSize.min,
+                //             children: actions,
+                //           ),
+                //   ),
+                //   defaultValue: (index) => '',
+                //   labelText: '自增组件',
+                //   onChanged: (val) => form['autoIncrement'] = val,
+                //   initialValue: form['autoIncrement'],
+                //   limit: 3,
+                //   required: true,
+                // ),
+                // TxTimePickerFormField(
+                //   labelText: '时间选择',
+                //   minimumTime: const TimeOfDay(hour: 6, minute: 0),
+                //   maximumTime: const TimeOfDay(hour: 18, minute: 0),
+                //   onChanged: (time) => form['time'] = time,
+                //   initialTime: form['time'],
+                //   titleText: '时间选择',
+                //   required: true,
+                // ),
+                // TxYearPickerFormField(
+                //   labelText: '年份选择',
+                //   minimumYear: 2000,
+                //   onChanged: (year) => form['year'] = year,
+                //   maximumYear: 2023,
+                //   initialYear: form['year'],
+                //   titleText: '年份选择',
+                //   required: true,
+                // ),
+              ],
             ),
           ),
         ),

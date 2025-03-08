@@ -7,12 +7,12 @@ import 'picker_form_field.dart';
 
 /// 日期范围选择组件
 @Deprecated(
-  'Use TxDateRangePickerFormFieldTile instead. '
+  'Use TxDateRangePickerFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class DateRangePickerFormField extends TxDateRangePickerFormField {
   @Deprecated(
-    'Use TxDateRangePickerFormFieldTile instead. '
+    'Use TxDateRangePickerFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   DateRangePickerFormField({
@@ -27,7 +27,7 @@ class DateRangePickerFormField extends TxDateRangePickerFormField {
     super.onSaved,
     super.validator,
     DateTimeRange? initialValue,
-    super.enabled,
+    bool? readonly,
     super.autovalidateMode,
     super.restorationId,
     super.required,
@@ -36,7 +36,7 @@ class DateRangePickerFormField extends TxDateRangePickerFormField {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -55,6 +55,7 @@ class DateRangePickerFormField extends TxDateRangePickerFormField {
           initialDateRange: initialValue,
           label: label,
           layoutDirection: direction,
+          enabled: readonly,
         );
 }
 
@@ -152,6 +153,7 @@ class TxDateRangePickerFormField
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,

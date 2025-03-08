@@ -113,7 +113,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
             initialValue: initialValue,
             valueMapper: valueMapper,
           ),
-          onTap: (field) async {
+          onFieldTap: (field) async {
             final res = await showCascadePicker<T, V>(
               context: field.context,
               datasource: source,
@@ -245,7 +245,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
             initialValue: initialValue,
             valueMapper: (data) => data[valueKey],
           ) as T?,
-          onTap: (field) async {
+          onFieldTap: (field) async {
             final res = await showMapListCascadePicker<V>(
               context: field.context,
               datasource: source,
@@ -378,7 +378,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
             initialValue: initialValue,
             valueMapper: (data) => data[valueKey],
           ) as T?,
-          onTap: (field) async {
+          onFieldTap: (field) async {
             final res = await showMapTreeCascadePicker<V>(
               context: field.context,
               datasource: source,
@@ -402,4 +402,16 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
           ),
           readOnly: true,
         );
+
+  @override
+  TxCommonTextFormFieldState<T> createState() =>
+      _TxCascadePickerFormFieldState();
+}
+
+class _TxCascadePickerFormFieldState<T> extends TxCommonTextFormFieldState<T> {
+  @override
+  List<Widget>? get suffixIcons => [
+        ...?super.suffixIcons,
+        const Icon(Icons.keyboard_arrow_right),
+      ];
 }

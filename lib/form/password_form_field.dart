@@ -1,15 +1,9 @@
-import 'dart:ui' as ui;
-
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-import '../field/field.dart';
-import '../field/password_field.dart';
-import 'form_field.dart';
+import 'common_text_form_field.dart';
 
 /// 密码输入框表单
-class TxPasswordFormField extends TxFormField<String> {
+class TxPasswordFormField extends TxCommonTextFormField<String> {
   TxPasswordFormField({
     super.key,
     super.onSaved,
@@ -22,68 +16,68 @@ class TxPasswordFormField extends TxFormField<String> {
     super.required,
     super.initialValue,
     super.bordered,
-    bool? clearable,
-    bool? switchEnabled,
+    super.clearable,
+    this.switchEnabled,
     String? hintText,
-    TextEditingController? controller,
-    FocusNode? focusNode,
+    super.controller,
+    super.undoController,
+    super.focusNode,
     TextInputType? keyboardType,
-    TextCapitalization? textCapitalization,
-    TextInputAction? textInputAction,
-    TextStyle? style,
-    StrutStyle? strutStyle,
-    TextDirection? textDirection,
-    TextAlign? textAlign,
-    TextAlignVertical? textAlignVertical,
-    bool? autofocus,
-    bool? readOnly,
-    bool? showCursor,
-    String? obscuringCharacter,
-    bool? obscureText,
-    bool? autocorrect,
-    SmartDashesType? smartDashesType,
-    SmartQuotesType? smartQuotesType,
-    bool? enableSuggestions,
-    MaxLengthEnforcement? maxLengthEnforcement,
-    int? maxLines,
-    int? minLines,
-    bool? expands,
-    int? maxLength,
-    ValueChanged<TxFieldState<String>>? onTap,
-    bool? onTapAlwaysCalled,
-    TapRegionCallback? onTapOutside,
-    VoidCallback? onEditingComplete,
-    ValueChanged<String>? onFieldSubmitted,
-    List<TextInputFormatter>? inputFormatters,
-    double? cursorWidth,
-    double? cursorHeight,
-    Radius? cursorRadius,
-    Color? cursorColor,
-    Color? cursorErrorColor,
-    Brightness? keyboardAppearance,
-    EdgeInsets? scrollPadding,
-    bool? enableInteractiveSelection,
-    TextSelectionControls? selectionControls,
-    InputCounterWidgetBuilder? buildCounter,
-    ScrollPhysics? scrollPhysics,
-    Iterable<String>? autofillHints,
-    ScrollController? scrollController,
-    bool? enableIMEPersonalizedLearning,
-    MouseCursor? mouseCursor,
-    EditableTextContextMenuBuilder? contextMenuBuilder,
-    SpellCheckConfiguration? spellCheckConfiguration,
-    TextMagnifierConfiguration? magnifierConfiguration,
-    UndoHistoryController? undoController,
-    AppPrivateCommandCallback? onAppPrivateCommand,
-    bool? cursorOpacityAnimates,
-    ui.BoxHeightStyle? selectionHeightStyle,
-    ui.BoxWidthStyle? selectionWidthStyle,
-    DragStartBehavior? dragStartBehavior,
-    ContentInsertionConfiguration? contentInsertionConfiguration,
-    MaterialStatesController? statesController,
-    Clip? clipBehavior,
-    bool? scribbleEnabled,
-    bool? canRequestFocus,
+    super.textInputAction,
+    super.textCapitalization,
+    super.style,
+    super.strutStyle,
+    super.textAlignVertical,
+    super.textDirection,
+    super.readOnly,
+    super.showCursor,
+    super.autofocus,
+    super.statesController,
+    super.obscuringCharacter,
+    super.obscureText,
+    super.autocorrect,
+    super.smartDashesType,
+    super.smartQuotesType,
+    super.enableSuggestions,
+    super.maxLines,
+    super.minLines,
+    super.expands,
+    super.maxLength,
+    super.maxLengthEnforcement,
+    super.onEditingComplete,
+    super.onFieldSubmitted,
+    super.onAppPrivateCommand,
+    super.inputFormatters,
+    super.cursorWidth,
+    super.cursorHeight,
+    super.cursorRadius,
+    super.cursorOpacityAnimates,
+    super.cursorColor,
+    super.cursorErrorColor,
+    super.selectionHeightStyle,
+    super.selectionWidthStyle,
+    super.keyboardAppearance,
+    super.scrollPadding,
+    super.dragStartBehavior,
+    super.enableInteractiveSelection,
+    super.selectionControls,
+    super.onTap,
+    super.onFieldTap,
+    super.onTapAlwaysCalled,
+    super.onTapOutside,
+    super.mouseCursor,
+    super.buildCounter,
+    super.scrollController,
+    super.scrollPhysics,
+    super.autofillHints,
+    super.contentInsertionConfiguration,
+    super.clipBehavior,
+    super.scribbleEnabled,
+    super.enableIMEPersonalizedLearning,
+    super.contextMenuBuilder,
+    super.canRequestFocus,
+    super.spellCheckConfiguration,
+    super.magnifierConfiguration,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -109,98 +103,49 @@ class TxPasswordFormField extends TxFormField<String> {
     super.focusColor,
   })  : assert(initialValue == null || controller == null),
         super(
-          builder: (field) {
-            return TxPasswordField(
-              bordered: bordered,
-              clearable: clearable,
-              switchEnabled: switchEnabled,
-              hintText: hintText,
-              initialValue: field.value,
-              controller: controller,
-              focusNode: focusNode,
-              undoController: undoController,
-              decoration: field.effectiveDecoration,
-              keyboardType: keyboardType,
-              textInputAction: textInputAction,
-              textCapitalization: textCapitalization,
-              style: style,
-              strutStyle: strutStyle,
-              textAlign: textAlign,
-              textAlignVertical: textAlignVertical,
-              textDirection: textDirection,
-              readOnly: readOnly,
-              showCursor: showCursor,
-              autofocus: autofocus,
-              statesController: statesController,
-              obscuringCharacter: obscuringCharacter,
-              obscureText: obscureText,
-              autocorrect: autocorrect,
-              smartDashesType: smartDashesType,
-              smartQuotesType: smartQuotesType,
-              enableSuggestions: enableSuggestions,
-              maxLines: maxLines,
-              minLines: minLines,
-              expands: expands,
-              maxLength: maxLength,
-              maxLengthEnforcement: maxLengthEnforcement,
-              onChanged: field.didChange,
-              onEditingComplete: onEditingComplete,
-              onSubmitted: onFieldSubmitted,
-              onAppPrivateCommand: onAppPrivateCommand,
-              inputFormatters: inputFormatters,
-              enabled: enabled,
-              cursorWidth: cursorWidth,
-              cursorHeight: cursorHeight,
-              cursorRadius: cursorRadius,
-              cursorOpacityAnimates: cursorOpacityAnimates,
-              cursorColor: cursorColor,
-              cursorErrorColor: cursorErrorColor,
-              selectionHeightStyle: selectionHeightStyle,
-              selectionWidthStyle: selectionWidthStyle,
-              keyboardAppearance: keyboardAppearance,
-              scrollPadding: scrollPadding,
-              dragStartBehavior: dragStartBehavior,
-              enableInteractiveSelection: enableInteractiveSelection,
-              selectionControls: selectionControls,
-              onTap: onTap,
-              onTapAlwaysCalled: onTapAlwaysCalled,
-              onTapOutside: onTapOutside,
-              mouseCursor: mouseCursor,
-              buildCounter: buildCounter,
-              scrollController: scrollController,
-              scrollPhysics: scrollPhysics,
-              autofillHints: autofillHints,
-              contentInsertionConfiguration: contentInsertionConfiguration,
-              clipBehavior: clipBehavior,
-              restorationId: restorationId,
-              scribbleEnabled: scribbleEnabled,
-              enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
-              contextMenuBuilder: contextMenuBuilder,
-              canRequestFocus: canRequestFocus,
-              spellCheckConfiguration: spellCheckConfiguration,
-              magnifierConfiguration: magnifierConfiguration,
-              label: field.effectiveLabel,
-              labelTextAlign: labelTextAlign,
-              padding: padding,
-              actionsBuilder: actionsBuilder,
-              trailingBuilder: trailingBuilder,
-              labelStyle: labelStyle,
-              horizontalGap: horizontalGap,
-              tileColor: tileColor,
-              layoutDirection: layoutDirection,
-              leading: leading,
-              visualDensity: visualDensity,
-              shape: shape,
-              iconColor: iconColor,
-              textColor: textColor,
-              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-              minLeadingWidth: minLeadingWidth,
-              minLabelWidth: minLabelWidth,
-              minVerticalPadding: minVerticalPadding,
-              dense: dense,
-              colon: colon,
-              focusColor: focusColor,
-            );
-          },
+          hintText: hintText ?? '请输入',
+          displayTextMapper: (context, value) => value,
+          keyboardType: keyboardType ?? TextInputType.visiblePassword,
         );
+
+  /// 是否允许切换
+  final bool? switchEnabled;
+
+  @override
+  TxCommonTextFormFieldState<String> createState() =>
+      _TxPasswordFormFieldState();
+}
+
+class _TxPasswordFormFieldState extends TxCommonTextFormFieldState<String> {
+  @override
+  TxPasswordFormField get widget => super.widget as TxPasswordFormField;
+
+  @override
+  void initState() {
+    _obscureText = widget.obscureText ?? true;
+    super.initState();
+  }
+
+  late bool _obscureText;
+
+  @override
+  bool get obscureText => _obscureText;
+
+  void switchObscure() {
+    setState(() {
+      _obscureText = !obscureText;
+    });
+  }
+
+  @override
+  List<Widget>? get suffixIcons => [
+        ...?super.suffixIcons,
+        if (widget.switchEnabled != false && !isEmpty)
+          IconButton(
+            onPressed: switchObscure,
+            icon: Icon(obscureText
+                ? Icons.visibility_off_outlined
+                : Icons.visibility_outlined),
+          ),
+      ];
 }

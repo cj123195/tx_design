@@ -8,12 +8,12 @@ const String _defaultFormat = 'yyyy/MM/dd HH:mm\t—\tyyyy/MM/dd HH:mm';
 
 /// 日期+时间范围选择组件
 @Deprecated(
-  'Use TxDatetimeRangePickerFormFieldTile instead. '
+  'Use TxDatetimeRangePickerFormField instead. '
   'This feature was deprecated after v0.3.0.',
 )
 class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormField {
   @Deprecated(
-    'Use TxDatetimeRangePickerFormFieldTile instead. '
+    'Use TxDatetimeRangePickerFormField instead. '
     'This feature was deprecated after v0.3.0.',
   )
   DatetimeRangePickerFormField({
@@ -28,7 +28,7 @@ class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormField {
     super.labelTextAlign,
     super.labelOverflow,
     Color? backgroundColor,
-    Axis? direction,
+    Axis direction = Axis.vertical,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -37,7 +37,7 @@ class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormField {
     super.onSaved,
     super.validator,
     DateTimeRange? initialValue,
-    super.enabled,
+    bool? readonly,
     super.autovalidateMode,
     super.restorationId,
     super.decoration,
@@ -54,6 +54,7 @@ class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormField {
           tileColor: backgroundColor,
           layoutDirection: direction,
           initialDatetimeRange: initialValue,
+          enabled: readonly,
         );
 }
 
@@ -143,6 +144,7 @@ class TxDatetimeRangePickerFormField
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
+    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,
