@@ -121,11 +121,14 @@ class TxActionBar extends StatelessWidget {
 
     Widget result;
     if (leading != null) {
-      result = DefaultTextStyle(
-        style: effectiveLeadingTextStyle,
-        child: effectiveIconTheme == null
-            ? leading!
-            : IconTheme(data: effectiveIconTheme, child: leading!),
+      result = Align(
+        alignment: Alignment.centerLeft,
+        child: DefaultTextStyle(
+          style: effectiveLeadingTextStyle,
+          child: effectiveIconTheme == null
+              ? leading!
+              : IconTheme(data: effectiveIconTheme, child: leading!),
+        ),
       );
       if (effectiveMinLeadingWidth != null) {
         result = ConstrainedBox(
@@ -187,7 +190,7 @@ class _DefaultButtonStyle extends ButtonStyle {
   @override
   MaterialStateProperty<TextStyle?> get textStyle =>
       MaterialStatePropertyAll<TextStyle?>(
-          Theme.of(context).textTheme.labelSmall);
+          Theme.of(context).textTheme.labelMedium);
 
   @override
   MaterialStateProperty<EdgeInsetsGeometry>? get padding =>

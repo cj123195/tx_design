@@ -204,4 +204,13 @@ class TxYearPickerFormField extends TxPickerFormField<int, String> {
           displayTextMapper: (context, year) =>
               DateTime(year).format(format ?? _defaultFormat),
         );
+
+  @override
+  TxPickerFormFieldState<int> createState() => _TxYearPickerFormFieldState();
+}
+
+class _TxYearPickerFormFieldState extends TxPickerFormFieldState<int> {
+  @override
+  List<Widget>? get prefixIcons =>
+      [...?super.prefixIcons, const Icon(Icons.calendar_month)];
 }

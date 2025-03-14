@@ -184,4 +184,15 @@ class TxDateRangePickerFormField
           displayTextMapper: (context, range) =>
               range.format(format ?? _defaultFormat),
         );
+
+  @override
+  TxPickerFormFieldState<DateTimeRange> createState() =>
+      _TxDateRangePickerFormFieldState();
+}
+
+class _TxDateRangePickerFormFieldState
+    extends TxPickerFormFieldState<DateTimeRange> {
+  @override
+  List<Widget>? get prefixIcons =>
+      [...?super.prefixIcons, const Icon(Icons.date_range)];
 }

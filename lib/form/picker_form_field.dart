@@ -407,10 +407,10 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
   }
 
   @override
-  TxCommonTextFormFieldState<T> createState() => _TxPickerFormFieldState();
+  TxCommonTextFormFieldState<T> createState() => TxPickerFormFieldState();
 }
 
-class _TxPickerFormFieldState<T> extends TxCommonTextFormFieldState<T> {
+class TxPickerFormFieldState<T> extends TxCommonTextFormFieldState<T> {
   @override
   List<Widget>? get suffixIcons => [
         ...?super.suffixIcons,

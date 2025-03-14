@@ -202,4 +202,14 @@ class TxTimePickerFormField extends TxPickerFormField<TimeOfDay, String> {
           ),
           displayTextMapper: (context, time) => time.format(context),
         );
+
+  @override
+  TxPickerFormFieldState<TimeOfDay> createState() =>
+      _TxTimePickerFormFieldState();
+}
+
+class _TxTimePickerFormFieldState extends TxPickerFormFieldState<TimeOfDay> {
+  @override
+  List<Widget>? get prefixIcons =>
+      [...?super.prefixIcons, const Icon(Icons.access_time)];
 }

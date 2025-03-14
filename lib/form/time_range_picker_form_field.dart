@@ -124,4 +124,15 @@ class TxTimeRangePickerFormField
           ),
           displayTextMapper: format ?? _defaultFormat,
         );
+
+  @override
+  TxPickerFormFieldState<TimeRange> createState() =>
+      _TxTimeRangePickerFormFieldState();
+}
+
+class _TxTimeRangePickerFormFieldState
+    extends TxPickerFormFieldState<TimeRange> {
+  @override
+  List<Widget>? get prefixIcons =>
+      [...?super.prefixIcons, const Icon(Icons.access_time)];
 }
