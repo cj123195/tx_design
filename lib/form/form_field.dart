@@ -339,11 +339,15 @@ class TxFormFieldState<T> extends FormFieldState<T> {
         data: iconThemeData,
         child: IconButtonTheme(
           data: iconButtonThemeData,
-          child: preIcons.length == 1
-              ? preIcons[0]
-              : Row(mainAxisSize: MainAxisSize.min, children: preIcons),
+          child: Row(mainAxisSize: MainAxisSize.min, children: preIcons),
         ),
       );
+      if (decoration.prefixIconConstraints == null) {
+        prefixIcon = Padding(
+          padding: const EdgeInsets.only(right: 12.0),
+          child: prefixIcon,
+        );
+      }
     }
 
     final List<Widget> sufIcons = suffixIcons ?? [];
@@ -368,7 +372,8 @@ class TxFormFieldState<T> extends FormFieldState<T> {
     decoration = decoration.copyWith(
       enabled: isEnabled,
       hintText: hintText,
-      prefixIconConstraints: decoration.prefixIconConstraints ?? constraints,
+      prefixIconConstraints: decoration.prefixIconConstraints ??
+          (constraints ?? const BoxConstraints()).copyWith(minWidth: 0),
       suffixIconConstraints: decoration.suffixIconConstraints ?? constraints,
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
