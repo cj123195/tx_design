@@ -139,6 +139,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
             initialValue,
             valueMapper,
           ),
+          hintText: hintText ?? '请选择',
           builder: (field) {
             return DropdownButtonFormField<T>(
               items: List.generate(
@@ -160,7 +161,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
               onChanged: field.didChange,
               onTap: onTap,
               elevation: elevation ?? 0,
-              style: style,
+              style: style ?? Theme.of(field.context).textTheme.bodyLarge,
               icon: icon,
               iconDisabledColor: iconDisabledColor,
               iconEnabledColor: iconEnabledColor,
@@ -252,7 +253,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
               onChanged: field.didChange,
               onTap: onTap,
               elevation: elevation ?? 0,
-              style: style,
+              style: style ?? Theme.of(field.context).textTheme.bodyLarge,
               icon: icon,
               iconDisabledColor: iconDisabledColor,
               iconEnabledColor: iconEnabledColor,
@@ -274,5 +275,6 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
           },
           validator: (val) =>
               TxPickerFormField.generateValidator(val, validator, required),
+          hintText: hintText ?? '请选择',
         );
 }
