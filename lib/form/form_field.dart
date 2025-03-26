@@ -68,12 +68,26 @@ class TxFormField<T> extends FormField<T> {
           builder: (field) {
             final TxFormFieldState<T> state = field as TxFormFieldState<T>;
 
+            final List<InlineSpan> spans = [
+              if (required == true)
+                const TextSpan(
+                  text: '*',
+                  style: TextStyle(color: Colors.red),
+                ),
+              if (label != null)
+                WidgetSpan(
+                  child: label,
+                  alignment: PlaceholderAlignment.middle,
+                ),
+              if (labelText != null && labelText.isNotEmpty)
+                TextSpan(text: labelText),
+            ];
+
             final ThemeData theme = Theme.of(field.context);
             return TxTile(
               content: builder(state),
-              label: label,
-              labelText:
-                  labelText == null || labelText.isEmpty ? null : labelText,
+              label:
+                  spans.isEmpty ? null : Text.rich(TextSpan(children: spans)),
               labelTextAlign: labelTextAlign,
               padding: padding,
               actions: actionsBuilder == null ? null : actionsBuilder(field),
@@ -160,6 +174,21 @@ class TxFormField<T> extends FormField<T> {
                     .effectiveDecoration.contentPadding ??
                 (layoutDirection == Axis.horizontal ? EdgeInsets.zero : null);
 
+            final List<InlineSpan> spans = [
+              if (required == true)
+                const TextSpan(
+                  text: '*',
+                  style: TextStyle(color: Colors.red),
+                ),
+              if (label != null)
+                WidgetSpan(
+                  child: label,
+                  alignment: PlaceholderAlignment.middle,
+                ),
+              if (labelText != null && labelText.isNotEmpty)
+                TextSpan(text: labelText),
+            ];
+
             return TxTile(
               content: TxFieldDecorator(
                 focusNode: focusNode,
@@ -172,8 +201,8 @@ class TxFormField<T> extends FormField<T> {
                 isEmpty: state.isEmpty,
                 child: builder(state),
               ),
-              label: label,
-              labelText: labelText,
+              label:
+                  spans.isEmpty ? null : Text.rich(TextSpan(children: spans)),
               labelTextAlign: labelTextAlign,
               padding: padding,
               actions: actionsBuilder == null ? null : actionsBuilder(field),
