@@ -4,7 +4,7 @@ import '../extensions/datetime_range_extension.dart';
 import '../widgets/date_range_picker.dart';
 import 'picker_form_field.dart';
 
-const String _defaultFormat = 'yyyy/MM/dd HH:mm\t—\tyyyy/MM/dd HH:mm';
+const String _defaultFormat = 'slashDatetime';
 
 /// 日期+时间范围选择组件
 @Deprecated(
@@ -17,7 +17,7 @@ class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormField {
     'This feature was deprecated after v0.3.0.',
   )
   DatetimeRangePickerFormField({
-    super.format = 'yyyy-MM-dd HH:mm',
+    super.format,
     super.minimumDate,
     super.maximumDate,
     super.helpText,
@@ -78,6 +78,7 @@ class TxDatetimeRangePickerFormField
     String? helpText,
     String? titleText,
     String? format,
+    String? separator,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -170,8 +171,10 @@ class TxDatetimeRangePickerFormField
             helpText: helpText,
             titleText: titleText,
           ),
-          displayTextMapper: (context, range) =>
-              range.format(format ?? _defaultFormat),
+          displayTextMapper: (context, range) => range.format(
+            format: format ?? _defaultFormat,
+            separator: separator,
+          ),
         );
 
   @override

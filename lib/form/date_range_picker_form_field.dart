@@ -59,7 +59,7 @@ class DateRangePickerFormField extends TxDateRangePickerFormField {
         );
 }
 
-const String _defaultFormat = 'yyyy/MM/dd\t—\tyyyy/MM/dd';
+const String _defaultFormat = 'slashDate';
 
 /// 日期范围选择框表单
 class TxDateRangePickerFormField
@@ -87,6 +87,7 @@ class TxDateRangePickerFormField
       DateRangeYearQuickChoice(),
     ],
     String? format,
+    String? separator,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -181,8 +182,10 @@ class TxDateRangePickerFormField
             fieldEndHintText: fieldEndHintText,
             fieldStartHintText: fieldStartHintText,
           ),
-          displayTextMapper: (context, range) =>
-              range.format(format ?? _defaultFormat),
+          displayTextMapper: (context, range) => range.format(
+            format: format ?? _defaultFormat,
+            separator: separator,
+          ),
         );
 
   @override
