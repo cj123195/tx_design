@@ -1,57 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// 日期时间范围格式化工具
-class DateTimeRangeFormatter {
-  static const Map<String, String> _defaultFormats = {
-    'full': 'yyyy-MM-dd HH:mm:ss',
-    'datetime': 'yyyy-MM-dd HH:mm',
-    'slashDatetime': 'yyyy/MM/dd HH:mm',
-    'date': 'yyyy-MM-dd',
-    'slashDate': 'yyyy/MM/dd',
-    'time': 'HH:mm:ss',
-    'compact': 'yyyyMMdd',
-    'shortDate': 'yy-MM-dd',
-  };
-
-  static String _formatDateTime(DateTime dateTime, String pattern) {
-    final Map<String, dynamic> formatMap = {
-      'yyyy': dateTime.year.toString(),
-      'YYYY': dateTime.year.toString(),
-      'yy': dateTime.year.toString().substring(2),
-      'YY': dateTime.year.toString().substring(2),
-      'MM': dateTime.month.toString().padLeft(2, '0'),
-      'M': dateTime.month.toString(),
-      'dd': dateTime.day.toString().padLeft(2, '0'),
-      'DD': dateTime.day.toString().padLeft(2, '0'),
-      'd': dateTime.day.toString(),
-      'D': dateTime.day.toString(),
-      'hh': dateTime.hour.toString().padLeft(2, '0'),
-      'HH': dateTime.hour.toString().padLeft(2, '0'),
-      'h': dateTime.hour.toString(),
-      'H': dateTime.hour.toString(),
-      'mm': dateTime.minute.toString().padLeft(2, '0'),
-      'm': dateTime.minute.toString(),
-      'ss': dateTime.second.toString().padLeft(2, '0'),
-      'SS': dateTime.second.toString().padLeft(2, '0'),
-      's': dateTime.second.toString(),
-      'SSS': dateTime.millisecond.toString().padLeft(3, '0'),
-      'Q': ((dateTime.month - 1) ~/ 3 + 1).toString(),
-      'W': dateTime.weekday.toString(),
-      'WW': _getWeekName(dateTime.weekday),
-    };
-
-    String result = pattern;
-    formatMap.forEach((key, value) {
-      result = result.replaceAll(key, value);
-    });
-    return result;
-  }
-
-  static String _getWeekName(int weekday) {
-    const weeks = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
-    return weeks[weekday - 1];
-  }
-}
+import 'datetime_extension.dart';
 
 extension DateTimeRangeExtension on DateTimeRange {
   /// 格式化日期时间范围
@@ -75,14 +24,10 @@ extension DateTimeRangeExtension on DateTimeRange {
   /// - W: 星期几(数字)
   /// - WW: 星期几(中文)
   String format({String? format, String? separator}) {
-    format ??= 'full';
     separator ??= ' — ';
 
-    // 如果是预定义格式，获取对应的格式字符串
-    final pattern = DateTimeRangeFormatter._defaultFormats[format] ?? format;
-
-    final startStr = DateTimeRangeFormatter._formatDateTime(start, pattern);
-    final endStr = DateTimeRangeFormatter._formatDateTime(end, pattern);
+    final startStr = start.format(format);
+    final endStr = end.format(format);
 
     return '$startStr$separator$endStr';
   }

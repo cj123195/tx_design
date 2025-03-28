@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'datetime_extension.dart' show comFormat;
+import 'datetime_extension.dart' show DatetimeExtension, comFormat;
 
 extension TimeOfDayExtension on TimeOfDay {
   /// 判断当前时间是否早于另一时间
@@ -44,9 +44,7 @@ extension TimeOfDayExtension on TimeOfDay {
 
   /// 不使用本地化格式化
   String formatWithoutLocalization([String format = 'HH:mm']) {
-    format = comFormat(hour, format, 'H', 'HH');
-    format = comFormat(minute, format, 'm', 'mm');
-    return format;
+    return DateTime(0, 0, 0, hour, minute).format(format);
   }
 
   /// 转换为 DateTime

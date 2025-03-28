@@ -40,27 +40,6 @@ extension IntExtension on int {
     return toDatetime(isUtc: isUtc).format(format);
   }
 
-  /// format Date By Seconds.
-  /// 根据秒数格式化时间
-  String toFormattedTime([String? format]) {
-    final int seconds = this % 60;
-    final int totalMinutes = (this / 60).floor();
-    final int minutes = totalMinutes % 60;
-    final int hours = (totalMinutes / 60).floor();
-
-    format = format ?? 'HH:mm:ss';
-
-    if (hours != 0) {
-      format = comFormat(hours, format, 'H', 'HH');
-    } else {
-      format = format.substring(3, format.length);
-    }
-    format = comFormat(minutes, format, 'm', 'mm');
-    format = comFormat(seconds, format, 's', 'ss');
-
-    return format;
-  }
-
   /// is yesterday by Milliseconds.
   /// 是否是昨天
   bool isYesterdayByMs([int? locMs]) {
