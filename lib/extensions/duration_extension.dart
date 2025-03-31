@@ -33,21 +33,61 @@ extension DurationExtension on Duration {
   }
 
   /// 格式化
-  String format() {
-    String text;
-    final int total = inSeconds;
-    final int second = total % 60;
-    text = _formatNum(second);
-    int minute = total ~/ 60;
-    if (minute > 60) {
-      minute = minute % 60;
-      text = '${_formatNum(minute)}:$text';
-      final int hour = minute ~/ 60;
-      text = '$hour:$text';
+  /// format 支持的格式：
+  /// - HH: 两位小时
+  /// - H: 一位小时
+  /// - mm: 两位分钟
+  /// - m: 一位分钟
+  /// - ss: 两位秒
+  /// - s: 一位秒
+  String format([String pattern = 'HH:mm:ss']) {
+    final int days = inDays;
+    final int hours = inHours % Duration.hoursPerDay;
+    final int minutes = inMinutes % Duration.minutesPerHour;
+    final int seconds = inSeconds % Duration.secondsPerMinute;
+
+    String result = pattern.toLowerCase();
+
+    // 处理天
+    if (days != 0 && result.contains('d')) {
+      result = result.replaceAll('dd', days.toString());
+      result = result.replaceAll('d', days.toString());
     } else {
-      text = '${_formatNum(minute)}:$text';
+      final index = result.indexOf('h');
+      if (index != -1) {
+        result = result.substring(index);
+      }
     }
-    return text;
+
+    // 处理小时
+    if (hours != 0 && result.contains('h')) {
+      if (result.contains('hh')) {
+        result = result.replaceAll('hh', _formatNum(hours));
+      } else if (result.contains('h')) {
+        result = result.replaceAll('h', hours.toString());
+      }
+    } else {
+      final index = result.indexOf('m');
+      if (index != -1) {
+        result = result.substring(index);
+      }
+    }
+
+    // 处理分钟
+    if (result.contains('mm')) {
+      result = result.replaceAll('mm', _formatNum(minutes));
+    } else if (result.contains('m')) {
+      result = result.replaceAll('m', minutes.toString());
+    }
+
+    // 处理秒
+    if (result.contains('ss')) {
+      result = result.replaceAll('ss', _formatNum(seconds));
+    } else if (result.contains('s')) {
+      result = result.replaceAll('s', seconds.toString());
+    }
+
+    return result;
   }
 
   String _formatNum(int num) {
