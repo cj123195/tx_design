@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'datetime_extension.dart' show DatetimeExtension, comFormat;
+import 'datetime_extension.dart' show DatetimeExtension;
 
 extension TimeOfDayExtension on TimeOfDay {
   /// 判断当前时间是否早于另一时间

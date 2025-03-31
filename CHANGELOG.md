@@ -1,6 +1,20 @@
+# 0.2.14
+### Enhancements
+- Enhanced `DateTimeRange` extension
+  - Added support for uppercase date formats (e.g., YYYY-MM-DD)
+  - Added predefined datetime formats
+- Improved `Duration` extension
+  - Refactored `format` method to support custom formatting patterns
+  - Added support for days in formatting
+  - Smart omission of zero time units
+  - Added flexible format templates (e.g., dd days HH hours mm minutes ss seconds)
+
+# 0.2.13
+* Update forms.
+
 # 0.2.12
 * Add contentMaxLines parameter to TxDataGrid.fromMap constructor and TxDataRow.fromMap method.
-* Fix issue that TxCell widget did not calculate the height correctly..
+* Fix issue that TxCell widget did not calculate the height correctly.
 
 # 0.2.11
 * Fix the issue that TxDataRow.fromMap displaying incorrectly.
