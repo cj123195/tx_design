@@ -165,27 +165,22 @@ abstract class TxCupertinoPicker extends StatefulWidget {
     this.textStyle,
     this.unselectedTextStyle,
     this.unselectedColor,
-    DateTime? initialValue,
+    this.initialValue,
   })  : itemExtent = itemExtent ?? _kItemExtent,
         useMagnifier = useMagnifier ?? _kUseMagnifier,
         magnification = magnification ?? _kMagnification,
         squeeze = squeeze ?? _kSqueeze,
-        diameterRatio = diameterRatio ?? _kDiameterRatio,
-        initialValue = initialValue ?? DateTime.now() {
+        diameterRatio = diameterRatio ?? _kDiameterRatio {
     {
+      assert(
+        minimumValue == null ||
+            maximumValue == null ||
+            minimumValue!.isBefore(maximumValue!),
+        'minimumValue must before than maximumValue',
+      );
       assert(
         this.itemExtent > 0,
         'item extent should be greater than 0',
-      );
-      assert(
-        minimumValue == null || !minimumValue!.isAfter(this.initialValue),
-        'initial date $initialValue is not greater than or equal to '
-        'minimumDate $minimumValue',
-      );
-      assert(
-        maximumValue == null || !maximumValue!.isBefore(this.initialValue),
-        'initial date $initialValue is not less than or equal to '
-        'maximumDate $maximumValue',
       );
     }
   }
@@ -196,7 +191,7 @@ abstract class TxCupertinoPicker extends StatefulWidget {
   ///
   /// Changing this value after the initial build will not affect the currently
   /// selected date time.
-  final DateTime initialValue;
+  final DateTime? initialValue;
 
   /// The minimum selectable date that the picker can settle on.
   ///
@@ -267,6 +262,17 @@ abstract class TxCupertinoPicker extends StatefulWidget {
 }
 
 abstract class _CupertinoPickerState extends State<TxCupertinoPicker> {
+  DateTime get _initialDate {
+    final DateTime now = DateTime.now();
+    if (widget.minimumValue != null && now.isBefore(widget.minimumValue!)) {
+      return widget.minimumValue!;
+    }
+    if (widget.maximumValue != null && now.isAfter(widget.maximumValue!)) {
+      return widget.maximumValue!;
+    }
+    return now;
+  }
+
   late int textDirectionFactor;
   late CupertinoLocalizations localizations;
 
@@ -523,17 +529,7 @@ class TxCupertinoMonthPicker extends TxCupertinoPicker {
           initialValue: initialMonth,
           minimumValue: minimumDate,
           maximumValue: maximumDate,
-        ) {
-    assert(
-      this.minimumYear >= 1 && initialValue.year >= this.minimumYear,
-      'initial year is not greater than minimum year, or minimum year is not '
-      'positive',
-    );
-    assert(
-      maximumYear == null || initialValue.year <= maximumYear!,
-      'initial year is not smaller than maximum year',
-    );
-  }
+        );
 
   /// Minimum year that the picker can be scrolled to in
   /// [CupertinoDatePickerMode.date] mode. Defaults to 1.
@@ -565,7 +561,7 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState {
   DateTime get minSelectDate => DateTime(selectedYear, selectedMonth);
 
   DateTime get maxSelectDate =>
-      DateTime(selectedYear, selectedMonth, widget.initialValue.day + 1);
+      DateTime(selectedYear, selectedMonth, _initialDate.day + 1);
 
   DateTime get currentSelectedDate => DateTime(selectedYear, selectedMonth);
 
@@ -593,8 +589,9 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState {
   @override
   void initState() {
     super.initState();
-    selectedMonth = widget.initialValue.month;
-    selectedYear = widget.initialValue.year;
+    final DateTime initialDate = _initialDate;
+    selectedMonth = initialDate.month;
+    selectedYear = initialDate.year;
 
     monthController =
         FixedExtentScrollController(initialItem: selectedMonth - 1);
@@ -942,7 +939,7 @@ class _CupertinoDatePickerState extends _CupertinoMonthPickerState {
   @override
   void initState() {
     super.initState();
-    selectedDay = widget.initialValue.day;
+    selectedDay = _initialDate.day;
 
     dayController = FixedExtentScrollController(initialItem: selectedDay - 1);
   }
@@ -1194,7 +1191,7 @@ class TxCupertinoTimePicker extends TxCupertinoPicker {
           maximumValue: maximumTime?.toDateTime(initialTime),
         ) {
     assert(
-      initialValue.minute % minuteInterval == 0,
+      initialValue == null || initialValue!.minute % minuteInterval == 0,
       'initial minute is not divisible by minute interval',
     );
   }
@@ -1222,7 +1219,7 @@ class TxCupertinoTimePicker extends TxCupertinoPicker {
           onChanged: onDatetimeChanged,
         ) {
     assert(
-      initialValue.minute % minuteInterval == 0,
+      initialValue == null || initialValue!.minute % minuteInterval == 0,
       'initial minute is not divisible by minute interval',
     );
   }
@@ -1329,7 +1326,7 @@ class _CupertinoTimePickerState extends _CupertinoPickerState {
   @override
   void initState() {
     super.initState();
-    initialDateTime = widget.initialValue;
+    initialDateTime = _initialDate;
 
     // Initially each of the "physical" regions is mapped to the meridiem region
     // with the same number, e.g., the first 12 items are mapped to the first 12
@@ -2040,6 +2037,12 @@ class _YearPickerState extends State<YearPicker> {
   void initState() {
     super.initState();
     selectedYear = widget.initialYear ?? DateTime.now().year;
+    if (widget.minimumYear != null && selectedYear < widget.minimumYear!) {
+      selectedYear = widget.minimumYear!;
+    } else if (widget.maximumYear != null &&
+        selectedYear > widget.maximumYear!) {
+      selectedYear = widget.maximumYear!;
+    }
 
     yearController = FixedExtentScrollController(initialItem: selectedYear);
   }
