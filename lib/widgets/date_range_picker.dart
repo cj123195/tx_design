@@ -91,9 +91,10 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
   late FocusNode _endNode;
 
   /// 当前时间
-  late DateTime? _start;
-  late DateTime? _end;
+  DateTime? _start;
+  DateTime? _end;
 
+  /// 格式化
   String get _format =>
       widget.format ??
       switch (widget.mode) {
@@ -102,6 +103,62 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
         CupertinoDatePickerMode.dateAndTime => 'yyyy/MM/dd HH:mm',
         CupertinoDatePickerMode.monthYear => 'yyyy-MM',
       };
+
+  /// 获取开始时间和结束时间的初始差值
+  Duration get _initialDiff => switch (widget.mode) {
+        CupertinoDatePickerMode.time => const Duration(hours: 1),
+        CupertinoDatePickerMode.date => const Duration(days: 1),
+        CupertinoDatePickerMode.dateAndTime => const Duration(days: 1),
+        CupertinoDatePickerMode.monthYear => const Duration(days: 30),
+      };
+
+  /// 初始化开始时间
+  void _initStart() {
+    if (_start != null) {
+      return;
+    }
+    if (widget.initialDatetimeRange != null) {
+      _start = widget.initialDatetimeRange!.start;
+    } else if (_end != null) {
+      _start = _end!.subtract(_initialDiff);
+    } else {
+      _start = DateTime.now();
+    }
+    if (widget.minimumDate != null && _start!.isBefore(widget.minimumDate!)) {
+      _start = widget.minimumDate;
+    } else if (widget.maximumDate != null &&
+        _start!.isAfter(widget.maximumDate!)) {
+      _start = widget.minimumDate ?? widget.maximumDate;
+    }
+    _startController.text = _start!.format(_format);
+    if(_end != null) {
+      _callChange();
+    }
+  }
+
+  /// 初始化截止时间
+  void _initEnd() {
+    if (_end != null) {
+      return;
+    }
+    if (widget.initialDatetimeRange != null) {
+      _end = widget.initialDatetimeRange!.end;
+    } else if (_start != null) {
+      _end = _start!.add(_initialDiff);
+    } else {
+      _end = DateTime.now();
+    }
+    if (widget.maximumDate != null && _end!.isAfter(widget.maximumDate!)) {
+      _end = widget.maximumDate;
+    } else if (widget.minimumDate != null &&
+        _end!.isBefore(widget.minimumDate!)) {
+      _end = widget.maximumDate ?? widget.minimumDate;
+    }
+    _endController.text = _end!.format(_format);
+    if(_start != null) {
+      _callChange();
+    }
+  }
 
   /// 清除选择的日期
   void _onRangePicked(DateTimeRange range) {
@@ -124,10 +181,11 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
 
   /// 清除选择的日期
   void _clear() {
-    setState(() {
-      _start = null;
-      _end = null;
-    });
+    _start = null;
+    _end = null;
+    _endController.clear();
+    _startController.clear();
+    _onFocusChanged();
     widget.onChanged(null);
   }
 
@@ -171,20 +229,31 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
     _callChange();
   }
 
-  /// 焦点改变
+  /// 输入框焦点改变
   void _onFocusChanged() {
+    if (_startNode.hasFocus) {
+      _initStart();
+    } else if (_endNode.hasFocus) {
+      _initEnd();
+    }
     setState(() {});
   }
 
   @override
   void initState() {
-    _start = widget.initialDatetimeRange?.start ?? DateTime.now();
-    _end = widget.initialDatetimeRange?.end;
-    _startController = TextEditingController(text: _start?.format(_format));
-    _endController = TextEditingController(text: _end?.format(_format));
+    _startController = TextEditingController();
+    _endController = TextEditingController();
+
+    _initStart();
+    if (widget.initialDatetimeRange != null) {
+      _end = widget.initialDatetimeRange!.end;
+      _endController.text = _end!.format(_format);
+    }
+
     _startNode = FocusNode();
     _endNode = FocusNode();
     _startNode.addListener(_onFocusChanged);
+    _endNode.addListener(_onFocusChanged);
     super.initState();
   }
 
@@ -193,6 +262,7 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
     _startController.dispose();
     _endController.dispose();
     _startNode.removeListener(_onFocusChanged);
+    _endNode.removeListener(_onFocusChanged);
     if (_startNode.hasFocus) {
       _startNode.unfocus();
     }
@@ -272,6 +342,12 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
       controller: _startController,
       focusNode: _startNode,
       autofocus: true,
+      validator: (val) {
+        if (val == null || val.isEmpty) {
+          return txLocalizations.pickerFormFieldHint;
+        }
+        return null;
+      },
     );
 
     final String fieldEndHintText =
@@ -280,6 +356,12 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
       hintText: fieldEndHintText,
       controller: _endController,
       focusNode: _endNode,
+      validator: (val) {
+        if (val == null || val.isEmpty) {
+          return txLocalizations.pickerFormFieldHint;
+        }
+        return null;
+      },
     );
     final Widget textFields = Row(
       mainAxisSize: MainAxisSize.max,
@@ -308,21 +390,21 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
     }
 
     // 时间选择器
-    final Widget picker = _startNode.hasFocus
+    final Widget picker = _endNode.hasFocus
         ? CupertinoDatePicker(
-            onDateTimeChanged: _onStartChanged,
-            maximumDate: _end ?? widget.maximumDate,
-            minimumDate: widget.minimumDate,
-            initialDateTime: _start,
+            onDateTimeChanged: _onEndChanged,
+            maximumDate: widget.maximumDate,
+            minimumDate: _start ?? widget.minimumDate,
+            initialDateTime: _end,
             dateOrder: DatePickerDateOrder.ymd,
             mode: widget.mode,
             use24hFormat: true,
           )
         : CupertinoDatePicker(
-            onDateTimeChanged: _onEndChanged,
-            maximumDate: widget.maximumDate,
-            minimumDate: _start ?? widget.minimumDate,
-            initialDateTime: _end,
+            onDateTimeChanged: _onStartChanged,
+            maximumDate: _end ?? widget.maximumDate,
+            minimumDate: widget.minimumDate,
+            initialDateTime: _start,
             dateOrder: DatePickerDateOrder.ymd,
             mode: widget.mode,
             use24hFormat: true,
@@ -370,6 +452,7 @@ class _DateTextField extends StatelessWidget {
     required this.hintText,
     required this.controller,
     required this.focusNode,
+    required this.validator,
     this.autofocus = false,
   });
 
@@ -377,6 +460,7 @@ class _DateTextField extends StatelessWidget {
   final bool autofocus;
   final TextEditingController controller;
   final FocusNode focusNode;
+  final FormFieldValidator<String> validator;
 
   @override
   Widget build(BuildContext context) {
@@ -393,13 +477,14 @@ class _DateTextField extends StatelessWidget {
       focusedBorder: focusBorder,
     );
 
-    return TextField(
+    return TextFormField(
       controller: controller,
       focusNode: focusNode,
       readOnly: true,
       autofocus: autofocus,
       textAlign: TextAlign.center,
       decoration: decoration,
+      validator: validator,
     );
   }
 }
@@ -780,28 +865,41 @@ Future<DateTimeRange?> _showCupertinoRangePicker(
 }) async {
   DateTimeRange? result = initialRange;
 
-  return await showDefaultBottomSheet<DateTimeRange>(
+  return await showTxModalBottomSheet<DateTimeRange>(
     context,
-    title: titleText,
-    contentBuilder: (context) => CupertinoDateRangePicker(
-      mode: mode,
-      initialDatetimeRange: result,
-      minimumDate: minimumDate,
-      maximumDate: maximumDate,
-      dateOrder: dateOrder,
-      onChanged: (range) => result = range,
-      fieldEndHintText: fieldEndHintText,
-      fieldStartHintText: fieldStartHintText,
-      helpText: helpText,
-      quickChoices: quickChoices,
-      format: format,
-    ),
-    textConfirm: textConfirm,
-    textCancel: textCancel,
+    builder: (context) {
+      final formKey = GlobalKey<FormState>();
+
+      return TxBottomSheet(
+        content: Form(
+          key: formKey,
+          child: CupertinoDateRangePicker(
+            mode: mode,
+            initialDatetimeRange: result,
+            minimumDate: minimumDate,
+            maximumDate: maximumDate,
+            dateOrder: dateOrder,
+            onChanged: (range) => result = range,
+            fieldEndHintText: fieldEndHintText,
+            fieldStartHintText: fieldStartHintText,
+            helpText: helpText,
+            quickChoices: quickChoices,
+            format: format,
+          ),
+        ),
+        title: titleText,
+        textConfirm: textConfirm,
+        textCancel: textCancel,
+        contentPadding:
+            contentPadding ?? const EdgeInsets.symmetric(horizontal: 12.0),
+        onConfirm: () {
+          if (formKey.currentState!.validate()) {
+            Navigator.pop(context, result);
+          }
+        },
+      );
+    },
     backgroundColor: backgroundColor,
-    contentPadding:
-        contentPadding ?? const EdgeInsets.symmetric(horizontal: 12.0),
     elevation: elevation,
-    onConfirm: () => Navigator.pop(context, result),
   );
 }

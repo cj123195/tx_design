@@ -4,7 +4,41 @@ import '../form/form_item_theme.dart';
 import '../localizations.dart';
 import '../theme_extensions/spacing.dart';
 
+/// 自定义底部弹出面板路由
+///
+/// 相比 [ModalBottomSheetRoute]，增加了以下功能：
+/// - 支持自定义高度比例 [heightRatio]
+/// - 支持自定义动画时长
+/// - 支持移除顶部安全区域
+/// 自定义模态底部弹窗路由
+///
+/// 继承自 [PopupRoute]，提供高度可定制的底部弹窗实现
+///
+/// 特性：
+/// - 支持自定义高度比例 [heightRatio]
+/// - 可配置动画时长 [enterBottomSheetDuration]/[exitBottomSheetDuration]
+/// - 可移除顶部安全区域 [removeTop]
+/// - 支持主题定制 [theme]
+/// - 支持滚动控制 [isScrollControlled]
+/// - 可配置背景遮罩 [modalBarrierColor]
 class TxModalBottomSheetRoute<T> extends PopupRoute<T> {
+  /// 构造函数参数说明：
+  /// [builder] - 构建弹窗内容的构建器
+  /// [theme] - 自定义主题
+  /// [barrierLabel] - 无障碍标签
+  /// [backgroundColor] - 弹窗背景色
+  /// [isPersistent] - 是否持久化显示
+  /// [elevation] - 阴影高度
+  /// [shape] - 弹窗形状
+  /// [removeTop] - 是否移除顶部安全区域
+  /// [clipBehavior] - 裁剪行为
+  /// [modalBarrierColor] - 遮罩层颜色
+  /// [isDismissible] - 是否可点击遮罩关闭
+  /// [enableDrag] - 是否允许拖动关闭
+  /// [isScrollControlled] - 是否支持内容滚动
+  /// [heightRatio] - 弹窗高度占屏幕比例 (0.0-1.0)
+  /// [enterBottomSheetDuration] - 进入动画时长
+  /// [exitBottomSheetDuration] - 退出动画时长
   TxModalBottomSheetRoute(
     BuildContext context, {
     this.builder,
@@ -301,7 +335,6 @@ Future<T?> showDefaultBottomSheet<T>(
   List<Widget> Function(BuildContext context)? actionsBuilder,
   WidgetBuilder? footerBuilder,
   VoidCallback? onConfirm,
-  VoidCallback? onClose,
   VoidCallback? onCancel,
   String? textConfirm,
   String? textCancel,
@@ -328,26 +361,23 @@ Future<T?> showDefaultBottomSheet<T>(
 }) async {
   return showTxModalBottomSheet<T>(
     context,
-    builder: (_) => _DefaultSheet(
-      contentBuilder: contentBuilder,
+    builder: (_) => TxBottomSheet(
+      content: contentBuilder(context),
       title: title,
       titleSpacing: titleSpacing,
       centerTitle: centerTitle,
-      headerBuilder: headerBuilder,
-      actionsBuilder: actionsBuilder,
-      onConfirm: onConfirm,
-      onCancel: onCancel,
-      onClose: onClose,
+      header: headerBuilder?.call(context),
+      actions: actionsBuilder?.call(context),
+      onConfirm: onConfirm ?? () => Navigator.pop(context, true),
+      onCancel: onCancel ?? () => Navigator.pop(context),
       textConfirm: textConfirm,
       textCancel: textCancel,
-      showConfirmButton: showConfirmButton,
-      showCancelButton: showCancelButton,
       padding: padding,
       contentPadding: contentPadding,
-      leadingBuilder: leadingBuilder,
+      leading: leadingBuilder?.call(context),
       leadingWidth: leadingWidth,
       automaticallyImplyLeading: automaticallyImplyLeading,
-      footerBuilder: footerBuilder,
+      footer: footerBuilder?.call(context),
       actionsPosition: actionsPosition,
     ),
     persistent: persistent,
@@ -370,51 +400,52 @@ Future<T?> showDefaultBottomSheet<T>(
 
 /// 操作按钮显示位置
 enum ActionsPosition {
+  /// 显示在头部
   header,
+
+  /// 显示在底部
   footer,
 }
 
-class _DefaultSheet<T> extends StatelessWidget {
-  const _DefaultSheet({
-    required this.contentBuilder,
-    this.headerBuilder,
+/// 默认样式的底部弹出面板
+///
+/// 包含标题栏、内容区域和底部操作按钮，支持自定义各个部分的内容和样式
+class TxBottomSheet extends StatelessWidget {
+  const TxBottomSheet({
+    required this.content,
+    super.key,
+    this.header,
     this.title,
     this.titleSpacing,
     this.centerTitle,
-    this.leadingBuilder,
+    this.leading,
     this.leadingWidth,
     this.automaticallyImplyLeading = true,
-    this.actionsBuilder,
+    this.actions,
     this.onConfirm,
-    this.onClose,
     this.onCancel,
     this.textConfirm,
     this.textCancel,
-    this.showConfirmButton = true,
-    this.showCancelButton = true,
     this.padding,
     this.contentPadding = _contentPadding,
-    this.footerBuilder,
+    this.footer,
     ActionsPosition? actionsPosition,
   }) : actionsPosition = actionsPosition ?? ActionsPosition.header;
 
-  final WidgetBuilder? headerBuilder;
-  final WidgetBuilder? leadingBuilder;
+  final Widget? header;
+  final Widget? leading;
   final double? leadingWidth;
   final bool automaticallyImplyLeading;
   final String? title;
   final double? titleSpacing;
   final bool? centerTitle;
-  final WidgetBuilder contentBuilder;
-  final WidgetBuilder? footerBuilder;
-  final List<Widget> Function(BuildContext context)? actionsBuilder;
+  final Widget content;
+  final Widget? footer;
+  final List<Widget>? actions;
   final VoidCallback? onConfirm;
-  final VoidCallback? onClose;
   final VoidCallback? onCancel;
   final String? textConfirm;
   final String? textCancel;
-  final bool showConfirmButton;
-  final bool showCancelButton;
   final EdgeInsetsGeometry? contentPadding;
   final EdgeInsetsGeometry? padding;
   final ActionsPosition actionsPosition;
@@ -429,49 +460,41 @@ class _DefaultSheet<T> extends StatelessWidget {
           return true;
         case TargetPlatform.iOS:
         case TargetPlatform.macOS:
-          return actionsBuilder == null || actions!.length < 2;
+          return actions == null || actions.length < 2;
       }
     }
 
     return centerTitle ?? theme.appBarTheme.centerTitle ?? platformCenter();
   }
 
-  Widget? _getLeading(BuildContext context, Widget? leading) {
-    if (leading == null) {
-      if (actionsPosition == ActionsPosition.header) {
-        final MaterialLocalizations localizations =
-            MaterialLocalizations.of(context);
-
-        leading = TextButton(
-          onPressed: onCancel ?? () => Navigator.pop(context),
-          style: TextButton.styleFrom(
-            foregroundColor: Theme.of(context).colorScheme.onSurface,
-          ),
-          child: Text(localizations.cancelButtonLabel),
-        );
-      } else if (automaticallyImplyLeading) {
-        leading = CloseButton(
-          onPressed: onCancel ?? () => Navigator.pop(context),
-        );
-      }
-    }
-
+  Widget? _getLeading(BuildContext context) {
     if (leading != null) {
       final BoxConstraints constraints =
           BoxConstraints.tightFor(width: leadingWidth ?? kToolbarHeight);
       if (Theme.of(context).useMaterial3) {
-        leading = ConstrainedBox(
+        return ConstrainedBox(
           constraints: constraints,
           child: leading is IconButton ? Center(child: leading) : leading,
         );
       } else {
-        leading = ConstrainedBox(
-          constraints: constraints,
-          child: leading,
-        );
+        return ConstrainedBox(constraints: constraints, child: leading);
       }
     }
-    return leading;
+
+    if (actionsPosition == ActionsPosition.header) {
+      final MaterialLocalizations localizations =
+          MaterialLocalizations.of(context);
+
+      return TextButton(
+        onPressed: onCancel ?? () => Navigator.pop(context),
+        style: TextButton.styleFrom(
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+        ),
+        child: Text(textCancel ?? localizations.cancelButtonLabel),
+      );
+    }
+
+    return automaticallyImplyLeading ? const CloseButton() : null;
   }
 
   @override
@@ -480,24 +503,24 @@ class _DefaultSheet<T> extends StatelessWidget {
         MaterialLocalizations.of(context);
     final ThemeData theme = Theme.of(context);
 
-    Widget? footer;
-    if (footerBuilder != null) {
-      footer = footerBuilder!(context);
+    Widget? effectiveFooter;
+    if (footer != null) {
+      effectiveFooter = footer;
     } else if (actionsPosition == ActionsPosition.footer) {
       final List<Widget> buttons = [
-        if (showCancelButton)
+        if (onCancel != null)
           OutlinedButton(
-            onPressed: onCancel ?? () => Navigator.pop(context),
+            onPressed: onCancel,
             child: Text(textCancel ?? localizations.cancelButtonLabel),
           ),
-        if (showConfirmButton)
+        if (onConfirm != null)
           FilledButton(
-            onPressed: onConfirm ?? () => Navigator.pop<T>(context, true as T),
+            onPressed: onConfirm,
             child: Text(textConfirm ?? localizations.okButtonLabel),
           ),
       ];
       if (buttons.isNotEmpty) {
-        footer = Row(
+        effectiveFooter = Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -510,52 +533,55 @@ class _DefaultSheet<T> extends StatelessWidget {
       }
     }
 
-    List<Widget>? actions;
-    Widget? action;
-    if (actionsBuilder != null) {
-      actions = actionsBuilder!(context);
-      action = Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: actionsBuilder!(context),
-      );
-    } else if (actionsPosition == ActionsPosition.header) {
-      action = TextButton(
-        onPressed: onConfirm ?? () => Navigator.pop<T>(context, true as T),
-        child: Text(localizations.okButtonLabel),
-      );
-    }
+    Widget? effectiveHeader;
+    if (header != null) {
+      effectiveHeader = header;
+    } else {
+      Widget? trailing;
+      if (actions != null && actions!.isNotEmpty) {
+        trailing = Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: actions!,
+        );
+      } else if (actionsPosition == ActionsPosition.header) {
+        trailing = TextButton(
+          onPressed: onConfirm,
+          child: Text(textConfirm ?? localizations.okButtonLabel),
+        );
+      }
 
-    Widget? header;
-    if (headerBuilder != null && title != null) {
-      header = headerBuilder!(context);
-    } else if (title != null) {
-      header = SizedBox(
+      final Widget? leading = _getLeading(context);
+
+      final Widget? middle = title == null
+          ? null
+          : Text(title!, style: theme.textTheme.titleMedium);
+
+      effectiveHeader = SizedBox(
         height: kToolbarHeight,
         child: NavigationToolbar(
-          leading: _getLeading(context, leadingBuilder?.call(context)),
-          middle: Text(title!, style: theme.textTheme.titleMedium),
-          trailing: action,
+          leading: leading,
+          middle: middle,
+          trailing: trailing,
           centerMiddle: _getEffectiveCenterTitle(theme, actions),
           middleSpacing: titleSpacing ?? NavigationToolbar.kMiddleSpacing,
         ),
       );
     }
 
-    Widget content = contentBuilder(context);
-    if (contentPadding != null) {
-      content = Padding(padding: contentPadding!, child: content);
-    }
+    final Widget effectiveContent = contentPadding == null
+        ? content
+        : Padding(padding: contentPadding!, child: content);
 
     Widget result = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (header != null) header,
-        Expanded(child: content),
-        if (footer != null)
+        if (effectiveHeader != null) effectiveHeader,
+        Expanded(child: effectiveContent),
+        if (effectiveFooter != null)
           Padding(
             padding: const EdgeInsets.all(12.0),
-            child: footer,
+            child: effectiveFooter,
           ),
       ],
     );
@@ -756,7 +782,6 @@ Future<T?> showFilterBottomSheet<T>(
   List<Widget> Function(BuildContext context)? actionsBuilder,
   WidgetBuilder? footerBuilder,
   VoidCallback? onConfirm,
-  VoidCallback? onClose,
   VoidCallback? onReset,
   String? textConfirm,
   String? textCancel,
@@ -799,7 +824,6 @@ Future<T?> showFilterBottomSheet<T>(
     actionsBuilder: actionsBuilder,
     onConfirm: onConfirm,
     onCancel: onReset,
-    onClose: onClose,
     textConfirm: textConfirm,
     textCancel: textCancel ?? localizations.resetButtonLabel,
     showConfirmButton: showConfirmButton,
