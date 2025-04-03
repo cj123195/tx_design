@@ -112,6 +112,18 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
         CupertinoDatePickerMode.monthYear => const Duration(days: 30),
       };
 
+  DateTime get _now {
+    final DateTime now = DateTime.now();
+    return switch (widget.mode) {
+      CupertinoDatePickerMode.time =>
+        DateTime(now.year, now.month, now.day, now.hour, now.minute),
+      CupertinoDatePickerMode.date => DateTime(now.year, now.month, now.day),
+      CupertinoDatePickerMode.dateAndTime =>
+        DateTime(now.year, now.month, now.day, now.hour, now.minute),
+      CupertinoDatePickerMode.monthYear => DateTime(now.year, now.month),
+    };
+  }
+
   /// 初始化开始时间
   void _initStart() {
     if (_start != null) {
@@ -122,7 +134,7 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
     } else if (_end != null) {
       _start = _end!.subtract(_initialDiff);
     } else {
-      _start = DateTime.now();
+      _start = _now;
     }
     if (widget.minimumDate != null && _start!.isBefore(widget.minimumDate!)) {
       _start = widget.minimumDate;
@@ -131,7 +143,7 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
       _start = widget.minimumDate ?? widget.maximumDate;
     }
     _startController.text = _start!.format(_format);
-    if(_end != null) {
+    if (_end != null) {
       _callChange();
     }
   }
@@ -146,7 +158,7 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
     } else if (_start != null) {
       _end = _start!.add(_initialDiff);
     } else {
-      _end = DateTime.now();
+      _end = _now;
     }
     if (widget.maximumDate != null && _end!.isAfter(widget.maximumDate!)) {
       _end = widget.maximumDate;
@@ -155,7 +167,7 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
       _end = widget.maximumDate ?? widget.minimumDate;
     }
     _endController.text = _end!.format(_format);
-    if(_start != null) {
+    if (_start != null) {
       _callChange();
     }
   }

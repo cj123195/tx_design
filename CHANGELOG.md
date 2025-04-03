@@ -1,3 +1,6 @@
+# 0.2.15
+* Fixed issues DateRangePicker sometimes went wrong.
+
 # 0.2.14
 * Fixed initialValue issues in date pickers.
 * Fixed focus management when switching between form fields.
