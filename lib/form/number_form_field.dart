@@ -230,7 +230,7 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
           onInputChanged: (field, val) {
             final num? number = num.tryParse(val);
             if (number != field.value) {
-              (field as TxCommonTextFormFieldState).setValue(number);
+              (field as TxCommonTextFormFieldState).didChange(number);
             }
           },
           inputFormatters: [

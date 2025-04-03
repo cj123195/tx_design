@@ -1,3 +1,6 @@
+# 0.2.16
+* Fixed the issue where the onChanged callback of TxNumberFormField would never be called.
+
 # 0.2.15
 * Fixed issues DateRangePicker sometimes went wrong.
 
