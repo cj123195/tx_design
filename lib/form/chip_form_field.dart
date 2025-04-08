@@ -8,7 +8,7 @@ import 'wrap_field.dart';
 class TxChipFormField<T, V> extends TxWrapFormField<List<T>> {
   TxChipFormField({
     required List<T> source,
-    required ValueMapper<T, String> labelMapper,
+    required ValueMapper<T, String?> labelMapper,
     ValueMapper<T, V?>? valueMapper,
     IndexedValueMapper<T, bool>? enabledMapper,
     List<T>? initialData,
@@ -112,7 +112,7 @@ class _ChipItem<T> extends StatelessWidget {
   final int index;
   final T item;
   final List<T>? data;
-  final ValueMapper<T, String> labelMapper;
+  final ValueMapper<T, String?> labelMapper;
   final IndexedValueMapper<T, bool>? enabledMapper;
   final IndexedValueMapper<T, Widget>? avatarBuilder;
   final int? minCount;
@@ -152,7 +152,7 @@ class _ChipItem<T> extends StatelessWidget {
         );
 
     return ChoiceChip(
-      label: Text(labelMapper(item)),
+      label: Text(labelMapper(item) ?? ''),
       avatar: avatarBuilder == null ? null : avatarBuilder!(index, item),
       onSelected: effectiveEnabled ? onChangedHandler : null,
       selected: selected,

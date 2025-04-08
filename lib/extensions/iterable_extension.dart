@@ -17,7 +17,7 @@ extension IterableExtension<E> on Iterable<E> {
   E? getInitialData<V>({
     E? initialData,
     V? initialValue,
-    ValueMapper<E, V>? valueMapper,
+    ValueMapper<E, V?>? valueMapper,
   }) {
     if (initialData != null) {
       return initialData;

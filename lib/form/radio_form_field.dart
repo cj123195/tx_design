@@ -52,7 +52,7 @@ class RadioFormField<T, V> extends TxRadioFormField<T, V> {
 class TxRadioFormField<T, V> extends TxWrapFormField<T> {
   TxRadioFormField({
     required List<T> source,
-    required ValueMapper<T, String> labelMapper,
+    required ValueMapper<T, String?> labelMapper,
     ValueMapper<T, V?>? valueMapper,
     IndexedValueMapper<T, bool>? enabledMapper,
     T? initialData,
@@ -150,7 +150,7 @@ class _ChipItem<T> extends StatelessWidget {
   final int index;
   final T item;
   final bool selected;
-  final ValueMapper<T, String> labelMapper;
+  final ValueMapper<T, String?> labelMapper;
   final IndexedValueMapper<T, bool>? enabledMapper;
   final IndexedValueMapper<T, Widget>? avatarBuilder;
   final IndexedValueMapper<T, String>? tooltipMapper;
@@ -176,7 +176,7 @@ class _ChipItem<T> extends StatelessWidget {
         );
 
     return ChoiceChip(
-      label: Text(labelMapper(item)),
+      label: Text(labelMapper(item) ?? ''),
       avatar: avatarBuilder == null ? null : avatarBuilder!(index, item),
       onSelected: effectiveEnabled ? onChangedHandler : null,
       selected: selected,

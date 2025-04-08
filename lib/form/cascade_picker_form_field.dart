@@ -22,7 +22,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.decoration,
     super.onChanged,
     super.required,
-    ValueMapper<T, V>? valueMapper,
+    ValueMapper<T, V?>? valueMapper,
     T? initialData,
     V? initialValue,
     super.focusNode,

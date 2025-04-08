@@ -9,7 +9,7 @@ class TxCascadePicker<D, V> extends StatefulWidget {
   TxCascadePicker({
     required this.datasource,
     required this.labelMapper,
-    required ValueMapper<D, V>? valueMapper,
+    required ValueMapper<D, V?>? valueMapper,
     required this.childrenMapper,
     required this.onChanged,
     this.initialValue,
@@ -87,7 +87,7 @@ class TxCascadePicker<D, V> extends StatefulWidget {
   final ValueMapper<D, String?> labelMapper;
 
   /// 数据的值
-  final ValueMapper<D, V> valueMapper;
+  final ValueMapper<D, V?> valueMapper;
 
   /// 数据的值
   final ValueMapper<D, List<D>?> childrenMapper;
@@ -231,7 +231,7 @@ class _TxCascadePickerState<D, V> extends State<TxCascadePicker<D, V>> {
       children.length,
       (index) {
         final data = children[index];
-        final V value = widget.valueMapper(data);
+        final V? value = widget.valueMapper(data);
         final bool selected = _nodes.indexWhere((node) =>
                 node == null ? false : widget.valueMapper(node) == value) !=
             -1;
@@ -322,7 +322,7 @@ Future<D?> showCascadePicker<D, V>({
   required BuildContext context,
   required List<D> datasource,
   required ValueMapper<D, String?> labelMapper,
-  required ValueMapper<D, V>? valueMapper,
+  required ValueMapper<D, V?>? valueMapper,
   required ValueMapper<D, List<D>?> childrenMapper,
   V? initialValue,
   D? initialData,
