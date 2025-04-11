@@ -112,6 +112,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
             initialData: initialData,
             initialValue: initialValue,
             valueMapper: valueMapper,
+            childrenMapper: childrenMapper,
           ),
           onFieldTap: (field) async {
             final res = await showCascadePicker<T, V>(

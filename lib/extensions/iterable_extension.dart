@@ -18,6 +18,7 @@ extension IterableExtension<E> on Iterable<E> {
     E? initialData,
     V? initialValue,
     ValueMapper<E, V?>? valueMapper,
+    ValueMapper<E, List<E>?>? childrenMapper,
   }) {
     if (initialData != null) {
       return initialData;
@@ -30,6 +31,21 @@ extension IterableExtension<E> on Iterable<E> {
     for (E data in this) {
       if ((valueMapper == null ? data : valueMapper(data)) == initialValue) {
         return data;
+      }
+
+      if (childrenMapper != null) {
+        final children = childrenMapper(data);
+        if (children != null && children.isNotEmpty) {
+          final result = children.getInitialData(
+            initialData: initialData,
+            initialValue: initialValue,
+            valueMapper: valueMapper,
+            childrenMapper: childrenMapper,
+          );
+          if (result != null) {
+            return result;
+          }
+        }
       }
     }
     return null;
