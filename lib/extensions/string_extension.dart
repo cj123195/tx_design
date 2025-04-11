@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'datetime_extension.dart';
+import 'time_of_day_extension.dart';
 
 const Map<String, MaterialColor> _colorMap = {
   'red': Colors.red,
@@ -163,34 +164,242 @@ extension StringExtension on String {
   }
 
   /// 转换为时间
-  DateTime? toDatetime({bool? isUtc}) {
+  DateTime? toDatetime({bool? isUtc, String? format}) {
+    // 尝试使用标准解析
     DateTime? dateTime = DateTime.tryParse(this);
-    if (isUtc != null) {
-      dateTime = dateTime?.toUtc();
-    } else {
-      dateTime = dateTime?.toLocal();
+
+    // 如果标准解析失败，尝试使用自定义格式解析
+    if (dateTime == null && format != null) {
+      dateTime = _parseDateTime(this, format);
+    } else if (dateTime == null) {
+      // 尝试使用预定义格式解析
+      for (final formatPattern in DateTimeFormatter.defaultFormats.values) {
+        dateTime = _parseDateTime(this, formatPattern);
+        if (dateTime != null) {
+          break;
+        }
+      }
     }
+
+    // 处理时区
+    if (dateTime != null) {
+      if (isUtc == true) {
+        dateTime = dateTime.toUtc();
+      } else if (isUtc == false) {
+        dateTime = dateTime.toLocal();
+      }
+    }
+
     return dateTime;
+  }
+
+  /// 根据格式解析日期时间字符串
+  DateTime? _parseDateTime(String dateStr, String format) {
+    try {
+      // 构建正则表达式模式
+      String pattern = '';
+      final List<String> formatTokens = [];
+
+      // 逐字符处理格式字符串
+      int i = 0;
+      while (i < format.length) {
+        if (i + 4 <= format.length &&
+            (format.substring(i, i + 4) == 'yyyy' ||
+                format.substring(i, i + 4) == 'YYYY')) {
+          pattern += r'(\d{4})';
+          formatTokens.add('yyyy');
+          i += 4;
+        } else if (i + 2 <= format.length &&
+            (format.substring(i, i + 2) == 'yy' ||
+                format.substring(i, i + 2) == 'YY')) {
+          pattern += r'(\d{2})';
+          formatTokens.add('yy');
+          i += 2;
+        } else if (i + 2 <= format.length &&
+            format.substring(i, i + 2) == 'MM') {
+          pattern += r'(\d{2})';
+          formatTokens.add('MM');
+          i += 2;
+        } else if (i + 1 <= format.length &&
+            format.substring(i, i + 1) == 'M') {
+          pattern += r'(\d{1,2})';
+          formatTokens.add('M');
+          i += 1;
+        } else if (i + 2 <= format.length &&
+            (format.substring(i, i + 2) == 'dd' ||
+                format.substring(i, i + 2) == 'DD')) {
+          pattern += r'(\d{2})';
+          formatTokens.add('dd');
+          i += 2;
+        } else if (i + 1 <= format.length &&
+            (format.substring(i, i + 1) == 'd' ||
+                format.substring(i, i + 1) == 'D')) {
+          pattern += r'(\d{1,2})';
+          formatTokens.add('d');
+          i += 1;
+        } else if (i + 2 <= format.length &&
+            (format.substring(i, i + 2) == 'HH' ||
+                format.substring(i, i + 2) == 'hh')) {
+          pattern += r'(\d{2})';
+          formatTokens.add('HH');
+          i += 2;
+        } else if (i + 1 <= format.length &&
+            (format.substring(i, i + 1) == 'H' ||
+                format.substring(i, i + 1) == 'h')) {
+          pattern += r'(\d{1,2})';
+          formatTokens.add('H');
+          i += 1;
+        } else if (i + 2 <= format.length &&
+            format.substring(i, i + 2) == 'mm') {
+          pattern += r'(\d{2})';
+          formatTokens.add('mm');
+          i += 2;
+        } else if (i + 1 <= format.length &&
+            format.substring(i, i + 1) == 'm') {
+          pattern += r'(\d{1,2})';
+          formatTokens.add('m');
+          i += 1;
+        } else if (i + 2 <= format.length &&
+            (format.substring(i, i + 2) == 'ss' ||
+                format.substring(i, i + 2) == 'SS')) {
+          pattern += r'(\d{2})';
+          formatTokens.add('ss');
+          i += 2;
+        } else if (i + 1 <= format.length &&
+            format.substring(i, i + 1) == 's') {
+          pattern += r'(\d{1,2})';
+          formatTokens.add('s');
+          i += 1;
+        } else if (i + 3 <= format.length &&
+            format.substring(i, i + 3) == 'SSS') {
+          pattern += r'(\d{3})';
+          formatTokens.add('SSS');
+          i += 3;
+        } else {
+          // 转义特殊字符
+          final char = format[i];
+          if ('.-:/ '.contains(char)) {
+            pattern += '\\$char';
+          } else {
+            pattern += char;
+          }
+          i += 1;
+        }
+      }
+
+      final RegExp regExp = RegExp('^$pattern\$');
+      final Match? match = regExp.firstMatch(dateStr);
+
+      if (match == null) {
+        return null;
+      }
+
+      // 设置默认值
+      int year = DateTime.now().year;
+      int month = 1;
+      int day = 1;
+      int hour = 0;
+      int minute = 0;
+      int second = 0;
+      int millisecond = 0;
+
+      // 根据匹配的格式标记提取值
+      for (int i = 0; i < formatTokens.length; i++) {
+        final token = formatTokens[i];
+        final value = match.group(i + 1);
+
+        if (value == null) {
+          continue;
+        }
+
+        if (token == 'yyyy') {
+          year = int.parse(value);
+        } else if (token == 'yy') {
+          final DateTime now = DateTime.now();
+          year = int.parse('${now.year.toString().substring(0, 2)}$value');
+        } else if (token == 'MM' || token == 'M') {
+          month = int.parse(value);
+        } else if (token == 'dd' || token == 'd') {
+          day = int.parse(value);
+        } else if (token == 'HH' || token == 'H') {
+          hour = int.parse(value);
+        } else if (token == 'mm' || token == 'm') {
+          minute = int.parse(value);
+        } else if (token == 'ss' || token == 's') {
+          second = int.parse(value);
+        } else if (token == 'SSS') {
+          millisecond = int.parse(value);
+        }
+      }
+
+      return DateTime(year, month, day, hour, minute, second, millisecond);
+    } catch (e) {
+      return null;
+    }
   }
 
   /// 转换为格式化的时间
   String? toFormattedTime({String? format, bool? isUtc}) {
-    return toDatetime(isUtc: isUtc)?.format(format);
+    return toDatetime(isUtc: isUtc, format: format)?.format(format);
   }
 
   /// 转换为时分秒
-  TimeOfDay? toTime() {
+  TimeOfDay? toTime([String? format]) {
+    if (format != null) {
+      return _parseTime(this, format);
+    }
     try {
-      final Match? match = RegExp(r'(\d\d):(\d\d)').firstMatch(this);
+      return _parseTime(this, format ?? TimeOfDayFormatter.defaultFormat);
+    } on FormatException {
+      return null;
+    }
+  }
+
+  /// 根据格式解析日期时间字符串
+  TimeOfDay? _parseTime(String dateStr, String format) {
+    try {
+      // 替换格式中的特殊字符为正则表达式
+      String pattern = format
+          .replaceAll('HH', r'(\d{2})')
+          .replaceAll('hh', r'(\d{2})')
+          .replaceAll('H', r'(\d{1,2})')
+          .replaceAll('h', r'(\d{1,2})')
+          .replaceAll('mm', r'(\d{2})')
+          .replaceAll('m', r'(\d{1,2})');
+
+      // 转义特殊字符
+      pattern = pattern
+          .replaceAll('/', r'\/')
+          .replaceAll('.', r'\.')
+          .replaceAll('-', r'\-')
+          .replaceAll(':', r'\:')
+          .replaceAll(' ', r'\s');
+
+      final RegExp regExp = RegExp('^$pattern\$');
+      final Match? match = regExp.firstMatch(dateStr);
+
       if (match == null) {
         return null;
-      } else {
-        return TimeOfDay(
-          hour: int.parse(match[1]!),
-          minute: int.parse(match[2]!),
-        );
       }
-    } on FormatException {
+
+      // 提取年月日时分秒
+      int hour = 0, minute = 0;
+
+      int groupIndex = 1;
+      if (format.contains('HH') || format.contains('hh')) {
+        hour = int.parse(match.group(groupIndex++)!);
+      } else if (format.contains('H') || format.contains('h')) {
+        hour = int.parse(match.group(groupIndex++)!);
+      }
+
+      if (format.contains('mm')) {
+        minute = int.parse(match.group(groupIndex++)!);
+      } else if (format.contains('m')) {
+        minute = int.parse(match.group(groupIndex++)!);
+      }
+
+      return TimeOfDay(hour: hour, minute: minute);
+    } catch (e) {
       return null;
     }
   }

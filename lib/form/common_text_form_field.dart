@@ -208,10 +208,12 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
                 dragStartBehavior: dragStartBehavior ?? DragStartBehavior.start,
                 enableInteractiveSelection: enableInteractiveSelection,
                 selectionControls: selectionControls,
-                onTap: onFieldTap == null ? null : () {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                  onFieldTap(field);
-                },
+                onTap: onFieldTap == null
+                    ? null
+                    : () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        onFieldTap(field);
+                      },
                 onTapAlwaysCalled: onTapAlwaysCalled ?? false,
                 onTapOutside: onTapOutsideHandler,
                 mouseCursor: mouseCursor,

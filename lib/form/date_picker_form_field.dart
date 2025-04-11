@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../extensions/datetime_extension.dart';
+import '../extensions.dart';
 import '../widgets/date_picker.dart';
 import 'picker_form_field.dart';
 
@@ -201,10 +201,8 @@ class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
   }) : super.custom(
-          initialValue: initialDate ??
-              (initialDateStr == null
-                  ? null
-                  : DateTime.tryParse(initialDateStr)),
+          initialValue:
+              initialDate ?? initialDateStr?.toDatetime(format: format),
           onPickTap: (context, date) => showCupertinoDatePicker(
             context,
             initialDate: date,

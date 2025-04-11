@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_extension.dart';
+import '../extensions/string_extension.dart';
 import '../widgets/date_picker.dart';
 import 'picker_form_field.dart';
 
@@ -200,9 +201,7 @@ class TxMonthPickerFormField extends TxPickerFormField<DateTime, String> {
     super.magnifierConfiguration,
   }) : super.custom(
           initialValue: initialMonth ??
-              (initialMonthStr == null
-                  ? null
-                  : DateTime.tryParse(initialMonthStr)),
+              initialMonthStr?.toDatetime(format: format ?? _defaultFormat),
           onPickTap: (context, month) => showCupertinoMonthPicker(
             context,
             initialMonth: month,

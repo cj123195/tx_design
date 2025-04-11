@@ -2,7 +2,7 @@ import 'int_extension.dart';
 
 /// 日期时间范围格式化工具
 class DateTimeFormatter {
-  static const Map<String, String> _defaultFormats = {
+  static const Map<String, String> defaultFormats = {
     'full': 'yyyy-MM-dd HH:mm:ss',
     'datetime': 'yyyy-MM-dd HH:mm',
     'slashDatetime': 'yyyy/MM/dd HH:mm',
@@ -11,6 +11,7 @@ class DateTimeFormatter {
     'time': 'HH:mm:ss',
     'compact': 'yyyyMMdd',
     'shortDate': 'yy-MM-dd',
+    'shortTime': 'HH:mm',
   };
 
   static String _formatDateTime(DateTime dateTime, String pattern) {
@@ -73,7 +74,7 @@ extension DatetimeExtension on DateTime {
     format ??= 'full';
 
     // 如果是预定义格式，获取对应的格式字符串
-    final pattern = DateTimeFormatter._defaultFormats[format] ?? format;
+    final pattern = DateTimeFormatter.defaultFormats[format] ?? format;
 
     return DateTimeFormatter._formatDateTime(this, pattern);
   }

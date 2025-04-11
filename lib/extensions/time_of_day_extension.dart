@@ -1,6 +1,28 @@
 import 'package:flutter/material.dart';
 
-import 'datetime_extension.dart' show DatetimeExtension;
+/// 日期时间范围格式化工具
+class TimeOfDayFormatter {
+  static const String defaultFormat = 'HH:mm';
+
+  static String _formatTime(TimeOfDay time, String? pattern) {
+    pattern ??= defaultFormat;
+
+    final Map<String, dynamic> formatMap = {
+      'hh': time.hour.toString().padLeft(2, '0'),
+      'HH': time.hour.toString().padLeft(2, '0'),
+      'h': time.hour.toString(),
+      'H': time.hour.toString(),
+      'mm': time.minute.toString().padLeft(2, '0'),
+      'm': time.minute.toString(),
+    };
+
+    String result = pattern;
+    formatMap.forEach((key, value) {
+      result = result.replaceAll(key, value);
+    });
+    return result;
+  }
+}
 
 extension TimeOfDayExtension on TimeOfDay {
   /// 判断当前时间是否早于另一时间
@@ -43,8 +65,8 @@ extension TimeOfDayExtension on TimeOfDay {
   }
 
   /// 不使用本地化格式化
-  String formatWithoutLocalization([String format = 'HH:mm']) {
-    return DateTime(0, 0, 0, hour, minute).format(format);
+  String formatWithoutLocalization([String? format]) {
+    return TimeOfDayFormatter._formatTime(this, format);
   }
 
   /// 转换为 DateTime

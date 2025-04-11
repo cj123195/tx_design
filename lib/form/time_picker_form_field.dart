@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/string_extension.dart';
+import '../extensions/time_of_day_extension.dart';
 import '../widgets/date_picker.dart';
 import 'picker_form_field.dart';
 
@@ -200,7 +201,8 @@ class TxTimePickerFormField extends TxPickerFormField<TimeOfDay, String> {
             minimumTime: minimumTime,
             maximumTime: maximumTime,
           ),
-          displayTextMapper: (context, time) => time.format(context),
+          displayTextMapper: (context, time) =>
+              time.formatWithoutLocalization(),
         );
 
   @override
