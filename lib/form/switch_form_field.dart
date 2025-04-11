@@ -65,6 +65,7 @@ class TxSwitchFormField extends TxFormField<bool> {
     super.minLabelWidth,
     super.minVerticalPadding,
   }) : super(
+          layoutDirection: Axis.horizontal,
           builder: (field) {
             final AlignmentGeometry align = switch (textAlign) {
               null => AlignmentDirectional.centerStart,
