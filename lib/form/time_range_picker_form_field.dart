@@ -5,9 +5,6 @@ import 'picker_form_field.dart';
 
 export '../widgets/date_range_picker.dart' show TimeRange;
 
-String _defaultFormat(BuildContext context, TimeRange timeRange) =>
-    '${timeRange.start.format(context)}\t—\t${timeRange.end.format(context)}';
-
 /// 日期范围选择框表单
 class TxTimeRangePickerFormField
     extends TxPickerFormField<TimeRange, TimeRange> {
@@ -122,7 +119,7 @@ class TxTimeRangePickerFormField
             fieldEndHintText: fieldEndHintText,
             fieldStartHintText: fieldStartHintText,
           ),
-          displayTextMapper: format ?? _defaultFormat,
+          displayTextMapper: format ?? (context, range) => range.format(),
         );
 
   @override

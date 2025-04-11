@@ -685,6 +685,23 @@ class TimeRange {
       end: end.toDateTime(date),
     );
   }
+
+  /// 格式化时间范围
+  /// [format] 可以是预定义格式的key，也可以是自定义格式字符串
+  /// [separator] 开始时间和结束时间的分隔符
+  /// 支持的格式：
+  /// - HH: 两位小时
+  /// - H: 一位小时
+  /// - mm: 两位分钟
+  /// - m: 一位分钟
+  String format({String? format, String? separator}) {
+    separator ??= ' — ';
+
+    final startStr = start.formatWithoutLocalization(format);
+    final endStr = end.formatWithoutLocalization(format);
+
+    return '$startStr$separator$endStr';
+  }
 }
 
 /// 时间区间选择
