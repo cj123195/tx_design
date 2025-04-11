@@ -1,3 +1,6 @@
+# 0.2.17
+* Fixed some issues.
+
 # 0.2.16
 * Fixed the issue where the onChanged callback of TxNumberFormField would never be called.
 
