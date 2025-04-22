@@ -462,6 +462,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
         break;
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
+      case TargetPlatform.ohos:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
         routeName = searchFieldLabel;

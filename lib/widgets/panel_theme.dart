@@ -76,7 +76,7 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
   final bool? enableFeedback;
 
   /// 覆盖 [TxPanel.mouseCursor] 的默认值。
-  final MaterialStateProperty<MouseCursor?>? mouseCursor;
+  final WidgetStateProperty<MouseCursor?>? mouseCursor;
 
   /// 覆盖 [TxPanel.visualDensity] 的默认值。
   final VisualDensity? visualDensity;
@@ -123,7 +123,7 @@ class TxPanelThemeData extends ThemeExtension<TxPanelThemeData> {
     double? minLeadingWidth,
     double? verticalGap,
     bool? enableFeedback,
-    MaterialStateProperty<MouseCursor?>? mouseCursor,
+    WidgetStateProperty<MouseCursor?>? mouseCursor,
     VisualDensity? visualDensity,
     TextStyle? titleTextStyle,
     TextStyle? subtitleTextStyle,

@@ -349,6 +349,7 @@ class _ModalTopSheetState<T> extends State<_ModalTopSheet<T>> {
       case TargetPlatform.macOS:
         return '';
       case TargetPlatform.android:
+      case TargetPlatform.ohos:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
@@ -855,11 +856,11 @@ class _TopSheetState extends State<TopSheet> {
   bool get _dismissUnderway =>
       widget.animationController!.status == AnimationStatus.reverse;
 
-  Set<MaterialState> dragHandleMaterialState = <MaterialState>{};
+  Set<WidgetState> dragHandleWidgetState = <WidgetState>{};
 
   void _handleDragStart(DragStartDetails details) {
     setState(() {
-      dragHandleMaterialState.add(MaterialState.dragged);
+      dragHandleWidgetState.add(WidgetState.dragged);
     });
     widget.onDragStart?.call(details);
   }
@@ -892,7 +893,7 @@ class _TopSheetState extends State<TopSheet> {
       return;
     }
     setState(() {
-      dragHandleMaterialState.remove(MaterialState.dragged);
+      dragHandleWidgetState.remove(WidgetState.dragged);
     });
     bool isClosing = false;
     if (details.velocity.pixelsPerSecond.dy > _minFlingVelocity) {
@@ -932,12 +933,12 @@ class _TopSheetState extends State<TopSheet> {
   }
 
   void _handleDragHandleHover(bool hovering) {
-    if (hovering != dragHandleMaterialState.contains(MaterialState.hovered)) {
+    if (hovering != dragHandleWidgetState.contains(WidgetState.hovered)) {
       setState(() {
         if (hovering) {
-          dragHandleMaterialState.add(MaterialState.hovered);
+          dragHandleWidgetState.add(WidgetState.hovered);
         } else {
-          dragHandleMaterialState.remove(MaterialState.hovered);
+          dragHandleWidgetState.remove(WidgetState.hovered);
         }
       });
     }
@@ -974,7 +975,7 @@ class _TopSheetState extends State<TopSheet> {
       dragHandle = _DragHandle(
         onSemanticsTap: widget.onClosing,
         handleHover: _handleDragHandleHover,
-        materialState: dragHandleMaterialState,
+        materialState: dragHandleWidgetState,
         dragHandleColor: widget.dragHandleColor,
         dragHandleSize: widget.dragHandleSize,
       );
@@ -1055,7 +1056,7 @@ class _DragHandle extends StatelessWidget {
 
   final VoidCallback? onSemanticsTap;
   final ValueChanged<bool> handleHover;
-  final Set<MaterialState> materialState;
+  final Set<WidgetState> materialState;
   final Color? dragHandleColor;
   final Size? dragHandleSize;
 
@@ -1084,11 +1085,11 @@ class _DragHandle extends StatelessWidget {
               width: handleSize.width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(handleSize.height / 2),
-                color: MaterialStateProperty.resolveAs<Color?>(
+                color: WidgetStateProperty.resolveAs<Color?>(
                       dragHandleColor,
                       materialState,
                     ) ??
-                    MaterialStateProperty.resolveAs<Color?>(
+                    WidgetStateProperty.resolveAs<Color?>(
                       topSheetTheme.dragHandleColor,
                       materialState,
                     ) ??

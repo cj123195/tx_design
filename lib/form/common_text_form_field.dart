@@ -89,7 +89,7 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
     ui.BoxWidthStyle? selectionWidthStyle,
     DragStartBehavior? dragStartBehavior,
     ContentInsertionConfiguration? contentInsertionConfiguration,
-    MaterialStatesController? statesController,
+    WidgetStatesController? statesController,
     Clip? clipBehavior,
     bool? scribbleEnabled,
     bool? canRequestFocus,

@@ -564,8 +564,8 @@ class _TxFieldThemeDefaultsM3 extends TxFormFieldThemeData {
         isDense: true,
         outlineBorder: BorderSide(color: theme.colorScheme.outlineVariant),
         hintStyle: theme.textTheme.bodyMedium!.copyWith(
-          color: MaterialStateColor.resolveWith((states) =>
-              states.contains(MaterialState.disabled)
+          color: WidgetStateColor.resolveWith((states) =>
+              states.contains(WidgetState.disabled)
                   ? theme.disabledColor
                   : theme.hintColor),
         ),

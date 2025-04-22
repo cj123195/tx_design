@@ -457,6 +457,7 @@ class TxBottomSheet extends StatelessWidget {
         case TargetPlatform.fuchsia:
         case TargetPlatform.linux:
         case TargetPlatform.windows:
+        case TargetPlatform.ohos:
           return true;
         case TargetPlatform.iOS:
         case TargetPlatform.macOS:

@@ -184,17 +184,17 @@ class _DefaultButtonStyle extends ButtonStyle {
   final BuildContext context;
 
   @override
-  MaterialStateProperty<OutlinedBorder?>? get shape =>
+  WidgetStateProperty<OutlinedBorder?>? get shape =>
       Theme.of(context).outlinedButtonTheme.style?.shape;
 
   @override
-  MaterialStateProperty<TextStyle?> get textStyle =>
-      MaterialStatePropertyAll<TextStyle?>(
+  WidgetStateProperty<TextStyle?> get textStyle =>
+      WidgetStatePropertyAll<TextStyle?>(
           Theme.of(context).textTheme.labelMedium);
 
   @override
-  MaterialStateProperty<EdgeInsetsGeometry>? get padding =>
-      MaterialStatePropertyAll<EdgeInsetsGeometry>(
+  WidgetStateProperty<EdgeInsetsGeometry>? get padding =>
+      WidgetStatePropertyAll<EdgeInsetsGeometry>(
           ButtonStyleButton.scaledPadding(
         const EdgeInsets.symmetric(horizontal: 12.0),
         const EdgeInsets.symmetric(horizontal: 4.0),
@@ -203,8 +203,8 @@ class _DefaultButtonStyle extends ButtonStyle {
       ));
 
   @override
-  MaterialStateProperty<Size>? get minimumSize =>
-      const MaterialStatePropertyAll<Size>(Size(40.0, 32.0));
+  WidgetStateProperty<Size>? get minimumSize =>
+      const WidgetStatePropertyAll<Size>(Size(40.0, 32.0));
 
   @override
   VisualDensity? get visualDensity => VisualDensity.compact;
@@ -220,12 +220,12 @@ class _DefaultOutlinedButtonStyle extends ButtonStyle {
   final ColorScheme colorScheme;
 
   @override
-  MaterialStateProperty<BorderSide>? get side =>
-      MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-        if (states.contains(MaterialState.disabled)) {
+  WidgetStateProperty<BorderSide>? get side =>
+      WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.disabled)) {
           return BorderSide(color: colorScheme.onSurface.withOpacity(0.12));
         }
-        if (states.contains(MaterialState.focused)) {
+        if (states.contains(WidgetState.focused)) {
           return BorderSide(color: colorScheme.primary);
         }
         return BorderSide(color: colorScheme.primary);
@@ -238,18 +238,18 @@ class _DefaultIconButtonStyle extends ButtonStyle {
           animationDuration: kThemeChangeDuration,
           enableFeedback: true,
           alignment: Alignment.center,
-          iconSize: MaterialStatePropertyAll<double>(iconSize ?? 24.0),
+          iconSize: WidgetStatePropertyAll<double>(iconSize ?? 24.0),
         );
 
   final BuildContext context;
 
   @override
-  MaterialStateProperty<EdgeInsetsGeometry>? get padding =>
-      const MaterialStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(4.0));
+  WidgetStateProperty<EdgeInsetsGeometry>? get padding =>
+      const WidgetStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(4.0));
 
   @override
-  MaterialStateProperty<Size>? get minimumSize =>
-      const MaterialStatePropertyAll<Size>(Size(36.0, 36.0));
+  WidgetStateProperty<Size>? get minimumSize =>
+      const WidgetStatePropertyAll<Size>(Size(36.0, 36.0));
 
   @override
   VisualDensity? get visualDensity => VisualDensity.compact;

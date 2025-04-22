@@ -50,8 +50,8 @@ class TxTextButton extends TextButton {
         Theme.of(context).textTheme.labelLarge?.copyWith(height: 1.2);
 
     return super.defaultStyleOf(context).copyWith(
-          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(scaledPadding),
-          textStyle: MaterialStateProperty.all(textStyle),
+          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(scaledPadding),
+          textStyle: WidgetStateProperty.all(textStyle),
         );
   }
 }

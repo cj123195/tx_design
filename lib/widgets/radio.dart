@@ -84,17 +84,17 @@ class TxRadio<T> extends StatefulWidget {
   /// {@template flutter.material.radio.mouseCursor}
   /// 鼠标指针进入或悬停在小部件上时的光标。
   ///
-  /// 如果 [mouseCursor] 是 [MaterialStateProperty<MouseCursor>]，
-  /// [MaterialStateProperty.resolve] 用于以下 [MaterialState]：
+  /// 如果 [mouseCursor] 是 [WidgetStateProperty<MouseCursor>]，
+  /// [WidgetStateProperty.resolve] 用于以下 [WidgetState]：
   ///
-  ///  * [MaterialState.selected].
-  ///  * [MaterialState.hovered].
-  ///  * [MaterialState.focused].
-  ///  * [MaterialState.disabled].
+  ///  * [WidgetState.selected].
+  ///  * [WidgetState.hovered].
+  ///  * [WidgetState.focused].
+  ///  * [WidgetState.disabled].
   /// {@endtemplate}
   ///
   /// 如果为 null，则使用 [RadioThemeData.mouseCursor] 的值。 如果它也为 null，
-  /// 则使用 [MaterialStateMouseCursor.clickable]。
+  /// 则使用 [WidgetStateMouseCursor.clickable]。
   final MouseCursor? mouseCursor;
 
   /// 如果允许通过在选中时再次选择此单选按钮将其返回到不确定状态，则设置为 true。
@@ -115,23 +115,23 @@ class TxRadio<T> extends StatefulWidget {
   ///
   /// 默认为 [ColorScheme.secondary]。
   ///
-  /// 如果 [fillColor] 在 [MaterialState.selected] 状态下返回一个非空颜色，它将被用来
+  /// 如果 [fillColor] 在 [WidgetState.selected] 状态下返回一个非空颜色，它将被用来
   /// 代替这个颜色。
   final Color? activeColor;
 
-  /// 在所有 [MaterialState] 中填充单选按钮的颜色。
+  /// 在所有 [WidgetState] 中填充单选按钮的颜色。
   ///
   /// Resolves in the following states:
-  ///  * [MaterialState.selected].
-  ///  * [MaterialState.hovered].
-  ///  * [MaterialState.focused].
-  ///  * [MaterialState.disabled].
+  ///  * [WidgetState.selected].
+  ///  * [WidgetState.hovered].
+  ///  * [WidgetState.focused].
+  ///  * [WidgetState.disabled].
   ///
   /// 如果为 null，则 [activeColor] 的值用于选定状态。 如果它也为 null，则使用
   /// [RadioThemeData.fillColor] 的值。 如果那也是null，则[ThemeData.disabledColor]
   /// 在禁用状态下使用，[ColorScheme.secondary]在选中状态下使用，
   /// [ThemeData.unselectedWidgetColor]在默认状态下使用。
-  final MaterialStateProperty<Color?>? fillColor;
+  final WidgetStateProperty<Color?>? fillColor;
 
   /// {@template flutter.material.radio.materialTapTargetSize}
   /// 配置点击目标的最小尺寸。
@@ -153,7 +153,7 @@ class TxRadio<T> extends StatefulWidget {
 
   /// 单选按钮的 [Material] 具有输入焦点时的颜色。
   ///
-  /// 如果 [overlayColor] 在 [MaterialState.focused] 状态下返回非空颜色，它将被使用。
+  /// 如果 [overlayColor] 在 [WidgetState.focused] 状态下返回非空颜色，它将被使用。
   ///
   /// 如果为 null，则在聚焦状态下使用 [RadioThemeData.overlayColor] 的值。 如果它也为
   /// null，则使用 [ThemeData.focusColor] 的值。
@@ -161,7 +161,7 @@ class TxRadio<T> extends StatefulWidget {
 
   /// 当指针悬停在收音机上方时，单选按钮 [Material] 的颜色。
   ///
-  /// 如果 [overlayColor] 在 [MaterialState.hovered] 状态下返回非空颜色，它将被使用。
+  /// 如果 [overlayColor] 在 [WidgetState.hovered] 状态下返回非空颜色，它将被使用。
   ///
   /// 如果为 null，则在悬停状态下使用 [RadioThemeData.overlayColor] 的值。 如果它也为
   /// null，则使用 [ThemeData.hoverColor] 的值。
@@ -171,10 +171,10 @@ class TxRadio<T> extends StatefulWidget {
   /// 单选按钮 [Material] 的颜色。
   ///
   /// 解析为以下状态：
-  ///  * [MaterialState.pressed].
-  ///  * [MaterialState.selected].
-  ///  * [MaterialState.hovered].
-  ///  * [MaterialState.focused].
+  ///  * [WidgetState.pressed].
+  ///  * [WidgetState.selected].
+  ///  * [WidgetState.hovered].
+  ///  * [WidgetState.focused].
   /// {@endtemplate}
   ///
   /// 如果为 null，则在按下、聚焦和悬停状态下使用具有阿尔法 ialReactionAlpha、[focusColor]
@@ -182,7 +182,7 @@ class TxRadio<T> extends StatefulWidget {
   /// [TxRadioThemeData.overlayColor] 的值。 如果它也为 null，则
   /// [ColorScheme.secondary] 的值与 alpha [kRadialReactionAlpha]、
   /// [ThemeData.focusColor] 和 [ThemeData.hoverColor] 用于按下、聚焦和悬停状态。
-  final MaterialStateProperty<Color?>? overlayColor;
+  final WidgetStateProperty<Color?>? overlayColor;
 
   /// {@template flutter.material.radio.splashRadius}
   /// 圆形 [Material] 点击响应的水波纹半径。
@@ -209,16 +209,16 @@ class TxRadio<T> extends StatefulWidget {
   /// {@template flutter.material.checkbox.side}
   /// 单选框边框的颜色和宽度。
   ///
-  /// 此属性可以是 [MaterialStateBorderSide]，可以根据复选框的状态指定不同的边框颜色和宽度。
+  /// 此属性可以是 [WidgetStateBorderSide]，可以根据复选框的状态指定不同的边框颜色和宽度。
   ///
   /// 解析为以下状态：
-  ///  * [MaterialState.pressed].
-  ///  * [MaterialState.selected].
-  ///  * [MaterialState.hovered].
-  ///  * [MaterialState.focused].
-  ///  * [MaterialState.disabled].
+  ///  * [WidgetState.pressed].
+  ///  * [WidgetState.selected].
+  ///  * [WidgetState.hovered].
+  ///  * [WidgetState.focused].
+  ///  * [WidgetState.disabled].
   ///
-  /// 如果此属性不是 [MaterialStateBorderSide] 且非空，则仅当复选框的值为 false 时才会呈现。
+  /// 如果此属性不是 [WidgetStateBorderSide] 且非空，则仅当复选框的值为 false 时才会呈现。
   /// 解释上的差异是为了向后兼容。
   /// {@endtemplate}
   ///
@@ -273,12 +273,12 @@ class _TxRadioState<T> extends State<TxRadio<T>>
   @override
   bool? get value => widget._selected;
 
-  MaterialStateProperty<Color?> get _widgetFillColor {
-    return MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-      if (states.contains(MaterialState.disabled)) {
+  WidgetStateProperty<Color?> get _widgetFillColor {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.disabled)) {
         return null;
       }
-      if (states.contains(MaterialState.selected)) {
+      if (states.contains(WidgetState.selected)) {
         return widget.activeColor;
       }
       return null;
@@ -286,10 +286,10 @@ class _TxRadioState<T> extends State<TxRadio<T>>
   }
 
   BorderSide? _resolveSide(BorderSide? side) {
-    if (side is MaterialStateBorderSide) {
-      return MaterialStateProperty.resolveAs<BorderSide?>(side, states);
+    if (side is WidgetStateBorderSide) {
+      return WidgetStateProperty.resolveAs<BorderSide?>(side, states);
     }
-    if (!states.contains(MaterialState.selected)) {
+    if (!states.contains(WidgetState.selected)) {
       return side;
     }
     return null;
@@ -321,21 +321,20 @@ class _TxRadioState<T> extends State<TxRadio<T>>
     }
     size += effectiveVisualDensity.baseSizeAdjustment;
 
-    final MaterialStateProperty<MouseCursor> effectiveMouseCursor =
-        MaterialStateProperty.resolveWith<MouseCursor>(
-            (Set<MaterialState> states) {
-      return MaterialStateProperty.resolveAs<MouseCursor?>(
+    final WidgetStateProperty<MouseCursor> effectiveMouseCursor =
+        WidgetStateProperty.resolveWith<MouseCursor>((Set<WidgetState> states) {
+      return WidgetStateProperty.resolveAs<MouseCursor?>(
               widget.mouseCursor, states) ??
           radioTheme.mouseCursor?.resolve(states) ??
-          MaterialStateProperty.resolveAs<MouseCursor>(
-              MaterialStateMouseCursor.clickable, states);
+          WidgetStateProperty.resolveAs<MouseCursor>(
+              WidgetStateMouseCursor.clickable, states);
     });
 
     // Colors need to be resolved in selected and non selected states separately
     // so that they can be lerped between.
-    final Set<MaterialState> activeStates = states..add(MaterialState.selected);
-    final Set<MaterialState> inactiveStates = states
-      ..remove(MaterialState.selected);
+    final Set<WidgetState> activeStates = states..add(WidgetState.selected);
+    final Set<WidgetState> inactiveStates = states
+      ..remove(WidgetState.selected);
     final Color? activeColor = widget.fillColor?.resolve(activeStates) ??
         _widgetFillColor.resolve(activeStates) ??
         radioTheme.fillColor?.resolve(activeStates);
@@ -347,30 +346,30 @@ class _TxRadioState<T> extends State<TxRadio<T>>
     final Color effectiveInactiveColor =
         inactiveColor ?? defaults.fillColor!.resolve(inactiveStates)!;
 
-    final Set<MaterialState> focusedStates = states..add(MaterialState.focused);
+    final Set<WidgetState> focusedStates = states..add(WidgetState.focused);
     Color effectiveFocusOverlayColor =
         widget.overlayColor?.resolve(focusedStates) ??
             widget.focusColor ??
             radioTheme.overlayColor?.resolve(focusedStates) ??
             defaults.overlayColor!.resolve(focusedStates)!;
 
-    final Set<MaterialState> hoveredStates = states..add(MaterialState.hovered);
+    final Set<WidgetState> hoveredStates = states..add(WidgetState.hovered);
     Color effectiveHoverOverlayColor =
         widget.overlayColor?.resolve(hoveredStates) ??
             widget.hoverColor ??
             radioTheme.overlayColor?.resolve(hoveredStates) ??
             defaults.overlayColor!.resolve(hoveredStates)!;
 
-    final Set<MaterialState> activePressedStates = activeStates
-      ..add(MaterialState.pressed);
+    final Set<WidgetState> activePressedStates = activeStates
+      ..add(WidgetState.pressed);
     final Color effectiveActivePressedOverlayColor =
         widget.overlayColor?.resolve(activePressedStates) ??
             radioTheme.overlayColor?.resolve(activePressedStates) ??
             activeColor?.withAlpha(kRadialReactionAlpha) ??
             defaults.overlayColor!.resolve(activePressedStates)!;
 
-    final Set<MaterialState> inactivePressedStates = inactiveStates
-      ..add(MaterialState.pressed);
+    final Set<WidgetState> inactivePressedStates = inactiveStates
+      ..add(WidgetState.pressed);
     final Color effectiveInactivePressedOverlayColor =
         widget.overlayColor?.resolve(inactivePressedStates) ??
             radioTheme.overlayColor?.resolve(inactivePressedStates) ??
@@ -378,10 +377,10 @@ class _TxRadioState<T> extends State<TxRadio<T>>
             defaults.overlayColor!.resolve(inactivePressedStates)!;
 
     if (downPosition != null) {
-      effectiveHoverOverlayColor = states.contains(MaterialState.selected)
+      effectiveHoverOverlayColor = states.contains(WidgetState.selected)
           ? effectiveActivePressedOverlayColor
           : effectiveInactivePressedOverlayColor;
-      effectiveFocusOverlayColor = states.contains(MaterialState.selected)
+      effectiveFocusOverlayColor = states.contains(WidgetState.selected)
           ? effectiveActivePressedOverlayColor
           : effectiveInactivePressedOverlayColor;
     }
@@ -407,8 +406,8 @@ class _TxRadioState<T> extends State<TxRadio<T>>
               radioTheme.splashRadius ??
               kRadialReactionRadius
           ..downPosition = downPosition
-          ..isFocused = states.contains(MaterialState.focused)
-          ..isHovered = states.contains(MaterialState.hovered)
+          ..isFocused = states.contains(WidgetState.focused)
+          ..isHovered = states.contains(WidgetState.hovered)
           ..activeColor = effectiveActiveColor
           ..inactiveColor = effectiveInactiveColor
           ..shape = widget.shape ??
@@ -497,12 +496,12 @@ class _RadioDefaultsM2 extends TxRadioThemeData {
   late final ColorScheme _colors = _theme.colorScheme;
 
   @override
-  MaterialStateProperty<Color> get fillColor {
-    return MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-      if (states.contains(MaterialState.disabled)) {
+  WidgetStateProperty<Color> get fillColor {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.disabled)) {
         return _theme.disabledColor;
       }
-      if (states.contains(MaterialState.selected)) {
+      if (states.contains(WidgetState.selected)) {
         return _colors.secondary;
       }
       return _theme.unselectedWidgetColor;
@@ -510,15 +509,15 @@ class _RadioDefaultsM2 extends TxRadioThemeData {
   }
 
   @override
-  MaterialStateProperty<Color> get overlayColor {
-    return MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-      if (states.contains(MaterialState.pressed)) {
+  WidgetStateProperty<Color> get overlayColor {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.pressed)) {
         return fillColor.resolve(states).withAlpha(kRadialReactionAlpha);
       }
-      if (states.contains(MaterialState.focused)) {
+      if (states.contains(WidgetState.focused)) {
         return _theme.focusColor;
       }
-      if (states.contains(MaterialState.hovered)) {
+      if (states.contains(WidgetState.hovered)) {
         return _theme.hoverColor;
       }
       return Colors.transparent;
@@ -541,33 +540,33 @@ class _RadioDefaultsM3 extends TxRadioThemeData {
   late final ColorScheme _colors = _theme.colorScheme;
 
   @override
-  MaterialStateProperty<Color> get fillColor {
-    return MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-      if (states.contains(MaterialState.selected)) {
-        if (states.contains(MaterialState.disabled)) {
+  WidgetStateProperty<Color> get fillColor {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.selected)) {
+        if (states.contains(WidgetState.disabled)) {
           return _colors.onSurface.withOpacity(0.38);
         }
-        if (states.contains(MaterialState.pressed)) {
+        if (states.contains(WidgetState.pressed)) {
           return _colors.primary;
         }
-        if (states.contains(MaterialState.hovered)) {
+        if (states.contains(WidgetState.hovered)) {
           return _colors.primary;
         }
-        if (states.contains(MaterialState.focused)) {
+        if (states.contains(WidgetState.focused)) {
           return _colors.primary;
         }
         return _colors.primary;
       }
-      if (states.contains(MaterialState.disabled)) {
+      if (states.contains(WidgetState.disabled)) {
         return _colors.onSurface.withOpacity(0.38);
       }
-      if (states.contains(MaterialState.pressed)) {
+      if (states.contains(WidgetState.pressed)) {
         return _colors.onSurface;
       }
-      if (states.contains(MaterialState.hovered)) {
+      if (states.contains(WidgetState.hovered)) {
         return _colors.onSurface;
       }
-      if (states.contains(MaterialState.focused)) {
+      if (states.contains(WidgetState.focused)) {
         return _colors.onSurface;
       }
       return _colors.onSurfaceVariant;
@@ -575,27 +574,27 @@ class _RadioDefaultsM3 extends TxRadioThemeData {
   }
 
   @override
-  MaterialStateProperty<Color> get overlayColor {
-    return MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-      if (states.contains(MaterialState.selected)) {
-        if (states.contains(MaterialState.pressed)) {
+  WidgetStateProperty<Color> get overlayColor {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.selected)) {
+        if (states.contains(WidgetState.pressed)) {
           return _colors.onSurface.withOpacity(0.12);
         }
-        if (states.contains(MaterialState.hovered)) {
+        if (states.contains(WidgetState.hovered)) {
           return _colors.primary.withOpacity(0.08);
         }
-        if (states.contains(MaterialState.focused)) {
+        if (states.contains(WidgetState.focused)) {
           return _colors.primary.withOpacity(0.12);
         }
         return Colors.transparent;
       }
-      if (states.contains(MaterialState.pressed)) {
+      if (states.contains(WidgetState.pressed)) {
         return _colors.primary.withOpacity(0.12);
       }
-      if (states.contains(MaterialState.hovered)) {
+      if (states.contains(WidgetState.hovered)) {
         return _colors.onSurface.withOpacity(0.08);
       }
-      if (states.contains(MaterialState.focused)) {
+      if (states.contains(WidgetState.focused)) {
         return _colors.onSurface.withOpacity(0.12);
       }
       return Colors.transparent;

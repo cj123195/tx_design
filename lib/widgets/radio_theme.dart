@@ -31,17 +31,17 @@ class TxRadioThemeData extends ThemeExtension<TxRadioThemeData>
   /// {@macro flutter.material.checkbox.mouseCursor}
   ///
   /// 如果指定，则覆盖 [TxRadio.mouseCursor] 的默认值。
-  final MaterialStateProperty<MouseCursor?>? mouseCursor;
+  final WidgetStateProperty<MouseCursor?>? mouseCursor;
 
   /// {@macro flutter.material.checkbox.fillColor}
   ///
   /// 如果指定，则覆盖 [TxRadio.fillColor] 的默认值。
-  final MaterialStateProperty<Color?>? fillColor;
+  final WidgetStateProperty<Color?>? fillColor;
 
   /// {@macro flutter.material.checkbox.overlayColor}
   ///
   /// 如果指定，则覆盖 [TxRadio.overlayColor] 的默认值。
-  final MaterialStateProperty<Color?>? overlayColor;
+  final WidgetStateProperty<Color?>? overlayColor;
 
   /// {@macro flutter.material.checkbox.splashRadius}
   ///
@@ -71,10 +71,10 @@ class TxRadioThemeData extends ThemeExtension<TxRadioThemeData>
   /// 创建此对象的副本，但将给定字段替换为新值。
   @override
   TxRadioThemeData copyWith({
-    MaterialStateProperty<MouseCursor?>? mouseCursor,
-    MaterialStateProperty<Color?>? fillColor,
-    MaterialStateProperty<Color?>? checkColor,
-    MaterialStateProperty<Color?>? overlayColor,
+    WidgetStateProperty<MouseCursor?>? mouseCursor,
+    WidgetStateProperty<Color?>? fillColor,
+    WidgetStateProperty<Color?>? checkColor,
+    WidgetStateProperty<Color?>? overlayColor,
     double? splashRadius,
     MaterialTapTargetSize? materialTapTargetSize,
     VisualDensity? visualDensity,
@@ -128,13 +128,13 @@ class TxRadioThemeData extends ThemeExtension<TxRadioThemeData>
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(DiagnosticsProperty<MaterialStateProperty<MouseCursor?>>(
+    properties.add(DiagnosticsProperty<WidgetStateProperty<MouseCursor?>>(
         'mouseCursor', mouseCursor,
         defaultValue: null));
-    properties.add(DiagnosticsProperty<MaterialStateProperty<Color?>>(
+    properties.add(DiagnosticsProperty<WidgetStateProperty<Color?>>(
         'fillColor', fillColor,
         defaultValue: null));
-    properties.add(DiagnosticsProperty<MaterialStateProperty<Color?>>(
+    properties.add(DiagnosticsProperty<WidgetStateProperty<Color?>>(
         'overlayColor', overlayColor,
         defaultValue: null));
     properties
@@ -168,9 +168,9 @@ class TxRadioThemeData extends ThemeExtension<TxRadioThemeData>
 
     return TxRadioThemeData(
       mouseCursor: t < 0.5 ? mouseCursor : other.mouseCursor,
-      fillColor: MaterialStateProperty.lerp<Color?>(
+      fillColor: WidgetStateProperty.lerp<Color?>(
           fillColor, other.fillColor, t, Color.lerp),
-      overlayColor: MaterialStateProperty.lerp<Color?>(
+      overlayColor: WidgetStateProperty.lerp<Color?>(
           overlayColor, other.overlayColor, t, Color.lerp),
       splashRadius: lerpDouble(splashRadius, other.splashRadius, t),
       materialTapTargetSize:
