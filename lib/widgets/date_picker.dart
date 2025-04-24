@@ -149,6 +149,38 @@ class _DatePickerLayoutDelegate extends MultiChildLayoutDelegate {
   }
 }
 
+/// 布局年份选择器
+class _YearPickerLayoutDelegate extends MultiChildLayoutDelegate {
+  _YearPickerLayoutDelegate();
+
+  @override
+  void performLayout(Size size) {
+    final double childWidth = size.width - _kDatePickerPadSize * 2;
+    assert(() {
+      if (childWidth < 0) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: FlutterError(
+              'Insufficient horizontal space to render the '
+              'CupertinoDatePicker because the parent is too narrow at '
+              '${size.width}px.\n'
+              'An additional ${-childWidth}px is needed to avoid '
+              'overlapping columns.',
+            ),
+          ),
+        );
+      }
+      return true;
+    }());
+    layoutChild(
+        0, BoxConstraints.tight(Size(math.max(0.0, childWidth), size.height)));
+    positionChild(0, const Offset(_kDatePickerPadSize, 0.0));
+  }
+
+  @override
+  bool shouldRelayout(_YearPickerLayoutDelegate oldDelegate) => false;
+}
+
 abstract class TxCupertinoPicker extends StatefulWidget {
   /// Constructs an iOS style date picker.
   TxCupertinoPicker({
@@ -1897,8 +1929,8 @@ class _CupertinoDatetimePickerState extends _CupertinoTimePickerState {
 }
 
 /// 年份选择器
-class YearPicker extends StatefulWidget {
-  const YearPicker({
+class TxCupertinoYearPicker extends StatefulWidget {
+  const TxCupertinoYearPicker({
     required this.onChanged,
     super.key,
     this.initialYear,
@@ -1959,10 +1991,10 @@ class YearPicker extends StatefulWidget {
   final double squeeze;
 
   @override
-  State<StatefulWidget> createState() => _YearPickerState();
+  State<StatefulWidget> createState() => _TxCupertinoYearPickerState();
 }
 
-class _YearPickerState extends State<YearPicker> {
+class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
   // 选择器当前选择的值
   late int selectedYear;
 
@@ -2048,7 +2080,7 @@ class _YearPickerState extends State<YearPicker> {
   }
 
   @override
-  void didUpdateWidget(covariant YearPicker oldWidget) {
+  void didUpdateWidget(covariant TxCupertinoYearPicker oldWidget) {
     if (widget.initialYear != selectedYear) {
       selectedYear = widget.initialYear ?? DateTime.now().year;
       scrollToYear(selectedYear);
@@ -2080,10 +2112,7 @@ class _YearPickerState extends State<YearPicker> {
       child: DefaultTextStyle.merge(
         style: _kDefaultPickerTextStyle,
         child: CustomMultiChildLayout(
-          delegate: _DatePickerLayoutDelegate(
-              columnWidths: [_columnWidth],
-              textDirectionFactor: textDirectionFactor,
-              maxWidth: _kPickerWidth),
+          delegate: _YearPickerLayoutDelegate(),
           children: pickers,
         ),
       ),
@@ -2121,23 +2150,6 @@ class _YearPickerState extends State<YearPicker> {
 
   /// 列宽
   Map<int, double> estimatedColumnWidths = <int, double>{};
-
-  // 计算列的最小宽度（近似值）
-  double get _columnWidth {
-    final longestText = localizations.datePickerYear(selectedYear);
-
-    final TextPainter painter = TextPainter(
-      text: TextSpan(
-        style: themeTextStyle(context),
-        text: longestText,
-      ),
-      textDirection: Directionality.of(context),
-    );
-
-    painter.layout();
-
-    return painter.maxIntrinsicWidth;
-  }
 
   /// 文字样式
   TextStyle themeTextStyle(BuildContext context, {bool isValid = true}) {
@@ -2181,7 +2193,7 @@ Future<int?> showCupertinoYearPicker(
   return await showDefaultBottomSheet(
     context,
     title: titleText ?? TxLocalizations.of(context).yearPickerTitle,
-    contentBuilder: (context) => YearPicker(
+    contentBuilder: (context) => TxCupertinoYearPicker(
       onChanged: (year) => result = year,
       initialYear: initialYear,
       minimumYear: minimumYear,
