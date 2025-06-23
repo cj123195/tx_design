@@ -71,7 +71,7 @@ class TxFormField<T> extends FormField<T> {
             final List<InlineSpan> spans = [
               if (required == true)
                 const TextSpan(
-                  text: '*',
+                  text: '*\t',
                   style: TextStyle(color: Colors.red),
                 ),
               if (label != null)
@@ -177,7 +177,7 @@ class TxFormField<T> extends FormField<T> {
             final List<InlineSpan> spans = [
               if (required == true)
                 const TextSpan(
-                  text: '*',
+                  text: '*\t',
                   style: TextStyle(color: Colors.red),
                 ),
               if (label != null)
