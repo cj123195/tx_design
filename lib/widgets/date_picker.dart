@@ -2010,7 +2010,7 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
   bool get maxCheck =>
       widget.maximumYear == null ? true : widget.maximumYear! >= selectedYear;
 
-  bool get isCurrentYearValid => minCheck && !maxCheck;
+  bool get isCurrentYearValid => minCheck && maxCheck;
 
   Widget _buildYearPicker(
     double offAxisFraction,
