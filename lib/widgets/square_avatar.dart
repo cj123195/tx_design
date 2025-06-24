@@ -17,6 +17,8 @@ class TxSquareAvatar extends StatelessWidget {
     this.minRadius,
     this.maxRadius,
     this.borderRadius,
+    this.foregroundImageFit,
+    this.backgroundImageFit,
   })  : assert(radius == null || (minRadius == null && maxRadius == null)),
         assert(backgroundImage != null || onBackgroundImageError == null),
         assert(foregroundImage != null || onForegroundImageError == null);
@@ -101,6 +103,16 @@ class TxSquareAvatar extends StatelessWidget {
   /// M3默认值为12.0, M2默认值为4.0
   final BorderRadiusGeometry? borderRadius;
 
+  /// [foregroundImage] 的填充方式
+  ///
+  /// 默认值为 [BoxFit.contain]
+  final BoxFit? foregroundImageFit;
+
+  /// [backgroundImage] 的填充方式
+  ///
+  /// 默认值为 [BoxFit.contain]
+  final BoxFit? backgroundImageFit;
+
   // 如果未指定任何内容，则为默认半径。
   static const double defaultRadius = 20.0;
 
@@ -176,7 +188,7 @@ class TxSquareAvatar extends StatelessWidget {
             ? DecorationImage(
                 image: backgroundImage!,
                 onError: onBackgroundImageError,
-                fit: BoxFit.cover,
+                fit: backgroundImageFit ?? BoxFit.cover,
               )
             : null,
         borderRadius: effectiveBorderRadius,
@@ -186,7 +198,7 @@ class TxSquareAvatar extends StatelessWidget {
               image: DecorationImage(
                 image: foregroundImage!,
                 onError: onForegroundImageError,
-                fit: BoxFit.cover,
+                fit: foregroundImageFit ?? BoxFit.cover,
               ),
               borderRadius: effectiveBorderRadius,
             )
