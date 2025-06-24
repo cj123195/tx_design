@@ -114,6 +114,6 @@ class TxTextFormField extends TxCommonTextFormField<String> {
             return null;
           },
           isEmpty: (val) => val.isEmpty,
-          hintText: hintText ?? '请输入',
+          hintText: readOnly == true ? null : hintText ?? '请输入',
         );
 }

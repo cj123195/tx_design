@@ -72,7 +72,10 @@ class TxFormField<T> extends FormField<T> {
               if (required == true)
                 const TextSpan(
                   text: '*\t',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               if (label != null)
                 WidgetSpan(
@@ -83,7 +86,6 @@ class TxFormField<T> extends FormField<T> {
                 TextSpan(text: labelText),
             ];
 
-            final ThemeData theme = Theme.of(field.context);
             return TxTile(
               content: builder(state),
               label:
@@ -92,10 +94,7 @@ class TxFormField<T> extends FormField<T> {
               padding: padding,
               actions: actionsBuilder == null ? null : actionsBuilder(field),
               trailing: trailingBuilder == null ? null : trailingBuilder(field),
-              labelStyle: labelStyle ??
-                  theme.textTheme.labelLarge!.copyWith(
-                    color: theme.colorScheme.outline,
-                  ),
+              labelStyle: labelStyle,
               horizontalGap: horizontalGap,
               tileColor: tileColor,
               layoutDirection: layoutDirection,
@@ -378,6 +377,7 @@ class TxFormFieldState<T> extends FormFieldState<T> {
       prefixIcon: prefixIcon,
       suffixIcon: suffixIcon,
       errorText: errorText,
+      // constraints: const BoxConstraints(minHeight: 48.0),
     );
 
     final bool bordered =
@@ -561,7 +561,7 @@ class _TxFieldThemeDefaultsM3 extends TxFormFieldThemeData {
   @override
   InputDecorationTheme? get inputDecorationTheme =>
       theme.inputDecorationTheme.copyWith(
-        isDense: true,
+        // isDense: true,
         outlineBorder: BorderSide(color: theme.colorScheme.outlineVariant),
         hintStyle: theme.textTheme.bodyMedium!.copyWith(
           color: MaterialStateColor.resolveWith((states) =>

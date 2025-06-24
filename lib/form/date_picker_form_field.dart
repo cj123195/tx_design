@@ -200,6 +200,7 @@ class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
+    super.readOnly,
   }) : super.custom(
           initialValue:
               initialDate ?? initialDateStr?.toDatetime(format: format),
@@ -217,11 +218,12 @@ class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
         );
 
   @override
-  TxPickerFormFieldState<DateTime> createState() =>
+  TxPickerFormFieldState<DateTime, String> createState() =>
       _TxDatePickerFormFieldState();
 }
 
-class _TxDatePickerFormFieldState extends TxPickerFormFieldState<DateTime> {
+class _TxDatePickerFormFieldState
+    extends TxPickerFormFieldState<DateTime, String> {
   @override
   List<Widget>? get prefixIcons =>
       [...?super.prefixIcons, const Icon(Icons.calendar_month)];

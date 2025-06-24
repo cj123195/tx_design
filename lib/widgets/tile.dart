@@ -818,7 +818,7 @@ class _FieldTileDefaultsM3 extends TxTileThemeData {
   Color? get tileColor => Colors.transparent;
 
   @override
-  TextStyle? get labelStyle => _textTheme.labelLarge!.copyWith(
+  TextStyle? get labelStyle => _textTheme.titleSmall!.copyWith(
         fontWeight: FontWeight.w500,
         color: _colors.onSurface,
       );

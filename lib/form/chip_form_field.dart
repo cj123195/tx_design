@@ -132,8 +132,8 @@ class _ChipItem<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool selected = data == null ? false : data!.contains(item);
-    bool effectiveEnabled = enabled != false &&
-        (enabledMapper == null ? true : enabledMapper!(index, item));
+    bool effectiveEnabled =
+        enabled && (enabledMapper == null ? true : enabledMapper!(index, item));
     if (minCount != null) {
       effectiveEnabled =
           effectiveEnabled && (!selected || data!.length > minCount!);

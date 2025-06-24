@@ -110,6 +110,7 @@ class TxTimePickerFormField extends TxPickerFormField<TimeOfDay, String> {
     TimeOfDay? minimumTime,
     TimeOfDay? maximumTime,
     String? titleText,
+    super.readOnly,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -206,11 +207,12 @@ class TxTimePickerFormField extends TxPickerFormField<TimeOfDay, String> {
         );
 
   @override
-  TxPickerFormFieldState<TimeOfDay> createState() =>
+  TxPickerFormFieldState<TimeOfDay, String> createState() =>
       _TxTimePickerFormFieldState();
 }
 
-class _TxTimePickerFormFieldState extends TxPickerFormFieldState<TimeOfDay> {
+class _TxTimePickerFormFieldState
+    extends TxPickerFormFieldState<TimeOfDay, String> {
   @override
   List<Widget>? get prefixIcons =>
       [...?super.prefixIcons, const Icon(Icons.access_time)];

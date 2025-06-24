@@ -110,6 +110,7 @@ class TxYearPickerFormField extends TxPickerFormField<int, String> {
     int? maximumYear,
     String? format,
     String? titleText,
+    super.readOnly,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -206,10 +207,11 @@ class TxYearPickerFormField extends TxPickerFormField<int, String> {
         );
 
   @override
-  TxPickerFormFieldState<int> createState() => _TxYearPickerFormFieldState();
+  TxPickerFormFieldState<int, String> createState() =>
+      _TxYearPickerFormFieldState();
 }
 
-class _TxYearPickerFormFieldState extends TxPickerFormFieldState<int> {
+class _TxYearPickerFormFieldState extends TxPickerFormFieldState<int, String> {
   @override
   List<Widget>? get prefixIcons =>
       [...?super.prefixIcons, const Icon(Icons.calendar_month)];

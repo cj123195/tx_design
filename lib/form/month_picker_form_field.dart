@@ -117,6 +117,7 @@ class TxMonthPickerFormField extends TxPickerFormField<DateTime, String> {
     int? maximumYear,
     String? format,
     String? titleText,
+    super.readOnly,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -216,11 +217,12 @@ class TxMonthPickerFormField extends TxPickerFormField<DateTime, String> {
         );
 
   @override
-  TxPickerFormFieldState<DateTime> createState() =>
+  TxPickerFormFieldState<DateTime, String> createState() =>
       _TxMonthPickerFormFieldState();
 }
 
-class _TxMonthPickerFormFieldState extends TxPickerFormFieldState<DateTime> {
+class _TxMonthPickerFormFieldState
+    extends TxPickerFormFieldState<DateTime, String> {
   @override
   List<Widget>? get prefixIcons =>
       [...?super.prefixIcons, const Icon(Icons.calendar_month)];

@@ -38,6 +38,7 @@ class PickerFormField<T, V> extends TxPickerFormField<T, V> {
     super.labelOverflow,
     Color? backgroundColor,
     Axis direction = Axis.vertical,
+    super.inputEnabled,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,
@@ -157,7 +158,8 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.strutStyle,
     super.textAlignVertical,
     super.textDirection,
-    super.readOnly = true,
+    bool readOnly = false,
+    this.inputEnabled = false,
     super.showCursor,
     super.autofocus,
     super.statesController,
@@ -228,31 +230,42 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.dense,
     super.colon,
     super.focusColor,
-  }) : super(
+  })  : _readOnly = readOnly,
+        super(
           initialValue:
               initData<T, V>(source, initialData, initialValue, valueMapper),
-          onFieldTap: (field) => _onTap(
-            field,
-            (context, value) => showPickerBottomSheet<T, T>(
-              context,
-              sources: readOnly == true
-                  ? source
-                  : <T>{...source, if (field.value != null) field.value!}
-                      .toList(),
-              labelMapper: labelMapper,
-              valueMapper: (v) => v,
-              initialValue: value,
-              enabledMapper: enabledMapper,
-            ),
-          ),
-          onInputChanged: (field, text) => _onInputChanged<T>(
-            field,
-            text,
-            readOnly,
-          ),
+          onFieldTap: readOnly
+              ? null
+              : (field) => _onTap(
+                    field,
+                    (context, value) => showPickerBottomSheet<T, T>(
+                      context,
+                      sources: readOnly == true
+                          ? source
+                          : <T>{
+                              ...source,
+                              if (field.value != null) field.value!
+                            }.toList(),
+                      labelMapper: labelMapper,
+                      valueMapper: (v) => v,
+                      initialValue: value,
+                      enabledMapper: enabledMapper,
+                    ),
+                  ),
+          readOnly: !inputEnabled || readOnly,
+          onInputChanged: readOnly
+              ? null
+              : (field, text) => _onInputChanged<T>(
+                    field,
+                    text,
+                    inputEnabled,
+                  ),
           displayTextMapper: (context, val) => labelMapper(val) ?? '',
-          hintText: hintText ?? (readOnly == true ? '请选择' : '请选择或输入'),
-          validator: (val) => generateValidator(val, validator, required),
+          hintText:
+              readOnly ? null : hintText ?? (inputEnabled ? '请选择或输入' : '请选择'),
+          validator: readOnly
+              ? null
+              : (val) => generateValidator(val, validator, required),
         );
 
   TxPickerFormField.custom({
@@ -282,7 +295,8 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.bordered,
     super.textAlignVertical,
     super.autofocus,
-    super.readOnly = true,
+    bool readOnly = false,
+    this.inputEnabled = false,
     super.showCursor,
     super.obscuringCharacter,
     super.obscureText,
@@ -353,13 +367,23 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.dense,
     super.focusColor,
     super.colon,
-  }) : super(
-          onFieldTap: (field) => _onTap(field, onPickTap!),
-          onInputChanged: (field, text) =>
-              _onInputChanged<T>(field, text, readOnly),
-          hintText: hintText ?? (readOnly == true ? '请选择' : '请选择或输入'),
+  })  : _readOnly = readOnly,
+        super(
+          onFieldTap: readOnly ? null : (field) => _onTap(field, onPickTap!),
+          readOnly: !inputEnabled || readOnly,
+          onInputChanged: readOnly
+              ? null
+              : (field, text) => _onInputChanged<T>(field, text, readOnly),
+          hintText:
+              readOnly ? null : hintText ?? (inputEnabled ? '请选择或输入' : '请选择'),
           validator: (val) => generateValidator(val, validator, required),
         );
+
+  /// 是否可选
+  final bool _readOnly;
+
+  /// 是否允许输入
+  final bool inputEnabled;
 
   /// 根据当前表单值 [value]、传入验证器 [validator]、 是否必填 [required] 生成默认验证器法。
   static String? generateValidator<T>(
@@ -407,13 +431,17 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
   }
 
   @override
-  TxCommonTextFormFieldState<T> createState() => TxPickerFormFieldState();
+  TxPickerFormFieldState<T, V> createState() => TxPickerFormFieldState<T, V>();
 }
 
-class TxPickerFormFieldState<T> extends TxCommonTextFormFieldState<T> {
+class TxPickerFormFieldState<T, V> extends TxCommonTextFormFieldState<T> {
+  @override
+  TxPickerFormField<T, V> get widget => super.widget as TxPickerFormField<T, V>;
+
   @override
   List<Widget>? get suffixIcons => [
         ...?super.suffixIcons,
-        if (isEnabled) const Icon(Icons.keyboard_arrow_right),
+        if (isEnabled && !widget._readOnly)
+          const Icon(Icons.keyboard_arrow_right),
       ];
 }

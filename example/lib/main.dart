@@ -165,6 +165,7 @@ class _FormViewState extends State<FormView> {
                   labelText: '文字输入',
                   onChanged: (val) => form['text'] = val,
                   required: true,
+                  readOnly: true,
                 ),
                 TxPickerFormField(
                   labelText: '单项选择',
@@ -173,6 +174,7 @@ class _FormViewState extends State<FormView> {
                   onChanged: (val) => form['pickerValue'] = val,
                   initialValue: form['pickerValue'],
                   required: true,
+                  readOnly: true,
                 ),
                 TxDatePickerFormField(
                   labelText: '日期选择器',

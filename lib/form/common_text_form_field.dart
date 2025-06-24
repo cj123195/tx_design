@@ -37,7 +37,7 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
     super.required,
     super.initialValue,
     super.bordered,
-    super.hintText,
+    String? hintText,
     TextInputType? keyboardType,
     TextCapitalization? textCapitalization,
     TextInputAction? textInputAction,
@@ -134,6 +134,7 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
         assert(maxLength == null ||
             maxLength == TextField.noMaxLength ||
             maxLength > 0),
+        readOnly = readOnly ?? false,
         super(
           builder: (field) {
             final state = field as TxCommonTextFormFieldState<T>;
@@ -236,6 +237,7 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
               ),
             );
           },
+          hintText: hintText,
         );
 
   /// 参考 [TextFormField.controller]
@@ -255,6 +257,9 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
 
   /// 焦点
   final FocusNode? focusNode;
+
+  /// 是否只读
+  final bool readOnly;
 
   static Widget _defaultContextMenuBuilder(
     BuildContext context,
@@ -347,7 +352,10 @@ class TxCommonTextFormFieldState<T> extends TxFormFieldState<T> {
   List<Widget>? get suffixIcons {
     return [
       ...?super.suffixIcons,
-      if (isEnabled && widget.clearable != false && !isEmpty)
+      if (!widget.readOnly &&
+          isEnabled &&
+          widget.clearable != false &&
+          !isEmpty)
         IconButton(
           onPressed: () => didChange(null),
           icon: const Icon(Icons.clear, size: 16.0),

@@ -88,6 +88,7 @@ class TxDateRangePickerFormField
     ],
     String? format,
     String? separator,
+    super.readOnly,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -189,12 +190,12 @@ class TxDateRangePickerFormField
         );
 
   @override
-  TxPickerFormFieldState<DateTimeRange> createState() =>
+  TxPickerFormFieldState<DateTimeRange, DateTimeRange> createState() =>
       _TxDateRangePickerFormFieldState();
 }
 
 class _TxDateRangePickerFormFieldState
-    extends TxPickerFormFieldState<DateTimeRange> {
+    extends TxPickerFormFieldState<DateTimeRange, DateTimeRange> {
   @override
   List<Widget>? get prefixIcons =>
       [...?super.prefixIcons, const Icon(Icons.date_range)];
