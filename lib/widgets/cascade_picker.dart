@@ -32,6 +32,7 @@ class TxCascadePicker<D, V> extends StatefulWidget {
     String? idKey,
     String? pidKey,
     String? childrenKey,
+    String? rootId,
     super.key,
     this.itemBuilder,
     this.tabItemBuilder,
@@ -45,6 +46,7 @@ class TxCascadePicker<D, V> extends StatefulWidget {
               idKey: idKey ?? kTreeIdKey,
               pidKey: pidKey ?? kTreePidKey,
               childrenKey: childrenKey ?? kTreeChildrenKey,
+              rootId: rootId,
             )
             .toList() as List<D>,
         labelMapper =
@@ -377,6 +379,7 @@ Future<Map?> showMapListCascadePicker<V>({
   String? idKey,
   String? pidKey,
   String? childrenKey,
+  String? rootId,
   V? initialValue,
   Map? initialData,
   SelectableWidgetBuilder<Map>? itemBuilder,
@@ -402,6 +405,7 @@ Future<Map?> showMapListCascadePicker<V>({
         idKey: idKey,
         pidKey: pidKey,
         childrenKey: childrenKey,
+        rootId: rootId,
         initialData: initialData,
         itemBuilder: itemBuilder,
         tabItemBuilder: tabItemBuilder,

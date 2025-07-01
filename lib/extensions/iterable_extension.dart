@@ -80,6 +80,7 @@ extension MapIterableExtension on Iterable<Map> {
     String idKey = kTreeIdKey,
     String pidKey = kTreePidKey,
     String childrenKey = kTreeChildrenKey,
+    String? rootId,
   }) {
     final List<Map> nodes = [...this];
 
@@ -91,7 +92,7 @@ extension MapIterableExtension on Iterable<Map> {
     final List<Map> tree = [];
     for (var node in nodeMap.values) {
       final String? parentId = node[pidKey];
-      if (parentId == null || parentId.isEmpty) {
+      if (parentId == rootId || parentId == null || parentId.isEmpty) {
         tree.add(node);
       } else {
         // 通过映射表快速找到父节点

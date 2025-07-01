@@ -1,3 +1,6 @@
+# 0.2.19
+* Add rootId parameter to TxCascadePicker.fromMapList, showMapListCascadePicker and TxCascadePickerFormField.fromMapList to determine which is the top level id of the list.
+
 # 0.2.18
 * Fix the issue of CupertinoYearPicker component's onChanged method not triggering correctly.
 * Optimize the Form components.
