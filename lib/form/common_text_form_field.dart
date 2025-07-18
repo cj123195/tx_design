@@ -283,6 +283,9 @@ class TxCommonTextFormFieldState<T> extends TxFormFieldState<T> {
 
   bool? get obscureText => widget.obscureText;
 
+  bool get clearable =>
+      !widget.readOnly && isEnabled && widget.clearable != false && !isEmpty;
+
   @override
   TxCommonTextFormField<T> get widget =>
       super.widget as TxCommonTextFormField<T>;
@@ -352,13 +355,10 @@ class TxCommonTextFormFieldState<T> extends TxFormFieldState<T> {
   List<Widget>? get suffixIcons {
     return [
       ...?super.suffixIcons,
-      if (!widget.readOnly &&
-          isEnabled &&
-          widget.clearable != false &&
-          !isEmpty)
+      if (clearable)
         IconButton(
           onPressed: () => didChange(null),
-          icon: const Icon(Icons.clear, size: 16.0),
+          icon: const Icon(Icons.cancel, size: 16.0),
           style: IconButton.styleFrom(
             visualDensity: VisualDensity.compact,
             padding: EdgeInsets.zero,

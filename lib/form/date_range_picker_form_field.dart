@@ -1,63 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_range_extension.dart';
-import '../utils/basic_types.dart';
 import '../widgets/date_range_picker.dart';
 import 'picker_form_field.dart';
-
-/// 日期范围选择组件
-@Deprecated(
-  'Use TxDateRangePickerFormField instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class DateRangePickerFormField extends TxDateRangePickerFormField {
-  @Deprecated(
-    'Use TxDateRangePickerFormField instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  DateRangePickerFormField({
-    super.format,
-    super.minimumDate,
-    super.maximumDate,
-    super.helpText,
-    super.fieldStartHintText,
-    super.fieldEndHintText,
-    super.quickChoices,
-    super.key,
-    super.onSaved,
-    super.validator,
-    DateTimeRange? initialValue,
-    bool? readonly,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Color? backgroundColor,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    InputDecoration decoration = const InputDecoration(),
-    TextStyle? style,
-    StrutStyle? strutStyle,
-    TextDirection? textDirection,
-    TextAlign textAlign = TextAlign.center,
-    TextAlignVertical? textAlignVertical,
-    EditableTextContextMenuBuilder? contextMenuBuilder,
-    ValueChanged<DateTimeRange?>? onChanged,
-    PickerFuture<DateTimeRange?>? onTap,
-  }) : super(
-          initialDateRange: initialValue,
-          label: label,
-          layoutDirection: direction,
-          enabled: readonly,
-        );
-}
 
 const String _defaultFormat = 'slashDate';
 
@@ -81,11 +26,7 @@ class TxDateRangePickerFormField
     String? helpText,
     String? fieldStartHintText,
     String? fieldEndHintText,
-    List<DateRangeQuickChoice>? quickChoices = const [
-      DateRangeMonthQuickChoice(),
-      DateRangeMonthQuickChoice(value: 6),
-      DateRangeYearQuickChoice(),
-    ],
+    List<DateRangeQuickChoice>? quickChoices,
     String? format,
     String? separator,
     super.readOnly,
@@ -197,6 +138,5 @@ class TxDateRangePickerFormField
 class _TxDateRangePickerFormFieldState
     extends TxPickerFormFieldState<DateTimeRange, DateTimeRange> {
   @override
-  List<Widget>? get prefixIcons =>
-      [...?super.prefixIcons, const Icon(Icons.date_range)];
+  Widget? get prefixIcon => const Icon(Icons.date_range);
 }

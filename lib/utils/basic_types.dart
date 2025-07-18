@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show BuildContext, VoidCallback, Widget;
+import 'package:flutter/material.dart' show BuildContext, Widget;
 
 /// 为给定 [T] 类型数据 生成 [V] 类型值的函数的签名。
 typedef ValueMapper<T, V> = V Function(T data);
@@ -28,10 +28,9 @@ typedef NullableIndexedDataWidgetBuilder<T> = Widget? Function(
   T data,
 );
 
-typedef SelectableWidgetBuilder<T> = Widget Function(
+typedef DataWidgetBuilder<T> = Widget Function(BuildContext context, T data);
+
+typedef NullableDataWidgetBuilder<T> = Widget? Function(
   BuildContext context,
-  int index,
   T data,
-  bool selected,
-  VoidCallback? onSelect,
 );

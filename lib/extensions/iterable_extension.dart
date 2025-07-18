@@ -54,7 +54,8 @@ extension IterableExtension<E> on Iterable<E> {
   List<E>? getInitialList<V>({
     List<E>? initialData,
     List<V>? initialValue,
-    ValueMapper<E, V>? valueMapper,
+    ValueMapper<E, V?>? valueMapper,
+    ValueMapper<E, List<E>?>? childrenMapper,
   }) {
     if (initialData != null) {
       return initialData;
@@ -68,6 +69,21 @@ extension IterableExtension<E> on Iterable<E> {
     for (E data in this) {
       if ((valueMapper == null ? data : valueMapper(data)) == initialValue) {
         result.add(data);
+      }
+
+      if (childrenMapper != null) {
+        final children = childrenMapper(data);
+        if (children != null && children.isNotEmpty) {
+          final childrenResult = children.getInitialList(
+            initialData: initialData,
+            initialValue: initialValue,
+            valueMapper: valueMapper,
+            childrenMapper: childrenMapper,
+          );
+          if (childrenResult != null) {
+            result.addAll(childrenResult);
+          }
+        }
       }
     }
     return result;

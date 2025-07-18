@@ -4,92 +4,6 @@ import '../extensions/datetime_extension.dart';
 import '../widgets/date_picker.dart';
 import 'picker_form_field.dart';
 
-/// 年份选择 Form 组件
-@Deprecated(
-  'Use TxTimePickerFormFieldTile instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class YearPickerFormField extends TxYearPickerFormField {
-  @Deprecated(
-    'Use TxTimePickerFormFieldTile instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  YearPickerFormField({
-    super.initialYear,
-    super.format,
-    super.minimumYear,
-    super.maximumYear,
-    super.titleText,
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Color? backgroundColor,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.controller,
-    super.focusNode,
-    super.decoration,
-    super.keyboardType,
-    super.textCapitalization,
-    super.textInputAction,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.bordered,
-    super.textAlignVertical,
-    super.autofocus,
-    super.maxLines,
-    super.minLines,
-    super.maxLength,
-    super.onChanged,
-    super.onEditingComplete,
-    super.inputFormatters,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
-    super.expands,
-    super.onTapOutside,
-    super.onFieldSubmitted,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorColor,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.scrollController,
-    super.enableIMEPersonalizedLearning,
-    super.mouseCursor,
-    super.contextMenuBuilder,
-  }) : super(
-          label: label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-        );
-}
-
 const String _defaultFormat = 'yyyy年';
 
 /// 年份选择框表单
@@ -213,6 +127,5 @@ class TxYearPickerFormField extends TxPickerFormField<int, String> {
 
 class _TxYearPickerFormFieldState extends TxPickerFormFieldState<int, String> {
   @override
-  List<Widget>? get prefixIcons =>
-      [...?super.prefixIcons, const Icon(Icons.calendar_month)];
+  Widget? get prefixIcon => const Icon(Icons.calendar_month);
 }
