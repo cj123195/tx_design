@@ -5,93 +5,6 @@ import '../extensions/time_of_day_extension.dart';
 import '../widgets/date_picker.dart';
 import 'picker_form_field.dart';
 
-/// 时间选择Form组件
-@Deprecated(
-  'Use TxTimePickerFormField instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class TimePickerFormField extends TxTimePickerFormField {
-  @Deprecated(
-    'Use TxTimePickerFormField instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  TimePickerFormField({
-    super.initialTimeStr,
-    super.initialTime,
-    super.minimumTime,
-    super.maximumTime,
-    super.titleText,
-    super.key,
-    super.onSaved,
-    super.validator,
-    bool? readonly,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Color? backgroundColor,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.controller,
-    super.focusNode,
-    super.decoration,
-    super.keyboardType,
-    super.textCapitalization,
-    super.textInputAction,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.bordered,
-    super.textAlignVertical,
-    super.autofocus,
-    super.maxLines,
-    super.minLines,
-    super.maxLength,
-    super.onChanged,
-    super.onEditingComplete,
-    super.inputFormatters,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
-    super.expands,
-    super.onTapOutside,
-    super.onFieldSubmitted,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorColor,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.scrollController,
-    super.enableIMEPersonalizedLearning,
-    super.mouseCursor,
-    super.contextMenuBuilder,
-  }) : super(
-          label: label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-          enabled: readonly,
-        );
-}
-
 /// 时间选择框表单
 class TxTimePickerFormField extends TxPickerFormField<TimeOfDay, String> {
   TxTimePickerFormField({
@@ -214,6 +127,5 @@ class TxTimePickerFormField extends TxPickerFormField<TimeOfDay, String> {
 class _TxTimePickerFormFieldState
     extends TxPickerFormFieldState<TimeOfDay, String> {
   @override
-  List<Widget>? get prefixIcons =>
-      [...?super.prefixIcons, const Icon(Icons.access_time)];
+  Widget? get prefixIcon => const Icon(Icons.access_time);
 }

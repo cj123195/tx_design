@@ -131,6 +131,5 @@ class TxTimeRangePickerFormField
 class _TxTimeRangePickerFormFieldState
     extends TxPickerFormFieldState<TimeRange, TimeRange> {
   @override
-  List<Widget>? get prefixIcons =>
-      [...?super.prefixIcons, const Icon(Icons.access_time)];
+  Widget? get prefixIcon => const Icon(Icons.access_time);
 }

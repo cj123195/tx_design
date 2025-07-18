@@ -4,69 +4,6 @@ import '../utils/basic_types.dart';
 import 'form_field.dart';
 import 'picker_form_field.dart';
 
-/// 下拉选择Form组件
-@Deprecated(
-  'Use TxDropdownFormField instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class DropdownFormField<T, V> extends TxDropdownFormField<T, V> {
-  @Deprecated(
-    'Use TxDropdownFormField instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  DropdownFormField({
-    required super.labelMapper,
-    required List<T>? sources,
-    super.valueMapper,
-    super.enabledMapper,
-    super.key,
-    super.initialValue,
-    super.initialData,
-    super.onChanged,
-    super.onSaved,
-    super.validator,
-    bool? readonly,
-    super.autovalidateMode = AutovalidateMode.disabled,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Widget? label,
-    super.required,
-    Color? backgroundColor,
-    super.labelStyle,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.hint,
-    super.disabledHint,
-    super.onTap,
-    super.elevation,
-    super.style,
-    super.icon,
-    super.iconDisabledColor,
-    super.iconEnabledColor,
-    super.iconSize,
-    super.isDense,
-    super.isExpanded,
-    super.itemHeight,
-    super.focusColor,
-    super.focusNode,
-    super.autofocus,
-    super.dropdownColor,
-    super.decoration,
-    super.menuMaxHeight,
-    super.alignment,
-    super.borderRadius,
-  }) : super(
-          source: sources ?? [],
-          label: label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-          enabled: readonly,
-        );
-}
-
 /// 下拉选择框表单
 class TxDropdownFormField<T, V> extends TxFormField<T> {
   TxDropdownFormField({

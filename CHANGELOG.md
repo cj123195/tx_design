@@ -1,3 +1,6 @@
+# 0.2.20
+* Update pickers.
+
 # 0.2.19
 * Add rootId parameter to TxCascadePicker.fromMapList, showMapListCascadePicker and TxCascadePickerFormField.fromMapList to determine which is the top level id of the list.
 

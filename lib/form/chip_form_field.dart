@@ -30,7 +30,7 @@ class TxChipFormField<T, V> extends TxWrapFormField<List<T>> {
     super.decoration,
     super.onChanged,
     super.required,
-    super.bordered,
+    super.bordered = false,
     IndexedValueMapper<T, Widget>? avatarBuilder,
     IndexedValueMapper<T, String>? tooltipMapper,
     super.label,

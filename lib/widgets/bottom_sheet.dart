@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../form/form_item_theme.dart';
 import '../localizations.dart';
 import '../theme_extensions/spacing.dart';
 
@@ -765,89 +764,4 @@ class SimplePickerItem<T> extends StatelessWidget {
           : null,
     );
   }
-}
-
-/// 显示筛选弹框
-@Deprecated('This feature was deprecated after v0.3.0.')
-Future<T?> showFilterBottomSheet<T>(
-  BuildContext context, {
-  required WidgetBuilder contentBuilder,
-  WidgetBuilder? headerBuilder,
-  String? title,
-  bool? centerTitle,
-  double? titleSpacing,
-  WidgetBuilder? leadingBuilder,
-  double? leadingWidth,
-  bool automaticallyImplyLeading = true,
-  List<Widget> Function(BuildContext context)? actionsBuilder,
-  WidgetBuilder? footerBuilder,
-  VoidCallback? onConfirm,
-  VoidCallback? onReset,
-  String? textConfirm,
-  String? textCancel,
-  bool showConfirmButton = true,
-  bool showCancelButton = true,
-  bool? showCloseButton,
-  Color? backgroundColor,
-  double? elevation,
-  ShapeBorder? shape,
-  Clip? clipBehavior,
-  Color? barrierColor,
-  bool isScrollControlled = true,
-  bool useRootNavigator = false,
-  bool isDismissible = true,
-  bool enableDrag = true,
-  EdgeInsetsGeometry? padding,
-  EdgeInsetsGeometry? contentPadding = _contentPadding,
-  bool persistent = false,
-  bool? ignoreSafeArea,
-  RouteSettings? settings,
-  Duration? enterBottomSheetDuration,
-  Duration? exitBottomSheetDuration,
-  ActionsPosition? actionsPosition = ActionsPosition.footer,
-}) async {
-  final TxLocalizations localizations = TxLocalizations.of(context);
-
-  return showDefaultBottomSheet<T>(
-    context,
-    contentBuilder: (context) => FormItemTheme(
-      data: const FormItemThemeData(
-        backgroundColor: Colors.transparent,
-        padding: EdgeInsets.zero,
-      ),
-      child: contentBuilder(context),
-    ),
-    title: title ?? localizations.filterSheetLabel,
-    titleSpacing: titleSpacing,
-    centerTitle: centerTitle,
-    headerBuilder: headerBuilder,
-    actionsBuilder: actionsBuilder,
-    onConfirm: onConfirm,
-    onCancel: onReset,
-    textConfirm: textConfirm,
-    textCancel: textCancel ?? localizations.resetButtonLabel,
-    showConfirmButton: showConfirmButton,
-    showCancelButton: showCancelButton,
-    padding: padding,
-    contentPadding: contentPadding,
-    leadingBuilder:
-        leadingBuilder ?? (context) => const Icon(Icons.filter_list),
-    leadingWidth: leadingWidth,
-    automaticallyImplyLeading: automaticallyImplyLeading,
-    footerBuilder: footerBuilder,
-    persistent: persistent,
-    isScrollControlled: isScrollControlled,
-    backgroundColor: backgroundColor,
-    elevation: elevation,
-    shape: shape,
-    ignoreSafeArea: ignoreSafeArea,
-    clipBehavior: clipBehavior,
-    isDismissible: isDismissible,
-    barrierColor: barrierColor,
-    settings: settings,
-    enableDrag: enableDrag,
-    enterBottomSheetDuration: enterBottomSheetDuration,
-    exitBottomSheetDuration: exitBottomSheetDuration,
-    actionsPosition: actionsPosition,
-  );
 }
