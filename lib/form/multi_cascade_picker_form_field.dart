@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../utils/basic_types.dart';
-import '../widgets/cascade_picker.dart';
-import '../widgets/multi_picker.dart';
+import '../widgets/multi_cascade_picker.dart';
 import 'multi_picker_form_field.dart';
 
-export '../widgets/cascade_picker.dart';
+export '../widgets/multi_cascade_picker.dart'
+    show
+        ValueMapper,
+        DataWidgetBuilder,
+        MultiPickerItemBuilder,
+        MultiPickerActionBarBuilder,
+        MultiPickerSelectedItemBuilder;
 
 /// 级联选择框表单
 class TxMultiCascadePickerFormField<T, V> extends TxMultiPickerFormField<T, V> {

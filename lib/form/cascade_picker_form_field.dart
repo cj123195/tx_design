@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/iterable_extension.dart';
-import '../utils/basic_types.dart';
 import '../widgets/cascade_picker.dart';
 import 'common_text_form_field.dart';
 import 'picker_form_field.dart';
+
+export '../widgets/cascade_picker.dart' show ValueMapper, DataWidgetBuilder;
 
 /// 级联选择框表单
 class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {

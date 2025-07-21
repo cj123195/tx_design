@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 import '../localizations.dart';
-import '../utils/basic_types.dart';
+import '../utils/basic_types.dart' show ValueMapper, DataWidgetBuilder;
 import 'bottom_sheet.dart';
 import 'matching_text.dart';
 
-/// 选择项构造方法
+export '../utils/basic_types.dart' show ValueMapper, DataWidgetBuilder;
+
+/// 选择项构造方法x
 typedef PickerItemBuilder<T> = Widget Function(
   BuildContext context,
   T data,

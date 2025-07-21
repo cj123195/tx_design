@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../utils/basic_types.dart';
 import '../widgets/picker.dart';
 import 'common_text_form_field.dart';
 import 'form_field.dart';

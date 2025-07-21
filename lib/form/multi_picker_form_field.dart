@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../utils/basic_types.dart';
 import '../widgets/multi_picker.dart';
 import 'form_field.dart';
 

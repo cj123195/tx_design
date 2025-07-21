@@ -2,16 +2,15 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+// import '../form/multi_picker_form_field.dart';
 import '../form/multi_picker_form_field.dart';
 import '../localizations.dart';
-import '../utils/basic_types.dart';
 import 'bottom_sheet.dart';
 import 'checkbox_list_tile.dart';
 import 'matching_text.dart';
 import 'picker.dart';
 
-/// 标签编辑回调
-typedef LabelEditCallback = void Function(int index, String value);
+export 'picker.dart' show ValueMapper, DataWidgetBuilder;
 
 /// 多选项构造方法
 typedef MultiPickerItemBuilder<T> = Widget Function(
