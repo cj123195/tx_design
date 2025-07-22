@@ -377,7 +377,8 @@ class TxFormFieldState<T> extends FormFieldState<T> {
 
       final BorderSide borderSide =
           (border == null || border == InputBorder.none)
-              ? inputDecorationTheme.outlineBorder!
+              ? inputDecorationTheme.outlineBorder ??
+                  defaults.inputDecorationTheme!.outlineBorder!
               : border.borderSide;
 
       if (border == null || !border.isOutline) {
@@ -568,6 +569,7 @@ class _TxFieldThemeDefaultsM3 extends TxFormFieldThemeData {
                     ? theme.disabledColor
                     : theme.hintColor),
           ),
+          outlineBorder: BorderSide(color: theme.colorScheme.outlineVariant),
           enabledBorder: InputBorder.none,
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
