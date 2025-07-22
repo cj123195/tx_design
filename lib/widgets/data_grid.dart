@@ -196,10 +196,7 @@ class TxDataRow extends StatelessWidget {
     return [
       for (int i = 0; i < cells.length; i += columnNum)
         TxDataRow(
-          cells: cells
-              .sublist(i, i + columnNum > last ? last : i + columnNum)
-              .map((e) => Expanded(child: e))
-              .toList(),
+          cells: cells.sublist(i, i + columnNum > last ? last : i + columnNum),
           decoration: decoration,
           padding: padding,
           spacing: spacing,
@@ -241,7 +238,7 @@ class TxDataRow extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           for (int i = 0; i < cells.length; i++) ...[
-            cells[i],
+            Expanded(child: cells[i]),
             if (i != cells.length - 1) SizedBox(width: effectiveSpacing)
           ],
         ],
