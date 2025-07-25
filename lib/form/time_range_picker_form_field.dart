@@ -26,6 +26,7 @@ class TxTimeRangePickerFormField
     String? fieldStartHintText,
     String? fieldEndHintText,
     String Function(BuildContext context, TimeRange timeRange)? format,
+    super.readOnly,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -123,13 +124,12 @@ class TxTimeRangePickerFormField
         );
 
   @override
-  TxPickerFormFieldState<TimeRange> createState() =>
+  TxPickerFormFieldState<TimeRange, TimeRange> createState() =>
       _TxTimeRangePickerFormFieldState();
 }
 
 class _TxTimeRangePickerFormFieldState
-    extends TxPickerFormFieldState<TimeRange> {
+    extends TxPickerFormFieldState<TimeRange, TimeRange> {
   @override
-  List<Widget>? get prefixIcons =>
-      [...?super.prefixIcons, const Icon(Icons.access_time)];
+  Widget? get prefixIcon => const Icon(Icons.access_time);
 }

@@ -6,97 +6,6 @@ import 'picker_form_field.dart';
 
 const String _defaultFormat = 'yyyy-MM-dd';
 
-/// 日期选择Form组件
-@Deprecated(
-  'Use TxDatePickerFormField instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class DatePickerFormField extends TxDatePickerFormField {
-  @Deprecated(
-    'Use TxDatePickerFormField instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  DatePickerFormField({
-    super.initialDateStr,
-    super.initialDate,
-    super.format,
-    DateTime? minimumDate,
-    DateTime? maximumDate,
-    super.minimumYear,
-    super.maximumYear,
-    super.key,
-    super.onSaved,
-    super.validator,
-    bool? readonly,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Color? backgroundColor,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.controller,
-    super.focusNode,
-    super.decoration,
-    super.keyboardType,
-    super.textCapitalization,
-    super.textInputAction,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.bordered,
-    super.textAlignVertical,
-    super.autofocus,
-    super.maxLines,
-    super.minLines,
-    super.maxLength,
-    super.onChanged,
-    super.onEditingComplete,
-    super.inputFormatters,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
-    super.expands,
-    super.onTapOutside,
-    super.onFieldSubmitted,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorColor,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.scrollController,
-    super.enableIMEPersonalizedLearning,
-    super.mouseCursor,
-    super.contextMenuBuilder,
-  }) : super(
-          label: label,
-          layoutDirection: direction,
-          tileColor: backgroundColor,
-          minimumDate: minimumDate,
-          maximumDate: maximumDate,
-          enabled: readonly,
-        );
-}
-
 /// 日期选择框表单
 class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
   TxDatePickerFormField({
@@ -200,6 +109,7 @@ class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
     super.canRequestFocus,
     super.spellCheckConfiguration,
     super.magnifierConfiguration,
+    super.readOnly,
   }) : super.custom(
           initialValue:
               initialDate ?? initialDateStr?.toDatetime(format: format),
@@ -217,12 +127,12 @@ class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
         );
 
   @override
-  TxPickerFormFieldState<DateTime> createState() =>
+  TxPickerFormFieldState<DateTime, String> createState() =>
       _TxDatePickerFormFieldState();
 }
 
-class _TxDatePickerFormFieldState extends TxPickerFormFieldState<DateTime> {
+class _TxDatePickerFormFieldState
+    extends TxPickerFormFieldState<DateTime, String> {
   @override
-  List<Widget>? get prefixIcons =>
-      [...?super.prefixIcons, const Icon(Icons.calendar_month)];
+  Widget? get prefixIcon => const Icon(Icons.calendar_month);
 }

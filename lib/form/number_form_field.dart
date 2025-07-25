@@ -5,98 +5,6 @@ import 'package:flutter/services.dart';
 
 import 'common_text_form_field.dart';
 
-/// 数字输入Form表单
-@Deprecated(
-  'Use TxNumberFormField instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class NumberFormField extends TxNumberFormField {
-  @Deprecated(
-    'Use TxNumberFormField instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  NumberFormField({
-    num? maximumValue, // 最大值
-    num? minimumValue, // 最小值
-    bool? showOperateButton, // 是否显示操作按钮
-    num? difference, // 自增或自减时的差值，showOperateButton为true时生效
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.initialValue,
-    enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Color? backgroundColor,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.controller,
-    super.focusNode,
-    super.decoration,
-    super.textCapitalization,
-    super.textInputAction,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.bordered,
-    super.textAlignVertical,
-    super.autofocus,
-    bool? readonly,
-    super.maxLines,
-    super.minLines,
-    super.maxLength,
-    super.onChanged,
-    super.onTap,
-    super.onEditingComplete,
-    super.inputFormatters,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
-    super.expands,
-    super.onTapOutside,
-    super.onFieldSubmitted,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorColor,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.scrollController,
-    super.enableIMEPersonalizedLearning,
-    super.mouseCursor,
-    super.contextMenuBuilder,
-  }) : super(
-          maxValue: maximumValue,
-          minValue: minimumValue,
-          stepped: showOperateButton,
-          step: difference,
-          label: label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-          readOnly: readonly,
-        );
-}
-
 InputDecoration _decoration(
     InputDecoration decoration, num? min, num? max, int? precision) {
   String? helperText = decoration.helperText;
@@ -389,27 +297,25 @@ class _TxNumberFormFieldState extends TxCommonTextFormFieldState<num> {
   }
 
   @override
-  List<Widget>? get prefixIcons {
-    final List<Widget> result = [...?super.prefixIcons];
-    if (widget.stepped == true) {
-      void changeValue(num value) {
-        controller?.text = value.toString();
-        didChange(value);
-      }
-
-      final num effectiveValue = value ?? 0;
-      final num diff = widget.step ?? 1;
-
-      final bool canRemove =
-          widget.minValue == null || effectiveValue > widget.minValue!;
-      final Widget prefixIcon = IconButton(
-        onPressed: canRemove ? () => changeValue(effectiveValue + diff) : null,
-        icon: const Icon(Icons.remove),
-      );
-
-      result.add(prefixIcon);
+  Widget? get prefixIcon {
+    if (!widget.stepped) {
+      return null;
     }
-    return result;
+
+    void changeValue(num value) {
+      controller?.text = value.toString();
+      didChange(value);
+    }
+
+    final num effectiveValue = value ?? 0;
+    final num diff = widget.step ?? 1;
+
+    final bool canRemove =
+        widget.minValue == null || effectiveValue > widget.minValue!;
+    return IconButton(
+      onPressed: canRemove ? () => changeValue(effectiveValue + diff) : null,
+      icon: const Icon(Icons.remove),
+    );
   }
 }
 

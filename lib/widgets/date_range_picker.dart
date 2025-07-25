@@ -5,14 +5,15 @@ import '../extensions/datetime_extension.dart';
 import '../extensions/time_of_day_extension.dart';
 import '../localizations.dart';
 import 'bottom_sheet.dart';
+import 'date_picker.dart';
 
 const double _kMediumGap = 12.0;
 const Duration _dialogSizeAnimationDuration = Duration(milliseconds: 200);
 const Size _inputPortraitDialogSize = Size(330.0, 400.0);
 
 /// 带快捷选择的时间范围选择器
-class CupertinoDateRangePicker extends StatefulWidget {
-  const CupertinoDateRangePicker({
+class TxCupertinoDateRangePicker extends StatefulWidget {
+  const TxCupertinoDateRangePicker({
     required this.onChanged,
     required this.mode,
     this.minimumDate,
@@ -22,11 +23,7 @@ class CupertinoDateRangePicker extends StatefulWidget {
     this.helpText,
     this.fieldStartHintText,
     this.fieldEndHintText,
-    this.quickChoices = const [
-      DateRangeMonthQuickChoice(),
-      DateRangeMonthQuickChoice(value: 6),
-      DateRangeYearQuickChoice(),
-    ],
+    this.quickChoices,
     this.format,
     this.dateOrder,
   });
@@ -76,11 +73,11 @@ class CupertinoDateRangePicker extends StatefulWidget {
   final DatePickerDateOrder? dateOrder;
 
   @override
-  State<CupertinoDateRangePicker> createState() =>
-      _CupertinoDateRangePickerState();
+  State<TxCupertinoDateRangePicker> createState() =>
+      _TxCupertinoDateRangePickerState();
 }
 
-class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
+class _TxCupertinoDateRangePickerState extends State<TxCupertinoDateRangePicker>
     with SingleTickerProviderStateMixin {
   /// 输入控制器
   late TextEditingController _startController;
@@ -170,6 +167,7 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
     if (_start != null) {
       _callChange();
     }
+    setState(() {});
   }
 
   /// 清除选择的日期
@@ -403,23 +401,17 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
 
     // 时间选择器
     final Widget picker = _endNode.hasFocus
-        ? CupertinoDatePicker(
-            onDateTimeChanged: _onEndChanged,
-            maximumDate: widget.maximumDate,
-            minimumDate: _start ?? widget.minimumDate,
-            initialDateTime: _end,
-            dateOrder: DatePickerDateOrder.ymd,
-            mode: widget.mode,
-            use24hFormat: true,
+        ? buildPicker(
+            onChanged: _onEndChanged,
+            maximum: widget.maximumDate,
+            minimum: _start ?? widget.minimumDate,
+            initialValue: _end,
           )
-        : CupertinoDatePicker(
-            onDateTimeChanged: _onStartChanged,
-            maximumDate: _end ?? widget.maximumDate,
-            minimumDate: widget.minimumDate,
-            initialDateTime: _start,
-            dateOrder: DatePickerDateOrder.ymd,
-            mode: widget.mode,
-            use24hFormat: true,
+        : buildPicker(
+            onChanged: _onStartChanged,
+            maximum: _end ?? widget.maximumDate,
+            minimum: widget.minimumDate,
+            initialValue: _start,
           );
 
     Size size;
@@ -456,6 +448,47 @@ class _CupertinoDateRangePickerState extends State<CupertinoDateRangePicker>
         }),
       ),
     );
+  }
+
+  Widget buildPicker({
+    required DateTime? initialValue,
+    required DateTime? minimum,
+    required DateTime? maximum,
+    required ValueChanged<DateTime> onChanged,
+  }) {
+    return switch (widget.mode) {
+      CupertinoDatePickerMode.time => TxCupertinoTimePicker(
+          onTimeChanged: (time) => onChanged(time.toDateTime(initialValue)),
+          maximumTime: maximum == null ? null : TimeOfDay.fromDateTime(maximum),
+          minimumTime: minimum == null ? null : TimeOfDay.fromDateTime(minimum),
+          initialTime: initialValue == null
+              ? null
+              : TimeOfDay.fromDateTime(initialValue),
+          key: UniqueKey(),
+        ),
+      CupertinoDatePickerMode.date => TxCupertinoDatePicker(
+          onDateChanged: onChanged,
+          maximumDate: maximum,
+          minimumDate: minimum,
+          initialDate: initialValue,
+          key: UniqueKey(),
+        ),
+      CupertinoDatePickerMode.dateAndTime => TxCupertinoDatetimePicker(
+          onDatetimeChanged: onChanged,
+          maximumDatetime: maximum,
+          minimumDatetime: minimum,
+          initialDatetime: initialValue,
+          showSeconds: widget.format?.toLowerCase().contains('s') == true,
+          key: UniqueKey(),
+        ),
+      CupertinoDatePickerMode.monthYear => TxCupertinoMonthPicker(
+          onMonthChanged: onChanged,
+          maximumDate: maximum,
+          minimumDate: minimum,
+          initialMonth: initialValue,
+          key: UniqueKey(),
+        ),
+    };
   }
 }
 
@@ -902,7 +935,7 @@ Future<DateTimeRange?> _showCupertinoRangePicker(
       return TxBottomSheet(
         content: Form(
           key: formKey,
-          child: CupertinoDateRangePicker(
+          child: TxCupertinoDateRangePicker(
             mode: mode,
             initialDatetimeRange: result,
             minimumDate: minimumDate,

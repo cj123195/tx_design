@@ -218,7 +218,7 @@ class TxCell extends StatelessWidget {
       final TextStyle style = textStyle ?? themeStyle ?? defaultStyle;
       return style.copyWith(
         color: color,
-        fontSize: isDense ? fontSize * 0.9 : null,
+        fontSize: isDense ? fontSize * 0.9 : fontSize,
       );
     }
 

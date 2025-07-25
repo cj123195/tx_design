@@ -54,7 +54,8 @@ extension IterableExtension<E> on Iterable<E> {
   List<E>? getInitialList<V>({
     List<E>? initialData,
     List<V>? initialValue,
-    ValueMapper<E, V>? valueMapper,
+    ValueMapper<E, V?>? valueMapper,
+    ValueMapper<E, List<E>?>? childrenMapper,
   }) {
     if (initialData != null) {
       return initialData;
@@ -69,6 +70,21 @@ extension IterableExtension<E> on Iterable<E> {
       if ((valueMapper == null ? data : valueMapper(data)) == initialValue) {
         result.add(data);
       }
+
+      if (childrenMapper != null) {
+        final children = childrenMapper(data);
+        if (children != null && children.isNotEmpty) {
+          final childrenResult = children.getInitialList(
+            initialData: initialData,
+            initialValue: initialValue,
+            valueMapper: valueMapper,
+            childrenMapper: childrenMapper,
+          );
+          if (childrenResult != null) {
+            result.addAll(childrenResult);
+          }
+        }
+      }
     }
     return result;
   }
@@ -80,6 +96,7 @@ extension MapIterableExtension on Iterable<Map> {
     String idKey = kTreeIdKey,
     String pidKey = kTreePidKey,
     String childrenKey = kTreeChildrenKey,
+    String? rootId,
   }) {
     final List<Map> nodes = [...this];
 
@@ -91,7 +108,7 @@ extension MapIterableExtension on Iterable<Map> {
     final List<Map> tree = [];
     for (var node in nodeMap.values) {
       final String? parentId = node[pidKey];
-      if (parentId == null || parentId.isEmpty) {
+      if (parentId == rootId || parentId == null || parentId.isEmpty) {
         tree.add(node);
       } else {
         // 通过映射表快速找到父节点

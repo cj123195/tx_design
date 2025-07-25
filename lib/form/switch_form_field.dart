@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -18,30 +19,16 @@ class TxSwitchFormField extends TxFormField<bool> {
     super.initialValue,
     TextAlign? textAlign = TextAlign.end,
     Color? activeColor,
-    Color? activeTrackColor,
-    Color? inactiveThumbColor,
-    Color? inactiveTrackColor,
-    ImageProvider? activeThumbImage,
-    ImageErrorListener? onActiveThumbImageError,
-    ImageProvider? inactiveThumbImage,
-    ImageErrorListener? onInactiveThumbImageError,
-    WidgetStateProperty<Color?>? thumbColor,
-    WidgetStateProperty<Color?>? trackColor,
-    WidgetStateProperty<Color?>? trackOutlineColor,
-    WidgetStateProperty<double?>? trackOutlineWidth,
-    WidgetStateProperty<Icon?>? thumbIcon,
-    MaterialTapTargetSize? materialTapTargetSize,
+    Color? thumbColor,
+    Color? trackColor,
+    Color? onLabelColor,
+    Color? offLabelColor,
     DragStartBehavior? dragStartBehavior,
-    MouseCursor? mouseCursor,
-    WidgetStateProperty<Color?>? overlayColor,
-    double? splashRadius,
     Color? focusColor,
     FocusNode? focusNode,
     ValueChanged<bool>? onFocusChange,
     bool? autofocus,
-    Color? hoverColor,
-    bool? applyCupertinoTheme,
-    TextDirection? textDirection,
+    bool? applyTheme,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -77,34 +64,27 @@ class TxSwitchFormField extends TxFormField<bool> {
               TextAlign.end => AlignmentDirectional.centerEnd,
             };
 
+            final theme = Theme.of(field.context);
+
             return Align(
               alignment: align,
-              child: Switch.adaptive(
+              child: CupertinoSwitch(
                 value: field.value ?? false,
                 onChanged: field.didChange,
-                activeColor: activeColor,
-                activeTrackColor: activeTrackColor,
-                inactiveThumbColor: inactiveThumbColor,
-                activeThumbImage: activeThumbImage,
-                onActiveThumbImageError: onActiveThumbImageError,
-                inactiveThumbImage: inactiveThumbImage,
-                onInactiveThumbImageError: onInactiveThumbImageError,
-                materialTapTargetSize:
-                    materialTapTargetSize ?? MaterialTapTargetSize.shrinkWrap,
+                activeColor: activeColor ??
+                    theme.switchTheme.trackColor
+                        ?.resolve({MaterialState.selected}) ??
+                    theme.colorScheme.primary,
                 thumbColor: thumbColor,
                 trackColor: trackColor,
-                trackOutlineColor: trackOutlineColor,
-                trackOutlineWidth: trackOutlineWidth,
-                thumbIcon: thumbIcon,
-                dragStartBehavior: dragStartBehavior ?? DragStartBehavior.start,
-                mouseCursor: mouseCursor,
+                applyTheme: applyTheme,
                 focusColor: focusColor,
-                hoverColor: hoverColor,
-                overlayColor: overlayColor,
-                splashRadius: splashRadius,
+                onLabelColor: onLabelColor,
+                offLabelColor: offLabelColor,
                 focusNode: focusNode,
                 autofocus: autofocus ?? false,
-                applyCupertinoTheme: applyCupertinoTheme,
+                dragStartBehavior: dragStartBehavior ?? DragStartBehavior.start,
+                onFocusChange: onFocusChange,
               ),
             );
           },

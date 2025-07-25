@@ -1,3 +1,14 @@
+# 0.2.20
+* Update pickers.
+
+# 0.2.19
+* Add rootId parameter to TxCascadePicker.fromMapList, showMapListCascadePicker and TxCascadePickerFormField.fromMapList to determine which is the top level id of the list.
+
+# 0.2.18
+* Fix the issue of CupertinoYearPicker component's onChanged method not triggering correctly.
+* Optimize the Form components.
+* Add backImageFit and foregroundImageFit to set the filling method for background and foreground images of TxSquareAvatar.
+
 # 0.2.17
 * Fixed some issues.
 

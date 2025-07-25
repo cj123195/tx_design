@@ -6,58 +6,6 @@ import 'picker_form_field.dart';
 
 const String _defaultFormat = 'slashDatetime';
 
-/// 日期+时间范围选择组件
-@Deprecated(
-  'Use TxDatetimeRangePickerFormField instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class DatetimeRangePickerFormField extends TxDatetimeRangePickerFormField {
-  @Deprecated(
-    'Use TxDatetimeRangePickerFormField instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  DatetimeRangePickerFormField({
-    super.format,
-    super.minimumDate,
-    super.maximumDate,
-    super.helpText,
-    super.key,
-    super.required,
-    Widget? label,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Color? backgroundColor,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.onSaved,
-    super.validator,
-    DateTimeRange? initialValue,
-    bool? readonly,
-    super.autovalidateMode,
-    super.restorationId,
-    super.decoration,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.bordered,
-    super.textAlignVertical,
-    super.contextMenuBuilder,
-    super.onChanged,
-  }) : super(
-          label: label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-          initialDatetimeRange: initialValue,
-          enabled: readonly,
-        );
-}
-
 /// 日期时间范围选择框表单
 class TxDatetimeRangePickerFormField
     extends TxPickerFormField<DateTimeRange, DateTimeRange> {
@@ -79,6 +27,7 @@ class TxDatetimeRangePickerFormField
     String? titleText,
     String? format,
     String? separator,
+    super.readOnly,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -178,13 +127,12 @@ class TxDatetimeRangePickerFormField
         );
 
   @override
-  TxPickerFormFieldState<DateTimeRange> createState() =>
+  TxPickerFormFieldState<DateTimeRange, DateTimeRange> createState() =>
       _TxDatetimeRangePickerFormFieldState();
 }
 
 class _TxDatetimeRangePickerFormFieldState
-    extends TxPickerFormFieldState<DateTimeRange> {
+    extends TxPickerFormFieldState<DateTimeRange, DateTimeRange> {
   @override
-  List<Widget>? get prefixIcons =>
-      [...?super.prefixIcons, const Icon(Icons.date_range)];
+  Widget? get prefixIcon => const Icon(Icons.date_range);
 }

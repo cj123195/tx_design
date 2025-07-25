@@ -1,102 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../utils/basic_types.dart';
-import '../widgets/picker_bottom_sheet.dart';
+import '../widgets/picker.dart';
 import 'common_text_form_field.dart';
 import 'form_field.dart';
 
 export '../utils/basic_types.dart' show ValueMapper;
-export '../widgets/picker_bottom_sheet.dart' show PickerItemBuilder;
-
-/// 单选Form组件
-@Deprecated(
-  'Use TxPickerFormField instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class PickerFormField<T, V> extends TxPickerFormField<T, V> {
-  @Deprecated(
-    'Use TxPickerFormField instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  PickerFormField({
-    required List<T>? sources,
-    required super.labelMapper,
-    super.valueMapper,
-    super.enabledMapper,
-    super.initialValue,
-    super.initialData,
-    super.key,
-    super.onSaved,
-    super.validator,
-    bool? readonly,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Color? backgroundColor,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-    super.controller,
-    super.focusNode,
-    super.decoration,
-    super.keyboardType,
-    super.textCapitalization,
-    super.textInputAction,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
-    super.bordered,
-    super.textAlignVertical,
-    super.autofocus,
-    super.readOnly,
-    super.maxLines,
-    super.minLines,
-    super.maxLength,
-    super.onChanged,
-    super.onEditingComplete,
-    super.inputFormatters,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
-    super.expands,
-    super.onTapOutside,
-    super.onFieldSubmitted,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorColor,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.scrollController,
-    super.enableIMEPersonalizedLearning,
-    super.mouseCursor,
-    super.contextMenuBuilder,
-  }) : super(
-          source: sources ?? [],
-          label: label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-          enabled: readonly,
-        );
-}
+export '../widgets/picker.dart' show PickerItemBuilder;
 
 typedef PickVoidCallback<T> = Future<T?> Function(
   BuildContext context,
@@ -105,8 +14,11 @@ typedef PickVoidCallback<T> = Future<T?> Function(
 
 /// 处理多选框输入内容变更事件
 void _onInputChanged<T>(
-    TxFormFieldState<T> field, String? text, bool? readOnly) {
-  if (readOnly != true) {
+  TxFormFieldState<T> field,
+  String? text,
+  bool? inputEnabled,
+) {
+  if (inputEnabled == true) {
     if (text != field.value) {
       field.didChange(text as T?);
     }
@@ -141,9 +53,14 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.onChanged,
     super.required,
     ValueMapper<T, V?>? valueMapper,
-    IndexedValueMapper<T, bool>? enabledMapper,
+    DataWidgetBuilder<T>? subtitleBuilder,
+    PickerItemBuilder<T>? itemBuilder,
+    ValueMapper<T, bool>? disabledWhen,
     T? initialData,
     V? initialValue,
+    bool? showSearchField,
+    Widget? placeholder,
+    ListTileThemeData? listTileTheme,
     super.focusNode,
     String? hintText,
     super.textAlign,
@@ -157,7 +74,8 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.strutStyle,
     super.textAlignVertical,
     super.textDirection,
-    super.readOnly = true,
+    bool? readOnly,
+    bool? inputEnabled,
     super.showCursor,
     super.autofocus,
     super.statesController,
@@ -228,31 +146,48 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.dense,
     super.colon,
     super.focusColor,
-  }) : super(
+  })  : _readOnly = readOnly ?? false,
+        inputEnabled = inputEnabled ?? false,
+        super(
           initialValue:
               initData<T, V>(source, initialData, initialValue, valueMapper),
-          onFieldTap: (field) => _onTap(
-            field,
-            (context, value) => showPickerBottomSheet<T, T>(
-              context,
-              sources: readOnly == true
-                  ? source
-                  : <T>{...source, if (field.value != null) field.value!}
-                      .toList(),
-              labelMapper: labelMapper,
-              valueMapper: (v) => v,
-              initialValue: value,
-              enabledMapper: enabledMapper,
-            ),
-          ),
+          onFieldTap: readOnly == true
+              ? null
+              : (field) => _onTap(
+                    field,
+                    (context, value) => showPickerBottomSheet<T, V>(
+                      context,
+                      source: readOnly == true
+                          ? source
+                          : <T>{
+                              ...source,
+                              if (field.value != null) field.value!
+                            }.toList(),
+                      labelMapper: labelMapper,
+                      valueMapper: valueMapper,
+                      initialData: value,
+                      disabledWhen: disabledWhen,
+                      title: labelText,
+                      subtitleBuilder: subtitleBuilder,
+                      itemBuilder: itemBuilder,
+                      showSearchField: showSearchField,
+                      placeholder: placeholder,
+                      listTileTheme: listTileTheme,
+                    ),
+                  ),
+          readOnly: inputEnabled != true || readOnly == true,
           onInputChanged: (field, text) => _onInputChanged<T>(
             field,
             text,
-            readOnly,
+            inputEnabled,
           ),
           displayTextMapper: (context, val) => labelMapper(val) ?? '',
-          hintText: hintText ?? (readOnly == true ? '请选择' : '请选择或输入'),
-          validator: (val) => generateValidator(val, validator, required),
+          hintText: readOnly == true
+              ? null
+              : hintText ?? (inputEnabled == true ? '请选择或输入' : '请选择'),
+          validator: readOnly == true
+              ? null
+              : (val) => generateValidator(val, validator, required),
         );
 
   TxPickerFormField.custom({
@@ -282,7 +217,8 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.bordered,
     super.textAlignVertical,
     super.autofocus,
-    super.readOnly = true,
+    bool? readOnly,
+    bool? inputEnabled,
     super.showCursor,
     super.obscuringCharacter,
     super.obscureText,
@@ -353,13 +289,25 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.dense,
     super.focusColor,
     super.colon,
-  }) : super(
-          onFieldTap: (field) => _onTap(field, onPickTap!),
+  })  : _readOnly = readOnly ?? false,
+        inputEnabled = inputEnabled ?? false,
+        super(
+          onFieldTap:
+              readOnly == true ? null : (field) => _onTap(field, onPickTap!),
+          readOnly: inputEnabled != true || readOnly == true,
           onInputChanged: (field, text) =>
-              _onInputChanged<T>(field, text, readOnly),
-          hintText: hintText ?? (readOnly == true ? '请选择' : '请选择或输入'),
+              _onInputChanged<T>(field, text, inputEnabled),
+          hintText: readOnly == true
+              ? null
+              : hintText ?? (inputEnabled == true ? '请选择或输入' : '请选择'),
           validator: (val) => generateValidator(val, validator, required),
         );
+
+  /// 是否可选
+  final bool _readOnly;
+
+  /// 是否允许输入
+  final bool inputEnabled;
 
   /// 根据当前表单值 [value]、传入验证器 [validator]、 是否必填 [required] 生成默认验证器法。
   static String? generateValidator<T>(
@@ -407,13 +355,21 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
   }
 
   @override
-  TxCommonTextFormFieldState<T> createState() => TxPickerFormFieldState();
+  TxPickerFormFieldState<T, V> createState() => TxPickerFormFieldState<T, V>();
 }
 
-class TxPickerFormFieldState<T> extends TxCommonTextFormFieldState<T> {
+class TxPickerFormFieldState<T, V> extends TxCommonTextFormFieldState<T> {
+  @override
+  bool get clearable =>
+      !widget._readOnly && isEnabled && widget.clearable != false && !isEmpty;
+
+  @override
+  TxPickerFormField<T, V> get widget => super.widget as TxPickerFormField<T, V>;
+
   @override
   List<Widget>? get suffixIcons => [
         ...?super.suffixIcons,
-        if (isEnabled) const Icon(Icons.keyboard_arrow_right),
+        if (isEnabled && !widget._readOnly)
+          const Icon(Icons.keyboard_arrow_right),
       ];
 }

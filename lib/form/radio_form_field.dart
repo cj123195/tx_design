@@ -4,57 +4,13 @@ import '../utils/basic_types.dart';
 import 'picker_form_field.dart';
 import 'wrap_field.dart';
 
-/// Radio单选Form 组件
-@Deprecated(
-  'Use TxRadioFormField instead. '
-  'This feature was deprecated after v0.3.0.',
-)
-class RadioFormField<T, V> extends TxRadioFormField<T, V> {
-  @Deprecated(
-    'Use TxRadioFormField instead. '
-    'This feature was deprecated after v0.3.0.',
-  )
-  RadioFormField({
-    required super.labelMapper,
-    required List<T>? sources,
-    super.initialData,
-    super.valueMapper,
-    super.enabledMapper,
-    super.onChanged,
-    super.key,
-    super.onSaved,
-    super.validator,
-    super.initialValue,
-    super.enabled,
-    super.autovalidateMode,
-    super.restorationId,
-    super.required,
-    Widget? label,
-    super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    Color? backgroundColor,
-    Axis direction = Axis.vertical,
-    super.padding,
-    super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.minLabelWidth,
-  }) : super(
-          source: sources ?? [],
-          label: label,
-          tileColor: backgroundColor,
-          layoutDirection: direction,
-        );
-}
-
 /// 单项选择框表单
 class TxRadioFormField<T, V> extends TxWrapFormField<T> {
   TxRadioFormField({
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
     ValueMapper<T, V?>? valueMapper,
-    IndexedValueMapper<T, bool>? enabledMapper,
+    ValueMapper<T, bool>? disabledWhen,
     T? initialData,
     V? initialValue,
     double? spacing,
@@ -72,7 +28,7 @@ class TxRadioFormField<T, V> extends TxWrapFormField<T> {
     super.decoration,
     super.onChanged,
     super.required,
-    super.bordered,
+    super.bordered = false,
     IndexedValueMapper<T, Widget>? avatarBuilder,
     IndexedValueMapper<T, String>? tooltipMapper,
     super.label,
@@ -114,7 +70,7 @@ class TxRadioFormField<T, V> extends TxWrapFormField<T> {
               labelMapper: labelMapper,
               enabled: field.isEnabled,
               onChanged: field.didChange,
-              enabledMapper: enabledMapper,
+              disabledWhen: disabledWhen,
               avatarBuilder: avatarBuilder,
             );
           },
@@ -141,7 +97,7 @@ class _ChipItem<T> extends StatelessWidget {
     required this.labelMapper,
     required this.enabled,
     required this.onChanged,
-    this.enabledMapper,
+    this.disabledWhen,
     this.avatarBuilder,
     this.tooltipMapper,
     super.key,
@@ -151,7 +107,7 @@ class _ChipItem<T> extends StatelessWidget {
   final T item;
   final bool selected;
   final ValueMapper<T, String?> labelMapper;
-  final IndexedValueMapper<T, bool>? enabledMapper;
+  final ValueMapper<T, bool>? disabledWhen;
   final IndexedValueMapper<T, Widget>? avatarBuilder;
   final IndexedValueMapper<T, String>? tooltipMapper;
   final bool enabled;
@@ -166,7 +122,7 @@ class _ChipItem<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool effectiveEnabled = enabled != false &&
-        (enabledMapper == null ? true : enabledMapper!(index, item));
+        (disabledWhen == null ? true : !disabledWhen!(item));
 
     final OutlinedBorder shape = ChipTheme.of(context).shape ??
         StadiumBorder(

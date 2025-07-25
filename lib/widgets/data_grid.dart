@@ -73,60 +73,6 @@ class TxDataGrid extends StatelessWidget {
                 contentMaxLines: contentMaxLines,
               );
 
-  /// 创建由[data]参数派生出的描述数据表的小组件。
-  ///
-  /// [data] 参数不能为空。
-  @Deprecated('下一个版本即将弃用，使用TxDataGrid.fromMap替代')
-  TxDataGrid.fromData({
-    required Map<String, dynamic> data,
-    super.key,
-    int columnNum = 1,
-    this.padding,
-    this.decoration,
-    this.spacing,
-    Map<int, Widget>? slots,
-    bool? dense,
-    VisualDensity? visualDensity,
-    double? minLabelWidth,
-    double? minLeadingWidth,
-    double? horizontalGap,
-    TextStyle? contentTextStyle,
-    TextStyle? labelTextStyle,
-    TextAlign? contentTextAlign,
-    EdgeInsetsGeometry? rowPadding,
-    Decoration? rowDecoration,
-    double? columnSpacing,
-  })  : assert(columnNum > 0),
-        rows = columnNum == 1
-            ? TxCell.fromMap(
-                data,
-                padding: rowPadding,
-                slots: slots,
-                dense: dense,
-                visualDensity: visualDensity,
-                minLeadingWidth: minLeadingWidth,
-                minLabelWidth: minLabelWidth,
-                horizontalGap: horizontalGap,
-                labelTextStyle: labelTextStyle,
-                contentTextStyle: contentTextStyle,
-                contentTextAlign: contentTextAlign,
-              )
-            : TxDataRow.fromMap(
-                data,
-                spacing: columnSpacing,
-                decoration: rowDecoration,
-                padding: rowPadding,
-                slots: slots,
-                dense: dense,
-                visualDensity: visualDensity,
-                minLeadingWidth: minLeadingWidth,
-                minLabelWidth: minLabelWidth,
-                horizontalGap: horizontalGap,
-                labelTextStyle: labelTextStyle,
-                contentTextStyle: contentTextStyle,
-                contentTextAlign: contentTextAlign,
-              );
-
   /// 栅格的背景和边框装饰
   ///
   /// 如果为 null，则使用 [TxDataGridThemeData.decoration]。默认情况下没有装饰。
@@ -250,10 +196,7 @@ class TxDataRow extends StatelessWidget {
     return [
       for (int i = 0; i < cells.length; i += columnNum)
         TxDataRow(
-          cells: cells
-              .sublist(i, i + columnNum > last ? last : i + columnNum)
-              .map((e) => Expanded(child: e))
-              .toList(),
+          cells: cells.sublist(i, i + columnNum > last ? last : i + columnNum),
           decoration: decoration,
           padding: padding,
           spacing: spacing,
@@ -295,7 +238,7 @@ class TxDataRow extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           for (int i = 0; i < cells.length; i++) ...[
-            cells[i],
+            Expanded(child: cells[i]),
             if (i != cells.length - 1) SizedBox(width: effectiveSpacing)
           ],
         ],
