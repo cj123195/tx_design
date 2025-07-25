@@ -201,6 +201,7 @@ abstract class TxSinglePickerBaseState<T, V>
       title: TxMatchingText(label ?? '', query: controller?.text),
       onChanged: enabled ? (value) => onChanged(data) : null,
       selected: selected,
+      contentPadding: EdgeInsets.zero,
     );
   }
 

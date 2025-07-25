@@ -10,7 +10,7 @@ class TxRadioFormField<T, V> extends TxWrapFormField<T> {
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
     ValueMapper<T, V?>? valueMapper,
-    IndexedValueMapper<T, bool>? enabledMapper,
+    ValueMapper<T, bool>? disabledWhen,
     T? initialData,
     V? initialValue,
     double? spacing,
@@ -70,7 +70,7 @@ class TxRadioFormField<T, V> extends TxWrapFormField<T> {
               labelMapper: labelMapper,
               enabled: field.isEnabled,
               onChanged: field.didChange,
-              enabledMapper: enabledMapper,
+              disabledWhen: disabledWhen,
               avatarBuilder: avatarBuilder,
             );
           },
@@ -97,7 +97,7 @@ class _ChipItem<T> extends StatelessWidget {
     required this.labelMapper,
     required this.enabled,
     required this.onChanged,
-    this.enabledMapper,
+    this.disabledWhen,
     this.avatarBuilder,
     this.tooltipMapper,
     super.key,
@@ -107,7 +107,7 @@ class _ChipItem<T> extends StatelessWidget {
   final T item;
   final bool selected;
   final ValueMapper<T, String?> labelMapper;
-  final IndexedValueMapper<T, bool>? enabledMapper;
+  final ValueMapper<T, bool>? disabledWhen;
   final IndexedValueMapper<T, Widget>? avatarBuilder;
   final IndexedValueMapper<T, String>? tooltipMapper;
   final bool enabled;
@@ -122,7 +122,7 @@ class _ChipItem<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool effectiveEnabled = enabled != false &&
-        (enabledMapper == null ? true : enabledMapper!(index, item));
+        (disabledWhen == null ? true : !disabledWhen!(item));
 
     final OutlinedBorder shape = ChipTheme.of(context).shape ??
         StadiumBorder(

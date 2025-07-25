@@ -14,6 +14,7 @@ export 'form/number_form_field.dart';
 export 'form/password_form_field.dart';
 export 'form/picker_form_field.dart';
 export 'form/radio_form_field.dart';
+export 'form/segmented_form_field.dart';
 export 'form/switch_form_field.dart';
 export 'form/text_form_field.dart';
 export 'form/time_picker_form_field.dart';

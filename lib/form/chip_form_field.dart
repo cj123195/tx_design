@@ -10,7 +10,7 @@ class TxChipFormField<T, V> extends TxWrapFormField<List<T>> {
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
     ValueMapper<T, V?>? valueMapper,
-    IndexedValueMapper<T, bool>? enabledMapper,
+    ValueMapper<T, bool>? disabledWhen,
     List<T>? initialData,
     List<V>? initialValue,
     int? minCount,
@@ -70,7 +70,7 @@ class TxChipFormField<T, V> extends TxWrapFormField<List<T>> {
             labelMapper: labelMapper,
             enabled: field.isEnabled,
             onChanged: field.didChange,
-            enabledMapper: enabledMapper,
+            disabledWhen: disabledWhen,
             avatarBuilder: avatarBuilder,
             minCount: minCount,
             maxCount: maxCount,
@@ -101,7 +101,7 @@ class _ChipItem<T> extends StatelessWidget {
     required this.labelMapper,
     required this.enabled,
     required this.onChanged,
-    this.enabledMapper,
+    this.disabledWhen,
     this.avatarBuilder,
     this.minCount,
     this.maxCount,
@@ -113,7 +113,7 @@ class _ChipItem<T> extends StatelessWidget {
   final T item;
   final List<T>? data;
   final ValueMapper<T, String?> labelMapper;
-  final IndexedValueMapper<T, bool>? enabledMapper;
+  final ValueMapper<T, bool>? disabledWhen;
   final IndexedValueMapper<T, Widget>? avatarBuilder;
   final int? minCount;
   final int? maxCount;
@@ -133,7 +133,7 @@ class _ChipItem<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool selected = data == null ? false : data!.contains(item);
     bool effectiveEnabled =
-        enabled && (enabledMapper == null ? true : enabledMapper!(index, item));
+        enabled && (disabledWhen == null ? true : !disabledWhen!(item));
     if (minCount != null) {
       effectiveEnabled =
           effectiveEnabled && (!selected || data!.length > minCount!);

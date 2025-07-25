@@ -238,7 +238,8 @@ class TxCascadePicker<T, V> extends TxSinglePickerBase<T, V> {
           subtitleBuilder: subtitleBuilder as DataWidgetBuilder<T>?,
           itemBuilder: itemBuilder as PickerItemBuilder<T>?,
           disabledWhen: disabledWhen as ValueMapper<T, bool>?,
-          onChanged: onChanged as ValueChanged<T?>?,
+          onChanged:
+              onChanged == null ? null : (T? val) => onChanged(val as Map?),
           labelMapper: (data) =>
               (data as Map)[labelKey ?? kLabelKey] as String?,
           valueMapper: (data) =>

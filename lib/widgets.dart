@@ -34,6 +34,7 @@ export 'widgets/help_tooltip.dart';
 export 'widgets/loading.dart';
 export 'widgets/loading_theme.dart';
 export 'widgets/matching_text.dart';
+export 'widgets/multi_cascade_picker.dart';
 export 'widgets/multi_picker.dart';
 export 'widgets/panel.dart';
 export 'widgets/panel_theme.dart';
