@@ -71,7 +71,7 @@ class TxLoading extends StatelessWidget {
     Color highlightColor;
     if (brightness == Brightness.light) {
       baseColor = Colors.grey;
-      highlightColor = Colors.grey.withOpacity(0.5);
+      highlightColor = Colors.grey.withValues(alpha: 0.5);
     } else {
       baseColor = Colors.white12;
       highlightColor = Colors.white70;

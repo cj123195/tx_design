@@ -18,9 +18,9 @@ class TxSwitchFormField extends TxFormField<bool> {
     super.required,
     super.initialValue,
     TextAlign? textAlign = TextAlign.end,
-    Color? activeColor,
+    Color? activeTrackColor,
     Color? thumbColor,
-    Color? trackColor,
+    Color? inactiveTrackColor,
     Color? onLabelColor,
     Color? offLabelColor,
     DragStartBehavior? dragStartBehavior,
@@ -71,12 +71,12 @@ class TxSwitchFormField extends TxFormField<bool> {
               child: CupertinoSwitch(
                 value: field.value ?? false,
                 onChanged: field.didChange,
-                activeColor: activeColor ??
+                activeTrackColor: activeTrackColor ??
                     theme.switchTheme.trackColor
-                        ?.resolve({MaterialState.selected}) ??
+                        ?.resolve({WidgetState.selected}) ??
                     theme.colorScheme.primary,
                 thumbColor: thumbColor,
-                trackColor: trackColor,
+                inactiveTrackColor: inactiveTrackColor,
                 applyTheme: applyTheme,
                 focusColor: focusColor,
                 onLabelColor: onLabelColor,

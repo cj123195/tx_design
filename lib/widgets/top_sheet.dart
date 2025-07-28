@@ -272,12 +272,12 @@ class ModalTopSheetRoute<T> extends PopupRoute<T> {
 
   @override
   Widget buildModalBarrier() {
-    if (barrierColor.alpha != 0 && !offstage) {
+    if (barrierColor.a != 0 && !offstage) {
       // 如果 barrierColor 或 offstage 更新，则调用 changedInternalState
-      assert(barrierColor != barrierColor.withOpacity(0.0));
+      assert(barrierColor != barrierColor.withValues(alpha: 0.0));
       final Animation<Color?> color = animation!.drive(
         ColorTween(
-          begin: barrierColor.withOpacity(0.0),
+          begin: barrierColor.withValues(alpha: 0.0),
           end: barrierColor, // 如果 barrierColor 更新，则调用 changedInternalState
         ).chain(
           CurveTween(curve: barrierCurve),
@@ -1243,7 +1243,7 @@ class _TopSheetDefaultsM3 extends BottomSheetThemeData {
   Color? get shadowColor => Colors.transparent;
 
   @override
-  Color? get dragHandleColor => _colors.onSurfaceVariant.withOpacity(0.4);
+  Color? get dragHandleColor => _colors.onSurfaceVariant.withValues(alpha: 0.4);
 
   @override
   Size? get dragHandleSize => const Size(32, 4);

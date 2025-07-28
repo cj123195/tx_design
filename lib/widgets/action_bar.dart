@@ -223,7 +223,8 @@ class _DefaultOutlinedButtonStyle extends ButtonStyle {
   WidgetStateProperty<BorderSide>? get side =>
       WidgetStateProperty.resolveWith((Set<WidgetState> states) {
         if (states.contains(WidgetState.disabled)) {
-          return BorderSide(color: colorScheme.onSurface.withOpacity(0.12));
+          return BorderSide(
+              color: colorScheme.onSurface.withValues(alpha: 0.12));
         }
         if (states.contains(WidgetState.focused)) {
           return BorderSide(color: colorScheme.primary);

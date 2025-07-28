@@ -220,35 +220,35 @@ class TxRadioCell<T> extends StatelessWidget {
         WidgetStateProperty.resolveWith((Set<WidgetState> states) {
           if (states.contains(WidgetState.error)) {
             if (states.contains(WidgetState.pressed)) {
-              return colorScheme.error.withOpacity(0.12);
+              return colorScheme.error.withValues(alpha: 0.12);
             }
             if (states.contains(WidgetState.hovered)) {
-              return colorScheme.error.withOpacity(0.08);
+              return colorScheme.error.withValues(alpha: 0.08);
             }
             if (states.contains(WidgetState.focused)) {
-              return colorScheme.error.withOpacity(0.12);
+              return colorScheme.error.withValues(alpha: 0.12);
             }
           }
           if (states.contains(WidgetState.selected)) {
             if (states.contains(WidgetState.pressed)) {
-              return colorScheme.onSurface.withOpacity(0.12);
+              return colorScheme.onSurface.withValues(alpha: 0.12);
             }
             if (states.contains(WidgetState.hovered)) {
-              return colorScheme.primary.withOpacity(0.08);
+              return colorScheme.primary.withValues(alpha: 0.08);
             }
             if (states.contains(WidgetState.focused)) {
-              return colorScheme.primary.withOpacity(0.12);
+              return colorScheme.primary.withValues(alpha: 0.12);
             }
             return Colors.transparent;
           }
           if (states.contains(WidgetState.pressed)) {
-            return colorScheme.primary.withOpacity(0.12);
+            return colorScheme.primary.withValues(alpha: 0.12);
           }
           if (states.contains(WidgetState.hovered)) {
-            return colorScheme.onSurface.withOpacity(0.08);
+            return colorScheme.onSurface.withValues(alpha: 0.08);
           }
           if (states.contains(WidgetState.focused)) {
-            return colorScheme.onSurface.withOpacity(0.12);
+            return colorScheme.onSurface.withValues(alpha: 0.12);
           }
           return Colors.transparent;
         });
@@ -286,7 +286,7 @@ class TxRadioCell<T> extends StatelessWidget {
       style: effectiveStyle.copyWith(
         color: enabled
             ? textColor
-            : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
+            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
       ),
       child: label,
     );

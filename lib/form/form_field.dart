@@ -396,7 +396,7 @@ class TxFormFieldState<T> extends FormFieldState<T> {
       final InputBorder focusedBorder =
           decoration.focusedBorder ?? resolveBorder(colorScheme.primary);
       final InputBorder disabledBorder = decoration.disabledBorder ??
-          resolveBorder(colorScheme.outline.withOpacity(0.3));
+          resolveBorder(colorScheme.outline.withValues(alpha: 0.3));
       final InputBorder errorBorder =
           decoration.errorBorder ?? resolveBorder(colorScheme.error);
       decoration = decoration.copyWith(
@@ -564,8 +564,8 @@ class _TxFieldThemeDefaultsM3 extends TxFormFieldThemeData {
       theme.inputDecorationTheme.merge(
         InputDecorationTheme(
           hintStyle: theme.textTheme.bodyLarge!.copyWith(
-            color: MaterialStateColor.resolveWith((states) =>
-                states.contains(MaterialState.disabled)
+            color: WidgetStateColor.resolveWith((states) =>
+                states.contains(WidgetState.disabled)
                     ? theme.disabledColor
                     : theme.hintColor),
           ),

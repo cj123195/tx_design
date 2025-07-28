@@ -1338,7 +1338,7 @@ class _DefaultCellTheme extends TxCellThemeData {
 
   @override
   TextStyle get contentTextStyle => _textTheme.bodyMedium!.copyWith(
-        color: _colors.onSurface.withOpacity(0.7),
+        color: _colors.onSurface.withValues(alpha: 0.7),
         fontSize: labelTextStyle.fontSize,
       );
 

@@ -68,23 +68,23 @@ class TxButtonBar extends StatelessWidget {
 
   /// 覆盖周围的 [ButtonThemeData.padding] 以定义按钮子项（通常是按钮的标签）的填充。
   ///
-  /// 如果为 null，则它将使用周围的 [ButtonBarThemeData.buttonPadding]。
+  /// 如果为 null，则它将使用周围的 [ButtonThemeData.padding]。
   /// 如果为 null，它将默认为左侧和右侧的 8.0 个逻辑像素。
   final EdgeInsetsGeometry? buttonPadding;
 
-  /// 覆盖周围的 [ButtonBarThemeData.buttonTextTheme] 以定义按钮的基色、大小、内部填充
+  /// 覆盖周围的 [ButtonThemeData.textTheme] 以定义按钮的基色、大小、内部填充
   /// 和形状。
   final ButtonTextTheme? buttonTextTheme;
 
   /// 覆盖周围的 [ButtonThemeData.height] 以定义按钮的最小高度。
   ///
-  /// 如果为 null，则它将使用周围的 [ButtonBarThemeData.buttonHeight]。
+  /// 如果为 null，则它将使用周围的 [ButtonThemeData.height]。
   /// 如果为空，它将默认为 36.0 个逻辑像素。
   final double? buttonHeight;
 
   /// 覆盖周围的 [ButtonThemeData.minWidth] 以定义按钮的最小宽度。
   ///
-  /// 如果为 null，则它将使用周围的 [ButtonBarThemeData.buttonMinWidth]。
+  /// 如果为 null，则它将使用周围的 [ButtonThemeData.minWidth]。
   /// 如果为空，它将默认为 64.0 个逻辑像素。
   final double? buttonMinWidth;
 
@@ -92,14 +92,14 @@ class TxButtonBar extends StatelessWidget {
   ///
   /// 覆盖周围的 [ButtonThemeData.layoutBehavior]。
   ///
-  /// 如果为 null，则它将使用周围的 [ButtonBarThemeData.layoutBehavior]。
+  /// 如果为 null，则它将使用周围的 [ButtonThemeData.layoutBehavior]。
   /// 如果它也为为 null，它将默认为 [ButtonBarLayoutBehavior.padded]。
   final ButtonBarLayoutBehavior? layoutBehavior;
 
   /// 覆盖周围的 [ButtonThemeData.alignedDropdown] 以定义 [DropdownButton] 菜单的
   /// 宽度是否与按钮的宽度匹配。
   ///
-  /// 如果为 null，则它将使用周围的 [ButtonBarThemeData.buttonAlignedDropdown]。
+  /// 如果为 null，则它将使用周围的 [ButtonThemeData.alignedDropdown]。
   /// 如果它也为 null，则默认为 false。
   final bool? buttonAlignedDropdown;
 

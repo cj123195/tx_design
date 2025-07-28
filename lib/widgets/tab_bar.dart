@@ -33,7 +33,7 @@ class _TabStyle extends AnimatedWidget {
   final Widget child;
 
   WidgetStateColor _resolveWithLabelColor(BuildContext context) {
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     final Animation<double> animation = listenable as Animation<double>;
 
     Color selectedColor = labelColor ??
@@ -68,7 +68,7 @@ class _TabStyle extends AnimatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     final Animation<double> animation = listenable as Animation<double>;
 
     final Set<WidgetState> states = isSelected
@@ -410,7 +410,7 @@ class _TabBarState extends _CustomTabBarState {
   @override
   void _initIndicatorPainter() {
     final ThemeData theme = Theme.of(context);
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     final TabBarIndicatorSize indicatorSize = widget.indicatorSize ??
         tabBarTheme.indicatorSize ??
         _defaults.indicatorSize!;
@@ -700,7 +700,7 @@ class _TxTabBarViewState extends _CustomTabBarState {
     timeDilation = 1.0;
 
     final ThemeData theme = Theme.of(context);
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final tabBarTheme = TabBarTheme.of(context);
     final TabBarIndicatorSize indicatorSize = widget.indicatorSize ??
         tabBarTheme.indicatorSize ??
         _defaults.indicatorSize!;
@@ -711,7 +711,7 @@ class _TxTabBarViewState extends _CustomTabBarState {
           borderRadius: borderRadius,
           boxShadow: [
             BoxShadow(
-              color: theme.shadowColor.withOpacity(0.1),
+              color: theme.shadowColor.withValues(alpha: 0.1),
               blurRadius: 8.0,
             ),
           ],
@@ -1305,7 +1305,7 @@ abstract class _CustomTabBarState extends State<CustomTabBar> {
 
   Decoration? _getIndicator(TabBarIndicatorSize indicatorSize) {
     final ThemeData theme = Theme.of(context);
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final tabBarTheme = TabBarTheme.of(context);
 
     if (widget.indicator != null) {
       return widget.indicator!;
@@ -1323,6 +1323,7 @@ abstract class _CustomTabBarState extends State<CustomTabBar> {
         _defaults.indicatorColor!;
 
     if (widget.automaticIndicatorColorAdjustment &&
+        // ignore: deprecated_member_use
         color.value == Material.maybeOf(context)?.color?.value) {
       color = Colors.white;
     }
@@ -1398,7 +1399,7 @@ abstract class _CustomTabBarState extends State<CustomTabBar> {
   Widget _buildTabBar() {
     assert(debugCheckHasMaterialLocalizations(context));
     assert(_debugScheduleCheckHasValidTabsCount());
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final tabBarTheme = TabBarTheme.of(context);
 
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
@@ -1791,24 +1792,24 @@ class _TabsPrimaryDefaultsM3 extends TabBarTheme {
     return WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         if (states.contains(WidgetState.pressed)) {
-          return _colors.primary.withOpacity(0.12);
+          return _colors.primary.withValues(alpha: 0.12);
         }
         if (states.contains(WidgetState.hovered)) {
-          return _colors.primary.withOpacity(0.08);
+          return _colors.primary.withValues(alpha: 0.08);
         }
         if (states.contains(WidgetState.focused)) {
-          return _colors.primary.withOpacity(0.12);
+          return _colors.primary.withValues(alpha: 0.12);
         }
         return null;
       }
       if (states.contains(WidgetState.pressed)) {
-        return _colors.primary.withOpacity(0.12);
+        return _colors.primary.withValues(alpha: 0.12);
       }
       if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withOpacity(0.08);
+        return _colors.onSurface.withValues(alpha: 0.08);
       }
       if (states.contains(WidgetState.focused)) {
-        return _colors.onSurface.withOpacity(0.12);
+        return _colors.onSurface.withValues(alpha: 0.12);
       }
       return null;
     });
@@ -1858,24 +1859,24 @@ class _TabsSecondaryDefaultsM3 extends TabBarTheme {
     return WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.selected)) {
         if (states.contains(WidgetState.pressed)) {
-          return _colors.onSurface.withOpacity(0.12);
+          return _colors.onSurface.withValues(alpha: 0.12);
         }
         if (states.contains(WidgetState.hovered)) {
-          return _colors.onSurface.withOpacity(0.08);
+          return _colors.onSurface.withValues(alpha: 0.08);
         }
         if (states.contains(WidgetState.focused)) {
-          return _colors.onSurface.withOpacity(0.12);
+          return _colors.onSurface.withValues(alpha: 0.12);
         }
         return null;
       }
       if (states.contains(WidgetState.pressed)) {
-        return _colors.onSurface.withOpacity(0.12);
+        return _colors.onSurface.withValues(alpha: 0.12);
       }
       if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withOpacity(0.08);
+        return _colors.onSurface.withValues(alpha: 0.08);
       }
       if (states.contains(WidgetState.focused)) {
-        return _colors.onSurface.withOpacity(0.12);
+        return _colors.onSurface.withValues(alpha: 0.12);
       }
       return null;
     });

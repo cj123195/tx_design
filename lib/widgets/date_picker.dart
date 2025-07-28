@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../extensions/time_of_day_extension.dart';
 import '../localizations.dart';
 import 'bottom_sheet.dart';
 
