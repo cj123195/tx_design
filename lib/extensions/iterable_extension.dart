@@ -67,7 +67,8 @@ extension IterableExtension<E> on Iterable<E> {
 
     final List<E> result = [];
     for (E data in this) {
-      if ((valueMapper == null ? data : valueMapper(data)) == initialValue) {
+      if (initialValue
+          .contains(valueMapper == null ? data : valueMapper(data))) {
         result.add(data);
       }
 

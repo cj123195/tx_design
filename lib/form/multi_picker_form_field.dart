@@ -4,7 +4,11 @@ import '../widgets/multi_picker.dart';
 import 'form_field.dart';
 
 export '../utils/basic_types.dart' show ValueMapper;
-export '../widgets/multi_picker.dart' show MultiPickerItemBuilder;
+export '../widgets/multi_picker.dart'
+    show
+        MultiPickerItemBuilder,
+        MultiPickerActionBarBuilder,
+        MultiPickerSelectedItemBuilder;
 
 typedef MultiPickVoidCallback<T> = Future<List<T>?> Function(
   BuildContext context,

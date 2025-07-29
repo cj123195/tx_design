@@ -545,7 +545,7 @@ class _RenderFieldTile extends RenderBox
     return box == null ? 0.0 : box.getMaxIntrinsicWidth(height);
   }
 
-  static const double _verticalGap = 4.0;
+  static const double _verticalGap = 8.0;
 
   @override
   double computeMinIntrinsicWidth(double height) {
