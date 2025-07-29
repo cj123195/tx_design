@@ -336,6 +336,7 @@ Future<T?> showCascadePicker<T, V>({
     initialValue: initialValue,
     initialData: initialData,
     valueMapper: valueMapper,
+    childrenMapper: childrenMapper,
   );
   return showDefaultBottomSheet<T>(
     context,

@@ -135,7 +135,7 @@ class _MultiPickerSelectedSheetState<D>
           child: const Text('清空'),
         ),
         Expanded(
-          child: ElevatedButton(
+          child: FilledButton(
             onPressed: () => Navigator.pop(context, _selectedData),
             child: const Text('确定'),
           ),
@@ -147,7 +147,11 @@ class _MultiPickerSelectedSheetState<D>
       padding: const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [topBar, Expanded(child: content), bottomBar],
+        children: [
+          topBar,
+          Expanded(child: SingleChildScrollView(child: content)),
+          bottomBar,
+        ],
       ),
     );
   }
@@ -263,12 +267,13 @@ abstract class TxMultiPickerBaseState<T, V>
 
   /// 展示已选择的数据
   Future<void> _showSelectedData() async {
-    final res = await showModalBottomSheet(
-      context: context,
+    final res = await showTxModalBottomSheet(
+      context,
       builder: (context) => MultiPickerSelectedSheet<T>(
         selectedData: selectedData,
         labelMapper: widget.labelMapper,
       ),
+      isScrollControlled: true,
     );
     if (res != null) {
       setState(() {
