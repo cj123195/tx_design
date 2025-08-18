@@ -90,8 +90,10 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
                 multiSelectionEnabled: false,
                 emptySelectionAllowed: emptySelectionAllowed ?? true,
                 selected: {if (field.value != null) field.value!},
-                onSelectionChanged: (data) =>
-                    field.didChange(data.isEmpty ? null : data.first),
+                onSelectionChanged: field.isEnabled
+                    ? (data) =>
+                        field.didChange(data.isEmpty ? null : data.first)
+                    : null,
               ),
             );
           },
