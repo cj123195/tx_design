@@ -13,6 +13,10 @@ class TxDatePickerBar extends StatefulWidget implements PreferredSizeWidget {
     this.format,
     this.minimumDate,
     this.maximumDate,
+    this.buttonStyle,
+    this.beforeIcon = const Icon(Icons.keyboard_arrow_left),
+    this.middleIcon = const Icon(Icons.calendar_month),
+    this.afterIcon = const Icon(Icons.keyboard_arrow_right),
   });
 
   /// 初始日期
@@ -29,6 +33,18 @@ class TxDatePickerBar extends StatefulWidget implements PreferredSizeWidget {
 
   /// 最晚可选日期
   final DateTime? maximumDate;
+
+  /// 前一天图标
+  final Widget beforeIcon;
+
+  /// 中间图标
+  final Widget middleIcon;
+
+  /// 后一天图标
+  final Widget afterIcon;
+
+  /// 按钮样式
+  final ButtonStyle? buttonStyle;
 
   @override
   State<TxDatePickerBar> createState() => _TxDatePickerBar();
@@ -68,35 +84,44 @@ class _TxDatePickerBar extends State<TxDatePickerBar> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final Color? buttonColor =
-        theme.useMaterial3 || theme.brightness == Brightness.dark
-            ? null
-            : theme.colorScheme.onPrimary;
+    final Color color = Theme.of(context).colorScheme.onSurface;
     final TxLocalizations localizations = TxLocalizations.of(context);
 
-    final Widget beforeButton = IconButton(
+    final ButtonStyle iconButtonStyle =
+        (widget.buttonStyle ?? const ButtonStyle())
+            .merge(IconButton.styleFrom(foregroundColor: color));
+
+    final ButtonStyle textButtonStyle = (widget.buttonStyle ??
+            const ButtonStyle())
+        .merge(TextButton.styleFrom(foregroundColor: color, iconColor: color));
+
+    final Widget leading = IconButton(
       onPressed: () => _onDateSelected(_date.subtract(const Duration(days: 1))),
-      icon: const Icon(Icons.keyboard_arrow_left),
-      color: buttonColor,
+      icon: widget.beforeIcon,
+      style: iconButtonStyle,
       tooltip: localizations.theDayBeforeLabel,
     );
-    final Widget dateButton = TextButton.icon(
+    final Widget middle = TextButton.icon(
       onPressed: _showDatePicker,
-      icon: const Icon(Icons.calendar_month),
+      icon: widget.middleIcon,
       label: Text(_date.format(widget.format ?? 'yyyy-MM-dd')),
-      style: TextButton.styleFrom(foregroundColor: buttonColor),
+      style: textButtonStyle,
     );
-    final Widget afterButton = IconButton(
-      color: buttonColor,
+    final Widget trailing = IconButton(
+      style: iconButtonStyle,
       tooltip: localizations.theNextDayLabel,
-      icon: const Icon(Icons.keyboard_arrow_right),
+      icon: widget.afterIcon,
       onPressed: () => _onDateSelected(_date.add(const Duration(days: 1))),
     );
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [beforeButton, dateButton, afterButton],
+    return SizedBox(
+      height: kToolbarHeight,
+      child: NavigationToolbar(
+        leading: leading,
+        trailing: trailing,
+        middle: middle,
+        centerMiddle: true,
+      ),
     );
   }
 }
