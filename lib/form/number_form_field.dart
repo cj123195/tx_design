@@ -313,7 +313,7 @@ class _TxNumberFormFieldState extends TxCommonTextFormFieldState<num> {
     final bool canRemove =
         widget.minValue == null || effectiveValue > widget.minValue!;
     return IconButton(
-      onPressed: canRemove ? () => changeValue(effectiveValue + diff) : null,
+      onPressed: canRemove ? () => changeValue(effectiveValue - diff) : null,
       icon: const Icon(Icons.remove),
     );
   }
