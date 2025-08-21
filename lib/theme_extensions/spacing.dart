@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 /// [SpacingThemeData] 的实例可以使用 [SpacingThemeData.copyWith] 进行自定义。
 ///
 /// 新增属性时需同时更新[SpacingThemeData]默认构造方法、[copyWith]方法、[lerp]方法
+@Deprecated('下一个版本将被删除')
 @immutable
 class SpacingThemeData extends ThemeExtension<SpacingThemeData> {
+  @Deprecated('下一个版本将被删除')
   const SpacingThemeData({
     this.mini = 4.0,
     this.small = 8.0,
@@ -95,8 +97,10 @@ class SpacingThemeData extends ThemeExtension<SpacingThemeData> {
 ///
 /// 可以使用 [ThemeData.extension<SpacingThemeData>()] 将间距主题指定为整个 Material
 /// 主题的一部分。
+@Deprecated('下一个版本将被删除')
 class SpacingTheme extends InheritedWidget {
   /// 构造一个配置所有后代小部件间距的主题。
+  @Deprecated('下一个版本将被删除')
   const SpacingTheme({
     required this.data,
     required super.child,

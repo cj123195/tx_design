@@ -10,7 +10,9 @@ import 'package:flutter/material.dart';
 /// 新增属性时需同时更新[RadiusThemeData]默认构造方法、[copyWith]方法、[lerp]方法
 ///
 /// 配置参考https://m3.material.io/styles/shape/shape-scale-tokens
+@Deprecated('下一个版本将被删除')
 class RadiusThemeData extends ThemeExtension<RadiusThemeData> {
+  @Deprecated('下一个版本将被删除')
   const RadiusThemeData({
     this.mini = 4.0,
     this.small = 8.0,
@@ -95,8 +97,10 @@ class RadiusThemeData extends ThemeExtension<RadiusThemeData> {
 ///
 /// 可以使用 [ThemeData.extension<RadiusThemeData>()] 将圆角主题指定为整个 Material
 /// 主题的一部分。
+@Deprecated('下一个版本将被删除')
 class RadiusTheme extends InheritedWidget {
   /// 构造一个配置所有后代小部件圆角的主题。
+  @Deprecated('下一个版本将被删除')
   const RadiusTheme({
     required this.data,
     required super.child,

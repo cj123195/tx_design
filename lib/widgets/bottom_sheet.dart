@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../localizations.dart';
-import '../theme_extensions/spacing.dart';
 
 /// 自定义底部弹出面板路由
 ///
@@ -691,7 +690,7 @@ class _SimplePickerBottomSheet<T> extends StatelessWidget {
         children: [
           ...children,
           Container(
-            height: SpacingTheme.of(context).medium,
+            height: 12,
             color: colorScheme.outline.withValues(alpha: 0.05),
           ),
           cancelTile,

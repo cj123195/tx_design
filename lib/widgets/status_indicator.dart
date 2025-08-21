@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme_extensions/spacing.dart';
 import 'status_indicator_theme.dart';
 
 /// 状态指示器组件
@@ -59,7 +58,7 @@ class TxStatusIndicator extends StatelessWidget {
         Theme.of(context).textTheme.labelSmall!;
     final Color? effectiveLabelColor = labelColor ?? indicatorTheme.labelColor;
     final Widget effectiveLabel = Container(
-      margin: EdgeInsets.only(left: SpacingTheme.of(context).mini),
+      margin: const EdgeInsets.only(left: 4),
       child: DefaultTextStyle(
         style: textStyle.copyWith(color: effectiveLabelColor),
         child: label!,

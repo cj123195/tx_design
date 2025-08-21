@@ -42,8 +42,6 @@ class _MyAppState extends State<MyApp> {
         ),
         brightness: Brightness.light,
         extensions: const [
-          SpacingThemeData(),
-          RadiusThemeData(),
           TxCellThemeData(),
           TxTileThemeData(),
         ],
@@ -73,8 +71,6 @@ class _MyAppState extends State<MyApp> {
         colorSchemeSeed: Colors.purple,
         brightness: Brightness.dark,
         extensions: const [
-          SpacingThemeData(),
-          RadiusThemeData(),
           TxCellThemeData(),
         ],
         useMaterial3: true,

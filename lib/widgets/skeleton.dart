@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme_extensions/radius.dart';
-import '../theme_extensions/spacing.dart';
 import 'panel.dart';
 import 'skeleton_theme.dart';
 
@@ -70,7 +68,7 @@ class TxSkeleton extends StatelessWidget {
         Theme.of(context).colorScheme.outline.withValues(alpha: 0.1);
     final BorderRadius effectiveBorderRadius = borderRadius ??
         skeletonTheme.borderRadius ??
-        RadiusTheme.of(context).miniBorderRadius;
+        const BorderRadius.all(Radius.circular(4));
 
     Widget result = DecoratedBox(
       decoration: BoxDecoration(
@@ -193,8 +191,7 @@ class TxPanelSkeleton extends StatelessWidget {
       children: [
         for (int i = 0; i < contentColumnNumber; i++) ...[
           TxSkeleton.text(style: textTheme.labelMedium!),
-          if (i != contentColumnNumber - 1)
-            SizedBox(height: SpacingTheme.of(context).small),
+          if (i != contentColumnNumber - 1) const SizedBox(height: 8),
         ]
       ],
     );
