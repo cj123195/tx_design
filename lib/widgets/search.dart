@@ -156,21 +156,21 @@ abstract class TxSearchDelegate<T> {
         elevation: 0,
       ),
       inputDecorationTheme: searchFieldDecorationTheme ??
-          InputDecorationTheme(
-            prefixIconColor: colorScheme.outline,
-            suffixIconColor: colorScheme.outline,
-            contentPadding: EdgeInsets.zero,
-            hintStyle: searchFieldStyle ?? theme.inputDecorationTheme.hintStyle,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(4.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(4.0),
-            ),
-            filled: true,
-          ),
+          Theme.of(context).inputDecorationTheme.copyWith(
+                prefixIconColor: colorScheme.outlineVariant,
+                suffixIconColor: colorScheme.outlineVariant,
+                contentPadding: EdgeInsets.zero,
+                hintStyle: searchFieldStyle,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                filled: true,
+              ),
     );
   }
 
