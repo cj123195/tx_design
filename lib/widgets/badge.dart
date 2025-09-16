@@ -11,10 +11,18 @@ import 'badge_theme.dart';
 ///
 /// 徽章通常用于装饰 [BottomNavigationBarItem] 或 [NavigationRailDestination] 或按钮
 /// 图标中的图标，如 [TextButton.icon]。徽章的默认配置旨在与默认大小(24)的 [Icon] 配合使用。
+@Deprecated(
+  '请使用 TxTag 替代。 '
+  'This will be removed in the next major version.',
+)
 class TxBadge extends StatelessWidget {
   /// 创建一个徽章，将 [label] 堆叠在 [child] 之上。
   ///
   /// 如果 [label] 为 null，则仅显示一个实心圆圈。否则，[label] 将显示在 [shape] 形状的区域内。
+  @Deprecated(
+    '请使用 TxTag 替代。 '
+    'This will be removed in the next major version.',
+  )
   const TxBadge({
     super.key,
     this.backgroundColor,
@@ -35,6 +43,10 @@ class TxBadge extends StatelessWidget {
   ///
   /// 使用包含 [count] 的 [Text] 小部件初始化 [label]。如果 [count] 大于 999，
   /// 则标签为“999+”。
+  @Deprecated(
+    '请使用 TxTag 替代。 '
+    'This will be removed in the next major version.',
+  )
   TxBadge.count({
     required int count,
     super.key,
@@ -275,6 +287,7 @@ class _RenderBadge extends RenderAligningShiftedBox {
   }
 }
 
+@Deprecated('This will be removed in the next major version.')
 class _BadgeDefaultsM3 extends TxBadgeThemeData {
   _BadgeDefaultsM3(this.context)
       : super(

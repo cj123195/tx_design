@@ -52,6 +52,8 @@ export 'widgets/square_avatar.dart';
 export 'widgets/status_indicator.dart';
 export 'widgets/status_indicator_theme.dart';
 export 'widgets/tab_bar.dart';
+export 'widgets/tag.dart';
+export 'widgets/tag_theme.dart';
 export 'widgets/text_button.dart';
 export 'widgets/tile.dart';
 export 'widgets/tile_theme.dart';

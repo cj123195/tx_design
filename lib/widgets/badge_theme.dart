@@ -5,7 +5,15 @@ import 'badge.dart';
 /// 与 [TxBadgeTheme] 一起使用来定义后代 [TxBadge] 小部件的默认属性值。
 ///
 /// 有关详细信息，请参阅各个 [TxBadge] 属性。
+@Deprecated(
+  '请使用 TxTagThemeData 替代。 '
+  'This will be removed in the next major version.',
+)
 class TxBadgeThemeData extends ThemeExtension<TxBadgeThemeData> {
+  @Deprecated(
+    '请使用 TxTagThemeData 替代。 '
+    'This will be removed in the next major version.',
+  )
   const TxBadgeThemeData({this.shape, this.badgeTheme});
 
   /// 覆盖 [TxBadge.shape] 的默认值。
@@ -44,8 +52,16 @@ class TxBadgeThemeData extends ThemeExtension<TxBadgeThemeData> {
 /// 一个继承的小部件，它在此小部件的子树中定义 [TxBadge] 的颜色和样式参数。
 ///
 /// 此处指定的值用于未指定显式非空值的 [TxBadge] 属性。
+@Deprecated(
+  '请使用 TxTagTheme 替代。 '
+  'This will be removed in the next major version.',
+)
 class TxBadgeTheme extends InheritedWidget {
   /// 创建一个操作按钮栏主题，该主题定义后代 [TxBadge] 的颜色和样式参数。
+  @Deprecated(
+    '请使用 TxTagTheme 替代。 '
+    'This will be removed in the next major version.',
+  )
   const TxBadgeTheme({
     required super.child,
     required this.data,
