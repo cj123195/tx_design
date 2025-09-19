@@ -19,6 +19,7 @@ class TxDatePickerFormField extends TxPickerFormField<DateTime, String> {
     super.onChanged,
     super.required,
     super.hintText,
+    super.clearable,
     String? initialDateStr,
     DateTime? initialDate,
     DateTime? minimumDate,

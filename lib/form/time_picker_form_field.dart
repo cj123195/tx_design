@@ -18,6 +18,7 @@ class TxTimePickerFormField extends TxPickerFormField<TimeOfDay, String> {
     super.onChanged,
     super.required,
     super.hintText,
+    super.clearable,
     String? initialTimeStr,
     TimeOfDay? initialTime,
     TimeOfDay? minimumTime,

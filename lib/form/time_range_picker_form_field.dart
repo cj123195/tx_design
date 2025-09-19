@@ -19,6 +19,7 @@ class TxTimeRangePickerFormField
     super.onChanged,
     super.required,
     super.hintText,
+    super.clearable,
     TimeRange? initialTimeRange,
     TimeOfDay? minimumTime,
     TimeOfDay? maximumTime,

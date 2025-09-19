@@ -20,6 +20,7 @@ class TxDateRangePickerFormField
     super.onChanged,
     super.required,
     super.hintText,
+    super.clearable,
     DateTimeRange? initialDateRange,
     DateTime? minimumDate,
     DateTime? maximumDate,
