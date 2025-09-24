@@ -7,6 +7,10 @@ enum _TagStyle {
   filled,
   outlined,
   tonal,
+  tonalOutlined;
+
+  bool get isOutlined =>
+      this == _TagStyle.outlined || this == _TagStyle.tonalOutlined;
 }
 
 /// 用于展示少量信息的标签小组件。
@@ -36,8 +40,7 @@ class TxTag extends StatelessWidget {
     this.padding,
     OutlinedBorder? this.shape,
     this.margin,
-  })
-      : _style = _TagStyle.outlined,
+  })  : _style = _TagStyle.outlined,
         foregroundColor = color,
         backgroundColor = null;
 
@@ -54,6 +57,20 @@ class TxTag extends StatelessWidget {
     OutlinedBorder? this.shape,
     this.margin,
   }) : _style = _TagStyle.tonal;
+
+  /// 创建一个背景填充且有边框的标签。
+  ///
+  /// [label] 不能为 null。
+  const TxTag.tonalOutlined({
+    required this.label,
+    super.key,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.textStyle,
+    this.padding,
+    OutlinedBorder? this.shape,
+    this.margin,
+  }) : _style = _TagStyle.tonalOutlined;
 
   /// 徽章的填充颜色。
   ///
@@ -99,9 +116,7 @@ class TxTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme
-        .of(context)
-        .colorScheme;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     final TxTagThemeData tagTheme = TxTagTheme.of(context);
     final _TagDefaultsM3 defaults = _TagDefaultsM3(context);
@@ -112,9 +127,11 @@ class TxTag extends StatelessWidget {
             : tagTheme.backgroundColor ?? colorScheme.primary);
 
     ShapeBorder effectiveShape = shape ?? tagTheme.shape ?? defaults.shape!;
-    if (_style != _TagStyle.filled && effectiveShape is OutlinedBorder) {
-      final BorderSide side =
-      effectiveShape.side.copyWith(color: effectiveForegroundColor);
+    if (_style.isOutlined && effectiveShape is OutlinedBorder) {
+      final BorderSide side = effectiveShape.side.copyWith(
+        color: effectiveForegroundColor,
+        style: BorderStyle.solid,
+      );
       effectiveShape = effectiveShape.copyWith(side: side);
     }
 
@@ -122,9 +139,11 @@ class TxTag extends StatelessWidget {
         (_style == _TagStyle.filled
             ? tagTheme.backgroundColor ?? colorScheme.primary
             : _style == _TagStyle.outlined
-            ? null
-            : (tagTheme.backgroundColor ?? colorScheme.primary)
-            .withValues(alpha: 0.1));
+                ? null
+                : (foregroundColor ??
+                        tagTheme.backgroundColor ??
+                        colorScheme.primary)
+                    .withValues(alpha: 0.1));
 
     return DefaultTextStyle(
       style: (textStyle ?? tagTheme.textStyle ?? defaults.textStyle!).copyWith(
@@ -148,11 +167,11 @@ class TxTag extends StatelessWidget {
 class _TagDefaultsM3 extends TxTagThemeData {
   _TagDefaultsM3(this.context)
       : super(
-    padding: const EdgeInsets.fromLTRB(6, 1, 6, 2),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(4.0)),
-    ),
-  );
+          padding: const EdgeInsets.fromLTRB(6, 1, 6, 2),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          ),
+        );
 
   final BuildContext context;
   late final ThemeData _theme = Theme.of(context);
@@ -184,16 +203,16 @@ class TxTagSpan extends WidgetSpan {
     EdgeInsetsGeometry? margin = const EdgeInsets.only(left: 4.0),
     ShapeBorder? shape,
   }) : super(
-    child: TxTag(
-      label: Text(text),
-      textStyle: style,
-      backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor,
-      padding: padding,
-      margin: margin,
-      shape: shape,
-    ),
-  );
+          child: TxTag(
+            label: Text(text),
+            textStyle: style,
+            backgroundColor: backgroundColor,
+            foregroundColor: foregroundColor,
+            padding: padding,
+            margin: margin,
+            shape: shape,
+          ),
+        );
 
   /// 创建一个内部无填充且有边框的内嵌在文本中的标签组件
   ///
@@ -208,15 +227,15 @@ class TxTagSpan extends WidgetSpan {
     EdgeInsetsGeometry? margin = const EdgeInsets.only(left: 4.0),
     OutlinedBorder? shape,
   }) : super(
-    child: TxTag.outlined(
-      label: Text(text),
-      textStyle: style,
-      color: color,
-      padding: padding,
-      margin: margin,
-      shape: shape,
-    ),
-  );
+          child: TxTag.outlined(
+            label: Text(text),
+            textStyle: style,
+            color: color,
+            padding: padding,
+            margin: margin,
+            shape: shape,
+          ),
+        );
 
   /// 创建一个内部填充且有边框的内嵌在文本中的标签组件
   ///
@@ -232,14 +251,14 @@ class TxTagSpan extends WidgetSpan {
     EdgeInsetsGeometry? margin = const EdgeInsets.only(left: 4.0),
     OutlinedBorder? shape,
   }) : super(
-    child: TxTag.tonal(
-      label: Text(text),
-      textStyle: style,
-      backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor,
-      padding: padding,
-      margin: margin,
-      shape: shape,
-    ),
-  );
+          child: TxTag.tonal(
+            label: Text(text),
+            textStyle: style,
+            backgroundColor: backgroundColor,
+            foregroundColor: foregroundColor,
+            padding: padding,
+            margin: margin,
+            shape: shape,
+          ),
+        );
 }
