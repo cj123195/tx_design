@@ -14,12 +14,17 @@ class DateTimeFormatter {
     'shortTime': 'HH:mm',
   };
 
+  static String _twoDigitYear(int year) {
+    final yearStr = year.toString().padLeft(4, '0');
+    return yearStr.substring(yearStr.length - 2);
+  }
+
   static String _formatDateTime(DateTime dateTime, String pattern) {
     final Map<String, dynamic> formatMap = {
-      'yyyy': dateTime.year.toString(),
-      'YYYY': dateTime.year.toString(),
-      'yy': dateTime.year.toString().substring(2),
-      'YY': dateTime.year.toString().substring(2),
+      'yyyy': dateTime.year.toString().padLeft(4, '0'),
+      'YYYY': dateTime.year.toString().padLeft(4, '0'),
+      'yy': _twoDigitYear(dateTime.year),
+      'YY': _twoDigitYear(dateTime.year),
       'MM': dateTime.month.toString().padLeft(2, '0'),
       'M': dateTime.month.toString(),
       'dd': dateTime.day.toString().padLeft(2, '0'),
@@ -42,9 +47,14 @@ class DateTimeFormatter {
     };
 
     String result = pattern;
-    formatMap.forEach((key, value) {
-      result = result.replaceAll(key, value);
-    });
+
+    // 先按 key 长度从长到短替换，避免冲突
+    formatMap.keys.toList()
+      ..sort((a, b) => b.length.compareTo(a.length))
+      ..forEach((key) {
+        result = result.replaceAll(key, formatMap[key]!);
+      });
+
     return result;
   }
 
