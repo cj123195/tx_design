@@ -20,7 +20,7 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
     T? initialData,
     V? initialValue,
     super.textAlign,
-    super.focusNode,
+    // super.focusNode,
     super.key,
     super.onSaved,
     FormFieldValidator<T>? validator,
@@ -55,7 +55,7 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
     super.dense,
     super.colon,
     super.focusColor,
-  }) : super.decorated(
+  }) : super(
           layoutDirection: layoutDirection ?? Axis.horizontal,
           builder: (field) {
             final AlignmentGeometry align = switch (textAlign) {
