@@ -697,7 +697,8 @@ class _RenderFieldTile extends RenderBox
         label?.getMaxIntrinsicWidth(maxIconHeightConstraint.maxHeight) ?? 0.0,
         _minLabelWidth,
       );
-      labelConstraints = BoxConstraints(maxWidth: labelWidth);
+      labelConstraints =
+          BoxConstraints(minWidth: _minLabelWidth, maxWidth: labelWidth);
       contentConstraints = looseConstraints.tighten(
         width: tileWidth -
             labelStart -
