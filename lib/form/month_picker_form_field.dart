@@ -20,6 +20,7 @@ class TxMonthPickerFormField extends TxPickerFormField<DateTime, String> {
     super.onChanged,
     super.required,
     super.hintText,
+    super.clearable,
     String? initialMonthStr,
     DateTime? initialMonth,
     DateTime? minimumMonth,

@@ -19,6 +19,7 @@ class TxYearPickerFormField extends TxPickerFormField<int, String> {
     super.onChanged,
     super.required,
     super.hintText,
+    super.clearable,
     int? initialYear,
     int? minimumYear,
     int? maximumYear,
