@@ -1,3 +1,6 @@
+# 0.2.22
+* Fix some issues.
+
 # 0.2.21
 * Fix some issues.
 
