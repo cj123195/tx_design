@@ -25,7 +25,6 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     super.bordered,
     FocusNode? focusNode,
     String? hintText,
-    TextAlign? textAlign,
     Widget? hint,
     Widget? disabledHint,
     VoidCallback? onTap,
@@ -43,7 +42,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     Color? dropdownColor,
     double? menuMaxHeight,
     bool? enableFeedback,
-    AlignmentGeometry alignment = AlignmentDirectional.centerStart,
+    AlignmentGeometry? alignment,
     BorderRadius? borderRadius,
     EdgeInsetsGeometry? menuPadding,
     DropdownButtonBuilder? selectedItemBuilder,
@@ -76,8 +75,12 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
             initialValue,
             valueMapper,
           ),
-          hintText: hintText ?? '请选择',
           builder: (field) {
+            final AlignmentGeometry effectiveAlign = alignment ??
+                (layoutDirection == Axis.horizontal
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft);
+
             return DropdownButtonFormField<T>(
               items: List.generate(
                 source.length,
@@ -85,7 +88,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
                   final T item = source[i];
                   return DropdownMenuItem<T>(
                     value: item,
-                    alignment: alignment,
+                    alignment: effectiveAlign,
                     enabled:
                         enabledMapper == null ? true : enabledMapper(i, item),
                     child: Text(labelMapper(item) ?? ''),
@@ -94,7 +97,8 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
               ),
               selectedItemBuilder: selectedItemBuilder,
               value: field.value,
-              hint: hint,
+              hint: hint ?? Text(hintText ?? '请选择'),
+              disabledHint: disabledHint ?? const Text('无'),
               onChanged: field.didChange,
               onTap: onTap,
               elevation: elevation ?? 0,
@@ -104,7 +108,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
               iconEnabledColor: iconEnabledColor,
               iconSize: iconSize ?? 24.0,
               isDense: isDense ?? true,
-              isExpanded: isExpanded ?? false,
+              isExpanded: isExpanded ?? true,
               itemHeight: itemHeight,
               focusColor: focusColor,
               focusNode: focusNode,
@@ -113,7 +117,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
               decoration: field.effectiveDecoration,
               menuMaxHeight: menuMaxHeight,
               enableFeedback: enableFeedback,
-              alignment: alignment,
+              alignment: effectiveAlign,
               borderRadius: borderRadius,
               padding: menuPadding,
             );
@@ -136,7 +140,6 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     super.required,
     FocusNode? focusNode,
     String? hintText,
-    TextAlign? textAlign,
     Widget? hint,
     Widget? disabledHint,
     VoidCallback? onTap,
@@ -154,7 +157,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     Color? dropdownColor,
     double? menuMaxHeight,
     bool? enableFeedback,
-    AlignmentGeometry alignment = AlignmentDirectional.centerStart,
+    AlignmentGeometry? alignment,
     BorderRadius? borderRadius,
     EdgeInsetsGeometry? menuPadding,
     DropdownButtonBuilder? selectedItemBuilder,
@@ -182,11 +185,17 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     super.minVerticalPadding,
   }) : super(
           builder: (field) {
+            final AlignmentGeometry effectiveAlign = alignment ??
+                (layoutDirection == Axis.horizontal
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft);
+
             return DropdownButtonFormField<T>(
               items: items,
               selectedItemBuilder: selectedItemBuilder,
               value: field.value,
-              hint: hint,
+              hint: hint ?? Text(hintText ?? '请选择'),
+              disabledHint: disabledHint ?? const Text('无'),
               onChanged: field.didChange,
               onTap: onTap,
               elevation: elevation ?? 0,
@@ -196,7 +205,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
               iconEnabledColor: iconEnabledColor,
               iconSize: iconSize ?? 24.0,
               isDense: isDense ?? true,
-              isExpanded: isExpanded ?? false,
+              isExpanded: isExpanded ?? true,
               itemHeight: itemHeight,
               focusColor: focusColor,
               focusNode: focusNode,
@@ -205,7 +214,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
               decoration: field.effectiveDecoration,
               menuMaxHeight: menuMaxHeight,
               enableFeedback: enableFeedback,
-              alignment: alignment,
+              alignment: effectiveAlign,
               borderRadius: borderRadius,
               padding: menuPadding,
             );
