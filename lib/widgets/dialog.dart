@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../localizations.dart';
+import '../utils/basic_types.dart';
 
 const EdgeInsets _defaultInsetPadding =
     EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0);
@@ -9,14 +10,14 @@ Future<T?> showDefaultDialog<T>(
   BuildContext context, {
   bool showTitle = true,
   String? titleText,
-  Widget? title,
+  WidgetBuilder? titleBuilder,
   EdgeInsetsGeometry? titlePadding,
   TextStyle? titleTextStyle,
   String? contentText,
-  Widget? content,
+  WidgetBuilder? contentBuilder,
   EdgeInsetsGeometry? contentPadding,
   TextStyle? contentTextStyle,
-  List<Widget>? actions,
+  WidgetsBuilder? actionsBuilder,
   EdgeInsetsGeometry? actionsPadding,
   MainAxisAlignment? actionsAlignment,
   OverflowBarAlignment? actionsOverflowAlignment,
@@ -24,14 +25,14 @@ Future<T?> showDefaultDialog<T>(
   double? actionsOverflowButtonSpacing,
   EdgeInsetsGeometry? buttonPadding,
   String? confirmText,
-  Widget? confirm,
+  WidgetBuilder? confirmBuilder,
   ButtonStyle? confirmButtonStyle,
-  VoidCallback? onConfirm,
+  ValueChanged<BuildContext>? onConfirm,
   bool showConfirmButton = true,
   String? cancelText,
-  Widget? cancel,
+  WidgetBuilder? cancelBuilder,
   ButtonStyle? cancelButtonStyle,
-  VoidCallback? onCancel,
+  ValueChanged<BuildContext>? onCancel,
   bool showCancelButton = true,
   Color? backgroundColor,
   bool barrierDismissible = true,
@@ -54,59 +55,6 @@ Future<T?> showDefaultDialog<T>(
   AlignmentGeometry? alignment,
   bool scrollable = false,
 }) async {
-  final MaterialLocalizations localizations = MaterialLocalizations.of(context);
-  final TxLocalizations txLocalizations = TxLocalizations.of(context);
-
-  Widget? effectiveTitle;
-  if (showTitle) {
-    if (title != null) {
-      effectiveTitle = title;
-    } else {
-      effectiveTitle = Text(titleText ?? txLocalizations.dialogTitle);
-    }
-  }
-
-  Widget? effectiveContent;
-  if (content != null) {
-    effectiveContent = content;
-  } else {
-    effectiveContent = Text(contentText ?? txLocalizations.dialogContent);
-  }
-
-  List<Widget>? effectiveActions;
-  if (actions != null) {
-    effectiveActions = actions;
-  } else {
-    if (showCancelButton) {
-      final VoidCallback effectiveOnCancel =
-          onCancel ?? () => Navigator.pop(context);
-      final Widget effectiveCancel =
-          cancel ?? Text(cancelText ?? localizations.cancelButtonLabel);
-      effectiveActions = [
-        TextButton(
-          onPressed: effectiveOnCancel,
-          style: cancelButtonStyle,
-          child: effectiveCancel,
-        ),
-      ];
-    }
-
-    if (showConfirmButton) {
-      final VoidCallback effectiveOnConfirm =
-          onConfirm ?? () => Navigator.pop<T>(context, true as T);
-      final Widget effectiveConfirm =
-          confirm ?? Text(confirmText ?? localizations.okButtonLabel);
-      effectiveActions = [
-        ...?effectiveActions,
-        FilledButton(
-          onPressed: effectiveOnConfirm,
-          style: confirmButtonStyle,
-          child: effectiveConfirm,
-        ),
-      ];
-    }
-  }
-
   return showDialog<T>(
     context: context,
     barrierDismissible: barrierDismissible,
@@ -116,17 +64,70 @@ Future<T?> showDefaultDialog<T>(
     routeSettings: routeSettings,
     anchorPoint: anchorPoint,
     builder: (context) {
+      final MaterialLocalizations localizations =
+          MaterialLocalizations.of(context);
+      final TxLocalizations txLocalizations = TxLocalizations.of(context);
+
+      Widget? title;
+      if (showTitle) {
+        if (titleBuilder != null) {
+          title = titleBuilder(context);
+        } else {
+          title = Text(titleText ?? txLocalizations.dialogTitle);
+        }
+      }
+
+      Widget content;
+      if (contentBuilder != null) {
+        content = contentBuilder(context);
+      } else {
+        content = Text(contentText ?? txLocalizations.dialogContent);
+      }
+
+      List<Widget>? actions;
+      if (actionsBuilder != null) {
+        actions = actionsBuilder(context);
+      } else if (showCancelButton || showConfirmButton) {
+        actions = [];
+
+        if (showCancelButton) {
+          final Widget cancel = cancelBuilder == null
+              ? TextButton(
+                  onPressed: () => onCancel == null
+                      ? Navigator.pop(context)
+                      : onCancel(context),
+                  style: cancelButtonStyle,
+                  child: Text(cancelText ?? localizations.cancelButtonLabel),
+                )
+              : cancelBuilder(context);
+          actions.add(cancel);
+        }
+
+        if (showConfirmButton) {
+          final Widget confirm = confirmBuilder == null
+              ? FilledButton(
+                  onPressed: () => onConfirm == null
+                      ? Navigator.pop<T>(context, true as T)
+                      : onConfirm(context),
+                  style: confirmButtonStyle,
+                  child: Text(confirmText ?? localizations.okButtonLabel),
+                )
+              : confirmBuilder(context);
+          actions.add(confirm);
+        }
+      }
+
       return AlertDialog(
         icon: icon,
         iconPadding: iconPadding,
         iconColor: iconColor,
-        title: effectiveTitle,
+        title: title,
         titlePadding: titlePadding,
         titleTextStyle: titleTextStyle,
-        content: effectiveContent,
+        content: content,
         contentPadding: contentPadding,
         contentTextStyle: contentTextStyle,
-        actions: effectiveActions,
+        actions: actions,
         actionsPadding: actionsPadding,
         actionsAlignment: actionsAlignment,
         actionsOverflowAlignment: actionsOverflowAlignment,
