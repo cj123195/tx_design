@@ -88,6 +88,7 @@ class TxCheckbox extends StatefulWidget {
     this.side,
     this.isError = false,
     this.semanticLabel,
+    this.boxSize,
   })  : _checkboxType = _TxCheckboxType.material,
         assert(tristate || value != null);
 
@@ -128,6 +129,7 @@ class TxCheckbox extends StatefulWidget {
     this.side,
     this.isError = false,
     this.semanticLabel,
+    this.boxSize,
   })  : _checkboxType = _TxCheckboxType.adaptive,
         assert(tristate || value != null);
 
@@ -401,6 +403,9 @@ class TxCheckbox extends StatefulWidget {
   /// {@endtemplate}
   final String? semanticLabel;
 
+  /// Size of box.
+  final double? boxSize;
+
   /// The width of a checkbox widget.
   static const double width = 18.0;
 
@@ -412,13 +417,14 @@ class TxCheckbox extends StatefulWidget {
 
 class _TxCheckboxState extends State<TxCheckbox>
     with TickerProviderStateMixin, ToggleableStateMixin {
-  final _TxCheckboxPainter _painter = _TxCheckboxPainter();
+  late final _TxCheckboxPainter _painter;
   bool? _previousValue;
 
   @override
   void initState() {
     super.initState();
     _previousValue = widget.value;
+    _painter = _TxCheckboxPainter(widget.boxSize);
   }
 
   @override
@@ -520,8 +526,7 @@ class _TxCheckboxState extends State<TxCheckbox>
     size += effectiveVisualDensity.baseSizeAdjustment;
 
     final WidgetStateProperty<MouseCursor> effectiveMouseCursor =
-        WidgetStateProperty.resolveWith<MouseCursor>(
-            (Set<WidgetState> states) {
+        WidgetStateProperty.resolveWith<MouseCursor>((Set<WidgetState> states) {
       return WidgetStateProperty.resolveAs<MouseCursor?>(
               widget.mouseCursor, states) ??
           checkboxTheme.mouseCursor?.resolve(states) ??
@@ -648,6 +653,8 @@ const double _kEdgeSize = TxCheckbox.width;
 const double _kStrokeWidth = 2.0;
 
 class _TxCheckboxPainter extends ToggleablePainter {
+  _TxCheckboxPainter(double? boxSize) : _boxSize = boxSize ?? _kEdgeSize;
+
   Color get checkColor => _checkColor!;
   Color? _checkColor;
 
@@ -714,13 +721,24 @@ class _TxCheckboxPainter extends ToggleablePainter {
     notifyListeners();
   }
 
+  double get boxSize => _boxSize;
+  double _boxSize;
+
+  set boxSize(double value) {
+    if (_boxSize == value) {
+      return;
+    }
+    _boxSize = value;
+    notifyListeners();
+  }
+
   // The square outer bounds of the checkbox at t, with the specified origin.
-  // At t == 0.0, the outer rect's size is _kEdgeSize (TxCheckbox.width)
-  // At t == 0.5, .. is _kEdgeSize - _kStrokeWidth
-  // At t == 1.0, .. is _kEdgeSize
+  // At t == 0.0, the outer rect's size is _boxSize (TxCheckbox.width)
+  // At t == 0.5, .. is _boxSize - _kStrokeWidth
+  // At t == 1.0, .. is _boxSize
   Rect _outerRectAt(Offset origin, double t) {
     final double inset = 1.0 - (t - 0.5).abs() * 2.0;
-    final double size = _kEdgeSize - inset * _kStrokeWidth;
+    final double size = _boxSize - inset * _kStrokeWidth;
     final Rect rect =
         Rect.fromLTWH(origin.dx + inset, origin.dy + inset, size, size);
     return rect;
@@ -755,9 +773,9 @@ class _TxCheckboxPainter extends ToggleablePainter {
     // As t goes from 0.0 to 1.0, animate the two check mark strokes from the
     // short side to the long side.
     final Path path = Path();
-    const Offset start = Offset(_kEdgeSize * 0.3, _kEdgeSize * 0.5);
-    const Offset mid = Offset(_kEdgeSize * 0.45, _kEdgeSize * 0.65);
-    const Offset end = Offset(_kEdgeSize * 0.7, _kEdgeSize * 0.4);
+    final Offset start = Offset(_boxSize * 0.3, _boxSize * 0.5);
+    final Offset mid = Offset(_boxSize * 0.45, _boxSize * 0.65);
+    final Offset end = Offset(_boxSize * 0.7, _boxSize * 0.4);
     if (t < 0.5) {
       final double strokeT = t * 2.0;
       final Offset drawMid = Offset.lerp(start, mid, strokeT)!;
@@ -777,9 +795,9 @@ class _TxCheckboxPainter extends ToggleablePainter {
     assert(t >= 0.0 && t <= 1.0);
     // As t goes from 0.0 to 1.0, animate the horizontal line from the
     // mid point outwards.
-    const Offset start = Offset(_kEdgeSize * 0.2, _kEdgeSize * 0.5);
-    const Offset mid = Offset(_kEdgeSize * 0.5, _kEdgeSize * 0.5);
-    const Offset end = Offset(_kEdgeSize * 0.8, _kEdgeSize * 0.5);
+    final Offset start = Offset(_boxSize * 0.2, _boxSize * 0.5);
+    final Offset mid = Offset(_boxSize * 0.5, _boxSize * 0.5);
+    final Offset end = Offset(_boxSize * 0.8, _boxSize * 0.5);
     final Offset drawStart = Offset.lerp(start, mid, 1.0 - t)!;
     final Offset drawEnd = Offset.lerp(mid, end, t)!;
     canvas.drawLine(origin + drawStart, origin + drawEnd, paint);
@@ -790,8 +808,7 @@ class _TxCheckboxPainter extends ToggleablePainter {
     paintRadialReaction(canvas: canvas, origin: size.center(Offset.zero));
 
     final Paint strokePaint = _createStrokePaint();
-    final Offset origin =
-        size / 2.0 - const Size.square(_kEdgeSize) / 2.0 as Offset;
+    final Offset origin = size / 2.0 - Size.square(_boxSize) / 2.0 as Offset;
     final AnimationStatus status = position.status;
     final double tNormalized =
         status == AnimationStatus.forward || status == AnimationStatus.completed
@@ -838,6 +855,17 @@ class _TxCheckboxPainter extends ToggleablePainter {
         }
       }
     }
+  }
+
+  @override
+  bool shouldRepaint(covariant _TxCheckboxPainter oldDelegate) {
+    return _boxSize != oldDelegate._boxSize ||
+        _checkColor != oldDelegate._checkColor ||
+        _value != oldDelegate._value ||
+        _previousValue != oldDelegate._previousValue ||
+        _shape != oldDelegate._shape ||
+        _activeSide != oldDelegate._activeSide ||
+        _inactiveSide != oldDelegate._inactiveSide;
   }
 }
 
