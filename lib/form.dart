@@ -7,6 +7,8 @@ export 'form/date_range_picker_form_field.dart';
 export 'form/datetime_picker_form_field.dart';
 export 'form/datetime_range_picker_form_field.dart';
 export 'form/dropdown_form_field.dart';
+export 'form/form_field.dart';
+export 'form/form_field_theme.dart';
 export 'form/month_picker_form_field.dart';
 export 'form/multi_cascade_picker_form_field.dart';
 export 'form/multi_picker_form_field.dart';

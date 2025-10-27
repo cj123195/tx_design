@@ -4,7 +4,7 @@ const String kTreeIdKey = 'id';
 const String kTreePidKey = 'pid';
 const String kTreeChildrenKey = 'children';
 
-extension IterableExtension<E> on Iterable<E> {
+extension TxIterableExtension<E> on Iterable<E> {
   E? tryFind(bool Function(E element) test) {
     for (E element in this) {
       if (test(element)) {

@@ -43,7 +43,7 @@ const Map<String, MaterialAccentColor> _accentColorMap = {
   'deepOrangeAccent': Colors.deepOrangeAccent,
 };
 
-extension StringExtension on String {
+extension TxStringExtension on String {
   /// 获取有效的Rgb值
   int _getValidRgbValue(int value) {
     if (value < 0) {

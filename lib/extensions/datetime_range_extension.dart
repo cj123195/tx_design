@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'datetime_extension.dart';
 
-extension DateTimeRangeExtension on DateTimeRange {
+extension TxDateTimeRangeExtension on DateTimeRange {
   /// 格式化日期时间范围
   /// [format] 可以是预定义格式的key，也可以是自定义格式字符串
   /// [separator] 开始时间和结束时间的分隔符

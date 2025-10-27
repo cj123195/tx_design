@@ -1,7 +1,7 @@
 import 'package:flutter/painting.dart';
 
 /// Extensions on [Gradient]
-extension GradientExtension on Gradient {
+extension TxGradientExtension on Gradient {
   /// 返回colorStops
   ///
   /// 如果提供了 [stops]，则直接返回，否则我们使用颜色列表计算它

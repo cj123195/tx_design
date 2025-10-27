@@ -24,7 +24,7 @@ class TimeOfDayFormatter {
   }
 }
 
-extension TimeOfDayExtension on TimeOfDay {
+extension TxTimeOfDayExtension on TimeOfDay {
   /// 判断当前时间是否早于另一时间
   bool isBefore(TimeOfDay time) {
     if (hour < time.hour) {

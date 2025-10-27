@@ -1,6 +1,6 @@
 import 'datetime_extension.dart';
 
-extension IntExtension on int {
+extension TxIntExtension on int {
   /// Return whether it is leap year.
   /// 是否是闰年
   bool get isLeapYear {

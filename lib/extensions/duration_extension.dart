@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../localizations.dart';
 
-extension DurationExtension on Duration {
+extension TxDurationExtension on Duration {
   /// 本地化
   String localize(BuildContext context) {
     final TxLocalizations localizations = TxLocalizations.of(context);

@@ -79,7 +79,7 @@ const Map<int, int> _kMonthDay = {
   12: 31,
 };
 
-extension DatetimeExtension on DateTime {
+extension TxDatetimeExtension on DateTime {
   String format([String? format]) {
     format ??= 'full';
 
