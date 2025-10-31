@@ -164,12 +164,12 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
             }
 
             /// 如果最小值不为空，判断输入值是否小于最小值
-            if (minValue != null && value! < minValue) {
+            if (minValue != null && value != null && value < minValue) {
               return '输入值需大于或等于$minValue';
             }
 
             /// 如果最小数量不为空，判断已选数量是否小于最小数量
-            if (maxValue != null && value! > maxValue) {
+            if (maxValue != null && value != null && value > maxValue) {
               return '输入值需小于或等于$maxValue';
             }
 
