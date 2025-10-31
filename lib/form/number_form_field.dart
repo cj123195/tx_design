@@ -8,13 +8,16 @@ import 'common_text_form_field.dart';
 InputDecoration _decoration(
     InputDecoration decoration, num? min, num? max, int? precision) {
   String? helperText = decoration.helperText;
+  if (helperText != null) {
+    return decoration;
+  }
+
   if (min != null || max != null) {
-    final String text = (max != null && min != null)
+    helperText = (max != null && min != null)
         ? '输入值应大于等于$min且小于等于$max'
         : max != null
             ? '输入值应小于等于$max'
             : '输入值应大于等于$min';
-    helperText = '${helperText == null ? '' : '$helperText，'}$text';
   }
   if (precision != null) {
     helperText = '${helperText == null ? '' : '$helperText，'}结果保留'
@@ -164,12 +167,12 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
             }
 
             /// 如果最小值不为空，判断输入值是否小于最小值
-            if (minValue != null && value! < minValue) {
+            if (minValue != null && value != null && value < minValue) {
               return '输入值需大于或等于$minValue';
             }
 
             /// 如果最小数量不为空，判断已选数量是否小于最小数量
-            if (maxValue != null && value! > maxValue) {
+            if (maxValue != null && value != null && value > maxValue) {
               return '输入值需小于或等于$maxValue';
             }
 
