@@ -5,23 +5,26 @@ import 'package:flutter/services.dart';
 
 import 'common_text_form_field.dart';
 
-InputDecoration _decoration(
-    InputDecoration decoration, num? min, num? max, int? precision) {
-  String? helperText = decoration.helperText;
-  if (min != null || max != null) {
-    final String text = (max != null && min != null)
-        ? '输入值应大于等于$min且小于等于$max'
-        : max != null
-            ? '输入值应小于等于$max'
-            : '输入值应大于等于$min';
-    helperText = '${helperText == null ? '' : '$helperText，'}$text';
-  }
-  if (precision != null) {
-    helperText = '${helperText == null ? '' : '$helperText，'}结果保留'
-        '${precision == 0 ? '整数' : '$precision位小数'}';
-  }
-  return decoration.copyWith(helperText: helperText);
-}
+// InputDecoration _decoration(
+//     InputDecoration decoration, num? min, num? max, int? precision) {
+//   String? helperText = decoration.helperText;
+//   if (helperText != null) {
+//     return decoration;
+//   }
+//
+//   if (min != null || max != null) {
+//     helperText = (max != null && min != null)
+//         ? '输入值应大于等于$min且小于等于$max'
+//         : max != null
+//             ? '输入值应小于等于$max'
+//             : '输入值应大于等于$min';
+//   }
+//   if (precision != null) {
+//     helperText = '${helperText == null ? '' : '$helperText，'}结果保留'
+//         '${precision == 0 ? '整数' : '$precision位小数'}';
+//   }
+//   return decoration.copyWith(helperText: helperText);
+// }
 
 /// 数字输入框表单
 class TxNumberFormField extends TxCommonTextFormField<num> {
@@ -164,12 +167,12 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
             }
 
             /// 如果最小值不为空，判断输入值是否小于最小值
-            if (minValue != null && value! < minValue) {
+            if (minValue != null && value != null && value < minValue) {
               return '输入值需大于或等于$minValue';
             }
 
             /// 如果最小数量不为空，判断已选数量是否小于最小数量
-            if (maxValue != null && value! > maxValue) {
+            if (maxValue != null && value != null && value > maxValue) {
               return '输入值需小于或等于$maxValue';
             }
 
@@ -261,13 +264,13 @@ class _TxNumberFormFieldState extends TxCommonTextFormFieldState<num> {
     super.dispose();
   }
 
-  @override
-  InputDecoration get effectiveDecoration => _decoration(
-        super.effectiveDecoration,
-        widget.minValue,
-        widget.maxValue,
-        widget.precision,
-      );
+  // @override
+  // InputDecoration get effectiveDecoration => _decoration(
+  //       super.effectiveDecoration,
+  //       widget.minValue,
+  //       widget.maxValue,
+  //       widget.precision,
+  //     );
 
   @override
   TxNumberFormField get widget => super.widget as TxNumberFormField;
