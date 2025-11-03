@@ -5,26 +5,26 @@ import 'package:flutter/services.dart';
 
 import 'common_text_form_field.dart';
 
-InputDecoration _decoration(
-    InputDecoration decoration, num? min, num? max, int? precision) {
-  String? helperText = decoration.helperText;
-  if (helperText != null) {
-    return decoration;
-  }
-
-  if (min != null || max != null) {
-    helperText = (max != null && min != null)
-        ? '输入值应大于等于$min且小于等于$max'
-        : max != null
-            ? '输入值应小于等于$max'
-            : '输入值应大于等于$min';
-  }
-  if (precision != null) {
-    helperText = '${helperText == null ? '' : '$helperText，'}结果保留'
-        '${precision == 0 ? '整数' : '$precision位小数'}';
-  }
-  return decoration.copyWith(helperText: helperText);
-}
+// InputDecoration _decoration(
+//     InputDecoration decoration, num? min, num? max, int? precision) {
+//   String? helperText = decoration.helperText;
+//   if (helperText != null) {
+//     return decoration;
+//   }
+//
+//   if (min != null || max != null) {
+//     helperText = (max != null && min != null)
+//         ? '输入值应大于等于$min且小于等于$max'
+//         : max != null
+//             ? '输入值应小于等于$max'
+//             : '输入值应大于等于$min';
+//   }
+//   if (precision != null) {
+//     helperText = '${helperText == null ? '' : '$helperText，'}结果保留'
+//         '${precision == 0 ? '整数' : '$precision位小数'}';
+//   }
+//   return decoration.copyWith(helperText: helperText);
+// }
 
 /// 数字输入框表单
 class TxNumberFormField extends TxCommonTextFormField<num> {
@@ -264,13 +264,13 @@ class _TxNumberFormFieldState extends TxCommonTextFormFieldState<num> {
     super.dispose();
   }
 
-  @override
-  InputDecoration get effectiveDecoration => _decoration(
-        super.effectiveDecoration,
-        widget.minValue,
-        widget.maxValue,
-        widget.precision,
-      );
+  // @override
+  // InputDecoration get effectiveDecoration => _decoration(
+  //       super.effectiveDecoration,
+  //       widget.minValue,
+  //       widget.maxValue,
+  //       widget.precision,
+  //     );
 
   @override
   TxNumberFormField get widget => super.widget as TxNumberFormField;
