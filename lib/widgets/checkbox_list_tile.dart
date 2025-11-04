@@ -556,6 +556,7 @@ class TxCheckboxListTile extends StatelessWidget {
         focusNode: focusNode,
         onFocusChange: onFocusChange,
         enableFeedback: enableFeedback,
+        horizontalTitleGap: 0,
       ),
     );
   }
