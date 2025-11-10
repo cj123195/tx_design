@@ -86,12 +86,20 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
                 source.length,
                 (i) {
                   final T item = source[i];
+                  final bool enabled =
+                      enabledMapper == null ? true : enabledMapper(i, item);
                   return DropdownMenuItem<T>(
                     value: item,
                     alignment: effectiveAlign,
-                    enabled:
-                        enabledMapper == null ? true : enabledMapper(i, item),
-                    child: Text(labelMapper(item) ?? ''),
+                    enabled: enabled,
+                    child: Text(
+                      labelMapper(item) ?? '',
+                      style: enabled
+                          ? null
+                          : TextStyle(
+                              color: Theme.of(field.context).disabledColor,
+                            ),
+                    ),
                   );
                 },
               ),
