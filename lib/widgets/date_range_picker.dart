@@ -483,8 +483,8 @@ class _TxCupertinoDateRangePickerState extends State<TxCupertinoDateRangePicker>
         ),
       CupertinoDatePickerMode.monthYear => TxCupertinoMonthPicker(
           onMonthChanged: onChanged,
-          maximumDate: maximum,
-          minimumDate: minimum,
+          minimumMonth: maximum,
+          maximumMonth: minimum,
           initialMonth: initialValue,
           key: UniqueKey(),
         ),
