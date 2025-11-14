@@ -23,8 +23,8 @@ const TextStyle _kDefaultPickerTextStyle = TextStyle(
   letterSpacing: -0.83,
 );
 
-void _animateColumnControllerToItem(
-    FixedExtentScrollController controller, int targetItem) {
+void _animateColumnControllerToItem(FixedExtentScrollController controller,
+    int targetItem) {
   controller.animateToItem(
     targetItem,
     curve: Curves.easeInOut,
@@ -55,10 +55,10 @@ const Widget _endSelectionOverlay = DecoratedBox(
 );
 
 typedef _ColumnBuilder = Widget Function(
-  double offAxisFraction,
-  TransitionBuilder itemPositioningBuilder,
-  Widget selectionOverlay,
-);
+    double offAxisFraction,
+    TransitionBuilder itemPositioningBuilder,
+    Widget selectionOverlay,
+    );
 
 // Different types of column in CupertinoDatePicker.
 enum _PickerColumnType {
@@ -108,7 +108,7 @@ class _DatePickerLayoutDelegate extends MultiChildLayoutDelegate {
 
     for (int i = 0; i < columnWidths.length; i++) {
       final int index =
-          textDirectionFactor == 1 ? i : columnWidths.length - i - 1;
+      textDirectionFactor == 1 ? i : columnWidths.length - i - 1;
 
       double childWidth = columnWidths[index] + _kDatePickerPadSize * 2;
       if (index == 0 || index == columnWidths.length - 1) {
@@ -123,10 +123,10 @@ class _DatePickerLayoutDelegate extends MultiChildLayoutDelegate {
             FlutterErrorDetails(
               exception: FlutterError(
                 'Insufficient horizontal space to render the '
-                'CupertinoDatePicker because the parent is too narrow at '
-                '${size.width}px.\n'
-                'An additional ${-remainingWidth}px is needed to avoid '
-                'overlapping columns.',
+                    'CupertinoDatePicker because the parent is too narrow at '
+                    '${size.width}px.\n'
+                    'An additional ${-remainingWidth}px is needed to avoid '
+                    'overlapping columns.',
               ),
             ),
           );
@@ -161,10 +161,10 @@ class _YearPickerLayoutDelegate extends MultiChildLayoutDelegate {
           FlutterErrorDetails(
             exception: FlutterError(
               'Insufficient horizontal space to render the '
-              'CupertinoDatePicker because the parent is too narrow at '
-              '${size.width}px.\n'
-              'An additional ${-childWidth}px is needed to avoid '
-              'overlapping columns.',
+                  'CupertinoDatePicker because the parent is too narrow at '
+                  '${size.width}px.\n'
+                  'An additional ${-childWidth}px is needed to avoid '
+                  'overlapping columns.',
             ),
           ),
         );
@@ -184,8 +184,6 @@ abstract class TxCupertinoPicker<T> extends StatefulWidget {
   /// Constructs an iOS style date picker.
   const TxCupertinoPicker({
     required this.onChanged,
-    this.minimumValue,
-    this.maximumValue,
     super.key,
     this.backgroundColor,
     double? itemExtent = _kItemExtent,
@@ -197,7 +195,8 @@ abstract class TxCupertinoPicker<T> extends StatefulWidget {
     this.unselectedTextStyle,
     this.unselectedColor,
     this.initialValue,
-  })  : itemExtent = itemExtent ?? _kItemExtent,
+  })
+      : itemExtent = itemExtent ?? _kItemExtent,
         useMagnifier = useMagnifier ?? _kUseMagnifier,
         magnification = magnification ?? _kMagnification,
         squeeze = squeeze ?? _kSqueeze,
@@ -210,39 +209,6 @@ abstract class TxCupertinoPicker<T> extends StatefulWidget {
   /// Changing this value after the initial build will not affect the currently
   /// selected date time.
   final T? initialValue;
-
-  /// The minimum selectable date that the picker can settle on.
-  ///
-  /// When non-null, the user can still scroll the picker to [DateTime]s earlier
-  /// than [minimumValue], but the [onChanged] will not be called on
-  /// these [DateTime]s. Once let go, the picker will scroll back to
-  /// [minimumValue].
-  ///
-  /// In [CupertinoDatePickerMode.time] mode, a time becomes unselectable if the
-  /// [DateTime] produced by combining that particular time and the date part of
-  /// [initialValue] is earlier than [minimumValue]. So typically [minimumValue]
-  /// needs to be set to a [DateTime] that is on the same date as
-  /// [initialValue].
-  ///
-  /// Defaults to null. When set to null, the picker does not impose a limit on
-  /// the earliest [DateTime] the user can select.
-  final T? minimumValue;
-
-  /// The maximum selectable date that the picker can settle on.
-  ///
-  /// When non-null, the user can still scroll the picker to [DateTime]s later
-  /// than [maximumValue], but the [onChanged] will not be called on these
-  /// [DateTime]s. Once let go, the picker will scroll back to [maximumValue].
-  ///
-  /// In [CupertinoDatePickerMode.time] mode, a time becomes unselectable if the
-  /// [DateTime] produced by combining that particular time and the date part of
-  /// [initialValue] is later than [maximumValue]. So typically [maximumValue]
-  /// needs to be set to a [DateTime] that is on the same date as
-  /// [initialValue].
-  ///
-  /// Defaults to null. When set to null, the picker does not impose a limit on
-  /// the latest [DateTime] the user can select.
-  final T? maximumValue;
 
   /// Background color of date picker.
   ///
@@ -297,7 +263,7 @@ abstract class _CupertinoPickerState<T> extends State<TxCupertinoPicker<T>> {
     final int middleIndex = total ~/ 2;
     // 计算当前索引与中间位置的距离，归一化到0到1之间
     final double normalizedDistance =
-        ((index - middleIndex).abs() / middleIndex).clamp(0.0, 1.0);
+    ((index - middleIndex).abs() / middleIndex).clamp(0.0, 1.0);
     // 使用二次函数计算透明度，实现平滑过渡
     final double transparency = 1 - normalizedDistance * normalizedDistance;
     return transparency;
@@ -305,26 +271,27 @@ abstract class _CupertinoPickerState<T> extends State<TxCupertinoPicker<T>> {
 
   TextStyle _themeTextStyle([bool isValid = true]) {
     final TextStyle style = widget.textStyle ??
-        CupertinoTheme.of(context).textTheme.dateTimePickerTextStyle;
+        CupertinoTheme
+            .of(context)
+            .textTheme
+            .dateTimePickerTextStyle;
     final TextStyle unselectedStyle = widget.unselectedTextStyle ?? style;
     return isValid
         ? style.copyWith(
-            color: CupertinoDynamicColor.maybeResolve(style.color, context))
+        color: CupertinoDynamicColor.maybeResolve(style.color, context))
         : unselectedStyle.copyWith(
-            color: CupertinoDynamicColor.resolve(
-                widget.unselectedColor ?? CupertinoColors.inactiveGray,
-                context));
+        color: CupertinoDynamicColor.resolve(
+            widget.unselectedColor ?? CupertinoColors.inactiveGray,
+            context));
   }
 
-  Widget _buildPicker(
-    double offAxisFraction,
-    TransitionBuilder itemPositioningBuilder,
-    Widget selectionOverlay,
-    ValueChanged<bool> onScrollingChanged,
-    FixedExtentScrollController controller,
-    ValueChanged<int> onSelectedItemChanged,
-    List<Widget> children,
-  ) {
+  Widget _buildPicker(double offAxisFraction,
+      TransitionBuilder itemPositioningBuilder,
+      Widget selectionOverlay,
+      ValueChanged<bool> onScrollingChanged,
+      FixedExtentScrollController controller,
+      ValueChanged<int> onSelectedItemChanged,
+      List<Widget> children,) {
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification notification) {
         if (notification is ScrollStartNotification) {
@@ -352,23 +319,22 @@ abstract class _CupertinoPickerState<T> extends State<TxCupertinoPicker<T>> {
     );
   }
 
-  double _getColumnWidth(
-    _PickerColumnType columnType,
-    CupertinoLocalizations localizations,
-    BuildContext context,
-    bool showDayOfWeek, {
-    bool standaloneMonth = false,
-  }) {
+  double _getColumnWidth(_PickerColumnType columnType,
+      CupertinoLocalizations localizations,
+      BuildContext context,
+      bool showDayOfWeek, {
+        bool standaloneMonth = false,
+      }) {
     String longestText = '';
 
     switch (columnType) {
       case _PickerColumnType.date:
-        // Measuring the length of all possible date is impossible, so here
-        // just some dates are measured.
+      // Measuring the length of all possible date is impossible, so here
+      // just some dates are measured.
         for (int i = 1; i <= 12; i++) {
           // An arbitrary date.
           final String date =
-              localizations.datePickerMediumDate(DateTime(2018, i, 25));
+          localizations.datePickerMediumDate(DateTime(2018, i, 25));
           if (longestText.length < date.length) {
             longestText = date;
           }
@@ -389,7 +355,7 @@ abstract class _CupertinoPickerState<T> extends State<TxCupertinoPicker<T>> {
         }
       case _PickerColumnType.dayPeriod:
         longestText = localizations.anteMeridiemAbbreviation.length >
-                localizations.postMeridiemAbbreviation.length
+            localizations.postMeridiemAbbreviation.length
             ? localizations.anteMeridiemAbbreviation
             : localizations.postMeridiemAbbreviation;
       case _PickerColumnType.dayOfMonth:
@@ -404,7 +370,7 @@ abstract class _CupertinoPickerState<T> extends State<TxCupertinoPicker<T>> {
         if (showDayOfWeek) {
           for (int wd = 1; wd < DateTime.daysPerWeek; wd++) {
             final String dayOfMonth =
-                localizations.datePickerDayOfMonth(longestDayOfMonth, wd);
+            localizations.datePickerDayOfMonth(longestDayOfMonth, wd);
             if (longestText.length < dayOfMonth.length) {
               longestText = dayOfMonth;
             }
@@ -439,13 +405,13 @@ abstract class _CupertinoPickerState<T> extends State<TxCupertinoPicker<T>> {
     super.didChangeDependencies();
 
     textDirectionFactor =
-        Directionality.of(context) == TextDirection.ltr ? 1 : -1;
+    Directionality.of(context) == TextDirection.ltr ? 1 : -1;
     localizations = CupertinoLocalizations.of(context);
 
     alignCenterLeft =
-        textDirectionFactor == 1 ? Alignment.centerLeft : Alignment.centerRight;
+    textDirectionFactor == 1 ? Alignment.centerLeft : Alignment.centerRight;
     alignCenterRight =
-        textDirectionFactor == 1 ? Alignment.centerRight : Alignment.centerLeft;
+    textDirectionFactor == 1 ? Alignment.centerRight : Alignment.centerLeft;
   }
 
   (List<Widget>, List<double>, double) get pickerConfig;
@@ -518,8 +484,8 @@ class TxCupertinoMonthPicker extends TxCupertinoPicker<DateTime> {
     required ValueChanged<DateTime> onMonthChanged,
     super.key,
     DateTime? initialMonth,
-    DateTime? minimumDate,
-    DateTime? maximumDate,
+    DateTime? minimumMonth,
+    DateTime? maximumMonth,
     int? minimumYear,
     this.maximumYear,
     this.dateOrder,
@@ -533,26 +499,60 @@ class TxCupertinoMonthPicker extends TxCupertinoPicker<DateTime> {
     super.unselectedTextStyle,
     super.unselectedColor,
     this.showDayOfWeek = false,
-  })  : minimumYear = minimumYear ?? 1,
+  })
+      : minimumYear = minimumYear ?? 1,
+        _minimumDate = minimumMonth,
+        _maximumDate = maximumMonth,
         super(
-          onChanged: onMonthChanged,
-          initialValue: initialMonth,
-          minimumValue: minimumDate,
-          maximumValue: maximumDate,
-        ) {
+        onChanged: onMonthChanged,
+        initialValue: initialMonth,
+      ) {
     {
       assert(
-        minimumValue == null ||
-            maximumValue == null ||
-            minimumValue!.isBefore(maximumValue!),
-        'minimumValue must before than maximumValue',
+      _minimumDate == null ||
+          _maximumDate == null ||
+          _minimumDate!.isBefore(_maximumDate!),
+      'minimumValue must before than maximumValue',
       );
       assert(
-        itemExtent > 0,
-        'item extent should be greater than 0',
+      itemExtent > 0,
+      'item extent should be greater than 0',
       );
     }
   }
+
+  /// The minimum selectable date that the picker can settle on.
+  ///
+  /// When non-null, the user can still scroll the picker to [DateTime]s earlier
+  /// than [minimumDate], but the [onChanged] will not be called on
+  /// these [DateTime]s. Once let go, the picker will scroll back to
+  /// [minimumDate].
+  ///
+  /// In [CupertinoDatePickerMode.time] mode, a time becomes unselectable if the
+  /// [DateTime] produced by combining that particular time and the date part of
+  /// [initialValue] is earlier than [minimumDate]. So typically [minimumDate]
+  /// needs to be set to a [DateTime] that is on the same date as
+  /// [initialValue].
+  ///
+  /// Defaults to null. When set to null, the picker does not impose a limit on
+  /// the earliest [DateTime] the user can select.
+  final DateTime? _minimumDate;
+
+  /// The maximum selectable date that the picker can settle on.
+  ///
+  /// When non-null, the user can still scroll the picker to [DateTime]s later
+  /// than [maximumDate], but the [onChanged] will not be called on these
+  /// [DateTime]s. Once let go, the picker will scroll back to [maximumDate].
+  ///
+  /// In [CupertinoDatePickerMode.time] mode, a time becomes unselectable if the
+  /// [DateTime] produced by combining that particular time and the date part of
+  /// [initialValue] is later than [maximumDate]. So typically [maximumDate]
+  /// needs to be set to a [DateTime] that is on the same date as
+  /// [initialValue].
+  ///
+  /// Defaults to null. When set to null, the picker does not impose a limit on
+  /// the latest [DateTime] the user can select.
+  final DateTime? _maximumDate;
 
   /// Minimum year that the picker can be scrolled to in
   /// [CupertinoDatePickerMode.date] mode. Defaults to 1.
@@ -570,6 +570,16 @@ class TxCupertinoMonthPicker extends TxCupertinoPicker<DateTime> {
   final DatePickerDateOrder? dateOrder;
 
   final bool showDayOfWeek;
+
+  DateTime? get minimumValue =>
+      _minimumDate == null
+          ? null
+          : DateTime(_minimumDate!.year, _minimumDate!.month);
+
+  DateTime? get maximumValue =>
+      _maximumDate == null
+          ? null
+          : DateTime(_maximumDate!.year, _maximumDate!.month);
 
   @override
   State<TxCupertinoPicker<DateTime>> createState() =>
@@ -598,9 +608,9 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState<DateTime> {
   DateTime get maxSelectedDate =>
       DateTime(selectedYear, selectedMonth, _initialDate.day + 1);
 
-  bool get minCheck => widget.minimumValue?.isBefore(minSelectedDate) ?? true;
+  bool get minCheck => widget.minimumValue?.isBefore(maxSelectedDate) ?? true;
 
-  bool get maxCheck => widget.maximumValue?.isBefore(maxSelectedDate) ?? false;
+  bool get maxCheck => widget.maximumValue?.isBefore(minSelectedDate) ?? false;
 
   DateTime get currentSelectedDate => DateTime(selectedYear, selectedMonth);
 
@@ -672,11 +682,9 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState<DateTime> {
         _PickerColumnType.year, localizations, context, widget.showDayOfWeek);
   }
 
-  Widget _buildMonthPicker(
-    double offAxisFraction,
-    TransitionBuilder itemPositioningBuilder,
-    Widget selectionOverlay,
-  ) {
+  Widget _buildMonthPicker(double offAxisFraction,
+      TransitionBuilder itemPositioningBuilder,
+      Widget selectionOverlay,) {
     void onSelectedChanged(int index) {
       selectedMonth = index + 1;
       if (_isCurrentDateValid) {
@@ -699,7 +707,7 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState<DateTime> {
       offAxisFraction,
       itemPositioningBuilder,
       selectionOverlay,
-      (val) => isMonthPickerScrolling = val,
+          (val) => isMonthPickerScrolling = val,
       monthController,
       onSelectedChanged,
       children,
@@ -773,7 +781,7 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState<DateTime> {
     }
 
     return (widget.minimumValue?.year == selectedYear &&
-            widget.minimumValue!.month > month) ||
+        widget.minimumValue!.month > month) ||
         (widget.maximumValue?.year == selectedYear &&
             widget.maximumValue!.month < month);
   }
@@ -797,7 +805,7 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState<DateTime> {
     if (!minCheck || maxCheck) {
       // We have minCheck === !maxCheck.
       final DateTime targetDate =
-          minCheck ? widget.maximumValue! : widget.minimumValue!;
+      minCheck ? widget.maximumValue! : widget.minimumValue!;
       _scrollToDate(targetDate);
       return;
     }
@@ -870,7 +878,7 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState<DateTime> {
         id: i,
         child: pickerBuilders[i](
           offAxisFraction,
-          (BuildContext context, Widget? child) {
+              (BuildContext context, Widget? child) {
             return Container(
               alignment: i == columnWidths.length - 1
                   ? alignCenterLeft
@@ -889,7 +897,7 @@ class _CupertinoMonthPickerState extends _CupertinoPickerState<DateTime> {
     }
 
     final double maxPickerWidth =
-        totalColumnWidths > _kPickerWidth ? totalColumnWidths : _kPickerWidth;
+    totalColumnWidths > _kPickerWidth ? totalColumnWidths : _kPickerWidth;
 
     return (pickers, columnWidths, maxPickerWidth);
   }
@@ -940,8 +948,8 @@ class TxCupertinoDatePicker extends TxCupertinoMonthPicker {
     required ValueChanged<DateTime> onDateChanged,
     super.key,
     DateTime? initialDate,
-    super.minimumDate,
-    super.maximumDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     super.minimumYear,
     super.maximumYear,
     super.dateOrder,
@@ -955,7 +963,26 @@ class TxCupertinoDatePicker extends TxCupertinoMonthPicker {
     super.textStyle,
     super.unselectedTextStyle,
     super.unselectedColor,
-  }) : super(initialMonth: initialDate, onMonthChanged: onDateChanged);
+  }) : super(
+    initialMonth: initialDate,
+    onMonthChanged: onDateChanged,
+    minimumMonth: minimumDate,
+    maximumMonth: maximumDate,
+  );
+
+  @override
+  DateTime? get minimumValue =>
+      _minimumDate == null
+          ? null
+          : DateTime(
+          _minimumDate!.year, _minimumDate!.month, _minimumDate!.day);
+
+  @override
+  DateTime? get maximumValue =>
+      _maximumDate == null
+          ? null
+          : DateTime(
+          _maximumDate!.year, _maximumDate!.month, _maximumDate!.day);
 
   @override
   State<TxCupertinoPicker<DateTime>> createState() =>
@@ -1056,7 +1083,7 @@ class _CupertinoDatePickerState extends _CupertinoMonthPickerState {
       offAxisFraction,
       itemPositioningBuilder,
       selectionOverlay,
-      (val) => isDayPickerScrolling = val,
+          (val) => isDayPickerScrolling = val,
       dayController,
       onSelectedItemChanged,
       children,
@@ -1073,16 +1100,17 @@ class _CupertinoDatePickerState extends _CupertinoMonthPickerState {
     }
 
     return (widget.minimumValue?.year == selectedYear &&
-            widget.minimumValue!.month == selectedMonth &&
-            widget.minimumValue!.day > day) ||
+        widget.minimumValue!.month == selectedMonth &&
+        widget.minimumValue!.day > day) ||
         (widget.maximumValue?.year == selectedYear &&
             widget.maximumValue!.month == selectedMonth &&
             widget.maximumValue!.day < day);
   }
 
   @override
-  bool get _isCurrentDateValid =>
-      super._isCurrentDateValid && minSelectedDate.day == selectedDay;
+  bool get _isCurrentDateValid {
+    return super._isCurrentDateValid && minSelectedDate.day == selectedDay;
+  }
 
   // One or more pickers have just stopped scrolling.
   @override
@@ -1101,7 +1129,7 @@ class _CupertinoDatePickerState extends _CupertinoMonthPickerState {
     if (!minCheck || maxCheck) {
       // We have minCheck === !maxCheck.
       final DateTime targetDate =
-          minCheck ? widget.maximumValue! : widget.minimumValue!;
+      minCheck ? widget.maximumValue! : widget.minimumValue!;
       _scrollToDate(targetDate);
       return;
     }
@@ -1210,7 +1238,7 @@ class _CupertinoDatePickerState extends _CupertinoMonthPickerState {
         id: i,
         child: pickerBuilders[i](
           offAxisFraction,
-          (BuildContext context, Widget? child) {
+              (BuildContext context, Widget? child) {
             return Container(
               alignment: i == columnWidths.length - 1
                   ? alignCenterLeft
@@ -1229,7 +1257,7 @@ class _CupertinoDatePickerState extends _CupertinoMonthPickerState {
     }
 
     final double maxPickerWidth =
-        totalColumnWidths > _kPickerWidth ? totalColumnWidths : _kPickerWidth;
+    totalColumnWidths > _kPickerWidth ? totalColumnWidths : _kPickerWidth;
     return (pickers, columnWidths, maxPickerWidth);
   }
 }
@@ -1277,23 +1305,24 @@ class TxCupertinoDatetimePicker extends TxCupertinoDatePicker {
     bool? showSeconds,
     int? minuteInterval,
     int? secondInterval,
-  })  : showSeconds = showSeconds ?? false,
+  })
+      : showSeconds = showSeconds ?? false,
         minuteInterval = minuteInterval ?? 1,
         secondInterval = secondInterval ?? 1,
         assert(
-            minuteInterval == null ||
-                (minuteInterval > 0 && 60 % minuteInterval == 0),
-            'minuteInterval must be a positive integer and a factor of 60'),
+        minuteInterval == null ||
+            (minuteInterval > 0 && 60 % minuteInterval == 0),
+        'minuteInterval must be a positive integer and a factor of 60'),
         assert(
-            secondInterval == null ||
-                (secondInterval > 0 && 60 % secondInterval == 0),
-            'secondInterval must be a positive integer and a factor of 60'),
+        secondInterval == null ||
+            (secondInterval > 0 && 60 % secondInterval == 0),
+        'secondInterval must be a positive integer and a factor of 60'),
         super(
-          initialDate: initialDatetime,
-          onDateChanged: onDatetimeChanged,
-          minimumDate: minimumDatetime,
-          maximumDate: maximumDatetime,
-        );
+        initialDate: initialDatetime,
+        onDateChanged: onDatetimeChanged,
+        minimumDate: minimumDatetime,
+        maximumDate: maximumDatetime,
+      );
 
   /// Whether to show the seconds picker. Defaults to true.
   final bool showSeconds;
@@ -1307,6 +1336,32 @@ class TxCupertinoDatetimePicker extends TxCupertinoDatePicker {
   final int secondInterval;
 
   @override
+  DateTime? get minimumValue =>
+      _minimumDate == null
+          ? null
+          : DateTime(
+        _minimumDate!.year,
+        _minimumDate!.month,
+        _minimumDate!.day,
+        _minimumDate!.hour,
+        _minimumDate!.minute,
+        showSeconds ? _minimumDate!.second : 0,
+      );
+
+  @override
+  DateTime? get maximumValue =>
+      _maximumDate == null
+          ? null
+          : DateTime(
+        _maximumDate!.year,
+        _maximumDate!.month,
+        _maximumDate!.day,
+        _maximumDate!.hour,
+        _maximumDate!.minute,
+        showSeconds ? _maximumDate!.second : 0,
+      );
+
+  @override
   State<TxCupertinoPicker<DateTime>> createState() =>
       _CupertinoDatetimePickerState();
 }
@@ -1317,33 +1372,34 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
       super.widget as TxCupertinoDatetimePicker;
 
   @override
-  DateTime get minSelectedDate => DateTime(
+  DateTime get minSelectedDate =>
+      DateTime(
         selectedYear,
         selectedMonth,
         selectedDay,
         selectedHour,
         selectedMinute,
-        selectedSecond,
+        // widget.showSeconds ? selectedSecond : 0,
       );
 
   @override
-  DateTime get maxSelectedDate => DateTime(
+  DateTime get maxSelectedDate =>
+      DateTime(
         selectedYear,
         selectedMonth,
         selectedDay,
         selectedHour,
-        selectedMinute,
-        selectedSecond + 1,
+        selectedMinute + 1,
       );
 
   @override
-  DateTime get currentSelectedDate => DateTime(
+  DateTime get currentSelectedDate =>
+      DateTime(
         selectedYear,
         selectedMonth,
         selectedDay,
         selectedHour,
         selectedMinute,
-        selectedSecond,
       );
 
   // The currently selected values of the time picker.
@@ -1363,9 +1419,9 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
   @override
   bool get isScrolling =>
       isHourPickerScrolling ||
-      isMinutePickerScrolling ||
-      isSecondPickerScrolling ||
-      super.isScrolling;
+          isMinutePickerScrolling ||
+          isSecondPickerScrolling ||
+          super.isScrolling;
 
   @override
   void initState() {
@@ -1444,7 +1500,7 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
       offAxisFraction,
       itemPositioningBuilder,
       selectionOverlay,
-      (val) => isHourPickerScrolling = val,
+          (val) => isHourPickerScrolling = val,
       hourController,
       onSelectedChanged,
       children,
@@ -1463,7 +1519,7 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
     }
 
     final List<Widget> children =
-        List<Widget>.generate(minuteCount, (int index) {
+    List<Widget>.generate(minuteCount, (int index) {
       final int minute = index * widget.minuteInterval;
       final bool isInvalid = _isMinuteInvalid(minute);
 
@@ -1480,7 +1536,7 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
       offAxisFraction,
       itemPositioningBuilder,
       selectionOverlay,
-      (val) => isMinutePickerScrolling = val,
+          (val) => isMinutePickerScrolling = val,
       minuteController,
       onSelectedChanged,
       children,
@@ -1499,7 +1555,7 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
     }
 
     final List<Widget> children =
-        List<Widget>.generate(secondCount, (int index) {
+    List<Widget>.generate(secondCount, (int index) {
       final int second = index * widget.secondInterval;
 
       final bool isInvalid = _isSecondInvalid(second);
@@ -1517,7 +1573,7 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
       offAxisFraction,
       itemPositioningBuilder,
       selectionOverlay,
-      (val) => isSecondPickerScrolling = val,
+          (val) => isSecondPickerScrolling = val,
       secondController,
       onSelectedChanged,
       children,
@@ -1536,9 +1592,9 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
     }
 
     return (widget.minimumValue?.year == selectedYear &&
-            widget.minimumValue!.month == selectedMonth &&
-            widget.minimumValue!.day == selectedDay &&
-            widget.minimumValue!.hour > hour) ||
+        widget.minimumValue!.month == selectedMonth &&
+        widget.minimumValue!.day == selectedDay &&
+        widget.minimumValue!.hour > hour) ||
         (widget.maximumValue?.year == selectedYear &&
             widget.maximumValue!.month == selectedMonth &&
             widget.maximumValue!.day == selectedDay &&
@@ -1558,10 +1614,10 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
     }
 
     return (widget.minimumValue?.year == selectedYear &&
-            widget.minimumValue!.month == selectedMonth &&
-            widget.minimumValue!.day == selectedDay &&
-            widget.minimumValue!.hour == selectedHour &&
-            widget.minimumValue!.minute > minute) ||
+        widget.minimumValue!.month == selectedMonth &&
+        widget.minimumValue!.day == selectedDay &&
+        widget.minimumValue!.hour == selectedHour &&
+        widget.minimumValue!.minute > minute) ||
         (widget.maximumValue?.year == selectedYear &&
             widget.maximumValue!.month == selectedMonth &&
             widget.maximumValue!.day == selectedDay &&
@@ -1583,11 +1639,11 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
     }
 
     return (widget.minimumValue?.year == selectedYear &&
-            widget.minimumValue!.month == selectedMonth &&
-            widget.minimumValue!.day == selectedDay &&
-            widget.minimumValue!.hour == selectedHour &&
-            widget.minimumValue!.minute == selectedMinute &&
-            widget.minimumValue!.second > second) ||
+        widget.minimumValue!.month == selectedMonth &&
+        widget.minimumValue!.day == selectedDay &&
+        widget.minimumValue!.hour == selectedHour &&
+        widget.minimumValue!.minute == selectedMinute &&
+        widget.minimumValue!.second > second) ||
         (widget.maximumValue?.year == selectedYear &&
             widget.maximumValue!.month == selectedMonth &&
             widget.maximumValue!.day == selectedDay &&
@@ -1597,11 +1653,11 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
   }
 
   @override
-  bool get _isCurrentDateValid =>
-      super._isCurrentDateValid &&
-      minSelectedDate.hour == selectedHour &&
-      minSelectedDate.minute == selectedMinute &&
-      minSelectedDate.second == selectedSecond;
+  bool get _isCurrentDateValid {
+    return super._isCurrentDateValid &&
+        minSelectedDate.hour == selectedHour &&
+        minSelectedDate.minute == selectedMinute;
+  }
 
   @override
   void _scrollToDate(DateTime newDate) {
@@ -1717,7 +1773,7 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
         id: i,
         child: pickerBuilders[i](
           offAxisFraction,
-          (BuildContext context, Widget? child) {
+              (BuildContext context, Widget? child) {
             return Container(
               alignment: i == columnWidths.length - 1
                   ? alignCenterLeft
@@ -1736,7 +1792,7 @@ class _CupertinoDatetimePickerState extends _CupertinoDatePickerState {
     }
 
     final double maxPickerWidth =
-        totalColumnWidths > _kPickerWidth ? totalColumnWidths : _kPickerWidth;
+    totalColumnWidths > _kPickerWidth ? totalColumnWidths : _kPickerWidth;
     return (pickers, columnWidths, maxPickerWidth);
   }
 }
@@ -1746,8 +1802,8 @@ class TxCupertinoTimePicker extends TxCupertinoPicker<TimeOfDay> {
   TxCupertinoTimePicker({
     required ValueChanged<TimeOfDay> onTimeChanged,
     TimeOfDay? initialTime,
-    TimeOfDay? minimumTime,
-    TimeOfDay? maximumTime,
+    this.minimumTime,
+    this.maximumTime,
     this.minuteInterval = 1,
     super.key,
     super.backgroundColor,
@@ -1760,20 +1816,22 @@ class TxCupertinoTimePicker extends TxCupertinoPicker<TimeOfDay> {
     super.unselectedTextStyle,
     super.unselectedColor,
   }) : super(
-          initialValue: initialTime,
-          onChanged: onTimeChanged,
-          minimumValue: minimumTime,
-          maximumValue: maximumTime,
-        ) {
+    initialValue: initialTime,
+    onChanged: onTimeChanged,
+  ) {
     assert(
-      initialValue == null || initialValue!.minute % minuteInterval == 0,
-      'initial minute is not divisible by minute interval',
+    initialValue == null || initialValue!.minute % minuteInterval == 0,
+    'initial minute is not divisible by minute interval',
     );
   }
 
   /// The granularity of the minutes spinner, if it is shown in the current
   /// mode. Must be an integer factor of 60.
   final int minuteInterval;
+
+  final TimeOfDay? minimumTime;
+
+  final TimeOfDay? maximumTime;
 
   @override
   State<TxCupertinoPicker<TimeOfDay>> createState() =>
@@ -1783,11 +1841,11 @@ class TxCupertinoTimePicker extends TxCupertinoPicker<TimeOfDay> {
 class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
   TimeOfDay get _initialTime {
     final TimeOfDay now = widget.initialValue ?? TimeOfDay.now();
-    if (widget.minimumValue != null && now.isBefore(widget.minimumValue!)) {
-      return widget.minimumValue!;
+    if (widget.minimumTime != null && now.isBefore(widget.minimumTime!)) {
+      return widget.minimumTime!;
     }
-    if (widget.maximumValue != null && now.isAfter(widget.maximumValue!)) {
-      return widget.maximumValue!;
+    if (widget.maximumTime != null && now.isAfter(widget.maximumTime!)) {
+      return widget.maximumTime!;
     }
     return now;
   }
@@ -1803,9 +1861,10 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
   // initialTime in the widget after first build is ignored.
   late TimeOfDay initialTime;
 
-  int get selectedHour => hourController.hasClients
-      ? hourController.selectedItem % 24
-      : initialTime.hour;
+  int get selectedHour =>
+      hourController.hasClients
+          ? hourController.selectedItem % 24
+          : initialTime.hour;
 
   // The controller of the hour column.
   late FixedExtentScrollController hourController;
@@ -1907,12 +1966,12 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
   // `hourIndex`, is it possible to change the value of the minute picker, so
   // that the resulting date stays in the valid range.
   bool _isInvalidHour(int hour) {
-    return (widget.minimumValue != null && widget.minimumValue!.hour > hour) ||
-        (widget.maximumValue != null && widget.maximumValue!.hour < hour);
+    return (widget.minimumTime != null && widget.minimumTime!.hour > hour) ||
+        (widget.maximumTime != null && widget.maximumTime!.hour < hour);
   }
 
   bool _isInvalidMinute(int minute) {
-    if (widget.minimumValue == null && widget.maximumValue == null) {
+    if (widget.minimumTime == null && widget.maximumTime == null) {
       return false;
     }
 
@@ -1920,17 +1979,15 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
       return minute != selectedMinute;
     }
 
-    return (widget.minimumValue?.hour == selectedHour &&
-            widget.minimumValue!.minute > minute) ||
-        (widget.maximumValue!.hour == selectedHour &&
-            widget.maximumValue!.minute < minute);
+    return (widget.minimumTime?.hour == selectedHour &&
+        widget.minimumTime!.minute > minute) ||
+        (widget.maximumTime!.hour == selectedHour &&
+            widget.maximumTime!.minute < minute);
   }
 
-  Widget _buildHourPicker(
-    double offAxisFraction,
-    TransitionBuilder itemPositioningBuilder,
-    Widget selectionOverlay,
-  ) {
+  Widget _buildHourPicker(double offAxisFraction,
+      TransitionBuilder itemPositioningBuilder,
+      Widget selectionOverlay,) {
     final List<Widget> children = List<Widget>.generate(24, (int index) {
       return itemPositioningBuilder(
         context,
@@ -1946,7 +2003,7 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
       offAxisFraction,
       itemPositioningBuilder,
       selectionOverlay,
-      (val) => isHourPickerScrolling = val,
+          (val) => isHourPickerScrolling = val,
       hourController,
       _onSelectedItemChange,
       children,
@@ -1956,7 +2013,7 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
   Widget _buildMinutePicker(double offAxisFraction,
       TransitionBuilder itemPositioningBuilder, Widget selectionOverlay) {
     final List<Widget> children =
-        List<Widget>.generate(60 ~/ widget.minuteInterval, (int index) {
+    List<Widget>.generate(60 ~/ widget.minuteInterval, (int index) {
       final int minute = index * widget.minuteInterval;
 
       final bool isInvalidMinute = _isInvalidMinute(minute);
@@ -1975,7 +2032,7 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
       offAxisFraction,
       itemPositioningBuilder,
       selectionOverlay,
-      (val) => isMinutePickerScrolling = val,
+          (val) => isMinutePickerScrolling = val,
       minuteController,
       _onSelectedItemChange,
       children,
@@ -1995,15 +2052,15 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
     // Whenever scrolling lands on an invalid entry, the picker
     // automatically scrolls to a valid one.
     final TimeOfDay selectedTime =
-        TimeOfDay(hour: selectedHour, minute: selectedMinute);
+    TimeOfDay(hour: selectedHour, minute: selectedMinute);
 
-    final bool minCheck = widget.minimumValue?.isAfter(selectedTime) ?? false;
-    final bool maxCheck = widget.maximumValue?.isBefore(selectedTime) ?? false;
+    final bool minCheck = widget.minimumTime?.isAfter(selectedTime) ?? false;
+    final bool maxCheck = widget.maximumTime?.isBefore(selectedTime) ?? false;
 
     if (minCheck || maxCheck) {
       // We have minCheck === !maxCheck.
       final TimeOfDay targetTime =
-          minCheck ? widget.minimumValue! : widget.maximumValue!;
+      minCheck ? widget.minimumTime! : widget.maximumTime!;
       _scrollToTime(targetTime, selectedTime, minCheck);
     }
   }
@@ -2020,7 +2077,7 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
       if (fromTime.minute != newTime.minute) {
         final double positionDouble = newTime.minute / widget.minuteInterval;
         final int position =
-            minCheck ? positionDouble.ceil() : positionDouble.floor();
+        minCheck ? positionDouble.ceil() : positionDouble.floor();
         _animateColumnControllerToItem(minuteController, position);
       }
     }, debugLabel: 'DatePicker.scrollToDate');
@@ -2036,9 +2093,9 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
     // Swap the hours and minutes if RTL to ensure they are in the correct
     // position.
     final List<_ColumnBuilder> pickerBuilders =
-        Directionality.of(context) == TextDirection.rtl
-            ? <_ColumnBuilder>[_buildMinutePicker, _buildHourPicker]
-            : <_ColumnBuilder>[_buildHourPicker, _buildMinutePicker];
+    Directionality.of(context) == TextDirection.rtl
+        ? <_ColumnBuilder>[_buildMinutePicker, _buildHourPicker]
+        : <_ColumnBuilder>[_buildHourPicker, _buildMinutePicker];
 
     return (pickerBuilders, columnWidths);
   }
@@ -2075,7 +2132,7 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
         id: i,
         child: pickerBuilders[i](
           offAxisFraction,
-          (BuildContext context, Widget? child) {
+              (BuildContext context, Widget? child) {
             return Container(
               alignment: i == columnWidths.length - 1
                   ? alignCenterLeft
@@ -2098,7 +2155,7 @@ class _CupertinoTimePickerState extends _CupertinoPickerState<TimeOfDay> {
     }
 
     final double maxPickerWidth =
-        totalColumnWidths > _kPickerWidth ? totalColumnWidths : _kPickerWidth;
+    totalColumnWidths > _kPickerWidth ? totalColumnWidths : _kPickerWidth;
 
     return (pickers, columnWidths, maxPickerWidth);
   }
@@ -2121,7 +2178,8 @@ class TxCupertinoYearPicker extends StatefulWidget {
     this.textStyle,
     this.unselectedTextStyle,
     this.unselectedColor,
-  })  : itemExtent = itemExtent ?? _kItemExtent,
+  })
+      : itemExtent = itemExtent ?? _kItemExtent,
         useMagnifier = useMagnifier ?? _kUseMagnifier,
         magnification = magnification ?? _kMagnification,
         squeeze = squeeze ?? _kSqueeze,
@@ -2188,11 +2246,9 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
 
   bool get isCurrentYearValid => minCheck && maxCheck;
 
-  Widget _buildYearPicker(
-    double offAxisFraction,
-    TransitionBuilder itemPositioningBuilder,
-    Widget selectionOverlay,
-  ) {
+  Widget _buildYearPicker(double offAxisFraction,
+      TransitionBuilder itemPositioningBuilder,
+      Widget selectionOverlay,) {
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification notification) {
         if (notification is ScrollStartNotification) {
@@ -2244,7 +2300,9 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
   @override
   void initState() {
     super.initState();
-    selectedYear = widget.initialYear ?? DateTime.now().year;
+    selectedYear = widget.initialYear ?? DateTime
+        .now()
+        .year;
     if (widget.minimumYear != null && selectedYear < widget.minimumYear!) {
       selectedYear = widget.minimumYear!;
     } else if (widget.maximumYear != null &&
@@ -2258,7 +2316,9 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
   @override
   void didUpdateWidget(covariant TxCupertinoYearPicker oldWidget) {
     if (widget.initialYear != selectedYear) {
-      selectedYear = widget.initialYear ?? DateTime.now().year;
+      selectedYear = widget.initialYear ?? DateTime
+          .now()
+          .year;
       scrollToYear(selectedYear);
     }
     super.didUpdateWidget(oldWidget);
@@ -2276,7 +2336,7 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
       id: 0,
       child: pickerBuilder(
         0,
-        (BuildContext context, Widget? child) => Center(child: child),
+            (BuildContext context, Widget? child) => Center(child: child),
         selectionOverlay,
       ),
     ));
@@ -2315,7 +2375,7 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
     final bool maxCheck = this.maxCheck;
     if (!minCheck || !maxCheck) {
       final int targetYear =
-          minCheck ? widget.maximumYear! : widget.minimumYear!;
+      minCheck ? widget.maximumYear! : widget.minimumYear!;
       scrollToYear(targetYear);
       return;
     }
@@ -2330,14 +2390,17 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
   /// 文字样式
   TextStyle themeTextStyle(BuildContext context, {bool isValid = true}) {
     final TextStyle style =
-        CupertinoTheme.of(context).textTheme.dateTimePickerTextStyle;
+        CupertinoTheme
+            .of(context)
+            .textTheme
+            .dateTimePickerTextStyle;
     return isValid
         ? style.copyWith(
-            color: CupertinoDynamicColor.maybeResolve(style.color, context))
+        color: CupertinoDynamicColor.maybeResolve(style.color, context))
         : style.copyWith(
-            color: CupertinoDynamicColor.resolve(
-                CupertinoColors.inactiveGray, context),
-          );
+      color: CupertinoDynamicColor.resolve(
+          CupertinoColors.inactiveGray, context),
+    );
   }
 
   @override
@@ -2345,7 +2408,7 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
     super.didChangeDependencies();
 
     textDirectionFactor =
-        Directionality.of(context) == TextDirection.ltr ? 1 : -1;
+    Directionality.of(context) == TextDirection.ltr ? 1 : -1;
     localizations = CupertinoLocalizations.of(context);
   }
 
@@ -2357,32 +2420,35 @@ class _TxCupertinoYearPickerState extends State<TxCupertinoYearPicker> {
 }
 
 /// 显示 iOS 风格的年份选择器
-Future<int?> showCupertinoYearPicker(
-  BuildContext context, {
+Future<int?> showCupertinoYearPicker(BuildContext context, {
   String? titleText,
   int? initialYear,
   int? minimumYear,
   int? maximumYear,
   Color? backgroundColor,
 }) async {
-  int? result = initialYear ?? DateTime.now().year;
+  int? result = initialYear ?? DateTime
+      .now()
+      .year;
   return await showDefaultBottomSheet(
     context,
-    title: titleText ?? TxLocalizations.of(context).yearPickerTitle,
-    contentBuilder: (context) => TxCupertinoYearPicker(
-      onChanged: (year) => result = year,
-      initialYear: initialYear,
-      minimumYear: minimumYear,
-      maximumYear: maximumYear,
-      backgroundColor: backgroundColor,
-    ),
+    title: titleText ?? TxLocalizations
+        .of(context)
+        .yearPickerTitle,
+    contentBuilder: (context) =>
+        TxCupertinoYearPicker(
+          onChanged: (year) => result = year,
+          initialYear: initialYear,
+          minimumYear: minimumYear,
+          maximumYear: maximumYear,
+          backgroundColor: backgroundColor,
+        ),
     onConfirm: () => Navigator.pop(context, result),
   );
 }
 
 /// 显示 iOS 风格的月份选择器
-Future<DateTime?> showCupertinoMonthPicker(
-  BuildContext context, {
+Future<DateTime?> showCupertinoMonthPicker(BuildContext context, {
   String? titleText,
   DateTime? initialMonth,
   DateTime? minimumMonth,
@@ -2411,33 +2477,38 @@ Future<DateTime?> showCupertinoMonthPicker(
 
   return await showDefaultBottomSheet<DateTime>(
     context,
-    title: titleText ?? TxLocalizations.of(context).monthPickerTitle,
+    title: titleText ?? TxLocalizations
+        .of(context)
+        .monthPickerTitle,
     elevation: 0,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    contentBuilder: (context) => TxCupertinoMonthPicker(
-      initialMonth: result,
-      minimumYear: minimumYear,
-      maximumYear: maximumYear,
-      minimumDate: minimumMonth,
-      maximumDate: maximumMonth,
-      backgroundColor: backgroundColor,
-      onMonthChanged: (DateTime date) => result = date,
-      dateOrder: dateOrder,
-      itemExtent: itemExtent,
-      useMagnifier: useMagnifier,
-      magnification: magnification,
-      diameterRatio: diameterRatio,
-      textStyle: textStyle,
-      unselectedColor: unselectedColor,
-      unselectedTextStyle: unselectedTextStyle,
-    ),
+    backgroundColor: Theme
+        .of(context)
+        .colorScheme
+        .surface,
+    contentBuilder: (context) =>
+        TxCupertinoMonthPicker(
+          initialMonth: result,
+          minimumYear: minimumYear,
+          maximumYear: maximumYear,
+          minimumMonth: minimumMonth,
+          maximumMonth: maximumMonth,
+          backgroundColor: backgroundColor,
+          onMonthChanged: (DateTime date) => result = date,
+          dateOrder: dateOrder,
+          itemExtent: itemExtent,
+          useMagnifier: useMagnifier,
+          magnification: magnification,
+          diameterRatio: diameterRatio,
+          textStyle: textStyle,
+          unselectedColor: unselectedColor,
+          unselectedTextStyle: unselectedTextStyle,
+        ),
     onConfirm: () => Navigator.pop(context, result),
   );
 }
 
 /// 显示 iOS 风格的日期时间选择器
-Future<DateTime?> showCupertinoDatetimePicker(
-  BuildContext context, {
+Future<DateTime?> showCupertinoDatetimePicker(BuildContext context, {
   String? titleText,
   DateTime? initialDateTime,
   DateTime? minimumDate,
@@ -2469,36 +2540,41 @@ Future<DateTime?> showCupertinoDatetimePicker(
 
   return await showDefaultBottomSheet<DateTime>(
     context,
-    title: titleText ?? TxLocalizations.of(context).datetimePickerTitle,
+    title: titleText ?? TxLocalizations
+        .of(context)
+        .datetimePickerTitle,
     elevation: 0,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    contentBuilder: (context) => TxCupertinoDatetimePicker(
-      initialDatetime: result,
-      minimumDatetime: minimumDate,
-      maximumDatetime: maximumDate,
-      backgroundColor: backgroundColor,
-      onDatetimeChanged: (DateTime datetime) => result = datetime,
-      itemExtent: itemExtent,
-      useMagnifier: useMagnifier,
-      magnification: magnification,
-      diameterRatio: diameterRatio,
-      textStyle: textStyle,
-      unselectedColor: unselectedColor,
-      unselectedTextStyle: unselectedTextStyle,
-      showSeconds: showSeconds,
-      minuteInterval: minuteInterval,
-      secondInterval: secondInterval,
-      minimumYear: minimumYear,
-      maximumYear: maximumYear,
-      squeeze: squeeze,
-    ),
+    backgroundColor: Theme
+        .of(context)
+        .colorScheme
+        .surface,
+    contentBuilder: (context) =>
+        TxCupertinoDatetimePicker(
+          initialDatetime: result,
+          minimumDatetime: minimumDate,
+          maximumDatetime: maximumDate,
+          backgroundColor: backgroundColor,
+          onDatetimeChanged: (DateTime datetime) => result = datetime,
+          itemExtent: itemExtent,
+          useMagnifier: useMagnifier,
+          magnification: magnification,
+          diameterRatio: diameterRatio,
+          textStyle: textStyle,
+          unselectedColor: unselectedColor,
+          unselectedTextStyle: unselectedTextStyle,
+          showSeconds: showSeconds,
+          minuteInterval: minuteInterval,
+          secondInterval: secondInterval,
+          minimumYear: minimumYear,
+          maximumYear: maximumYear,
+          squeeze: squeeze,
+        ),
     onConfirm: () => Navigator.pop(context, result),
   );
 }
 
 /// 显示 iOS 风格的日期选择器
-Future<DateTime?> showCupertinoDatePicker(
-  BuildContext context, {
+Future<DateTime?> showCupertinoDatePicker(BuildContext context, {
   String? titleText,
   DateTime? initialDate,
   DateTime? minimumDate,
@@ -2527,33 +2603,38 @@ Future<DateTime?> showCupertinoDatePicker(
 
   return await showDefaultBottomSheet<DateTime>(
     context,
-    title: titleText ?? TxLocalizations.of(context).datePickerTitle,
+    title: titleText ?? TxLocalizations
+        .of(context)
+        .datePickerTitle,
     elevation: 0,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    contentBuilder: (context) => TxCupertinoDatePicker(
-      initialDate: result,
-      minimumYear: minimumYear,
-      maximumYear: maximumYear,
-      minimumDate: minimumDate,
-      maximumDate: maximumDate,
-      backgroundColor: backgroundColor,
-      onDateChanged: (DateTime date) => result = date,
-      dateOrder: dateOrder,
-      itemExtent: itemExtent,
-      useMagnifier: useMagnifier,
-      magnification: magnification,
-      diameterRatio: diameterRatio,
-      textStyle: textStyle,
-      unselectedColor: unselectedColor,
-      unselectedTextStyle: unselectedTextStyle,
-    ),
+    backgroundColor: Theme
+        .of(context)
+        .colorScheme
+        .surface,
+    contentBuilder: (context) =>
+        TxCupertinoDatePicker(
+          initialDate: result,
+          minimumYear: minimumYear,
+          maximumYear: maximumYear,
+          minimumDate: minimumDate,
+          maximumDate: maximumDate,
+          backgroundColor: backgroundColor,
+          onDateChanged: (DateTime date) => result = date,
+          dateOrder: dateOrder,
+          itemExtent: itemExtent,
+          useMagnifier: useMagnifier,
+          magnification: magnification,
+          diameterRatio: diameterRatio,
+          textStyle: textStyle,
+          unselectedColor: unselectedColor,
+          unselectedTextStyle: unselectedTextStyle,
+        ),
     onConfirm: () => Navigator.pop(context, result),
   );
 }
 
 /// 显示 iOS 风格的事件选择器
-Future<TimeOfDay?> showCupertinoTimePicker(
-  BuildContext context, {
+Future<TimeOfDay?> showCupertinoTimePicker(BuildContext context, {
   String? titleText,
   TimeOfDay? initialTime,
   TimeOfDay? minimumTime,
@@ -2573,23 +2654,29 @@ Future<TimeOfDay?> showCupertinoTimePicker(
   TimeOfDay result = initialTime ?? TimeOfDay.now();
   return await showDefaultBottomSheet<TimeOfDay>(
     context,
-    title: titleText ?? TxLocalizations.of(context).timePickerTitle,
+    title: titleText ?? TxLocalizations
+        .of(context)
+        .timePickerTitle,
     elevation: 0,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    contentBuilder: (context) => TxCupertinoTimePicker(
-      initialTime: result,
-      minimumTime: minimumTime,
-      maximumTime: maximumTime,
-      backgroundColor: backgroundColor,
-      onTimeChanged: (TimeOfDay time) => result = time,
-      itemExtent: itemExtent,
-      useMagnifier: useMagnifier,
-      magnification: magnification,
-      diameterRatio: diameterRatio,
-      textStyle: textStyle,
-      unselectedColor: unselectedColor,
-      unselectedTextStyle: unselectedTextStyle,
-    ),
+    backgroundColor: Theme
+        .of(context)
+        .colorScheme
+        .surface,
+    contentBuilder: (context) =>
+        TxCupertinoTimePicker(
+          initialTime: result,
+          minimumTime: minimumTime,
+          maximumTime: maximumTime,
+          backgroundColor: backgroundColor,
+          onTimeChanged: (TimeOfDay time) => result = time,
+          itemExtent: itemExtent,
+          useMagnifier: useMagnifier,
+          magnification: magnification,
+          diameterRatio: diameterRatio,
+          textStyle: textStyle,
+          unselectedColor: unselectedColor,
+          unselectedTextStyle: unselectedTextStyle,
+        ),
     onConfirm: () => Navigator.pop(context, result),
   );
 }

@@ -1,3 +1,6 @@
+# 0.2.25
+* Fixed the issue of incorrect calculation of the maximum and minimum values of the date selector in some extreme cases.
+
 # 0.2.24
 * Fix some issues.
 
