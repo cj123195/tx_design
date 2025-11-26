@@ -12,19 +12,6 @@ typedef PickVoidCallback<T> = Future<T?> Function(
   T? initialValue,
 );
 
-/// 处理多选框输入内容变更事件
-void _onInputChanged<T>(
-  TxFormFieldState<T> field,
-  String? text,
-  bool? inputEnabled,
-) {
-  if (inputEnabled == true) {
-    if (text != field.value) {
-      field.didChange(text as T?);
-    }
-  }
-}
-
 /// 处理输入框点击事件
 Future<void> _onTap<T>(
   TxFormFieldState<T> field,
@@ -65,64 +52,24 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     String? hintText,
     super.textAlign,
     super.bordered,
-    super.controller,
-    super.undoController,
-    super.keyboardType,
-    super.textInputAction,
-    super.textCapitalization,
     super.style,
     super.strutStyle,
     super.textAlignVertical,
     super.textDirection,
-    bool? readOnly,
-    bool? inputEnabled,
-    super.showCursor,
-    super.autofocus,
-    super.statesController,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
+    super.readOnly,
     super.maxLines,
     super.minLines,
     super.expands,
-    super.maxLength,
-    super.maxLengthEnforcement,
-    super.onEditingComplete,
-    super.onFieldSubmitted,
-    super.onAppPrivateCommand,
-    super.inputFormatters,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorOpacityAnimates,
-    super.cursorColor,
-    super.cursorErrorColor,
-    super.selectionHeightStyle,
-    super.selectionWidthStyle,
-    super.keyboardAppearance,
     super.scrollPadding,
     super.dragStartBehavior,
-    super.enableInteractiveSelection,
-    super.selectionControls,
     FormFieldTapCallback<T>? onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,
-    super.buildCounter,
     super.scrollController,
     super.scrollPhysics,
-    super.autofillHints,
-    super.contentInsertionConfiguration,
     super.clipBehavior,
-    super.scribbleEnabled,
-    super.enableIMEPersonalizedLearning,
-    super.contextMenuBuilder,
     super.canRequestFocus,
-    super.spellCheckConfiguration,
-    super.magnifierConfiguration,
     super.label,
     super.labelText,
     super.labelTextAlign,
@@ -145,9 +92,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.dense,
     super.colon,
     super.focusColor,
-  })  : _readOnly = readOnly ?? false,
-        inputEnabled = inputEnabled ?? false,
-        super(
+  }) : super(
           initialValue:
               initData<T, V>(source, initialData, initialValue, valueMapper),
           onTap: (field) {
@@ -163,14 +108,12 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
 
             _onTap(
               field,
-                  (context, value) => showPickerBottomSheet<T, V>(
+              (context, value) => showPickerBottomSheet<T, V>(
                 context,
                 source: readOnly == true
                     ? source
-                    : <T>{
-                  ...source,
-                  if (field.value != null) field.value!
-                }.toList(),
+                    : <T>{...source, if (field.value != null) field.value!}
+                        .toList(),
                 labelMapper: labelMapper,
                 valueMapper: valueMapper,
                 initialData: value,
@@ -184,16 +127,8 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
               ),
             );
           },
-          readOnly: inputEnabled != true || readOnly == true,
-          onInputChanged: (field, text) => _onInputChanged<T>(
-            field,
-            text,
-            inputEnabled,
-          ),
           displayTextMapper: (context, val) => labelMapper(val) ?? '',
-          hintText: readOnly == true
-              ? null
-              : hintText ?? (inputEnabled == true ? '请选择或输入' : '请选择'),
+          hintText: readOnly == true ? null : hintText ?? '请选择',
           validator: readOnly == true
               ? null
               : (val) => generateValidator(val, validator, required),
@@ -214,65 +149,25 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.required,
     super.initialValue,
     String? hintText,
-    super.controller,
     super.focusNode,
-    super.keyboardType,
-    super.textCapitalization,
-    super.textInputAction,
     super.style,
     super.strutStyle,
     super.textDirection,
     super.textAlign,
     super.bordered,
     super.textAlignVertical,
-    super.autofocus,
-    bool? readOnly,
-    bool? inputEnabled,
-    super.showCursor,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLengthEnforcement,
+    super.readOnly,
     super.maxLines,
     super.minLines,
     super.expands,
-    super.maxLength,
     super.onTapAlwaysCalled,
     super.onTapOutside,
-    super.onEditingComplete,
-    super.onFieldSubmitted,
-    super.inputFormatters,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorColor,
-    super.cursorRadius,
-    super.cursorErrorColor,
-    super.keyboardAppearance,
     super.scrollPadding,
-    super.enableInteractiveSelection,
-    super.selectionControls,
-    super.buildCounter,
     super.scrollPhysics,
-    super.autofillHints,
     super.scrollController,
-    super.enableIMEPersonalizedLearning,
     super.mouseCursor,
-    super.contextMenuBuilder,
-    super.spellCheckConfiguration,
-    super.magnifierConfiguration,
-    super.undoController,
-    super.onAppPrivateCommand,
-    super.cursorOpacityAnimates,
-    super.selectionHeightStyle,
-    super.selectionWidthStyle,
     super.dragStartBehavior,
-    super.contentInsertionConfiguration,
-    super.statesController,
     super.clipBehavior,
-    super.scribbleEnabled,
     super.canRequestFocus,
     super.label,
     super.labelText,
@@ -296,25 +191,11 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.dense,
     super.focusColor,
     super.colon,
-  })  : _readOnly = readOnly ?? false,
-        inputEnabled = inputEnabled ?? false,
-        super(
-          onTap:
-              readOnly == true ? null : (field) => _onTap(field, onPickTap!),
-          readOnly: inputEnabled != true || readOnly == true,
-          onInputChanged: (field, text) =>
-              _onInputChanged<T>(field, text, inputEnabled),
-          hintText: readOnly == true
-              ? null
-              : hintText ?? (inputEnabled == true ? '请选择或输入' : '请选择'),
+  }) : super(
+          onTap: readOnly == true ? null : (field) => _onTap(field, onPickTap!),
+          hintText: readOnly == true ? null : hintText ?? '请选择',
           validator: (val) => generateValidator(val, validator, required),
         );
-
-  /// 是否可选
-  final bool _readOnly;
-
-  /// 是否允许输入
-  final bool inputEnabled;
 
   /// 根据当前表单值 [value]、传入验证器 [validator]、 是否必填 [required] 生成默认验证器法。
   static String? generateValidator<T>(
@@ -368,7 +249,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
 class TxPickerFormFieldState<T, V> extends TxCommonTextFormFieldState<T> {
   @override
   bool get clearable =>
-      !widget._readOnly && isEnabled && widget.clearable != false && !isEmpty;
+      !widget.readOnly && isEnabled && widget.clearable != false && !isEmpty;
 
   @override
   TxPickerFormField<T, V> get widget => super.widget as TxPickerFormField<T, V>;
@@ -376,7 +257,7 @@ class TxPickerFormFieldState<T, V> extends TxCommonTextFormFieldState<T> {
   @override
   List<Widget>? get suffixIcons => [
         ...?super.suffixIcons,
-        if (isEnabled && !widget._readOnly)
+        if (isEnabled && !widget.readOnly)
           const Icon(Icons.keyboard_arrow_right),
       ];
 }
