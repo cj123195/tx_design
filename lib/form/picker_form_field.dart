@@ -14,9 +14,11 @@ typedef PickVoidCallback<T> = Future<T?> Function(
 
 /// 处理输入框点击事件
 Future<void> _onTap<T>(
-  TxFormFieldState<T> field,
+  TxCommonTextFormFieldState<T> field,
   PickVoidCallback<T> onPick,
 ) async {
+  FocusScope.of(field.context).requestFocus(FocusNode());
+
   final res = await onPick(field.context, field.value);
 
   if (res != null && res != field.value) {
@@ -105,6 +107,8 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
             if (readOnly == true) {
               return;
             }
+
+            FocusScope.of(field.context).requestFocus(FocusNode());
 
             _onTap(
               field,

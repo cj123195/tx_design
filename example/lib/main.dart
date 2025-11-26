@@ -213,6 +213,7 @@ class _FormViewState extends State<FormView> {
             // decoration: InputDecoration(filled: true),
           ),
           TxTextFormField(
+            layoutDirection: Axis.horizontal,
             initialValue: form['text'],
             labelText: '文字输入',
             onChanged: (val) => form['text'] = val,

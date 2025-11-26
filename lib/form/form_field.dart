@@ -545,7 +545,10 @@ class _TxFieldDecoratorState extends State<TxFieldDecorator> {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       excludeFromSemantics: true,
-      onTap: widget.onTap,
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+        widget.onTap!();
+      },
       child: child,
     );
   }

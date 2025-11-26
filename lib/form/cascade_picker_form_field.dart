@@ -126,6 +126,8 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
           onTap: readOnly == true
               ? null
               : (field) async {
+                  FocusScope.of(field.context).requestFocus(FocusNode());
+
                   final res = await showCascadePicker<T, V>(
                     context: field.context,
                     source: source,
