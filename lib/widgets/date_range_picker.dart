@@ -227,6 +227,7 @@ class _TxCupertinoDateRangePickerState extends State<TxCupertinoDateRangePicker>
       _startController.text = start?.format(_format) ?? '';
     }
     setState(() {});
+    _callChange(); // 添加此行以触发变更回调
   }
 
   /// 结束时间改变
