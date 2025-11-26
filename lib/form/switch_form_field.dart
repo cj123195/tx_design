@@ -32,7 +32,6 @@ class TxSwitchFormField extends TxFormField<bool> {
     super.label,
     super.labelText,
     super.labelTextAlign,
-    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,

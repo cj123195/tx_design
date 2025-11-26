@@ -41,7 +41,6 @@ class TxTile extends StatelessWidget {
     Widget? label,
     String? labelText,
     this.labelTextAlign,
-    this.labelOverflow,
     this.padding,
     this.actions,
     this.labelStyle,
@@ -87,9 +86,6 @@ class TxTile extends StatelessWidget {
 
   /// [label] 文字的对齐方式
   final TextAlign? labelTextAlign;
-
-  /// [label] 文字溢出处理方式
-  final TextOverflow? labelOverflow;
 
   /// 背景颜色
   final Color? tileColor;
@@ -245,14 +241,12 @@ class TxTile extends StatelessWidget {
     );
     final TextAlign? effectiveLabelTextAlign =
         labelTextAlign ?? tileTheme.labelTextAlign ?? defaults.labelTextAlign;
-    final TextOverflow effectiveLabelOverflow =
-        labelOverflow ?? tileTheme.labelOverflow ?? defaults.labelOverflow!;
     final Widget? labelWidget = label == null
         ? null
         : DefaultTextStyle(
             style: effectiveLabelStyle,
             textAlign: effectiveLabelTextAlign,
-            overflow: effectiveLabelOverflow,
+            overflow: TextOverflow.ellipsis,
             child: label!,
           );
 
@@ -803,7 +797,6 @@ class _FieldTileDefaultsM3 extends TxTileThemeData {
           dense: false,
           visualDensity: VisualDensity.comfortable,
           minLabelWidth: 0,
-          labelOverflow: TextOverflow.ellipsis,
           minVerticalPadding: 0,
         );
 

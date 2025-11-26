@@ -33,7 +33,6 @@ class TxMonthPickerFormField extends TxPickerFormField<DateTime, String> {
     super.label,
     super.labelText,
     super.labelTextAlign,
-    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,

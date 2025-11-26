@@ -53,7 +53,6 @@ class TxMultiPickerFormField<T, V> extends TxFormField<List<T>> {
     super.label,
     super.labelText,
     super.labelTextAlign,
-    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,

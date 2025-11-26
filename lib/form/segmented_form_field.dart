@@ -34,7 +34,6 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
     super.label,
     super.labelText,
     super.labelTextAlign,
-    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,

@@ -34,7 +34,6 @@ class TxRadioFormField<T, V> extends TxWrapFormField<T> {
     super.label,
     super.labelText,
     super.labelTextAlign,
-    super.labelOverflow,
     super.padding,
     super.actionsBuilder,
     super.labelStyle,

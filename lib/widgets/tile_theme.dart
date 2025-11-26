@@ -12,7 +12,6 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
   const TxTileThemeData({
     this.labelStyle,
     this.labelTextAlign,
-    this.labelOverflow,
     this.padding,
     this.horizontalGap,
     this.tileColor,
@@ -38,9 +37,6 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
 
   /// 覆盖 [TxTile.labelTextAlign] 的默认值。
   final TextAlign? labelTextAlign;
-
-  /// 覆盖 [TxTile.labelOverflow] 的默认值。
-  final TextOverflow? labelOverflow;
 
   /// 覆盖 [TxTile.padding] 的默认值。
   final EdgeInsetsGeometry? padding;
@@ -89,7 +85,6 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
     Color? tileColor,
     TextStyle? labelStyle,
     TextAlign? labelTextAlign,
-    TextOverflow? labelOverflow,
     EdgeInsetsGeometry? padding,
     Axis? layoutDirection,
     double? horizontalGap,
@@ -109,7 +104,6 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
       tileColor: tileColor ?? this.tileColor,
       labelStyle: labelStyle ?? this.labelStyle,
       labelTextAlign: labelTextAlign ?? this.labelTextAlign,
-      labelOverflow: labelOverflow ?? this.labelOverflow,
       padding: padding ?? this.padding,
       layoutDirection: layoutDirection ?? this.layoutDirection,
       horizontalGap: horizontalGap ?? this.horizontalGap,
@@ -141,7 +135,6 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
       tileColor: Color.lerp(tileColor, other.tileColor, t),
       labelStyle: TextStyle.lerp(labelStyle, other.labelStyle, t),
       labelTextAlign: t < 0.5 ? labelTextAlign : other.labelTextAlign,
-      labelOverflow: t < 0.5 ? labelOverflow : other.labelOverflow,
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t),
       layoutDirection: t < 0.5 ? layoutDirection : other.layoutDirection,
       horizontalGap: lerpDouble(horizontalGap, other.horizontalGap, t),
@@ -171,7 +164,6 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
         tileColor,
         labelStyle,
         labelTextAlign,
-        labelOverflow,
         iconColor,
         textColor,
         padding,
@@ -200,7 +192,6 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
         other.tileColor == tileColor &&
         other.labelStyle == labelStyle &&
         other.labelTextAlign == labelTextAlign &&
-        other.labelOverflow == labelOverflow &&
         other.iconColor == iconColor &&
         other.padding == padding &&
         other.layoutDirection == layoutDirection &&
