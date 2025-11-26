@@ -56,7 +56,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.strutStyle,
     super.textAlignVertical,
     super.textDirection,
-    super.readOnly,
+    bool? readOnly,
     super.maxLines,
     super.minLines,
     super.expands,
@@ -132,6 +132,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
           validator: readOnly == true
               ? null
               : (val) => generateValidator(val, validator, required),
+          readOnly: true,
         );
 
   TxPickerFormField.custom({
@@ -156,7 +157,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.textAlign,
     super.bordered,
     super.textAlignVertical,
-    super.readOnly,
+    bool? readOnly,
     super.maxLines,
     super.minLines,
     super.expands,
@@ -195,6 +196,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
           onTap: readOnly == true ? null : (field) => _onTap(field, onPickTap!),
           hintText: readOnly == true ? null : hintText ?? '请选择',
           validator: (val) => generateValidator(val, validator, required),
+          readOnly: true,
         );
 
   /// 根据当前表单值 [value]、传入验证器 [validator]、 是否必填 [required] 生成默认验证器法。
