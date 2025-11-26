@@ -62,7 +62,6 @@ class TxPasswordFormField extends TxCommonTextFormField<String> {
     super.enableInteractiveSelection,
     super.selectionControls,
     super.onTap,
-    super.onFieldTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,

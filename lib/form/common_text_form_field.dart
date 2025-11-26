@@ -24,8 +24,7 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
     this.focusNode,
     this.obscureText,
     InputValueChanged<T>? onInputChanged,
-    ValueChanged<TxFormFieldState<T>>? onFieldTap, // 新增 onFieldTap
-    super.onTap, // 继承自 TxFormField 的 onTap
+    FormFieldTapCallback<T>? onTap, // 继承自 TxFormField 的 onTap
     super.key,
     super.onSaved,
     super.validator,
@@ -208,12 +207,12 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
                 dragStartBehavior: dragStartBehavior ?? DragStartBehavior.start,
                 enableInteractiveSelection: enableInteractiveSelection,
                 selectionControls: selectionControls,
-                onTap: onFieldTap == null
-                    ? null
-                    : () {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        onFieldTap(field);
-                      },
+                onTap: () {
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  if (onTap != null) {
+                    onTap(field);
+                  }
+                },
                 onTapAlwaysCalled: onTapAlwaysCalled ?? false,
                 onTapOutside: onTapOutsideHandler,
                 mouseCursor: mouseCursor,

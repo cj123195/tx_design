@@ -107,7 +107,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
-    super.onTap,
+    FormFieldTapCallback<T>? onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,
@@ -150,30 +150,40 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
         super(
           initialValue:
               initData<T, V>(source, initialData, initialValue, valueMapper),
-          onFieldTap: readOnly == true
-              ? null
-              : (field) => _onTap(
-                    field,
-                    (context, value) => showPickerBottomSheet<T, V>(
-                      context,
-                      source: readOnly == true
-                          ? source
-                          : <T>{
-                              ...source,
-                              if (field.value != null) field.value!
-                            }.toList(),
-                      labelMapper: labelMapper,
-                      valueMapper: valueMapper,
-                      initialData: value,
-                      disabledWhen: disabledWhen,
-                      title: labelText,
-                      subtitleBuilder: subtitleBuilder,
-                      itemBuilder: itemBuilder,
-                      showSearchField: showSearchField,
-                      placeholder: placeholder,
-                      listTileTheme: listTileTheme,
-                    ),
-                  ),
+          onTap: (field) {
+            // 如果用户提供了自定义 onTap，优先使用
+            if (onTap != null) {
+              return onTap(field);
+            }
+
+            // 只读模式下不执行任何操作
+            if (readOnly == true) {
+              return;
+            }
+
+            _onTap(
+              field,
+                  (context, value) => showPickerBottomSheet<T, V>(
+                context,
+                source: readOnly == true
+                    ? source
+                    : <T>{
+                  ...source,
+                  if (field.value != null) field.value!
+                }.toList(),
+                labelMapper: labelMapper,
+                valueMapper: valueMapper,
+                initialData: value,
+                disabledWhen: disabledWhen,
+                title: labelText,
+                subtitleBuilder: subtitleBuilder,
+                itemBuilder: itemBuilder,
+                showSearchField: showSearchField,
+                placeholder: placeholder,
+                listTileTheme: listTileTheme,
+              ),
+            );
+          },
           readOnly: inputEnabled != true || readOnly == true,
           onInputChanged: (field, text) => _onInputChanged<T>(
             field,
@@ -230,7 +240,6 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.minLines,
     super.expands,
     super.maxLength,
-    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.onEditingComplete,
@@ -290,7 +299,7 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
   })  : _readOnly = readOnly ?? false,
         inputEnabled = inputEnabled ?? false,
         super(
-          onFieldTap:
+          onTap:
               readOnly == true ? null : (field) => _onTap(field, onPickTap!),
           readOnly: inputEnabled != true || readOnly == true,
           onInputChanged: (field, text) =>

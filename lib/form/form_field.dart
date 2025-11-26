@@ -9,6 +9,9 @@ typedef FieldActionsBuilder<T> = List<Widget> Function(
   TxFormFieldState<T> field,
 );
 
+/// 表单点击回调
+typedef FormFieldTapCallback<T> = ValueChanged<TxFormFieldState<T>>;
+
 const BorderRadius _kBorderRadius = BorderRadius.all(Radius.circular(10.0));
 
 /// 域组件
@@ -140,14 +143,13 @@ class TxFormField<T> extends FormField<T> {
     Color? iconColor,
     Color? textColor,
     TextStyle? leadingAndTrailingTextStyle,
-    GestureTapCallback? onTap,
+    FormFieldTapCallback<T>? onTap,
     double? minLeadingWidth,
     double? minLabelWidth,
     double? minVerticalPadding,
     bool? dense,
     bool? colon,
     Color? focusColor,
-    ValueChanged<TxFormFieldState<T>>? onFieldTap,
   })  : required = required ?? false,
         super(
           builder: (field) {
@@ -187,7 +189,7 @@ class TxFormField<T> extends FormField<T> {
                 ),
                 textAlign: effectiveTextAlign,
                 isEmpty: state.isEmpty,
-                onTap: onFieldTap == null ? null : () => onFieldTap(field),
+                onTap: onTap == null ? null : () => onTap(field),
                 child: builder(state),
               ),
               label:
@@ -207,7 +209,6 @@ class TxFormField<T> extends FormField<T> {
               textColor: textColor,
               leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
               enabled: field.isEnabled,
-              onTap: onTap,
               minLeadingWidth: minLeadingWidth,
               minLabelWidth: minLabelWidth,
               minVerticalPadding: minVerticalPadding,

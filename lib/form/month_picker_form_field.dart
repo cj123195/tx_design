@@ -95,7 +95,6 @@ class TxMonthPickerFormField extends TxPickerFormField<DateTime, String> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
-    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,

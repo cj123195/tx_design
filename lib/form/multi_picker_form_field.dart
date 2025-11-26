@@ -48,7 +48,7 @@ class TxMultiPickerFormField<T, V> extends TxFormField<List<T>> {
     bool? readOnly,
     super.textAlign,
     super.bordered,
-    super.onTap,
+    FormFieldTapCallback<List<T>>? onTap,
     super.canRequestFocus,
     super.label,
     super.labelText,
@@ -108,34 +108,41 @@ class TxMultiPickerFormField<T, V> extends TxFormField<List<T>> {
               ),
             );
           },
-          onFieldTap: readOnly == true
-              ? null
-              : (field) async {
-                  onPickTap ??=
-                      (context, value) => showMultiPickerBottomSheet<T, V>(
-                            context,
-                            source: source ?? [],
-                            labelMapper: labelMapper,
-                            initialData: value,
-                            disabledWhen: disabledWhen,
-                            valueMapper: valueMapper,
-                            itemBuilder: itemBuilder,
-                            subtitleBuilder: subtitleBuilder,
-                            selectedItemBuilder: selectedItemBuilder,
-                            actionBarBuilder: actionBarBuilder,
-                            maxCount: maxCount,
-                            showSearchField: showSearchField,
-                            placeholder: placeholder,
-                            listTileTheme: listTileTheme,
-                            title: labelText,
-                          );
+          onTap: (field) async {
+            // 如果用户提供了自定义 onTap，优先使用
+            if (onTap != null) {
+              return onTap(field);
+            }
 
-                  final res = await onPickTap!(field.context, field.value);
+            // 只读模式下不执行任何操作
+            if (readOnly == true) {
+              return;
+            }
 
-                  if (res != null && res != field.value) {
-                    field.didChange(res);
-                  }
-                },
+            // 默认行为：打开多选弹窗
+            onPickTap ??= (context, value) => showMultiPickerBottomSheet<T, V>(
+                  context,
+                  source: source ?? [],
+                  labelMapper: labelMapper,
+                  initialData: value,
+                  disabledWhen: disabledWhen,
+                  valueMapper: valueMapper,
+                  itemBuilder: itemBuilder,
+                  subtitleBuilder: subtitleBuilder,
+                  selectedItemBuilder: selectedItemBuilder,
+                  actionBarBuilder: actionBarBuilder,
+                  maxCount: maxCount,
+                  showSearchField: showSearchField,
+                  placeholder: placeholder,
+                  listTileTheme: listTileTheme,
+                  title: labelText,
+                );
+
+            final res = await onPickTap!(field.context, field.value);
+            if (res != null && res != field.value) {
+              field.didChange(res);
+            }
+          },
         );
 
   /// 是否只读

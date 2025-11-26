@@ -125,7 +125,6 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
     super.minLabelWidth,
     super.minVerticalPadding,
     super.dense,
-    super.onFieldTap,
     super.colon,
     super.focusColor,
     super.focusNode,

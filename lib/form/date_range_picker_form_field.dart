@@ -96,7 +96,6 @@ class TxDateRangePickerFormField
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
-    super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,
     super.mouseCursor,

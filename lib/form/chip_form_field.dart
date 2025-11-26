@@ -49,7 +49,6 @@ class TxChipFormField<T, V> extends TxWrapFormField<List<T>> {
     super.iconColor,
     super.textColor,
     super.leadingAndTrailingTextStyle,
-    super.onTap,
     super.minLeadingWidth,
     super.minLabelWidth,
     super.minVerticalPadding,

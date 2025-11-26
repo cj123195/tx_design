@@ -47,7 +47,6 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
     super.iconColor,
     super.textColor,
     super.leadingAndTrailingTextStyle,
-    super.onTap,
     super.minLeadingWidth,
     super.minLabelWidth,
     super.minVerticalPadding,

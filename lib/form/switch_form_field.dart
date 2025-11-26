@@ -44,7 +44,6 @@ class TxSwitchFormField extends TxFormField<bool> {
     super.iconColor,
     super.textColor,
     super.leadingAndTrailingTextStyle,
-    super.onTap,
     super.minLeadingWidth,
     super.dense,
     super.colon,

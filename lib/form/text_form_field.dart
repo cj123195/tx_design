@@ -61,7 +61,6 @@ class TxTextFormField extends TxCommonTextFormField<String> {
     super.dragStartBehavior,
     super.enableInteractiveSelection,
     super.selectionControls,
-    super.onFieldTap,
     super.onTap,
     super.onTapAlwaysCalled,
     super.onTapOutside,

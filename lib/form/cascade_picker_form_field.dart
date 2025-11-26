@@ -123,7 +123,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
             valueMapper: valueMapper,
             childrenMapper: childrenMapper,
           ),
-          onFieldTap: readOnly == true
+          onTap: readOnly == true
               ? null
               : (field) async {
                   final res = await showCascadePicker<T, V>(
@@ -270,7 +270,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
             initialValue: initialValue,
             valueMapper: (data) => data[valueKey],
           ) as T?,
-          onFieldTap: readOnly == true
+          onTap: readOnly == true
               ? null
               : (field) async {
                   final res = await showMapListCascadePicker<V>(
