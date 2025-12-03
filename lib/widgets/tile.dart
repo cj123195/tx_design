@@ -63,6 +63,7 @@ class TxTile extends StatelessWidget {
     this.colon,
     this.focused = false,
     this.focusColor,
+    this.tileTheme,
   })  : assert(
           label == null || labelText == null,
           'label 和 labelText 最多指定一个',
@@ -166,10 +167,14 @@ class TxTile extends StatelessWidget {
   /// 选中的文字和图标颜色
   final Color? focusColor;
 
+  /// 主题
+  final TxTileThemeData? tileTheme;
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final TxTileThemeData tileTheme = TxTileTheme.of(context);
+    final TxTileThemeData tileTheme =
+        TxTileTheme.of(context).merge(this.tileTheme);
     final TxTileThemeData defaults = _FieldTileDefaultsM3(context);
 
     final Set<WidgetState> states = <WidgetState>{

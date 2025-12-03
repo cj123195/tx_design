@@ -28,6 +28,10 @@ Future<void> _onTap<T>(
 
 /// 单项选择框表单
 class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
+  /// 默认构造方法
+  ///
+  /// [source] 数据源
+  /// [labelMapper] 根据已知 T 类型数据生成展示标签的方法
   TxPickerFormField({
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
@@ -50,51 +54,23 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     bool? showSearchField,
     Widget? placeholder,
     ListTileThemeData? listTileTheme,
+    PickVoidCallback<T>? onPickTap,
+    FormFieldTapCallback<T>? onTap,
     super.focusNode,
-    String? hintText,
-    super.textAlign,
+    super.hintText,
     super.bordered,
-    super.style,
-    super.strutStyle,
-    super.textAlignVertical,
-    super.textDirection,
-    bool? readOnly,
+    super.readOnly,
     super.maxLines,
     super.minLines,
-    super.expands,
-    super.scrollPadding,
-    super.dragStartBehavior,
-    FormFieldTapCallback<T>? onTap,
-    super.onTapAlwaysCalled,
-    super.onTapOutside,
-    super.mouseCursor,
-    super.scrollController,
-    super.scrollPhysics,
-    super.clipBehavior,
-    super.canRequestFocus,
+    super.displayConfig,
+    super.scrollConfig,
     super.label,
     super.labelText,
-    super.labelTextAlign,
-    super.padding,
     super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.tileColor,
-    super.layoutDirection,
     super.trailingBuilder,
     super.leading,
-    super.visualDensity,
-    super.shape,
-    super.iconColor,
-    super.textColor,
-    super.leadingAndTrailingTextStyle,
-    super.minLeadingWidth,
-    super.minLabelWidth,
-    super.minVerticalPadding,
-    super.dense,
-    super.colon,
-    super.focusColor,
-  }) : super(
+    super.tileTheme,
+  }) : super.readonly(
           initialValue:
               initData<T, V>(source, initialData, initialValue, valueMapper),
           onTap: (field) {
@@ -110,36 +86,36 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
 
             FocusScope.of(field.context).requestFocus(FocusNode());
 
-            _onTap(
-              field,
-              (context, value) => showPickerBottomSheet<T, V>(
-                context,
-                source: readOnly == true
-                    ? source
-                    : <T>{...source, if (field.value != null) field.value!}
-                        .toList(),
-                labelMapper: labelMapper,
-                valueMapper: valueMapper,
-                initialData: value,
-                disabledWhen: disabledWhen,
-                title: labelText,
-                subtitleBuilder: subtitleBuilder,
-                itemBuilder: itemBuilder,
-                showSearchField: showSearchField,
-                placeholder: placeholder,
-                listTileTheme: listTileTheme,
-              ),
-            );
+            onPickTap ??= (context, value) => showPickerBottomSheet<T, V>(
+                  context,
+                  source: readOnly == true
+                      ? source
+                      : <T>{...source, if (field.value != null) field.value!}
+                          .toList(),
+                  labelMapper: labelMapper,
+                  valueMapper: valueMapper,
+                  initialData: value,
+                  disabledWhen: disabledWhen,
+                  title: labelText,
+                  subtitleBuilder: subtitleBuilder,
+                  itemBuilder: itemBuilder,
+                  showSearchField: showSearchField,
+                  placeholder: placeholder,
+                  listTileTheme: listTileTheme,
+                );
+
+            _onTap(field, onPickTap!);
           },
           displayTextMapper: (context, val) => labelMapper(val) ?? '',
-          hintText: readOnly == true ? null : hintText ?? '请选择',
           validator: readOnly == true
               ? null
               : (val) => generateValidator(val, validator, required),
-          readOnly: true,
         );
 
-  TxPickerFormField.custom({
+  /// 无需数据源的选择器构造方法
+  ///
+  /// 主要提供给时间选择组件使用
+  TxPickerFormField.withoutSource({
     required PickVoidCallback<T>? onPickTap,
     required super.displayTextMapper,
     super.clearable,
@@ -153,54 +129,25 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.onChanged,
     super.required,
     super.initialValue,
-    String? hintText,
+    super.hintText,
     super.focusNode,
-    super.style,
-    super.strutStyle,
-    super.textDirection,
-    super.textAlign,
     super.bordered,
-    super.textAlignVertical,
-    bool? readOnly,
+    super.readOnly,
     super.maxLines,
     super.minLines,
-    super.expands,
-    super.onTapAlwaysCalled,
-    super.onTapOutside,
-    super.scrollPadding,
-    super.scrollPhysics,
-    super.scrollController,
-    super.mouseCursor,
-    super.dragStartBehavior,
-    super.clipBehavior,
-    super.canRequestFocus,
+    super.displayConfig,
+    super.scrollConfig,
     super.label,
     super.labelText,
-    super.labelTextAlign,
-    super.padding,
     super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.tileColor,
-    super.layoutDirection,
     super.trailingBuilder,
     super.leading,
-    super.visualDensity,
-    super.shape,
-    super.iconColor,
-    super.textColor,
-    super.leadingAndTrailingTextStyle,
-    super.minLeadingWidth,
-    super.minLabelWidth,
-    super.minVerticalPadding,
-    super.dense,
-    super.focusColor,
-    super.colon,
-  }) : super(
+    super.tileTheme,
+  }) : super.readonly(
           onTap: readOnly == true ? null : (field) => _onTap(field, onPickTap!),
-          hintText: readOnly == true ? null : hintText ?? '请选择',
-          validator: (val) => generateValidator(val, validator, required),
-          readOnly: true,
+          validator: (val) => readOnly == true
+              ? null
+              : generateValidator(val, validator, required),
         );
 
   /// 根据当前表单值 [value]、传入验证器 [validator]、 是否必填 [required] 生成默认验证器法。
@@ -253,10 +200,6 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
 }
 
 class TxPickerFormFieldState<T, V> extends TxCommonTextFormFieldState<T> {
-  @override
-  bool get clearable =>
-      !widget.readOnly && isEnabled && widget.clearable != false && !isEmpty;
-
   @override
   TxPickerFormField<T, V> get widget => super.widget as TxPickerFormField<T, V>;
 

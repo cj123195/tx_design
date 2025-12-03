@@ -4,6 +4,37 @@ import 'package:flutter/material.dart';
 
 import 'form_field.dart';
 
+/// 开关配置
+class SwitchConfig {
+  SwitchConfig(
+    this.textAlign,
+    this.activeTrackColor,
+    this.thumbColor,
+    this.inactiveTrackColor,
+    this.onLabelColor,
+    this.offLabelColor,
+    this.dragStartBehavior,
+    this.focusColor,
+    this.focusNode,
+    this.onFocusChange,
+    this.autofocus,
+    this.applyTheme,
+  );
+
+  final TextAlign? textAlign;
+  final Color? activeTrackColor;
+  final Color? thumbColor;
+  final Color? inactiveTrackColor;
+  final Color? onLabelColor;
+  final Color? offLabelColor;
+  final DragStartBehavior? dragStartBehavior;
+  final Color? focusColor;
+  final FocusNode? focusNode;
+  final ValueChanged<bool>? onFocusChange;
+  final bool? autofocus;
+  final bool? applyTheme;
+}
+
 /// Switch 表单组件。
 class TxSwitchFormField extends TxFormField<bool> {
   TxSwitchFormField({
@@ -17,43 +48,20 @@ class TxSwitchFormField extends TxFormField<bool> {
     super.onChanged,
     super.required,
     super.initialValue,
-    TextAlign? textAlign = TextAlign.end,
-    Color? activeTrackColor,
-    Color? thumbColor,
-    Color? inactiveTrackColor,
-    Color? onLabelColor,
-    Color? offLabelColor,
-    DragStartBehavior? dragStartBehavior,
-    Color? focusColor,
-    FocusNode? focusNode,
-    ValueChanged<bool>? onFocusChange,
-    bool? autofocus,
-    bool? applyTheme,
+    SwitchConfig? switchConfig,
     super.label,
     super.labelText,
-    super.labelTextAlign,
-    super.padding,
     super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.tileColor,
     super.trailingBuilder,
     super.leading,
-    super.visualDensity,
-    super.shape,
-    super.iconColor,
-    super.textColor,
-    super.leadingAndTrailingTextStyle,
-    super.minLeadingWidth,
-    super.dense,
-    super.colon,
-    super.minLabelWidth,
-    super.minVerticalPadding,
+    TxTileThemeData? tileTheme,
   }) : super(
-          layoutDirection: Axis.horizontal,
+          textAlign: TextAlign.end,
+          tileTheme: (tileTheme ?? const TxTileThemeData())
+              .copyWith(layoutDirection: Axis.horizontal),
           builder: (field) {
-            final AlignmentGeometry align = switch (textAlign) {
-              null => AlignmentDirectional.centerStart,
+            final AlignmentGeometry align = switch (switchConfig?.textAlign) {
+              null => AlignmentDirectional.centerEnd,
               TextAlign.left => Alignment.centerLeft,
               TextAlign.right => Alignment.centerRight,
               TextAlign.center => AlignmentDirectional.center,
@@ -69,20 +77,21 @@ class TxSwitchFormField extends TxFormField<bool> {
               child: CupertinoSwitch(
                 value: field.value ?? false,
                 onChanged: field.didChange,
-                activeTrackColor: activeTrackColor ??
+                activeTrackColor: switchConfig?.activeTrackColor ??
                     theme.switchTheme.trackColor
                         ?.resolve({WidgetState.selected}) ??
                     theme.colorScheme.primary,
-                thumbColor: thumbColor,
-                inactiveTrackColor: inactiveTrackColor,
-                applyTheme: applyTheme,
-                focusColor: focusColor,
-                onLabelColor: onLabelColor,
-                offLabelColor: offLabelColor,
-                focusNode: focusNode,
-                autofocus: autofocus ?? false,
-                dragStartBehavior: dragStartBehavior ?? DragStartBehavior.start,
-                onFocusChange: onFocusChange,
+                thumbColor: switchConfig?.thumbColor,
+                inactiveTrackColor: switchConfig?.inactiveTrackColor,
+                applyTheme: switchConfig?.applyTheme,
+                focusColor: switchConfig?.focusColor,
+                onLabelColor: switchConfig?.onLabelColor,
+                offLabelColor: switchConfig?.offLabelColor,
+                focusNode: switchConfig?.focusNode,
+                autofocus: switchConfig?.autofocus ?? false,
+                dragStartBehavior:
+                    switchConfig?.dragStartBehavior ?? DragStartBehavior.start,
+                onFocusChange: switchConfig?.onFocusChange,
               ),
             );
           },

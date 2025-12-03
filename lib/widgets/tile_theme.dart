@@ -81,7 +81,7 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
   final Color? focusColor;
 
   @override
-  ThemeExtension<TxTileThemeData> copyWith({
+  TxTileThemeData copyWith({
     Color? tileColor,
     TextStyle? labelStyle,
     TextAlign? labelTextAlign,
@@ -119,6 +119,32 @@ class TxTileThemeData extends ThemeExtension<TxTileThemeData> {
       minLabelWidth: minLabelWidth ?? this.minLabelWidth,
       colon: colon ?? this.colon,
       focusColor: focusColor ?? this.focusColor,
+    );
+  }
+
+  TxTileThemeData merge(TxTileThemeData? other) {
+    if (other == null) {
+      return this;
+    }
+
+    return copyWith(
+      tileColor: other.tileColor,
+      labelStyle: other.labelStyle,
+      labelTextAlign: other.labelTextAlign,
+      padding: other.padding,
+      layoutDirection: other.layoutDirection,
+      horizontalGap: other.horizontalGap,
+      dense: other.dense,
+      shape: other.shape,
+      iconColor: other.iconColor,
+      textColor: other.textColor,
+      leadingAndTrailingTextStyle: other.leadingAndTrailingTextStyle,
+      minLeadingWidth: other.minLeadingWidth,
+      minLabelWidth: other.minLabelWidth,
+      minVerticalPadding: other.minVerticalPadding,
+      visualDensity: other.visualDensity,
+      colon: other.colon,
+      focusColor: other.focusColor,
     );
   }
 

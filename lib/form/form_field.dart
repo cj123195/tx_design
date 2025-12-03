@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/tile.dart';
+import '../widgets/tile_theme.dart';
 import 'form_field_theme.dart';
+
+export '../widgets/tile_theme.dart' show TxTileThemeData;
 
 typedef TxFormFieldBuilder<T> = Widget Function(TxFormFieldState<T> field);
 
@@ -36,27 +39,10 @@ class TxFormField<T> extends FormField<T> {
     this.labelText,
     this.label,
     bool? required,
-    TextStyle? labelStyle,
-    TextAlign? labelTextAlign,
-    Color? tileColor,
-    Axis? layoutDirection,
-    EdgeInsetsGeometry? padding,
+    TxTileThemeData? tileTheme,
     FieldActionsBuilder<T>? actionsBuilder,
     TxFormFieldBuilder<T>? trailingBuilder,
     Widget? leading,
-    double? horizontalGap,
-    VisualDensity? visualDensity,
-    ShapeBorder? shape,
-    Color? iconColor,
-    Color? textColor,
-    TextStyle? leadingAndTrailingTextStyle,
-    GestureTapCallback? onTap,
-    double? minLeadingWidth,
-    double? minLabelWidth,
-    double? minVerticalPadding,
-    bool? dense,
-    bool? colon,
-    Color? focusColor,
   })  : required = required ?? false,
         super(
           builder: (field) {
@@ -84,27 +70,11 @@ class TxFormField<T> extends FormField<T> {
               content: builder(state),
               label:
                   spans.isEmpty ? null : Text.rich(TextSpan(children: spans)),
-              labelTextAlign: labelTextAlign,
-              padding: padding,
+              tileTheme: tileTheme,
               actions: actionsBuilder == null ? null : actionsBuilder(field),
               trailing: trailingBuilder == null ? null : trailingBuilder(field),
-              labelStyle: labelStyle,
-              horizontalGap: horizontalGap,
-              tileColor: tileColor,
-              layoutDirection: layoutDirection,
               leading: leading,
-              visualDensity: visualDensity,
-              shape: shape,
-              iconColor: iconColor,
-              textColor: textColor,
-              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
               enabled: field.isEnabled,
-              onTap: onTap,
-              minLeadingWidth: minLeadingWidth,
-              minLabelWidth: minLabelWidth,
-              dense: dense,
-              colon: colon,
-              focusColor: focusColor,
             );
           },
           enabled: enabled ?? decoration?.enabled ?? true,
@@ -129,40 +99,26 @@ class TxFormField<T> extends FormField<T> {
     this.labelText,
     this.label,
     bool? required,
-    TextStyle? labelStyle,
-    TextAlign? labelTextAlign,
-    Color? tileColor,
-    Axis? layoutDirection,
-    EdgeInsetsGeometry? padding,
     FieldActionsBuilder<T>? actionsBuilder,
     TxFormFieldBuilder<T>? trailingBuilder,
     Widget? leading,
-    double? horizontalGap,
-    VisualDensity? visualDensity,
-    ShapeBorder? shape,
-    Color? iconColor,
-    Color? textColor,
-    TextStyle? leadingAndTrailingTextStyle,
+    TxTileThemeData? tileTheme,
     FormFieldTapCallback<T>? onTap,
-    double? minLeadingWidth,
-    double? minLabelWidth,
-    double? minVerticalPadding,
-    bool? dense,
-    bool? colon,
-    Color? focusColor,
   })  : required = required ?? false,
         super(
           builder: (field) {
             final TxFormFieldState<T> state = field as TxFormFieldState<T>;
 
             final TextAlign effectiveTextAlign = textAlign ??
-                (layoutDirection == Axis.horizontal
+                (tileTheme?.layoutDirection == Axis.horizontal
                     ? TextAlign.right
                     : TextAlign.left);
 
-            final EdgeInsetsGeometry? contentPadding = state
-                    .effectiveDecoration.contentPadding ??
-                (layoutDirection == Axis.horizontal ? EdgeInsets.zero : null);
+            final EdgeInsetsGeometry? contentPadding =
+                state.effectiveDecoration.contentPadding ??
+                    (tileTheme?.layoutDirection == Axis.horizontal
+                        ? EdgeInsets.zero
+                        : null);
 
             final List<InlineSpan> spans = [
               if (required == true)
@@ -194,27 +150,11 @@ class TxFormField<T> extends FormField<T> {
               ),
               label:
                   spans.isEmpty ? null : Text.rich(TextSpan(children: spans)),
-              labelTextAlign: labelTextAlign,
-              padding: padding,
+              tileTheme: tileTheme,
               actions: actionsBuilder == null ? null : actionsBuilder(field),
               trailing: trailingBuilder == null ? null : trailingBuilder(field),
-              labelStyle: labelStyle,
-              horizontalGap: horizontalGap,
-              tileColor: tileColor,
-              layoutDirection: layoutDirection,
               leading: leading,
-              visualDensity: visualDensity,
-              shape: shape,
-              iconColor: iconColor,
-              textColor: textColor,
-              leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
               enabled: field.isEnabled,
-              minLeadingWidth: minLeadingWidth,
-              minLabelWidth: minLabelWidth,
-              minVerticalPadding: minVerticalPadding,
-              dense: dense,
-              colon: colon,
-              focusColor: focusColor,
             );
           },
           enabled: enabled ?? decoration?.enabled ?? true,

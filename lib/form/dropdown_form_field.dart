@@ -1,8 +1,60 @@
 import 'package:flutter/material.dart';
 
-import '../utils/basic_types.dart';
 import 'form_field.dart';
 import 'picker_form_field.dart';
+
+/// 下拉选择框配置
+class DropdownConfig {
+  DropdownConfig({
+    this.focusNode,
+    this.hintText,
+    this.hint,
+    this.disabledHint,
+    this.onTap,
+    this.elevation,
+    this.style,
+    this.icon,
+    this.iconDisabledColor,
+    this.iconEnabledColor,
+    this.iconSize,
+    this.isDense,
+    this.isExpanded,
+    this.itemHeight,
+    this.focusColor,
+    this.autofocus,
+    this.dropdownColor,
+    this.menuMaxHeight,
+    this.enableFeedback,
+    this.alignment,
+    this.borderRadius,
+    this.menuPadding,
+    this.selectedItemBuilder,
+  });
+
+  final FocusNode? focusNode;
+  final String? hintText;
+  final Widget? hint;
+  final Widget? disabledHint;
+  final VoidCallback? onTap;
+  final int? elevation;
+  final TextStyle? style;
+  final Widget? icon;
+  final Color? iconDisabledColor;
+  final Color? iconEnabledColor;
+  final double? iconSize;
+  final bool? isDense;
+  final bool? isExpanded;
+  final double? itemHeight;
+  final Color? focusColor;
+  final bool? autofocus;
+  final Color? dropdownColor;
+  final double? menuMaxHeight;
+  final bool? enableFeedback;
+  final AlignmentGeometry? alignment;
+  final BorderRadius? borderRadius;
+  final EdgeInsetsGeometry? menuPadding;
+  final DropdownButtonBuilder? selectedItemBuilder;
+}
 
 /// 下拉选择框表单
 class TxDropdownFormField<T, V> extends TxFormField<T> {
@@ -10,7 +62,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     required List<T> source,
     required ValueMapper<T, String?> labelMapper,
     ValueMapper<T, V?>? valueMapper,
-    IndexedValueMapper<T, bool>? enabledMapper,
+    ValueMapper<T, bool>? disabledWhen,
     T? initialData,
     V? initialValue,
     super.key,
@@ -24,50 +76,14 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     super.required,
     super.bordered,
     bool? readOnly,
-    FocusNode? focusNode,
     String? hintText,
-    Widget? hint,
-    Widget? disabledHint,
-    VoidCallback? onTap,
-    int? elevation,
-    TextStyle? style,
-    Widget? icon,
-    Color? iconDisabledColor,
-    Color? iconEnabledColor,
-    double? iconSize,
-    bool? isDense,
-    bool? isExpanded,
-    double? itemHeight,
-    Color? focusColor,
-    bool? autofocus,
-    Color? dropdownColor,
-    double? menuMaxHeight,
-    bool? enableFeedback,
-    AlignmentGeometry? alignment,
-    BorderRadius? borderRadius,
-    EdgeInsetsGeometry? menuPadding,
-    DropdownButtonBuilder? selectedItemBuilder,
+    DropdownConfig? dropdownConfig,
     super.label,
     super.labelText,
-    super.labelTextAlign,
-    super.padding,
     super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.tileColor,
-    super.layoutDirection,
     super.trailingBuilder,
     super.leading,
-    super.visualDensity,
-    super.shape,
-    super.iconColor,
-    super.textColor,
-    super.leadingAndTrailingTextStyle,
-    super.minLeadingWidth,
-    super.dense,
-    super.colon,
-    super.minLabelWidth,
-    super.minVerticalPadding,
+    super.tileTheme,
   }) : super(
           initialValue: TxPickerFormField.initData(
             source,
@@ -76,58 +92,64 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
             valueMapper,
           ),
           builder: (field) {
-            final AlignmentGeometry effectiveAlign = alignment ??
-                (layoutDirection == Axis.horizontal
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft);
+            final AlignmentGeometry effectiveAlign =
+                dropdownConfig?.alignment ??
+                    (tileTheme?.layoutDirection == Axis.horizontal
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft);
+
+            final items = List.generate(
+              source.length,
+              (i) {
+                final T item = source[i];
+                final bool enabled =
+                    disabledWhen == null ? true : !disabledWhen(item);
+                return DropdownMenuItem<T>(
+                  value: item,
+                  alignment: effectiveAlign,
+                  enabled: enabled,
+                  child: Text(
+                    labelMapper(item) ?? '',
+                    style: enabled
+                        ? null
+                        : TextStyle(
+                            color: Theme.of(field.context).disabledColor,
+                          ),
+                  ),
+                );
+              },
+            );
 
             return DropdownButtonFormField<T>(
-              items: List.generate(
-                source.length,
-                (i) {
-                  final T item = source[i];
-                  final bool enabled =
-                      enabledMapper == null ? true : enabledMapper(i, item);
-                  return DropdownMenuItem<T>(
-                    value: item,
-                    alignment: effectiveAlign,
-                    enabled: enabled,
-                    child: Text(
-                      labelMapper(item) ?? '',
-                      style: enabled
-                          ? null
-                          : TextStyle(
-                              color: Theme.of(field.context).disabledColor,
-                            ),
-                    ),
-                  );
-                },
-              ),
-              selectedItemBuilder: selectedItemBuilder,
+              items: items,
+              selectedItemBuilder: dropdownConfig?.selectedItemBuilder,
               value: field.value,
-              hint: hint ?? Text(hintText ?? '请选择'),
-              disabledHint: disabledHint ?? const Text('无'),
+              hint: readOnly == true
+                  ? null
+                  : dropdownConfig?.hint ?? Text(hintText ?? '请选择'),
+              disabledHint: dropdownConfig?.disabledHint ?? const Text('无'),
               onChanged: readOnly == false ? null : field.didChange,
-              onTap: onTap,
-              elevation: elevation ?? 4,
-              style: style ?? Theme.of(field.context).textTheme.bodyLarge,
-              icon: icon,
-              iconDisabledColor: iconDisabledColor,
-              iconEnabledColor: iconEnabledColor,
-              iconSize: iconSize ?? 24.0,
-              isDense: isDense ?? true,
-              isExpanded: isExpanded ?? true,
-              itemHeight: itemHeight,
-              focusColor: focusColor,
-              focusNode: focusNode,
-              autofocus: autofocus ?? false,
-              dropdownColor: dropdownColor,
+              onTap: dropdownConfig?.onTap,
+              elevation: dropdownConfig?.elevation ?? 4,
+              style: dropdownConfig?.style ??
+                  Theme.of(field.context).textTheme.bodyLarge,
+              icon: dropdownConfig?.icon,
+              iconDisabledColor: dropdownConfig?.iconDisabledColor,
+              iconEnabledColor: dropdownConfig?.iconEnabledColor,
+              iconSize: dropdownConfig?.iconSize ?? 24.0,
+              isDense: dropdownConfig?.isDense ?? true,
+              isExpanded: dropdownConfig?.isExpanded ?? true,
+              itemHeight: dropdownConfig?.itemHeight,
+              focusColor: dropdownConfig?.focusColor,
+              focusNode: dropdownConfig?.focusNode,
+              autofocus: dropdownConfig?.autofocus ?? false,
+              dropdownColor: dropdownConfig?.dropdownColor,
               decoration: field.effectiveDecoration,
-              menuMaxHeight: menuMaxHeight,
-              enableFeedback: enableFeedback,
+              menuMaxHeight: dropdownConfig?.menuMaxHeight,
+              enableFeedback: dropdownConfig?.enableFeedback,
               alignment: effectiveAlign,
-              borderRadius: borderRadius,
-              padding: menuPadding,
+              borderRadius: dropdownConfig?.borderRadius,
+              padding: dropdownConfig?.menuPadding,
             );
           },
           validator: (val) =>
@@ -147,84 +169,52 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
     super.onChanged,
     super.required,
     bool? readOnly,
-    FocusNode? focusNode,
     String? hintText,
-    Widget? hint,
-    Widget? disabledHint,
-    VoidCallback? onTap,
-    int? elevation,
-    TextStyle? style,
-    Widget? icon,
-    Color? iconDisabledColor,
-    Color? iconEnabledColor,
-    double? iconSize,
-    bool? isDense,
-    bool? isExpanded,
-    double? itemHeight,
-    Color? focusColor,
-    bool? autofocus,
-    Color? dropdownColor,
-    double? menuMaxHeight,
-    bool? enableFeedback,
-    AlignmentGeometry? alignment,
-    BorderRadius? borderRadius,
-    EdgeInsetsGeometry? menuPadding,
-    DropdownButtonBuilder? selectedItemBuilder,
+    DropdownConfig? dropdownConfig,
     super.label,
     super.labelText,
-    super.labelTextAlign,
-    super.padding,
     super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.tileColor,
-    super.layoutDirection,
     super.trailingBuilder,
     super.leading,
-    super.visualDensity,
-    super.shape,
-    super.iconColor,
-    super.textColor,
-    super.leadingAndTrailingTextStyle,
-    super.minLeadingWidth,
-    super.dense,
-    super.colon,
-    super.minLabelWidth,
-    super.minVerticalPadding,
+    super.tileTheme,
   }) : super(
           builder: (field) {
-            final AlignmentGeometry effectiveAlign = alignment ??
-                (layoutDirection == Axis.horizontal
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft);
+            final AlignmentGeometry effectiveAlign =
+                dropdownConfig?.alignment ??
+                    (tileTheme?.layoutDirection == Axis.horizontal
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft);
 
             return DropdownButtonFormField<T>(
               items: items,
-              selectedItemBuilder: selectedItemBuilder,
+              selectedItemBuilder: dropdownConfig?.selectedItemBuilder,
               value: field.value,
               onChanged: readOnly == false ? null : field.didChange,
-              hint: hint ?? Text(hintText ?? '请选择'),
-              disabledHint: disabledHint ?? const Text('无'),
-              onTap: onTap,
-              elevation: elevation ?? 4,
-              style: style ?? Theme.of(field.context).textTheme.bodyLarge,
-              icon: icon,
-              iconDisabledColor: iconDisabledColor,
-              iconEnabledColor: iconEnabledColor,
-              iconSize: iconSize ?? 24.0,
-              isDense: isDense ?? true,
-              isExpanded: isExpanded ?? true,
-              itemHeight: itemHeight,
-              focusColor: focusColor,
-              focusNode: focusNode,
-              autofocus: autofocus ?? false,
-              dropdownColor: dropdownColor,
+              hint: readOnly == true
+                  ? null
+                  : dropdownConfig?.hint ?? Text(hintText ?? '请选择'),
+              disabledHint: dropdownConfig?.disabledHint ?? const Text('无'),
+              onTap: dropdownConfig?.onTap,
+              elevation: dropdownConfig?.elevation ?? 4,
+              style: dropdownConfig?.style ??
+                  Theme.of(field.context).textTheme.bodyLarge,
+              icon: dropdownConfig?.icon,
+              iconDisabledColor: dropdownConfig?.iconDisabledColor,
+              iconEnabledColor: dropdownConfig?.iconEnabledColor,
+              iconSize: dropdownConfig?.iconSize ?? 24.0,
+              isDense: dropdownConfig?.isDense ?? true,
+              isExpanded: dropdownConfig?.isExpanded ?? true,
+              itemHeight: dropdownConfig?.itemHeight,
+              focusColor: dropdownConfig?.focusColor,
+              focusNode: dropdownConfig?.focusNode,
+              autofocus: dropdownConfig?.autofocus ?? false,
+              dropdownColor: dropdownConfig?.dropdownColor,
               decoration: field.effectiveDecoration,
-              menuMaxHeight: menuMaxHeight,
-              enableFeedback: enableFeedback,
+              menuMaxHeight: dropdownConfig?.menuMaxHeight,
+              enableFeedback: dropdownConfig?.enableFeedback,
               alignment: effectiveAlign,
-              borderRadius: borderRadius,
-              padding: menuPadding,
+              borderRadius: dropdownConfig?.borderRadius,
+              padding: dropdownConfig?.menuPadding,
             );
           },
           validator: (val) =>
