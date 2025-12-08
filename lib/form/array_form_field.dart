@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../localizations.dart';
@@ -30,6 +32,8 @@ String? _validator<T>(
   return null;
 }
 
+typedef ArrayAddCallback<T> = FutureOr<T?> Function(int index);
+
 /// 自增组件构造器
 typedef ArrayFormFieldBuilder<T> = Widget? Function(
   TxFormFieldState<List<T>> field,
@@ -40,12 +44,13 @@ typedef ArrayFormFieldBuilder<T> = Widget? Function(
 class TxArrayFormField<T> extends TxFormField<List<T>> {
   TxArrayFormField({
     required ArrayFormFieldBuilder<T> builder,
-    required ValueMapper<int, T> defaultValue,
+    ValueMapper<int, T>? defaultValue,
     ButtonStyle? addButtonStyle,
     ButtonStyle? actionsButtonStyle,
     int? limit,
     bool? sortable,
     bool? insertable,
+    ArrayAddCallback<T>? onAddTap,
     super.key,
     super.onSaved,
     FormFieldValidator<List<T>>? validator,
@@ -84,7 +89,8 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
     super.minLabelWidth,
     super.focusColor,
     super.minVerticalPadding,
-  }) : super(
+  })  : assert(onAddTap != null || defaultValue != null),
+        super(
           builder: (field) => _buildFormField<T>(
             field,
             builder,
@@ -94,6 +100,7 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
             limit,
             sortable,
             insertable,
+            onAddTap,
           ),
           validator: (val) => _validator(val, required, limit, validator),
         );
@@ -101,12 +108,13 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
   /// 通过自增子项构造一个自增 Form 组件
   TxArrayFormField.builder({
     required ArrayFormFieldItemBuilder<T> itemBuilder,
-    required ValueMapper<int, T> defaultValue,
+    ValueMapper<int, T>? defaultValue,
     ButtonStyle? addButtonStyle,
     ButtonStyle? actionsButtonStyle,
     int? limit,
     bool? sortable,
     bool? insertable,
+    ArrayAddCallback<T>? onAddTap,
     FocusNode? focusNode,
     String? hintText,
     TextAlign? textAlign,
@@ -144,7 +152,8 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
     super.minLabelWidth,
     super.focusColor,
     super.minVerticalPadding,
-  }) : super(
+  })  : assert(onAddTap != null || defaultValue != null),
+        super(
           builder: (field) => _buildFormFieldByItem(
             field,
             itemBuilder,
@@ -154,6 +163,7 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
             limit,
             sortable,
             insertable,
+            onAddTap,
           ),
           validator: (val) => _validator(val, required, limit, validator),
         );
@@ -163,12 +173,13 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
 Widget _buildFormField<T>(
   TxFormFieldState<List<T>> field,
   ArrayFormFieldBuilder<T> builder,
-  ValueMapper<int, T> defaultValue,
+  ValueMapper<int, T>? defaultValue,
   ButtonStyle? addButtonStyle,
   ButtonStyle? actionsButtonStyle,
   int? limit,
   bool? sortable,
   bool? insertable,
+  ArrayAddCallback<T>? onAddTap,
 ) {
   final bool enabled = field.isEnabled;
 
@@ -197,8 +208,13 @@ Widget _buildFormField<T>(
 
     // 插入按钮
     final Widget insertButton = IconButton(
-      onPressed: () =>
-          field.didChange(data..insert(index, defaultValue(index))),
+      onPressed: () async {
+        final value =
+            onAddTap != null ? await onAddTap(index) : defaultValue!(index);
+        if (value != null) {
+          field.didChange([...data]..insert(index + 1, value));
+        }
+      },
       icon: const Icon(Icons.add),
       style: buttonStyle,
     );
@@ -246,7 +262,11 @@ Widget _buildFormField<T>(
         OutlinedButton.icon(
           icon: const Icon(Icons.add),
           onPressed: () async {
-            field.didChange([...?field.value, defaultValue(count)]);
+            final value =
+                onAddTap != null ? await onAddTap(count) : defaultValue!(count);
+            if (value != null) {
+              field.didChange([...data, value]);
+            }
           },
           style: addButtonStyle,
           label: Text(TxLocalizations.of(field.context).addButtonLabel),
@@ -259,12 +279,13 @@ Widget _buildFormField<T>(
 Widget _buildFormFieldByItem<T>(
   TxFormFieldState<List<T>> field,
   ArrayFormFieldItemBuilder<T> itemBuilder,
-  ValueMapper<int, T> defaultValue,
+  ValueMapper<int, T>? defaultValue,
   ButtonStyle? addButtonStyle,
   ButtonStyle? actionsButtonStyle,
   int? limit,
   bool? sortable,
   bool? insertable,
+  ArrayAddCallback<T>? onAddTap,
 ) {
   return _buildFormField(
     field,
@@ -290,5 +311,6 @@ Widget _buildFormFieldByItem<T>(
     limit,
     sortable,
     insertable,
+    onAddTap,
   );
 }
