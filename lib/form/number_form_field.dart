@@ -373,6 +373,21 @@ class NumberInputFormatter extends TextInputFormatter {
     );
 
     String text = newValue.text;
+
+    // 允许空输入
+    if (text.isEmpty) {
+      return newValue;
+    }
+
+    // 允许输入负号或小数点（作为输入中间状态）
+    if (text == '-' || text == '.' || text == '-.') {
+      // 检查是否允许负数
+      if (text.startsWith('-') && min != null && min! >= 0) {
+        return oldValue; // 不允许负数
+      }
+      return newValue;
+    }
+
     final num? value = num.tryParse(text);
     if (value == null) {
       return const TextEditingValue();
