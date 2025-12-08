@@ -6,18 +6,29 @@ import 'date_picker.dart';
 
 /// 日期选择栏
 class TxDatePickerBar extends StatefulWidget implements PreferredSizeWidget {
-  const TxDatePickerBar({
+  TxDatePickerBar({
     super.key,
     this.initialDate,
     this.onDateChange,
     this.format,
-    this.minimumDate,
-    this.maximumDate,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
     this.buttonStyle,
     this.beforeIcon = const Icon(Icons.keyboard_arrow_left),
     this.middleIcon = const Icon(Icons.calendar_month),
     this.afterIcon = const Icon(Icons.keyboard_arrow_right),
-  });
+  })  : minimumDate = minimumDate == null
+            ? null
+            : DateTime(minimumDate.year, minimumDate.month, minimumDate.day),
+        maximumDate = maximumDate == null
+            ? null
+            : DateTime(maximumDate.year, maximumDate.month, maximumDate.day),
+        assert(
+          minimumDate == null ||
+              maximumDate == null ||
+              maximumDate.isAfter(minimumDate),
+          '最晚时间必须晚于最早时间',
+        );
 
   /// 初始日期
   final DateTime? initialDate;
@@ -78,7 +89,16 @@ class _TxDatePickerBar extends State<TxDatePickerBar> {
 
   @override
   void initState() {
-    _date = widget.initialDate ?? DateTime.now();
+    final now = DateTime.now();
+    final nowDate = DateTime(now.year, now.month, now.day);
+    final firstDate = widget.minimumDate;
+    final lastDate = widget.maximumDate;
+    _date = widget.initialDate ??
+        (firstDate != null && nowDate.isBefore(firstDate)
+            ? firstDate
+            : lastDate != null && nowDate.isAfter(lastDate)
+                ? lastDate
+                : nowDate);
     super.initState();
   }
 
@@ -96,7 +116,9 @@ class _TxDatePickerBar extends State<TxDatePickerBar> {
         .merge(TextButton.styleFrom(foregroundColor: color, iconColor: color));
 
     final Widget leading = IconButton(
-      onPressed: () => _onDateSelected(_date.subtract(const Duration(days: 1))),
+      onPressed: _date != widget.minimumDate
+          ? () => _onDateSelected(_date.subtract(const Duration(days: 1)))
+          : null,
       icon: widget.beforeIcon,
       style: iconButtonStyle,
       tooltip: localizations.theDayBeforeLabel,
@@ -111,7 +133,9 @@ class _TxDatePickerBar extends State<TxDatePickerBar> {
       style: iconButtonStyle,
       tooltip: localizations.theNextDayLabel,
       icon: widget.afterIcon,
-      onPressed: () => _onDateSelected(_date.add(const Duration(days: 1))),
+      onPressed: _date != widget.maximumDate
+          ? () => _onDateSelected(_date.add(const Duration(days: 1)))
+          : null,
     );
 
     return SizedBox(
