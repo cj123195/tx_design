@@ -1,3 +1,8 @@
+# 0.2.26
+* Update TxArrayFormField.
+* Fix the issue where negative numbers cannot be entered into TxNumberFormField.
+* Fix the issue that maximumDate and minimumDate of TxDatePickerBar do not take effect.
+
 # 0.2.25
 * Fixed the issue of incorrect calculation of the maximum and minimum values of the date selector in some extreme cases.
 
