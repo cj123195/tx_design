@@ -422,73 +422,136 @@ extension StringExtension on String {
 
   /// 检查字符串是否为视频文件名。
   bool get isVideoFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".mp4") ||
-        path.endsWith(".avi") ||
-        path.endsWith(".wmv") ||
-        path.endsWith(".rmvb") ||
-        path.endsWith(".mpg") ||
-        path.endsWith(".mpeg") ||
-        path.endsWith(".3gp");
+    return ['mp4', 'avi', 'wmv', 'rmvb', 'mpg', 'mpeg', '3gp']
+        .contains(fileExtension);
   }
 
   /// 检查字符串是否为图片文件名。
   bool get isImageFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".jpg") ||
-        path.endsWith(".jpeg") ||
-        path.endsWith(".png") ||
-        path.endsWith(".gif") ||
-        path.endsWith(".bmp");
+    return ['jpg', 'jpeg', 'png', 'gif', 'bmp'].contains(fileExtension);
   }
 
   /// 检查字符串是否为音频文件名。
   bool get isAudioFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".mp3") ||
-        path.endsWith(".wav") ||
-        path.endsWith(".wma") ||
-        path.endsWith(".amr") ||
-        path.endsWith(".ogg");
+    return ['mp3', 'wav', 'wma', 'amr', 'ogg'].contains(fileExtension);
   }
 
-  /// 检查字符串是否为PPT文件名。
+  /// 检查字符串是否为演示文稿文件名。
   bool get isPPTFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".ppt") || path.endsWith(".pptx");
+    const microsoft = ['ppt', 'pptx', 'pptm', 'pps', 'pot', 'potx', 'potm'];
+    const openDocument = ['odp', 'otp', 'fodp'];
+    const others = ['key', 'sdd', 'sdp', 'sti', 'sxi'];
+    final extension = fileExtension;
+    return microsoft.contains(extension) ||
+        openDocument.contains(extension) ||
+        others.contains(extension);
   }
 
   /// 检查字符串是否为Word文件名。
   bool get isWordFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".doc") || path.endsWith(".docx");
+    const microsoft = ['doc', 'docx', 'docm', 'dot', 'dotx', 'dotm'];
+    const openDocument = ['odt', 'ott', 'fodt'];
+    const others = [
+      'wpd',
+      'wps',
+      'pages',
+      'lwp',
+      'hwp',
+      'mcw',
+      'psw',
+      'cwk',
+      'zabw',
+      'abw'
+    ];
+    final extension = fileExtension;
+    return microsoft.contains(extension) ||
+        openDocument.contains(extension) ||
+        others.contains(extension);
   }
 
-  /// 检查字符串是否为Excel文件名。
+  /// 检查字符串是否为电子表格文件名。
   bool get isExcelFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".xls") || path.endsWith(".xlsx");
+    const microsoft = [
+      'xls',
+      'xlsx',
+      'xlsm',
+      'xlsb',
+      'xlt',
+      'xltx',
+      'xltm',
+      'xlw'
+    ];
+    const openDocument = ['ods', 'ots', 'fods'];
+    const others = [
+      'csv',
+      'numbers',
+      'wk1',
+      'wks',
+      'dbf',
+      'dif',
+      'slk',
+      'pxl',
+      'wb2',
+      'sdc',
+      'stc',
+      'sxc',
+    ];
+    final extension = fileExtension;
+    return microsoft.contains(extension) ||
+        openDocument.contains(extension) ||
+        others.contains(extension);
   }
 
   /// 检查字符串是否为APK文件名。
   bool get isAPKFilename {
-    return toLowerCase().endsWith(".apk");
+    return fileExtension == 'apk';
   }
 
   /// 检查字符串是否为PDF文件名。
   bool get isPDFFileName {
-    return toLowerCase().endsWith(".pdf");
+    return fileExtension == 'pdf';
   }
 
-  /// 检查字符串是否为Txt文件名。
+  /// 检查字符串是否为绘图文件名。
+  bool get isDrawingFileName {
+    const microsoft = ['vsd', 'vsdx', 'vsdm', 'vdx'];
+    const openDocument = ['odg', 'otg', 'fodg'];
+    const others = ['sda', 'sxd', 'pub', 'wpg'];
+    final extension = fileExtension;
+    return microsoft.contains(extension) ||
+        openDocument.contains(extension) ||
+        others.contains(extension);
+  }
+
+  /// 检查字符串是否为文本文件名。
   bool get isTxtFileName {
-    return toLowerCase().endsWith(".txt");
+    final extension = fileExtension;
+    const openDocument = ['odg', 'otg', 'fodg'];
+    const others = [
+      'ltx',
+      'uof',
+      'uot',
+      'uop',
+      'uos',
+      '123',
+      '602',
+      'bib',
+      'pwp',
+      'vor',
+      'sdw',
+      'stw',
+      'sgl',
+      'sxg',
+      'sxm',
+      'sxw',
+      'smf',
+      'fopd',
+      'mw',
+    ];
+    return extension == 'txt' ||
+        extension == 'rtf' ||
+        openDocument.contains(extension) ||
+        others.contains(fileExtension);
   }
 
   /// 检查字符串是否为Chm文件名。
@@ -496,14 +559,31 @@ extension StringExtension on String {
     return toLowerCase().endsWith(".chm");
   }
 
-  /// 检查字符串是否为Vector文件名。
+  /// 检查字符串是否为矢量图文件名。
   bool get isVectorFileName {
-    return toLowerCase().endsWith(".svg");
+    return [
+      'svg',
+      'eps',
+      'emf',
+      'wmf',
+      'cgm',
+      'dxf',
+      'cdr',
+      'cmx',
+      'svm',
+      'swf',
+      'met',
+    ].contains(fileExtension);
   }
 
   /// 检查字符串是否为html文件名。
   bool get isHTMLFileName {
-    return toLowerCase().endsWith(".html");
+    return ['htm', 'html', 'xhtml', 'xml', 'mml'].contains(fileExtension);
+  }
+
+  /// 检查字符串是否为电子书文件名。
+  bool get isEBookFileName {
+    return ['epub', 'pdb'].contains(fileExtension);
   }
 
   /// 检查字符串是否为3D文件名。
@@ -523,44 +603,27 @@ extension StringExtension on String {
 
   /// 检查字符串是否为cad文件名。
   bool get isCadFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".dwg") ||
-        path.endsWith(".bak") ||
-        path.endsWith('.dwt');
+    return ['dwg', 'bak', 'dwt'].contains(fileExtension);
   }
 
   /// 检查字符串是否为exe文件名。
   bool get isExeFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".exe") || path.endsWith('.com');
+    return ['exe', 'com'].contains(fileExtension);
   }
 
   /// 检查字符串是否为数据库文件名。
   bool get isDatabaseFileName {
-    return toLowerCase().endsWith(".db");
+    return fileExtension == 'db';
   }
 
   /// 检查字符串是否为压缩文件名。
   bool get isCompressedFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".rar") ||
-        path.endsWith(".zip") ||
-        path.endsWith('.arj') ||
-        path.endsWith('.gz') ||
-        path.endsWith('.z');
+    return ['rar', 'zip', 'arj', 'gz', 'z'].contains(fileExtension);
   }
 
   /// 检查字符串是否为配置文件名。
   bool get isConfigurationFileName {
-    final String path = toLowerCase();
-
-    return path.endsWith(".ini") ||
-        path.endsWith(".conf") ||
-        path.endsWith('.py') ||
-        path.endsWith('.json');
+    return ['ini', 'conf', 'py', 'json'].contains(fileExtension);
   }
 
   /// 判断是否为网络地址
@@ -576,6 +639,23 @@ extension StringExtension on String {
     }
 
     return false;
+  }
+
+  /// 获取文件扩展名
+  String get fileExtension {
+    String extension = this;
+
+    // 获取文件的扩展名，去掉路径中的查询参数
+    final int queryIndex = extension.indexOf('?');
+    if (queryIndex != -1) {
+      extension = extension.substring(0, queryIndex);
+    }
+
+    final int dotIndex = extension.lastIndexOf('.');
+    if (dotIndex != -1) {
+      return extension.substring(dotIndex + 1).toLowerCase();
+    }
+    return '';
   }
 
   /// 针对 Dart 字符串优化的 64 位哈希算法 FNV-1a
