@@ -183,18 +183,18 @@ class TxPanel extends StatelessWidget {
 
   /// 鼠标指针进入或悬停小部件时的光标。
   ///
-  /// 如果 [mouseCursor] 是 [MaterialStateProperty<MouseCursor>]，
-  /// [MaterialStateProperty.resolve] 用于以下 [MaterialState]：
+  /// 如果 [mouseCursor] 是 [WidgetStateProperty<MouseCursor>]，
+  /// [WidgetStateProperty.resolve] 用于以下 [WidgetState]：
   ///
-  ///  * [MaterialState.selected].
-  ///  * [MaterialState.disabled].
+  ///  * [WidgetState.selected].
+  ///  * [WidgetState.disabled].
   ///
-  /// 如果为 null，则使用 [MaterialStateMouseCursor.clickable]。
+  /// 如果为 null，则使用 [WidgetStateMouseCursor.clickable]。
   ///
   /// 参考:
   ///
-  /// * [MaterialStateMouseCursor]，可用于创建[MouseCursor]
-  /// 这也是一个 [MaterialStateProperty<MouseCursor>]。
+  /// * [WidgetStateMouseCursor]，可用于创建[MouseCursor]
+  /// 这也是一个 [WidgetStateProperty<MouseCursor>]。
   final MouseCursor? mouseCursor;
 
   /// 如果此图块也已 [enabled]，则图标和文本将以相同的颜色呈现。
@@ -328,9 +328,9 @@ class TxPanel extends StatelessWidget {
     final TxPanelThemeData panelTheme = TxPanelTheme.of(context);
     final ListTileThemeData tileTheme = theme.listTileTheme;
     final TxPanelThemeData defaults = _PanelDefaultsM3(context);
-    final Set<MaterialState> states = <MaterialState>{
-      if (!enabled) MaterialState.disabled,
-      if (selected) MaterialState.selected,
+    final Set<WidgetState> states = <WidgetState>{
+      if (!enabled) WidgetState.disabled,
+      if (selected) WidgetState.selected,
     };
 
     Color? resolveColor(
@@ -471,16 +471,16 @@ class TxPanel extends StatelessWidget {
         panelTheme.padding?.resolve(textDirection) ??
         defaults.padding!.resolve(textDirection);
 
-    final Set<MaterialState> mouseStates = <MaterialState>{
+    final Set<WidgetState> mouseStates = <WidgetState>{
       if (!enabled || (onTap == null && onLongPress == null))
-        MaterialState.disabled,
+        WidgetState.disabled,
     };
     final MouseCursor effectiveMouseCursor =
-        MaterialStateProperty.resolveAs<MouseCursor?>(
+        WidgetStateProperty.resolveAs<MouseCursor?>(
                 mouseCursor, mouseStates) ??
             panelTheme.mouseCursor?.resolve(mouseStates) ??
             tileTheme.mouseCursor?.resolve(mouseStates) ??
-            MaterialStateMouseCursor.clickable.resolve(mouseStates);
+            WidgetStateMouseCursor.clickable.resolve(mouseStates);
 
     final ListTileTitleAlignment effectiveTitleAlignment = titleAlignment ??
         panelTheme.titleAlignment ??
@@ -564,7 +564,7 @@ class TxPanel extends StatelessWidget {
   }
 }
 
-class _IndividualOverrides extends MaterialStateProperty<Color?> {
+class _IndividualOverrides extends WidgetStateProperty<Color?> {
   _IndividualOverrides({
     this.explicitColor,
     this.enabledColor,
@@ -578,14 +578,14 @@ class _IndividualOverrides extends MaterialStateProperty<Color?> {
   final Color? disabledColor;
 
   @override
-  Color? resolve(Set<MaterialState> states) {
-    if (explicitColor is MaterialStateColor) {
-      return MaterialStateProperty.resolveAs<Color?>(explicitColor, states);
+  Color? resolve(Set<WidgetState> states) {
+    if (explicitColor is WidgetStateColor) {
+      return WidgetStateProperty.resolveAs<Color?>(explicitColor, states);
     }
-    if (states.contains(MaterialState.disabled)) {
+    if (states.contains(WidgetState.disabled)) {
       return disabledColor;
     }
-    if (states.contains(MaterialState.selected)) {
+    if (states.contains(WidgetState.selected)) {
       return selectedColor;
     }
     return enabledColor;

@@ -153,7 +153,7 @@ class TxLinearGradientProgressIndicator extends StatefulWidget {
         LinearGradient(
           colors: [
             Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.primary.withOpacity(0.5),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
@@ -318,7 +318,7 @@ class TxGradientCircularProgressIndicator extends StatelessWidget {
     List<Color>? colors = this.colors;
     if (colors == null) {
       final Color color = colorScheme.primary;
-      colors = [color, color.withOpacity(0.3)];
+      colors = [color, color.withValues(alpha: 0.3)];
     }
     return Transform.rotate(
       angle: angle,
@@ -327,8 +327,8 @@ class TxGradientCircularProgressIndicator extends StatelessWidget {
         painter: _GradientCircularProgressPainter(
           strokeWidth: strokeWidth,
           strokeCapRound: strokeCapRound,
-          backgroundColor:
-              backgroundColor ?? colorScheme.outlineVariant.withOpacity(0.3),
+          backgroundColor: backgroundColor ??
+              colorScheme.outlineVariant.withValues(alpha: 0.3),
           value: value,
           total: totalAngle,
           radius: radius,

@@ -107,7 +107,7 @@ class TxRadioCell<T> extends StatelessWidget {
   ///
   /// 如果为 null，则在所选状态中使用 [activeColor] 的值。如果该值也是 null，则使用
   /// [RadioThemeData.fillColor] 的值。如果该值也是 null，则使用默认值。
-  final MaterialStateProperty<Color?>? fillColor;
+  final WidgetStateProperty<Color?>? fillColor;
 
   /// {@macro flutter.material.checkbox.hoverColor}
   final Color? hoverColor;
@@ -115,15 +115,15 @@ class TxRadioCell<T> extends StatelessWidget {
   /// 复选框的 [Material] 的颜色。
   ///
   /// 解决以下状态：
-  ///  * [MaterialState.pressed].
-  ///  * [MaterialState.selected].
-  ///  * [MaterialState.hovered].
+  ///  * [WidgetState.pressed].
+  ///  * [WidgetState.selected].
+  ///  * [WidgetState.hovered].
   ///
   /// 如果为 null，则在按下和悬停状态中使用 alpha 为 [kRadialReactionAlpha] 和
   /// [hoverColor] 的 [activeColor] 的值。如果该值也是 null，则使用
   /// [RadioThemeData.overlayColor] 的值。如果该值也是 null，则在 pressed 和
   /// hovered 状态中使用默认值。
-  final MaterialStateProperty<Color?>? overlayColor;
+  final WidgetStateProperty<Color?>? overlayColor;
 
   /// {@macro flutter.material.checkbox.splashRadius}
   ///
@@ -152,7 +152,7 @@ class TxRadioCell<T> extends StatelessWidget {
 
   /// 单选按钮的 [Material] 具有输入焦点时的颜色。
   ///
-  /// 如果 [overlayColor] 在 [MaterialState.focused] 状态中返回非 null 颜色，则将改用该颜色。
+  /// 如果 [overlayColor] 在 [WidgetState.focused] 状态中返回非 null 颜色，则将改用该颜色。
   ///
   /// 如果为 null，则 [RadioThemeData.overlayColor] 的值用于焦点状态。如果该值也是 null，
   /// 则使用 [ThemeData.focusColor] 的值。
@@ -217,38 +217,38 @@ class TxRadioCell<T> extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     final effectiveOverlayColor = overlayColor ??
-        MaterialStateProperty.resolveWith((Set<MaterialState> states) {
-          if (states.contains(MaterialState.error)) {
-            if (states.contains(MaterialState.pressed)) {
-              return colorScheme.error.withOpacity(0.12);
+        WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+          if (states.contains(WidgetState.error)) {
+            if (states.contains(WidgetState.pressed)) {
+              return colorScheme.error.withValues(alpha: 0.12);
             }
-            if (states.contains(MaterialState.hovered)) {
-              return colorScheme.error.withOpacity(0.08);
+            if (states.contains(WidgetState.hovered)) {
+              return colorScheme.error.withValues(alpha: 0.08);
             }
-            if (states.contains(MaterialState.focused)) {
-              return colorScheme.error.withOpacity(0.12);
+            if (states.contains(WidgetState.focused)) {
+              return colorScheme.error.withValues(alpha: 0.12);
             }
           }
-          if (states.contains(MaterialState.selected)) {
-            if (states.contains(MaterialState.pressed)) {
-              return colorScheme.onSurface.withOpacity(0.12);
+          if (states.contains(WidgetState.selected)) {
+            if (states.contains(WidgetState.pressed)) {
+              return colorScheme.onSurface.withValues(alpha: 0.12);
             }
-            if (states.contains(MaterialState.hovered)) {
-              return colorScheme.primary.withOpacity(0.08);
+            if (states.contains(WidgetState.hovered)) {
+              return colorScheme.primary.withValues(alpha: 0.08);
             }
-            if (states.contains(MaterialState.focused)) {
-              return colorScheme.primary.withOpacity(0.12);
+            if (states.contains(WidgetState.focused)) {
+              return colorScheme.primary.withValues(alpha: 0.12);
             }
             return Colors.transparent;
           }
-          if (states.contains(MaterialState.pressed)) {
-            return colorScheme.primary.withOpacity(0.12);
+          if (states.contains(WidgetState.pressed)) {
+            return colorScheme.primary.withValues(alpha: 0.12);
           }
-          if (states.contains(MaterialState.hovered)) {
-            return colorScheme.onSurface.withOpacity(0.08);
+          if (states.contains(WidgetState.hovered)) {
+            return colorScheme.onSurface.withValues(alpha: 0.08);
           }
-          if (states.contains(MaterialState.focused)) {
-            return colorScheme.onSurface.withOpacity(0.12);
+          if (states.contains(WidgetState.focused)) {
+            return colorScheme.onSurface.withValues(alpha: 0.12);
           }
           return Colors.transparent;
         });
@@ -286,7 +286,7 @@ class TxRadioCell<T> extends StatelessWidget {
       style: effectiveStyle.copyWith(
         color: enabled
             ? textColor
-            : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
+            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
       ),
       child: label,
     );

@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 
 import 'tile_theme.dart';
 
-class _IndividualOverrides extends MaterialStateProperty<Color?> {
+class _IndividualOverrides extends WidgetStateProperty<Color?> {
   _IndividualOverrides({
     this.explicitColor,
     this.enabledColor,
@@ -19,14 +19,14 @@ class _IndividualOverrides extends MaterialStateProperty<Color?> {
   final Color? disabledColor;
 
   @override
-  Color? resolve(Set<MaterialState> states) {
-    if (explicitColor is MaterialStateColor) {
-      return MaterialStateProperty.resolveAs<Color?>(explicitColor, states);
+  Color? resolve(Set<WidgetState> states) {
+    if (explicitColor is WidgetStateColor) {
+      return WidgetStateProperty.resolveAs<Color?>(explicitColor, states);
     }
-    if (states.contains(MaterialState.disabled)) {
+    if (states.contains(WidgetState.disabled)) {
       return disabledColor;
     }
-    if (states.contains(MaterialState.focused)) {
+    if (states.contains(WidgetState.focused)) {
       return focusColor;
     }
     return enabledColor;
@@ -176,9 +176,9 @@ class TxTile extends StatelessWidget {
     final TxTileThemeData tileTheme = TxTileTheme.of(context);
     final TxTileThemeData defaults = _FieldTileDefaultsM3(context);
 
-    final Set<MaterialState> states = <MaterialState>{
-      if (!enabled) MaterialState.disabled,
-      if (focused) MaterialState.focused,
+    final Set<WidgetState> states = <WidgetState>{
+      if (!enabled) WidgetState.disabled,
+      if (focused) WidgetState.focused,
     };
 
     Color? resolveColor(

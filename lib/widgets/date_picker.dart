@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../extensions/time_of_day_extension.dart';
 import '../localizations.dart';
 import 'bottom_sheet.dart';
 
@@ -204,8 +203,7 @@ abstract class TxCupertinoPicker<T> extends StatefulWidget {
         diameterRatio = diameterRatio ?? _kDiameterRatio;
 
   /// The initial date and/or time of the picker. Defaults to the present date
-  /// and time. The present must conform to the intervals set in [minimumValue],
-  /// [maximumValue].
+  /// and time.
   ///
   /// Changing this value after the initial build will not affect the currently
   /// selected date time.
@@ -241,8 +239,7 @@ abstract class TxCupertinoPicker<T> extends StatefulWidget {
   final double squeeze;
 
   /// Callback called when the selected date and/or time changes. If the new
-  /// selected [DateTime] is not valid, or is not in the [minimumValue] through
-  /// [maximumValue] range, this callback will not be called.
+  /// selected [DateTime] is not valid.
   final ValueChanged<T> onChanged;
 
   @override
@@ -454,19 +451,19 @@ class TxCupertinoMonthPicker extends TxCupertinoPicker<DateTime> {
   ///
   /// [initialMonth] is the initial date time of the picker. Defaults to the
   /// present date and time. The present must conform to the intervals set in
-  /// [minimumDate], [maximumDate], [minimumYear], and [maximumYear].
+  /// [_minimumDate], [_maximumDate], [minimumYear], and [maximumYear].
   ///
-  /// [minimumDate] is the minimum selectable [DateTime] of the picker. When set
-  /// to null, the picker does not limit the minimum [DateTime] the user can
+  /// [_minimumDate] is the minimum selectable [DateTime] of the picker. When
+  /// set to null, the picker does not limit the minimum [DateTime] the user can
   /// pick.
-  /// In [CupertinoDatePickerMode.time] mode, [minimumDate] should typically be
+  /// In [CupertinoDatePickerMode.time] mode, [_minimumDate] should typically be
   /// on the same date as [initialMonth], as the picker will not limit the
   /// minimum time the user can pick if it's set to a date earlier than that.
   ///
-  /// [maximumDate] is the maximum selectable [DateTime] of the picker. When set
-  /// to null, the picker does not limit the maximum [DateTime] the user can
+  /// [_maximumDate] is the maximum selectable [DateTime] of the picker. When
+  /// set to null, the picker does not limit the maximum [DateTime] the user can
   /// pick.
-  /// In [CupertinoDatePickerMode.time] mode, [maximumDate] should typically be
+  /// In [CupertinoDatePickerMode.time] mode, [_maximumDate] should typically be
   /// on the same date as [initialMonth], as the picker will not limit the
   /// maximum time the user can pick if it's set to a date later than that.
   ///
@@ -525,13 +522,13 @@ class TxCupertinoMonthPicker extends TxCupertinoPicker<DateTime> {
   /// The minimum selectable date that the picker can settle on.
   ///
   /// When non-null, the user can still scroll the picker to [DateTime]s earlier
-  /// than [minimumDate], but the [onChanged] will not be called on
+  /// than [_minimumDate], but the [onChanged] will not be called on
   /// these [DateTime]s. Once let go, the picker will scroll back to
-  /// [minimumDate].
+  /// [_minimumDate].
   ///
   /// In [CupertinoDatePickerMode.time] mode, a time becomes unselectable if the
   /// [DateTime] produced by combining that particular time and the date part of
-  /// [initialValue] is earlier than [minimumDate]. So typically [minimumDate]
+  /// [initialValue] is earlier than [_minimumDate]. So typically [_minimumDate]
   /// needs to be set to a [DateTime] that is on the same date as
   /// [initialValue].
   ///
@@ -542,12 +539,12 @@ class TxCupertinoMonthPicker extends TxCupertinoPicker<DateTime> {
   /// The maximum selectable date that the picker can settle on.
   ///
   /// When non-null, the user can still scroll the picker to [DateTime]s later
-  /// than [maximumDate], but the [onChanged] will not be called on these
-  /// [DateTime]s. Once let go, the picker will scroll back to [maximumDate].
+  /// than [_maximumDate], but the [onChanged] will not be called on these
+  /// [DateTime]s. Once let go, the picker will scroll back to [_maximumDate].
   ///
   /// In [CupertinoDatePickerMode.time] mode, a time becomes unselectable if the
   /// [DateTime] produced by combining that particular time and the date part of
-  /// [initialValue] is later than [maximumDate]. So typically [maximumDate]
+  /// [initialValue] is later than [_maximumDate]. So typically [_maximumDate]
   /// needs to be set to a [DateTime] that is on the same date as
   /// [initialValue].
   ///

@@ -691,7 +691,7 @@ class _SimplePickerBottomSheet<T> extends StatelessWidget {
           ...children,
           Container(
             height: SpacingTheme.of(context).medium,
-            color: colorScheme.outline.withOpacity(0.05),
+            color: colorScheme.outline.withValues(alpha: 0.05),
           ),
           cancelTile,
         ],

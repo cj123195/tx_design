@@ -32,8 +32,8 @@ class _TabStyle extends AnimatedWidget {
   final TabBarTheme defaults;
   final Widget child;
 
-  MaterialStateColor _resolveWithLabelColor(BuildContext context) {
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+  WidgetStateColor _resolveWithLabelColor(BuildContext context) {
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     final Animation<double> animation = listenable as Animation<double>;
 
     Color selectedColor = labelColor ??
@@ -44,13 +44,13 @@ class _TabStyle extends AnimatedWidget {
 
     final Color unselectedColor;
 
-    if (selectedColor is MaterialStateColor) {
-      unselectedColor = selectedColor.resolve(const <MaterialState>{});
+    if (selectedColor is WidgetStateColor) {
+      unselectedColor = selectedColor.resolve(const <WidgetState>{});
       selectedColor =
-          selectedColor.resolve(const <MaterialState>{MaterialState.selected});
+          selectedColor.resolve(const <WidgetState>{WidgetState.selected});
     } else {
       // unselectedLabelColor and tabBarTheme.unselectedLabelColor are ignored
-      // when labelColor is a MaterialStateColor.
+      // when labelColor is a WidgetStateColor.
       unselectedColor = unselectedLabelColor ??
           tabBarTheme.unselectedLabelColor ??
           unselectedLabelStyle?.color ??
@@ -58,8 +58,8 @@ class _TabStyle extends AnimatedWidget {
           defaults.unselectedLabelColor!; // 70% alpha
     }
 
-    return MaterialStateColor.resolveWith((states) {
-      if (states.contains(MaterialState.selected)) {
+    return WidgetStateColor.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
         return Color.lerp(selectedColor, unselectedColor, animation.value)!;
       }
       return Color.lerp(unselectedColor, selectedColor, animation.value)!;
@@ -68,12 +68,12 @@ class _TabStyle extends AnimatedWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     final Animation<double> animation = listenable as Animation<double>;
 
-    final Set<MaterialState> states = isSelected
-        ? const <MaterialState>{MaterialState.selected}
-        : const <MaterialState>{};
+    final Set<WidgetState> states = isSelected
+        ? const <WidgetState>{WidgetState.selected}
+        : const <WidgetState>{};
 
     // To enable TextStyle.lerp(style1, style2, value), both styles must have
     // the same value of inherit. Force that to be inherit=true here.
@@ -410,7 +410,7 @@ class _TabBarState extends _CustomTabBarState {
   @override
   void _initIndicatorPainter() {
     final ThemeData theme = Theme.of(context);
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     final TabBarIndicatorSize indicatorSize = widget.indicatorSize ??
         tabBarTheme.indicatorSize ??
         _defaults.indicatorSize!;
@@ -700,18 +700,18 @@ class _TxTabBarViewState extends _CustomTabBarState {
     timeDilation = 1.0;
 
     final ThemeData theme = Theme.of(context);
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
     final TabBarIndicatorSize indicatorSize = widget.indicatorSize ??
         tabBarTheme.indicatorSize ??
         _defaults.indicatorSize!;
     const BorderRadius borderRadius = BorderRadius.all(Radius.circular(12.0));
     final BoxDecoration decoration = widget.decoration ??
         BoxDecoration(
-          color: theme.colorScheme.background,
+          color: theme.colorScheme.surfaceContainerLowest,
           borderRadius: borderRadius,
           boxShadow: [
             BoxShadow(
-              color: theme.shadowColor.withOpacity(0.1),
+              color: theme.shadowColor.withValues(alpha: 0.1),
               blurRadius: 8.0,
             ),
           ],
@@ -1305,7 +1305,7 @@ abstract class _CustomTabBarState extends State<CustomTabBar> {
 
   Decoration? _getIndicator(TabBarIndicatorSize indicatorSize) {
     final ThemeData theme = Theme.of(context);
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
 
     if (widget.indicator != null) {
       return widget.indicator!;
@@ -1323,7 +1323,7 @@ abstract class _CustomTabBarState extends State<CustomTabBar> {
         _defaults.indicatorColor!;
 
     if (widget.automaticIndicatorColorAdjustment &&
-        color.value == Material.maybeOf(context)?.color?.value) {
+        color == Material.maybeOf(context)?.color) {
       color = Colors.white;
     }
 
@@ -1398,7 +1398,7 @@ abstract class _CustomTabBarState extends State<CustomTabBar> {
   Widget _buildTabBar() {
     assert(debugCheckHasMaterialLocalizations(context));
     assert(_debugScheduleCheckHasValidTabsCount());
-    final TabBarTheme tabBarTheme = TabBarTheme.of(context);
+    final TabBarThemeData tabBarTheme = TabBarTheme.of(context);
 
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
@@ -1766,7 +1766,7 @@ class _TabsPrimaryDefaultsM3 extends TabBarTheme {
   late final TextTheme _textTheme = Theme.of(context).textTheme;
 
   @override
-  Color? get dividerColor => _colors.surfaceVariant;
+  Color? get dividerColor => _colors.surfaceContainerHighest;
 
   @override
   double? get dividerHeight => 1.0;
@@ -1787,28 +1787,28 @@ class _TabsPrimaryDefaultsM3 extends TabBarTheme {
   TextStyle? get unselectedLabelStyle => _textTheme.titleSmall;
 
   @override
-  MaterialStateProperty<Color?> get overlayColor {
-    return MaterialStateProperty.resolveWith((states) {
-      if (states.contains(MaterialState.selected)) {
-        if (states.contains(MaterialState.pressed)) {
-          return _colors.primary.withOpacity(0.12);
+  WidgetStateProperty<Color?> get overlayColor {
+    return WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        if (states.contains(WidgetState.pressed)) {
+          return _colors.primary.withValues(alpha: 0.12);
         }
-        if (states.contains(MaterialState.hovered)) {
-          return _colors.primary.withOpacity(0.08);
+        if (states.contains(WidgetState.hovered)) {
+          return _colors.primary.withValues(alpha: 0.08);
         }
-        if (states.contains(MaterialState.focused)) {
-          return _colors.primary.withOpacity(0.12);
+        if (states.contains(WidgetState.focused)) {
+          return _colors.primary.withValues(alpha: 0.12);
         }
         return null;
       }
-      if (states.contains(MaterialState.pressed)) {
-        return _colors.primary.withOpacity(0.12);
+      if (states.contains(WidgetState.pressed)) {
+        return _colors.primary.withValues(alpha: 0.12);
       }
-      if (states.contains(MaterialState.hovered)) {
-        return _colors.onSurface.withOpacity(0.08);
+      if (states.contains(WidgetState.hovered)) {
+        return _colors.onSurface.withValues(alpha: 0.08);
       }
-      if (states.contains(MaterialState.focused)) {
-        return _colors.onSurface.withOpacity(0.12);
+      if (states.contains(WidgetState.focused)) {
+        return _colors.onSurface.withValues(alpha: 0.12);
       }
       return null;
     });
@@ -1833,7 +1833,7 @@ class _TabsSecondaryDefaultsM3 extends TabBarTheme {
   late final TextTheme _textTheme = Theme.of(context).textTheme;
 
   @override
-  Color? get dividerColor => _colors.surfaceVariant;
+  Color? get dividerColor => _colors.surfaceContainerHighest;
 
   @override
   double? get dividerHeight => 1.0;
@@ -1854,28 +1854,28 @@ class _TabsSecondaryDefaultsM3 extends TabBarTheme {
   TextStyle? get unselectedLabelStyle => _textTheme.titleSmall;
 
   @override
-  MaterialStateProperty<Color?> get overlayColor {
-    return MaterialStateProperty.resolveWith((states) {
-      if (states.contains(MaterialState.selected)) {
-        if (states.contains(MaterialState.pressed)) {
-          return _colors.onSurface.withOpacity(0.12);
+  WidgetStateProperty<Color?> get overlayColor {
+    return WidgetStateProperty.resolveWith((states) {
+      if (states.contains(WidgetState.selected)) {
+        if (states.contains(WidgetState.pressed)) {
+          return _colors.onSurface.withValues(alpha: 0.12);
         }
-        if (states.contains(MaterialState.hovered)) {
-          return _colors.onSurface.withOpacity(0.08);
+        if (states.contains(WidgetState.hovered)) {
+          return _colors.onSurface.withValues(alpha: 0.08);
         }
-        if (states.contains(MaterialState.focused)) {
-          return _colors.onSurface.withOpacity(0.12);
+        if (states.contains(WidgetState.focused)) {
+          return _colors.onSurface.withValues(alpha: 0.12);
         }
         return null;
       }
-      if (states.contains(MaterialState.pressed)) {
-        return _colors.onSurface.withOpacity(0.12);
+      if (states.contains(WidgetState.pressed)) {
+        return _colors.onSurface.withValues(alpha: 0.12);
       }
-      if (states.contains(MaterialState.hovered)) {
-        return _colors.onSurface.withOpacity(0.08);
+      if (states.contains(WidgetState.hovered)) {
+        return _colors.onSurface.withValues(alpha: 0.08);
       }
-      if (states.contains(MaterialState.focused)) {
-        return _colors.onSurface.withOpacity(0.12);
+      if (states.contains(WidgetState.focused)) {
+        return _colors.onSurface.withValues(alpha: 0.12);
       }
       return null;
     });

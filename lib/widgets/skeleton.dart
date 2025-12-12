@@ -67,7 +67,7 @@ class TxSkeleton extends StatelessWidget {
 
     final Color effectiveColor = color ??
         skeletonTheme.color ??
-        Theme.of(context).colorScheme.outline.withOpacity(0.1);
+        Theme.of(context).colorScheme.outline.withValues(alpha: 0.1);
     final BorderRadius effectiveBorderRadius = borderRadius ??
         skeletonTheme.borderRadius ??
         RadiusTheme.of(context).miniBorderRadius;
