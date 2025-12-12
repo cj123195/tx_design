@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/iterable_extension.dart';
+import '../form/picker_form_field.dart';
 import 'bottom_sheet.dart';
 import 'matching_text.dart';
 import 'picker.dart';
@@ -219,6 +220,7 @@ class TxCascadePicker<T, V> extends TxSinglePickerBase<T, V> {
     PickerItemBuilder<Map>? itemBuilder,
     super.listTileTheme,
     Map? initialData,
+    V? initialValue,
     super.placeholder,
     super.showSearchField,
     bool? parentCheckable,
@@ -226,7 +228,12 @@ class TxCascadePicker<T, V> extends TxSinglePickerBase<T, V> {
   })  : parentCheckable = parentCheckable ?? false,
         childrenMapper = _kMapChildrenMapper,
         super(
-          initialData: initialData as T?,
+          initialData: TxPickerFormField.initData<Map, V>(
+            source,
+            initialData,
+            initialValue,
+            (data) => data[valueKey ?? idKey ?? kTreeIdKey] as V,
+          ) as T,
           source: source
               .toTree(
                 idKey: idKey ?? kTreeIdKey,
