@@ -1,7 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../localizations.dart';
-import '../theme_extensions/spacing.dart';
 
 /// 自定义底部弹出面板路由
 ///
@@ -452,14 +450,11 @@ class TxBottomSheet extends StatelessWidget {
   bool _getEffectiveCenterTitle(ThemeData theme, List<Widget>? actions) {
     bool platformCenter() {
       switch (theme.platform) {
-        case TargetPlatform.android:
-        case TargetPlatform.fuchsia:
-        case TargetPlatform.linux:
-        case TargetPlatform.windows:
-          return true;
         case TargetPlatform.iOS:
         case TargetPlatform.macOS:
           return actions == null || actions.length < 2;
+        default:
+          return true;
       }
     }
 
@@ -593,126 +588,54 @@ class TxBottomSheet extends StatelessWidget {
   }
 }
 
-typedef SimplePickerItemsBuilder<T> = List<SimplePickerItem<T>> Function(
-    BuildContext context);
+typedef CupertinoActionSheetItemsBuilder<T> = List<CupertinoActionSheetItem<T>>
+    Function(BuildContext context);
 
 /// 显示简易选择弹框
-Future<T?> showSimplePickerBottomSheet<T>({
+Future<T?> showCupertinoActionSheet<T>({
   required BuildContext context,
-  required SimplePickerItemsBuilder<T> itemsBuilder,
+  required CupertinoActionSheetItemsBuilder<T> itemsBuilder,
   Widget? title,
-  Widget? divider,
+  Widget? message,
+  Widget? cancelButton,
 }) async {
   return showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      final List<Widget> items = itemsBuilder(context);
-      return _SimplePickerBottomSheet(
-        pickerItems: items,
+      return CupertinoActionSheet(
         title: title,
-        divider: divider,
+        message: message,
+        actions: itemsBuilder(context),
+        cancelButton: cancelButton ??
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+              ),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            ),
       );
     },
   );
 }
 
-class _SimplePickerBottomSheet<T> extends StatelessWidget {
-  const _SimplePickerBottomSheet({
-    required this.pickerItems,
-    super.key,
-    this.title,
-    this.divider,
-  });
-
-  /// 标题
-  final Widget? title;
-
-  /// 选择项
-  final List<Widget> pickerItems;
-
-  /// 分隔线
-  final Widget? divider;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-    final ColorScheme colorScheme = theme.colorScheme;
-    final BorderRadius borderRadius = BorderRadius.vertical(
-      top: Radius.circular(Theme.of(context).useMaterial3 ? 12.0 : 4.0),
-    );
-
-    final List<Widget> children = [
-      if (title != null) ...[
-        ListTile(
-          title: DefaultTextStyle(
-            style:
-                theme.textTheme.labelMedium!.copyWith(color: theme.hintColor),
-            textAlign: TextAlign.center,
-            child:
-                title ?? Text(TxLocalizations.of(context).pickerFormFieldHint),
-          ),
-        ),
-        const Divider(),
-      ],
-    ];
-    List<Widget> pickTiles;
-    if (divider != null) {
-      pickTiles = [
-        for (int i = 0; i < pickerItems.length; i++) ...[
-          pickerItems[i],
-          if (i != pickerItems.length - 1) divider!,
-        ],
-      ];
-    } else {
-      pickTiles = ListTile.divideTiles(
-        color: colorScheme.outlineVariant,
-        tiles: pickerItems,
-      ).toList();
-    }
-    children.addAll(pickTiles);
-    final Widget cancelTile = ListTile(
-      title: Text(
-        MaterialLocalizations.of(context).cancelButtonLabel,
-        textAlign: TextAlign.center,
-      ),
-      onTap: () => Navigator.pop(context),
-    );
-
-    return Material(
-      shape: RoundedRectangleBorder(borderRadius: borderRadius),
-      surfaceTintColor: theme.colorScheme.surface,
-      color: theme.colorScheme.surface,
-      elevation: 1,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ...children,
-          Container(
-            height: SpacingTheme.of(context).medium,
-            color: colorScheme.outline.withValues(alpha: 0.05),
-          ),
-          cancelTile,
-        ],
-      ),
-    );
-  }
-}
-
 /// 简易选择项
-class SimplePickerItem<T> extends StatelessWidget {
-  const SimplePickerItem({
+class CupertinoActionSheetItem<T> extends StatelessWidget {
+  const CupertinoActionSheetItem({
     required this.title,
+    this.subtitle,
+    this.leading,
+    this.trailing,
     this.value,
     this.onTap,
     this.enabled = true,
-    this.subtitle,
-    this.leading,
     super.key,
+    this.titleTextStyle,
+    this.titleTextAlign = TextAlign.center,
   });
 
-  /// 如果选择此项，[showSimplePickerBottomSheet] 将返回的值。
+  /// 如果选择此项，[showCupertinoActionSheet] 将返回的值。
   final T? value;
 
   /// 点击选择项时调用
@@ -726,42 +649,43 @@ class SimplePickerItem<T> extends StatelessWidget {
   /// 参考[ListTile.title]
   final Widget title;
 
-  /// 参考[ListTile.subtitle]
+  /// 参考[ListTile.title]
   final Widget? subtitle;
 
-  /// 参考[ListTile.leading]
+  /// 参考[ListTile.title]
   final Widget? leading;
+
+  /// 参考[ListTile.title]
+  final Widget? trailing;
+
+  /// 标题文字样式
+  final TextStyle? titleTextStyle;
+
+  /// 标题对其方式
+  final TextAlign? titleTextAlign;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    final Widget effectiveTitle = DefaultTextStyle(
-      style: theme.textTheme.titleMedium!,
-      textAlign: TextAlign.center,
-      child: title,
-    );
-
-    Widget? effectiveSubtitle;
-    if (subtitle != null) {
-      effectiveSubtitle = DefaultTextStyle(
-        style: theme.textTheme.bodySmall!.copyWith(color: theme.hintColor),
-        textAlign: TextAlign.center,
-        child: subtitle!,
-      );
-    }
-
     return ListTile(
+      onTap: () {
+        Navigator.pop<T>(context, value);
+        onTap?.call();
+      },
       enabled: enabled,
+      title: DefaultTextStyle(
+        style: titleTextStyle ??
+            ListTileTheme.of(context).titleTextStyle ??
+            Theme.of(context).listTileTheme.titleTextStyle ??
+            Theme.of(context)
+                .textTheme
+                .bodyLarge!
+                .copyWith(color: Theme.of(context).colorScheme.onSurface),
+        textAlign: titleTextAlign,
+        child: title,
+      ),
+      subtitle: subtitle,
+      trailing: trailing,
       leading: leading,
-      title: effectiveTitle,
-      subtitle: effectiveSubtitle,
-      onTap: enabled
-          ? () {
-              Navigator.pop<T>(context, value);
-              onTap?.call();
-            }
-          : null,
     );
   }
 }

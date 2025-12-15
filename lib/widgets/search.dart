@@ -157,20 +157,20 @@ abstract class TxSearchDelegate<T> {
       ),
       inputDecorationTheme: searchFieldDecorationTheme ??
           Theme.of(context).inputDecorationTheme.copyWith(
-            prefixIconColor: colorScheme.outlineVariant,
-            suffixIconColor: colorScheme.outlineVariant,
-            contentPadding: EdgeInsets.zero,
-            hintStyle: searchFieldStyle,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            filled: true,
-          ),
+                prefixIconColor: colorScheme.outlineVariant,
+                suffixIconColor: colorScheme.outlineVariant,
+                contentPadding: EdgeInsets.zero,
+                hintStyle: searchFieldStyle,
+                border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                filled: true,
+              ),
     );
   }
 
@@ -460,10 +460,7 @@ class _SearchPageState<T> extends State<_SearchPage<T>> {
       case TargetPlatform.macOS:
         routeName = '';
         break;
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
+      default:
         routeName = searchFieldLabel;
     }
 
