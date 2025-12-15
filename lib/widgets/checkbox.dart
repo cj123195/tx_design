@@ -482,12 +482,6 @@ class _TxCheckboxState extends State<TxCheckbox>
       case _TxCheckboxType.adaptive:
         final ThemeData theme = Theme.of(context);
         switch (theme.platform) {
-          case TargetPlatform.ohos:
-          case TargetPlatform.android:
-          case TargetPlatform.fuchsia:
-          case TargetPlatform.linux:
-          case TargetPlatform.windows:
-            break;
           case TargetPlatform.iOS:
           case TargetPlatform.macOS:
             return CupertinoCheckbox(
@@ -502,6 +496,8 @@ class _TxCheckboxState extends State<TxCheckbox>
               side: widget.side,
               shape: widget.shape,
             );
+          default:
+            break;
         }
     }
 

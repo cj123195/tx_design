@@ -450,15 +450,11 @@ class TxBottomSheet extends StatelessWidget {
   bool _getEffectiveCenterTitle(ThemeData theme, List<Widget>? actions) {
     bool platformCenter() {
       switch (theme.platform) {
-        case TargetPlatform.android:
-        case TargetPlatform.fuchsia:
-        case TargetPlatform.linux:
-        case TargetPlatform.windows:
-        case TargetPlatform.ohos:
-          return true;
         case TargetPlatform.iOS:
         case TargetPlatform.macOS:
           return actions == null || actions.length < 2;
+        default:
+          return true;
       }
     }
 

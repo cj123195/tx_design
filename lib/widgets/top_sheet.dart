@@ -348,11 +348,7 @@ class _ModalTopSheetState<T> extends State<_ModalTopSheet<T>> {
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
         return '';
-      case TargetPlatform.android:
-      case TargetPlatform.ohos:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
+      default:
         return localizations.dialogLabel;
     }
   }
