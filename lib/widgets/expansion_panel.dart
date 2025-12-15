@@ -664,10 +664,7 @@ class _ExpansionTileState extends State<TxExpansionPanel>
                 '${localizations.expansionTileExpandedHint}'
             : '${localizations.expandedHint}\n '
                 '${localizations.expansionTileCollapsedHint}';
-      case TargetPlatform.android:
-      case TargetPlatform.fuchsia:
-      case TargetPlatform.linux:
-      case TargetPlatform.windows:
+      default:
         break;
     }
 
