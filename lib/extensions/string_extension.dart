@@ -43,6 +43,189 @@ const Map<String, MaterialAccentColor> _accentColorMap = {
   'deepOrangeAccent': Colors.deepOrangeAccent,
 };
 
+// file_type_constants.dart
+/// 文件类型定义
+class FileTypeConstants {
+  // 图片格式
+  static const Set<String> images = {'jpg', 'jpeg', 'png', 'gif', 'bmp'};
+
+  // 视频格式
+  static const Set<String> videos = {
+    'mp4',
+    'avi',
+    'wmv',
+    'rmvb',
+    'mpg',
+    'mpeg',
+    '3gp'
+  };
+
+  // 音频格式
+  static const Set<String> audios = {'mp3', 'wav', 'wma', 'amr', 'ogg'};
+
+  // Microsoft Office PPT
+  static const Set<String> pptMicrosoft = {
+    'ppt',
+    'pptx',
+    'pptm',
+    'pps',
+    'pot',
+    'potx',
+    'potm'
+  };
+  static const Set<String> pptOpenDocument = {'odp', 'otp', 'fodp'};
+  static const Set<String> pptOthers = {'key', 'sdd', 'sdp', 'sti', 'sxi'};
+
+  // Microsoft Office Word
+  static const Set<String> wordMicrosoft = {
+    'doc',
+    'docx',
+    'docm',
+    'dot',
+    'dotx',
+    'dotm'
+  };
+  static const Set<String> wordOpenDocument = {'odt', 'ott', 'fodt'};
+  static const Set<String> wordOthers = {
+    'wpd',
+    'wps',
+    'pages',
+    'lwp',
+    'hwp',
+    'mcw',
+    'psw',
+    'cwk',
+    'zabw',
+    'abw'
+  };
+
+  // Microsoft Office Excel
+  static const Set<String> excelMicrosoft = {
+    'xls',
+    'xlsx',
+    'xlsm',
+    'xlsb',
+    'xlt',
+    'xltx',
+    'xltm',
+    'xlw'
+  };
+  static const Set<String> excelOpenDocument = {'ods', 'ots', 'fods'};
+  static const Set<String> excelOthers = {
+    'csv',
+    'numbers',
+    'wk1',
+    'wks',
+    'dbf',
+    'dif',
+    'slk',
+    'pxl',
+    'wb2',
+    'sdc',
+    'stc',
+    'sxc'
+  };
+
+  // 矢量图
+  static const Set<String> vectors = {
+    'svg',
+    'eps',
+    'emf',
+    'wmf',
+    'cgm',
+    'dxf',
+    'cdr',
+    'cmx',
+    'svm',
+    'swf',
+    'met'
+  };
+
+  // 绘图文件
+  static const Set<String> drawingMicrosoft = {'vsd', 'vsdx', 'vsdm', 'vdx'};
+  static const Set<String> drawingOpenDocument = {'odg', 'otg', 'fodg'};
+  static const Set<String> drawingOthers = {'sda', 'sxd', 'pub', 'wpg'};
+
+  // 文本文件
+  static const Set<String> textOpenDocument = {'odt', 'ott', 'fodt'};
+  static const Set<String> textOthers = {
+    'txt',
+    'rtf',
+    'ltx',
+    'uof',
+    'uot',
+    'uop',
+    'uos',
+    '123',
+    '602',
+    'bib',
+    'pwp',
+    'vor',
+    'sdw',
+    'stw',
+    'sgl',
+    'sxg',
+    'sxm',
+    'sxw',
+    'smf',
+    'fopd',
+    'mw'
+  };
+
+  // HTML文件
+  static const Set<String> htmls = {'htm', 'html', 'xhtml', 'xml', 'mml'};
+
+  // 电子书
+  static const Set<String> ebooks = {'epub', 'pdb'};
+
+  // CAD文件
+  static const Set<String> cads = {'dwg', 'bak', 'dwt'};
+
+  // 可执行文件
+  static const Set<String> executables = {'exe', 'com'};
+
+  // 压缩文件
+  static const Set<String> compressed = {'rar', 'zip', 'arj', 'gz', 'z'};
+
+  // 配置文件
+  static const Set<String> configs = {'ini', 'conf', 'py', 'json'};
+
+  // 合并集合（用于批量判断）
+  static final Set<String> allPPT = {
+    ...pptMicrosoft,
+    ...pptOpenDocument,
+    ...pptOthers
+  };
+  static final Set<String> allWord = {
+    ...wordMicrosoft,
+    ...wordOpenDocument,
+    ...wordOthers
+  };
+  static final Set<String> allExcel = {
+    ...excelMicrosoft,
+    ...excelOpenDocument,
+    ...excelOthers
+  };
+  static final Set<String> allDrawing = {
+    ...drawingMicrosoft,
+    ...drawingOpenDocument,
+    ...drawingOthers
+  };
+  static final Set<String> allText = {...textOpenDocument, ...textOthers};
+
+  // Libre 支持转换的所有文件类型
+  static final Set<String> libreSupported = {
+    ...allWord,
+    ...allPPT,
+    ...allExcel,
+    ...vectors,
+    ...allDrawing,
+    ...allText,
+    ...htmls,
+    ...ebooks,
+  };
+}
+
 extension TxStringExtension on String {
   /// 获取有效的Rgb值
   int _getValidRgbValue(int value) {
@@ -420,211 +603,81 @@ extension TxStringExtension on String {
     return toDatetime()?.equalsDay(DateTime.now()) ?? false;
   }
 
-  /// 检查字符串是否为视频文件名。
-  bool get isVideoFileName {
-    return ['mp4', 'avi', 'wmv', 'rmvb', 'mpg', 'mpeg', '3gp']
-        .contains(fileExtension);
-  }
+  /// 检查字符串是否为视频文件名
+  bool get isVideoFileName => FileTypeConstants.videos.contains(fileExtension);
 
-  /// 检查字符串是否为图片文件名。
-  bool get isImageFileName {
-    return ['jpg', 'jpeg', 'png', 'gif', 'bmp'].contains(fileExtension);
-  }
+  /// 检查字符串是否为图片文件名
+  bool get isImageFileName => FileTypeConstants.images.contains(fileExtension);
 
-  /// 检查字符串是否为音频文件名。
-  bool get isAudioFileName {
-    return ['mp3', 'wav', 'wma', 'amr', 'ogg'].contains(fileExtension);
-  }
+  /// 检查字符串是否为音频文件名
+  bool get isAudioFileName => FileTypeConstants.audios.contains(fileExtension);
 
-  /// 检查字符串是否为演示文稿文件名。
-  bool get isPPTFileName {
-    const microsoft = ['ppt', 'pptx', 'pptm', 'pps', 'pot', 'potx', 'potm'];
-    const openDocument = ['odp', 'otp', 'fodp'];
-    const others = ['key', 'sdd', 'sdp', 'sti', 'sxi'];
-    final extension = fileExtension;
-    return microsoft.contains(extension) ||
-        openDocument.contains(extension) ||
-        others.contains(extension);
-  }
+  /// 检查字符串是否为演示文稿文件名
+  bool get isPPTFileName => FileTypeConstants.allPPT.contains(fileExtension);
 
-  /// 检查字符串是否为Word文件名。
-  bool get isWordFileName {
-    const microsoft = ['doc', 'docx', 'docm', 'dot', 'dotx', 'dotm'];
-    const openDocument = ['odt', 'ott', 'fodt'];
-    const others = [
-      'wpd',
-      'wps',
-      'pages',
-      'lwp',
-      'hwp',
-      'mcw',
-      'psw',
-      'cwk',
-      'zabw',
-      'abw'
-    ];
-    final extension = fileExtension;
-    return microsoft.contains(extension) ||
-        openDocument.contains(extension) ||
-        others.contains(extension);
-  }
+  /// 检查字符串是否为Word文件名
+  bool get isWordFileName => FileTypeConstants.allWord.contains(fileExtension);
 
-  /// 检查字符串是否为电子表格文件名。
-  bool get isExcelFileName {
-    const microsoft = [
-      'xls',
-      'xlsx',
-      'xlsm',
-      'xlsb',
-      'xlt',
-      'xltx',
-      'xltm',
-      'xlw'
-    ];
-    const openDocument = ['ods', 'ots', 'fods'];
-    const others = [
-      'csv',
-      'numbers',
-      'wk1',
-      'wks',
-      'dbf',
-      'dif',
-      'slk',
-      'pxl',
-      'wb2',
-      'sdc',
-      'stc',
-      'sxc',
-    ];
-    final extension = fileExtension;
-    return microsoft.contains(extension) ||
-        openDocument.contains(extension) ||
-        others.contains(extension);
-  }
+  /// 检查字符串是否为电子表格文件名
+  bool get isExcelFileName =>
+      FileTypeConstants.allExcel.contains(fileExtension);
 
-  /// 检查字符串是否为APK文件名。
-  bool get isAPKFilename {
-    return fileExtension == 'apk';
-  }
+  /// 检查字符串是否为矢量图文件名
+  bool get isVectorFileName =>
+      FileTypeConstants.vectors.contains(fileExtension);
 
-  /// 检查字符串是否为PDF文件名。
-  bool get isPDFFileName {
-    return fileExtension == 'pdf';
-  }
+  /// 检查字符串是否为绘图文件名
+  bool get isDrawingFileName =>
+      FileTypeConstants.allDrawing.contains(fileExtension);
 
-  /// 检查字符串是否为绘图文件名。
-  bool get isDrawingFileName {
-    const microsoft = ['vsd', 'vsdx', 'vsdm', 'vdx'];
-    const openDocument = ['odg', 'otg', 'fodg'];
-    const others = ['sda', 'sxd', 'pub', 'wpg'];
-    final extension = fileExtension;
-    return microsoft.contains(extension) ||
-        openDocument.contains(extension) ||
-        others.contains(extension);
-  }
+  /// 检查字符串是否为文本文件名
+  bool get isTxtFileName => FileTypeConstants.allText.contains(fileExtension);
 
-  /// 检查字符串是否为文本文件名。
-  bool get isTxtFileName {
-    final extension = fileExtension;
-    const openDocument = ['odg', 'otg', 'fodg'];
-    const others = [
-      'ltx',
-      'uof',
-      'uot',
-      'uop',
-      'uos',
-      '123',
-      '602',
-      'bib',
-      'pwp',
-      'vor',
-      'sdw',
-      'stw',
-      'sgl',
-      'sxg',
-      'sxm',
-      'sxw',
-      'smf',
-      'fopd',
-      'mw',
-    ];
-    return extension == 'txt' ||
-        extension == 'rtf' ||
-        openDocument.contains(extension) ||
-        others.contains(fileExtension);
-  }
+  /// 检查字符串是否为html文件名
+  bool get isHTMLFileName => FileTypeConstants.htmls.contains(fileExtension);
 
-  /// 检查字符串是否为Chm文件名。
-  bool get isChmFileName {
-    return toLowerCase().endsWith(".chm");
-  }
+  /// 检查字符串是否为电子书文件名
+  bool get isEBookFileName => FileTypeConstants.ebooks.contains(fileExtension);
 
-  /// 检查字符串是否为矢量图文件名。
-  bool get isVectorFileName {
-    return [
-      'svg',
-      'eps',
-      'emf',
-      'wmf',
-      'cgm',
-      'dxf',
-      'cdr',
-      'cmx',
-      'svm',
-      'swf',
-      'met',
-    ].contains(fileExtension);
-  }
+  /// 检查字符串是否为APK文件名
+  bool get isAPKFilename => fileExtension == 'apk';
 
-  /// 检查字符串是否为html文件名。
-  bool get isHTMLFileName {
-    return ['htm', 'html', 'xhtml', 'xml', 'mml'].contains(fileExtension);
-  }
+  /// 检查字符串是否为PDF文件名
+  bool get isPDFFileName => fileExtension == 'pdf';
 
-  /// 检查字符串是否为电子书文件名。
-  bool get isEBookFileName {
-    return ['epub', 'pdb'].contains(fileExtension);
-  }
+  /// 检查字符串是否为Chm文件名
+  bool get isChmFileName => fileExtension == 'chm';
 
-  /// 检查字符串是否为3D文件名。
-  bool get isThreeDFileName {
-    return toLowerCase().endsWith(".max");
-  }
+  /// 检查字符串是否为3D文件名
+  bool get isThreeDFileName => fileExtension == 'max';
 
-  /// 检查字符串是否为WPS文件名。
-  bool get isWPSFileName {
-    return toLowerCase().endsWith(".wps");
-  }
+  /// 检查字符串是否为WPS文件名
+  bool get isWPSFileName => fileExtension == 'wps';
 
-  /// 检查字符串是否为gif文件名。
-  bool get isGifFileName {
-    return toLowerCase().endsWith(".gif");
-  }
+  /// 检查字符串是否为gif文件名
+  bool get isGifFileName => fileExtension == 'gif';
 
-  /// 检查字符串是否为cad文件名。
-  bool get isCadFileName {
-    return ['dwg', 'bak', 'dwt'].contains(fileExtension);
-  }
+  /// 检查字符串是否为cad文件名
+  bool get isCadFileName => FileTypeConstants.cads.contains(fileExtension);
 
-  /// 检查字符串是否为exe文件名。
-  bool get isExeFileName {
-    return ['exe', 'com'].contains(fileExtension);
-  }
+  /// 检查字符串是否为exe文件名
+  bool get isExeFileName =>
+      FileTypeConstants.executables.contains(fileExtension);
 
-  /// 检查字符串是否为数据库文件名。
-  bool get isDatabaseFileName {
-    return fileExtension == 'db';
-  }
+  /// 检查字符串是否为数据库文件名
+  bool get isDatabaseFileName => fileExtension == 'db';
 
-  /// 检查字符串是否为压缩文件名。
-  bool get isCompressedFileName {
-    return ['rar', 'zip', 'arj', 'gz', 'z'].contains(fileExtension);
-  }
+  /// 检查字符串是否为压缩文件名
+  bool get isCompressedFileName =>
+      FileTypeConstants.compressed.contains(fileExtension);
 
-  /// 检查字符串是否为配置文件名。
-  bool get isConfigurationFileName {
-    return ['ini', 'conf', 'py', 'json'].contains(fileExtension);
-  }
+  /// 检查字符串是否为配置文件名
+  bool get isConfigurationFileName =>
+      FileTypeConstants.configs.contains(fileExtension);
+
+  /// 检查是否是否为 libre 支持转换的文件类型
+  bool get isLibreSupported =>
+      FileTypeConstants.libreSupported.contains(fileExtension);
 
   /// 判断是否为网络地址
   bool get isNetworkUrl {
