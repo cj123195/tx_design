@@ -272,12 +272,12 @@ class ModalTopSheetRoute<T> extends PopupRoute<T> {
 
   @override
   Widget buildModalBarrier() {
-    if (barrierColor.a != 0 && !offstage) {
+    if (barrierColor.alpha != 0 && !offstage) {
       // 如果 barrierColor 或 offstage 更新，则调用 changedInternalState
-      assert(barrierColor != barrierColor.withValues(alpha: 0.0));
+      assert(barrierColor != barrierColor.withOpacity(0.0));
       final Animation<Color?> color = animation!.drive(
         ColorTween(
-          begin: barrierColor.withValues(alpha: 0.0),
+          begin: barrierColor.withOpacity(0.0),
           end: barrierColor, // 如果 barrierColor 更新，则调用 changedInternalState
         ).chain(
           CurveTween(curve: barrierCurve),
@@ -852,11 +852,11 @@ class _TopSheetState extends State<TopSheet> {
   bool get _dismissUnderway =>
       widget.animationController!.status == AnimationStatus.reverse;
 
-  Set<WidgetState> dragHandleWidgetState = <WidgetState>{};
+  Set<MaterialState> dragHandleMaterialState = <MaterialState>{};
 
   void _handleDragStart(DragStartDetails details) {
     setState(() {
-      dragHandleWidgetState.add(WidgetState.dragged);
+      dragHandleMaterialState.add(MaterialState.dragged);
     });
     widget.onDragStart?.call(details);
   }
@@ -889,7 +889,7 @@ class _TopSheetState extends State<TopSheet> {
       return;
     }
     setState(() {
-      dragHandleWidgetState.remove(WidgetState.dragged);
+      dragHandleMaterialState.remove(MaterialState.dragged);
     });
     bool isClosing = false;
     if (details.velocity.pixelsPerSecond.dy > _minFlingVelocity) {
@@ -929,12 +929,12 @@ class _TopSheetState extends State<TopSheet> {
   }
 
   void _handleDragHandleHover(bool hovering) {
-    if (hovering != dragHandleWidgetState.contains(WidgetState.hovered)) {
+    if (hovering != dragHandleMaterialState.contains(MaterialState.hovered)) {
       setState(() {
         if (hovering) {
-          dragHandleWidgetState.add(WidgetState.hovered);
+          dragHandleMaterialState.add(MaterialState.hovered);
         } else {
-          dragHandleWidgetState.remove(WidgetState.hovered);
+          dragHandleMaterialState.remove(MaterialState.hovered);
         }
       });
     }
@@ -971,7 +971,7 @@ class _TopSheetState extends State<TopSheet> {
       dragHandle = _DragHandle(
         onSemanticsTap: widget.onClosing,
         handleHover: _handleDragHandleHover,
-        materialState: dragHandleWidgetState,
+        materialState: dragHandleMaterialState,
         dragHandleColor: widget.dragHandleColor,
         dragHandleSize: widget.dragHandleSize,
       );
@@ -1052,7 +1052,7 @@ class _DragHandle extends StatelessWidget {
 
   final VoidCallback? onSemanticsTap;
   final ValueChanged<bool> handleHover;
-  final Set<WidgetState> materialState;
+  final Set<MaterialState> materialState;
   final Color? dragHandleColor;
   final Size? dragHandleSize;
 
@@ -1081,11 +1081,11 @@ class _DragHandle extends StatelessWidget {
               width: handleSize.width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(handleSize.height / 2),
-                color: WidgetStateProperty.resolveAs<Color?>(
+                color: MaterialStateProperty.resolveAs<Color?>(
                       dragHandleColor,
                       materialState,
                     ) ??
-                    WidgetStateProperty.resolveAs<Color?>(
+                    MaterialStateProperty.resolveAs<Color?>(
                       topSheetTheme.dragHandleColor,
                       materialState,
                     ) ??
@@ -1239,7 +1239,7 @@ class _TopSheetDefaultsM3 extends BottomSheetThemeData {
   Color? get shadowColor => Colors.transparent;
 
   @override
-  Color? get dragHandleColor => _colors.onSurfaceVariant.withValues(alpha: 0.4);
+  Color? get dragHandleColor => _colors.onSurfaceVariant.withOpacity(0.4);
 
   @override
   Size? get dragHandleSize => const Size(32, 4);

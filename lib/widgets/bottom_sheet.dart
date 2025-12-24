@@ -1,5 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../localizations.dart';
+import '../theme_extensions/spacing.dart';
 
 /// 自定义底部弹出面板路由
 ///
@@ -37,25 +39,25 @@ class TxModalBottomSheetRoute<T> extends PopupRoute<T> {
   /// [enterBottomSheetDuration] - 进入动画时长
   /// [exitBottomSheetDuration] - 退出动画时长
   TxModalBottomSheetRoute(
-    BuildContext context, {
-    this.builder,
-    this.theme,
-    this.barrierLabel,
-    this.backgroundColor,
-    this.isPersistent,
-    this.elevation,
-    this.shape,
-    this.removeTop = true,
-    this.clipBehavior,
-    this.modalBarrierColor,
-    this.isDismissible = true,
-    this.enableDrag = true,
-    this.isScrollControlled = false,
-    RouteSettings? settings,
-    this.enterBottomSheetDuration = const Duration(milliseconds: 250),
-    this.exitBottomSheetDuration = const Duration(milliseconds: 200),
-    this.heightRatio,
-  }) : super(settings: settings);
+      BuildContext context, {
+        this.builder,
+        this.theme,
+        this.barrierLabel,
+        this.backgroundColor,
+        this.isPersistent,
+        this.elevation,
+        this.shape,
+        this.removeTop = true,
+        this.clipBehavior,
+        this.modalBarrierColor,
+        this.isDismissible = true,
+        this.enableDrag = true,
+        this.isScrollControlled = false,
+        RouteSettings? settings,
+        this.enterBottomSheetDuration = const Duration(milliseconds: 250),
+        this.exitBottomSheetDuration = const Duration(milliseconds: 200),
+        this.heightRatio,
+      }) : super(settings: settings);
 
   final bool? isPersistent;
   final WidgetBuilder? builder;
@@ -111,14 +113,14 @@ class TxModalBottomSheetRoute<T> extends PopupRoute<T> {
       removeTop: removeTop,
       child: Padding(
         padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: _TxModalBottomSheet<T>(
           route: this,
           backgroundColor: backgroundColor ??
               sheetTheme.modalBackgroundColor ??
               sheetTheme.backgroundColor,
           elevation:
-              elevation ?? sheetTheme.modalElevation ?? sheetTheme.elevation,
+          elevation ?? sheetTheme.modalElevation ?? sheetTheme.elevation,
           shape: shape,
           clipBehavior: clipBehavior,
           isScrollControlled: isScrollControlled,
@@ -201,35 +203,35 @@ class _TxModalBottomSheetState<T> extends State<_TxModalBottomSheet<T>> {
               ),
               child: widget.isPersistent == false
                   ? BottomSheet(
-                      animationController: widget.route!._animationController,
-                      onClosing: () {
-                        if (widget.route!.isCurrent) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      builder: widget.route!.builder!,
-                      backgroundColor: widget.backgroundColor,
-                      elevation: widget.elevation,
-                      shape: widget.shape,
-                      clipBehavior: widget.clipBehavior,
-                      enableDrag: widget.enableDrag,
-                    )
+                animationController: widget.route!._animationController,
+                onClosing: () {
+                  if (widget.route!.isCurrent) {
+                    Navigator.pop(context);
+                  }
+                },
+                builder: widget.route!.builder!,
+                backgroundColor: widget.backgroundColor,
+                elevation: widget.elevation,
+                shape: widget.shape,
+                clipBehavior: widget.clipBehavior,
+                enableDrag: widget.enableDrag,
+              )
                   : Scaffold(
-                      bottomSheet: BottomSheet(
-                        animationController: widget.route!._animationController,
-                        onClosing: () {
-                          // if (widget.route.isCurrent) {
-                          //   Navigator.pop(context);
-                          // }
-                        },
-                        builder: widget.route!.builder!,
-                        backgroundColor: widget.backgroundColor,
-                        elevation: widget.elevation,
-                        shape: widget.shape,
-                        clipBehavior: widget.clipBehavior,
-                        enableDrag: widget.enableDrag,
-                      ),
-                    ),
+                bottomSheet: BottomSheet(
+                  animationController: widget.route!._animationController,
+                  onClosing: () {
+                    // if (widget.route.isCurrent) {
+                    //   Navigator.pop(context);
+                    // }
+                  },
+                  builder: widget.route!.builder!,
+                  backgroundColor: widget.backgroundColor,
+                  elevation: widget.elevation,
+                  shape: widget.shape,
+                  clipBehavior: widget.clipBehavior,
+                  enableDrag: widget.enableDrag,
+                ),
+              ),
             ),
           ),
         );
@@ -240,10 +242,10 @@ class _TxModalBottomSheetState<T> extends State<_TxModalBottomSheet<T>> {
 
 class _TxModalBottomSheetLayout extends SingleChildLayoutDelegate {
   _TxModalBottomSheetLayout(
-    this.progress,
-    this.isScrollControlled,
-    this.heightRatio,
-  );
+      this.progress,
+      this.isScrollControlled,
+      this.heightRatio,
+      );
 
   final double progress;
   final bool isScrollControlled;
@@ -272,27 +274,27 @@ class _TxModalBottomSheetLayout extends SingleChildLayoutDelegate {
 }
 
 Future<T?> showTxModalBottomSheet<T>(
-  BuildContext context, {
-  required WidgetBuilder? builder,
-  Color? backgroundColor,
-  double? elevation,
-  ShapeBorder? shape,
-  Clip? clipBehavior,
-  Color? barrierColor,
-  bool isScrollControlled = false,
-  bool useRootNavigator = false,
-  bool isDismissible = true,
-  bool enableDrag = true,
-  EdgeInsetsGeometry? padding,
-  EdgeInsetsGeometry? contentPadding,
-  bool persistent = false,
-  bool? ignoreSafeArea,
-  RouteSettings? settings,
-  Duration? enterBottomSheetDuration,
-  Duration? exitBottomSheetDuration,
-}) {
+    BuildContext context, {
+      required WidgetBuilder? builder,
+      Color? backgroundColor,
+      double? elevation,
+      ShapeBorder? shape,
+      Clip? clipBehavior,
+      Color? barrierColor,
+      bool isScrollControlled = false,
+      bool useRootNavigator = false,
+      bool isDismissible = true,
+      bool enableDrag = true,
+      EdgeInsetsGeometry? padding,
+      EdgeInsetsGeometry? contentPadding,
+      bool persistent = false,
+      bool? ignoreSafeArea,
+      RouteSettings? settings,
+      Duration? enterBottomSheetDuration,
+      Duration? exitBottomSheetDuration,
+    }) {
   final NavigatorState navigator =
-      Navigator.of(context, rootNavigator: useRootNavigator);
+  Navigator.of(context, rootNavigator: useRootNavigator);
   return navigator.push(TxModalBottomSheetRoute<T>(
     context,
     builder: builder,
@@ -310,9 +312,9 @@ Future<T?> showTxModalBottomSheet<T>(
     settings: settings,
     enableDrag: enableDrag,
     enterBottomSheetDuration:
-        enterBottomSheetDuration ?? const Duration(milliseconds: 250),
+    enterBottomSheetDuration ?? const Duration(milliseconds: 250),
     exitBottomSheetDuration:
-        exitBottomSheetDuration ?? const Duration(milliseconds: 200),
+    exitBottomSheetDuration ?? const Duration(milliseconds: 200),
   ));
 }
 
@@ -320,42 +322,42 @@ const EdgeInsetsGeometry _contentPadding = EdgeInsets.all(12.0);
 
 /// 默认底部弹框
 Future<T?> showDefaultBottomSheet<T>(
-  BuildContext context, {
-  required WidgetBuilder contentBuilder,
-  WidgetBuilder? headerBuilder,
-  String? title,
-  bool? centerTitle,
-  double? titleSpacing,
-  WidgetBuilder? leadingBuilder,
-  double? leadingWidth,
-  bool automaticallyImplyLeading = true,
-  List<Widget> Function(BuildContext context)? actionsBuilder,
-  WidgetBuilder? footerBuilder,
-  VoidCallback? onConfirm,
-  VoidCallback? onCancel,
-  String? textConfirm,
-  String? textCancel,
-  bool showConfirmButton = true,
-  bool showCancelButton = false,
-  bool? showCloseButton,
-  Color? backgroundColor,
-  double? elevation,
-  ShapeBorder? shape,
-  Clip? clipBehavior,
-  Color? barrierColor,
-  bool isScrollControlled = false,
-  bool useRootNavigator = false,
-  bool isDismissible = true,
-  bool enableDrag = true,
-  EdgeInsetsGeometry? padding,
-  EdgeInsetsGeometry? contentPadding = _contentPadding,
-  bool persistent = false,
-  bool? ignoreSafeArea,
-  RouteSettings? settings,
-  Duration? enterBottomSheetDuration,
-  Duration? exitBottomSheetDuration,
-  ActionsPosition? actionsPosition,
-}) async {
+    BuildContext context, {
+      required WidgetBuilder contentBuilder,
+      WidgetBuilder? headerBuilder,
+      String? title,
+      bool? centerTitle,
+      double? titleSpacing,
+      WidgetBuilder? leadingBuilder,
+      double? leadingWidth,
+      bool automaticallyImplyLeading = true,
+      List<Widget> Function(BuildContext context)? actionsBuilder,
+      WidgetBuilder? footerBuilder,
+      VoidCallback? onConfirm,
+      VoidCallback? onCancel,
+      String? textConfirm,
+      String? textCancel,
+      bool showConfirmButton = true,
+      bool showCancelButton = false,
+      bool? showCloseButton,
+      Color? backgroundColor,
+      double? elevation,
+      ShapeBorder? shape,
+      Clip? clipBehavior,
+      Color? barrierColor,
+      bool isScrollControlled = false,
+      bool useRootNavigator = false,
+      bool isDismissible = true,
+      bool enableDrag = true,
+      EdgeInsetsGeometry? padding,
+      EdgeInsetsGeometry? contentPadding = _contentPadding,
+      bool persistent = false,
+      bool? ignoreSafeArea,
+      RouteSettings? settings,
+      Duration? enterBottomSheetDuration,
+      Duration? exitBottomSheetDuration,
+      ActionsPosition? actionsPosition,
+    }) async {
   return showTxModalBottomSheet<T>(
     context,
     builder: (_) => TxBottomSheet(
@@ -389,9 +391,9 @@ Future<T?> showDefaultBottomSheet<T>(
     settings: settings,
     enableDrag: enableDrag,
     enterBottomSheetDuration:
-        enterBottomSheetDuration ?? const Duration(milliseconds: 250),
+    enterBottomSheetDuration ?? const Duration(milliseconds: 250),
     exitBottomSheetDuration:
-        exitBottomSheetDuration ?? const Duration(milliseconds: 200),
+    exitBottomSheetDuration ?? const Duration(milliseconds: 200),
   );
 }
 
@@ -450,11 +452,14 @@ class TxBottomSheet extends StatelessWidget {
   bool _getEffectiveCenterTitle(ThemeData theme, List<Widget>? actions) {
     bool platformCenter() {
       switch (theme.platform) {
+        case TargetPlatform.android:
+        case TargetPlatform.fuchsia:
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+          return true;
         case TargetPlatform.iOS:
         case TargetPlatform.macOS:
           return actions == null || actions.length < 2;
-        default:
-          return true;
       }
     }
 
@@ -464,7 +469,7 @@ class TxBottomSheet extends StatelessWidget {
   Widget? _getLeading(BuildContext context) {
     if (leading != null) {
       final BoxConstraints constraints =
-          BoxConstraints.tightFor(width: leadingWidth ?? kToolbarHeight);
+      BoxConstraints.tightFor(width: leadingWidth ?? kToolbarHeight);
       if (Theme.of(context).useMaterial3) {
         return ConstrainedBox(
           constraints: constraints,
@@ -477,7 +482,7 @@ class TxBottomSheet extends StatelessWidget {
 
     if (actionsPosition == ActionsPosition.header) {
       final MaterialLocalizations localizations =
-          MaterialLocalizations.of(context);
+      MaterialLocalizations.of(context);
 
       return TextButton(
         onPressed: onCancel ?? () => Navigator.pop(context),
@@ -494,7 +499,7 @@ class TxBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MaterialLocalizations localizations =
-        MaterialLocalizations.of(context);
+    MaterialLocalizations.of(context);
     final ThemeData theme = Theme.of(context);
 
     Widget? effectiveFooter;
@@ -588,54 +593,126 @@ class TxBottomSheet extends StatelessWidget {
   }
 }
 
-typedef CupertinoActionSheetItemsBuilder<T> = List<CupertinoActionSheetItem<T>>
-    Function(BuildContext context);
+typedef SimplePickerItemsBuilder<T> = List<SimplePickerItem<T>> Function(
+    BuildContext context);
 
 /// 显示简易选择弹框
-Future<T?> showCupertinoActionSheet<T>({
+Future<T?> showSimplePickerBottomSheet<T>({
   required BuildContext context,
-  required CupertinoActionSheetItemsBuilder<T> itemsBuilder,
+  required SimplePickerItemsBuilder<T> itemsBuilder,
   Widget? title,
-  Widget? message,
-  Widget? cancelButton,
+  Widget? divider,
 }) async {
   return showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      return CupertinoActionSheet(
+      final List<Widget> items = itemsBuilder(context);
+      return _SimplePickerBottomSheet(
+        pickerItems: items,
         title: title,
-        message: message,
-        actions: itemsBuilder(context),
-        cancelButton: cancelButton ??
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.onSurface,
-              ),
-              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
-            ),
+        divider: divider,
       );
     },
   );
 }
 
+class _SimplePickerBottomSheet<T> extends StatelessWidget {
+  const _SimplePickerBottomSheet({
+    required this.pickerItems,
+    super.key,
+    this.title,
+    this.divider,
+  });
+
+  /// 标题
+  final Widget? title;
+
+  /// 选择项
+  final List<Widget> pickerItems;
+
+  /// 分隔线
+  final Widget? divider;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme colorScheme = theme.colorScheme;
+    final BorderRadius borderRadius = BorderRadius.vertical(
+      top: Radius.circular(Theme.of(context).useMaterial3 ? 12.0 : 4.0),
+    );
+
+    final List<Widget> children = [
+      if (title != null) ...[
+        ListTile(
+          title: DefaultTextStyle(
+            style:
+            theme.textTheme.labelMedium!.copyWith(color: theme.hintColor),
+            textAlign: TextAlign.center,
+            child:
+            title ?? Text(TxLocalizations.of(context).pickerFormFieldHint),
+          ),
+        ),
+        const Divider(),
+      ],
+    ];
+    List<Widget> pickTiles;
+    if (divider != null) {
+      pickTiles = [
+        for (int i = 0; i < pickerItems.length; i++) ...[
+          pickerItems[i],
+          if (i != pickerItems.length - 1) divider!,
+        ],
+      ];
+    } else {
+      pickTiles = ListTile.divideTiles(
+        color: colorScheme.outlineVariant,
+        tiles: pickerItems,
+      ).toList();
+    }
+    children.addAll(pickTiles);
+    final Widget cancelTile = ListTile(
+      title: Text(
+        MaterialLocalizations.of(context).cancelButtonLabel,
+        textAlign: TextAlign.center,
+      ),
+      onTap: () => Navigator.pop(context),
+    );
+
+    return Material(
+      shape: RoundedRectangleBorder(borderRadius: borderRadius),
+      surfaceTintColor: theme.colorScheme.surface,
+      color: theme.colorScheme.surface,
+      elevation: 1,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ...children,
+          Container(
+            height: SpacingTheme.of(context).medium,
+            color: colorScheme.outline.withOpacity(0.05),
+          ),
+          cancelTile,
+        ],
+      ),
+    );
+  }
+}
+
 /// 简易选择项
-class CupertinoActionSheetItem<T> extends StatelessWidget {
-  const CupertinoActionSheetItem({
+class SimplePickerItem<T> extends StatelessWidget {
+  const SimplePickerItem({
     required this.title,
-    this.subtitle,
-    this.leading,
-    this.trailing,
     this.value,
     this.onTap,
     this.enabled = true,
+    this.subtitle,
+    this.leading,
     super.key,
-    this.titleTextStyle,
-    this.titleTextAlign = TextAlign.center,
   });
 
-  /// 如果选择此项，[showCupertinoActionSheet] 将返回的值。
+  /// 如果选择此项，[showSimplePickerBottomSheet] 将返回的值。
   final T? value;
 
   /// 点击选择项时调用
@@ -649,43 +726,42 @@ class CupertinoActionSheetItem<T> extends StatelessWidget {
   /// 参考[ListTile.title]
   final Widget title;
 
-  /// 参考[ListTile.title]
+  /// 参考[ListTile.subtitle]
   final Widget? subtitle;
 
-  /// 参考[ListTile.title]
+  /// 参考[ListTile.leading]
   final Widget? leading;
-
-  /// 参考[ListTile.title]
-  final Widget? trailing;
-
-  /// 标题文字样式
-  final TextStyle? titleTextStyle;
-
-  /// 标题对其方式
-  final TextAlign? titleTextAlign;
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    final Widget effectiveTitle = DefaultTextStyle(
+      style: theme.textTheme.titleMedium!,
+      textAlign: TextAlign.center,
+      child: title,
+    );
+
+    Widget? effectiveSubtitle;
+    if (subtitle != null) {
+      effectiveSubtitle = DefaultTextStyle(
+        style: theme.textTheme.bodySmall!.copyWith(color: theme.hintColor),
+        textAlign: TextAlign.center,
+        child: subtitle!,
+      );
+    }
+
     return ListTile(
-      onTap: () {
+      enabled: enabled,
+      leading: leading,
+      title: effectiveTitle,
+      subtitle: effectiveSubtitle,
+      onTap: enabled
+          ? () {
         Navigator.pop<T>(context, value);
         onTap?.call();
-      },
-      enabled: enabled,
-      title: DefaultTextStyle(
-        style: titleTextStyle ??
-            ListTileTheme.of(context).titleTextStyle ??
-            Theme.of(context).listTileTheme.titleTextStyle ??
-            Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(color: Theme.of(context).colorScheme.onSurface),
-        textAlign: titleTextAlign,
-        child: title,
-      ),
-      subtitle: subtitle,
-      trailing: trailing,
-      leading: leading,
+      }
+          : null,
     );
   }
 }
