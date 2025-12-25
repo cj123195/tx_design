@@ -55,6 +55,7 @@ class TxMultiPickerFormField<T, V> extends TxFormField<List<T>> {
     super.actionsBuilder,
     super.trailingBuilder,
     super.leading,
+    super.tileTheme,
   })  : readOnly = readOnly ?? false,
         super.decorated(
           initialValue:
