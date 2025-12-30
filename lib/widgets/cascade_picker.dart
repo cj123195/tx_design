@@ -233,7 +233,7 @@ class TxCascadePicker<T, V> extends TxSinglePickerBase<T, V> {
             initialData,
             initialValue,
             (data) => data[valueKey ?? idKey ?? kTreeIdKey],
-          ) as T,
+          ) as T?,
           source: source
               .toTree(
                 idKey: idKey ?? kTreeIdKey,

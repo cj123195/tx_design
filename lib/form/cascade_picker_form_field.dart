@@ -182,7 +182,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.autovalidateMode,
     super.restorationId,
     super.decoration,
-    super.onChanged,
+    ValueChanged<Map>? onChanged,
     super.required,
     super.focusNode,
     String? hintText,
@@ -306,6 +306,7 @@ class TxCascadePickerFormField<T, V> extends TxCommonTextFormField<T> {
             required,
           ),
           readOnly: true,
+          onChanged: onChanged as ValueChanged<T?>?,
         );
 
   @override
