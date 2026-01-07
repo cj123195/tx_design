@@ -96,7 +96,7 @@ class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
     super.autovalidateMode,
     super.restorationId,
     super.decoration,
-    super.onChanged,
+    ValueChanged<Map?>? onChanged,
     super.required,
     super.focusNode,
     super.hintText,
@@ -113,7 +113,12 @@ class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
     super.tileTheme,
   }) : super(
           source: source as List<T>,
-          initialData: initialData as T?,
+          initialData: TxPickerFormField.initData(
+            source,
+            initialData,
+            initialValue,
+            (data) => data[valueKey ?? idKey ?? labelKey ?? kLabelKey],
+          ) as T?,
           subtitleBuilder: subtitleBuilder as DataWidgetBuilder<T>?,
           disabledWhen: disabledWhen as ValueMapper<T, bool>?,
           itemBuilder: itemBuilder as PickerItemBuilder<T>?,
@@ -139,5 +144,7 @@ class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
                 title: labelText,
               )) as PickVoidCallback<T>?,
           validator: validator as FormFieldValidator<T>?,
+          onChanged:
+              onChanged == null ? null : (value) => onChanged(value as Map?),
         );
 }

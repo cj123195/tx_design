@@ -233,7 +233,7 @@ class TxCascadePicker<T, V> extends TxSinglePickerBase<T, V> {
             initialData,
             initialValue,
             (data) => data[valueKey ?? idKey ?? kTreeIdKey],
-          ) as T,
+          ) as T?,
           source: source
               .toTree(
                 idKey: idKey ?? kTreeIdKey,
@@ -250,7 +250,7 @@ class TxCascadePicker<T, V> extends TxSinglePickerBase<T, V> {
           labelMapper: (data) =>
               (data as Map)[labelKey ?? kLabelKey] as String?,
           valueMapper: (data) =>
-              (data as Map)[valueKey ?? idKey ?? kTreeIdKey] as V,
+              (data as Map)[valueKey ?? idKey ?? kTreeIdKey] as V?,
         );
 
   /// 数据的子节点
