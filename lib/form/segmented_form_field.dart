@@ -58,7 +58,11 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
 
                   return ButtonSegment<T>(
                     value: data,
-                    label: Text(labelMapper(data) ?? ''),
+                    label: Text(
+                      labelMapper(data) ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     icon: iconBuilder == null
                         ? null
                         : iconBuilder(field.context, index, data),

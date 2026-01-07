@@ -186,8 +186,7 @@ abstract class TxSinglePickerBaseState<T, V>
     final V? value = widget.valueMapper(data);
     final V? selectedValue =
         selectedData == null ? null : widget.valueMapper(selectedData as T);
-    final bool selected =
-        selectedData != null && widget.valueMapper(selectedData as T) == value;
+    final bool selected = selectedData != null && selectedValue == value;
     final bool enabled =
         widget.disabledWhen == null ? true : !widget.disabledWhen!(data);
 
