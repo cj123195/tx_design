@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/datetime_range_extension.dart';
-import '../widgets/date_range_picker.dart';
 import 'picker_form_field.dart';
 
 const String _defaultFormat = 'slashDate';
@@ -27,7 +26,6 @@ class TxDateRangePickerFormField
     String? helpText,
     String? fieldStartHintText,
     String? fieldEndHintText,
-    List<DateRangeQuickChoice>? quickChoices,
     String? format,
     String? separator,
     super.readOnly,
@@ -45,13 +43,13 @@ class TxDateRangePickerFormField
     super.scrollConfig,
   }) : super.withoutSource(
           initialValue: initialDateRange,
-          onPickTap: (context, range) => showCupertinoDateRangePicker(
-            context,
-            minimumDate: minimumDate,
-            maximumDate: maximumDate,
+          onPickTap: (context, range) => showDateRangePicker(
+            context: context,
+            firstDate: minimumDate ?? DateTime(1970),
+            lastDate:
+                maximumDate ?? DateTime.now().add(const Duration(days: 730)),
             initialDateRange: range,
             helpText: helpText,
-            quickChoices: quickChoices,
             fieldEndHintText: fieldEndHintText,
             fieldStartHintText: fieldStartHintText,
           ),
