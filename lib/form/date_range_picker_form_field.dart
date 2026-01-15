@@ -115,13 +115,13 @@ class TxDateRangePickerFormField
     super.magnifierConfiguration,
   }) : super.custom(
           initialValue: initialDateRange,
-          onPickTap: (context, range) => showCupertinoDateRangePicker(
-            context,
-            minimumDate: minimumDate,
-            maximumDate: maximumDate,
+          onPickTap: (context, range) => showDateRangePicker(
+            context: context,
+            firstDate: minimumDate ?? DateTime(1970),
+            lastDate: maximumDate ??
+                DateTime.now().copyWith(year: DateTime.now().year + 3),
             initialDateRange: range,
             helpText: helpText,
-            quickChoices: quickChoices,
             fieldEndHintText: fieldEndHintText,
             fieldStartHintText: fieldStartHintText,
           ),
