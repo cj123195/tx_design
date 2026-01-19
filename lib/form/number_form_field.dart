@@ -39,7 +39,7 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
     super.decoration,
     super.onChanged,
     super.required,
-    super.initialValue,
+    num? initialValue,
     super.bordered,
     String? hintText,
     this.maxValue,
@@ -63,6 +63,9 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
         stepStrictly = stepStrictly ?? false,
         super(
           hintText: hintText ?? '请输入',
+          initialValue: initialValue is double && precision == 0
+              ? initialValue.toInt()
+              : initialValue,
           clearable: clearable ?? false,
           displayTextMapper: (context, val) => val.toString(),
           valueMapper: num.tryParse,
@@ -149,6 +152,7 @@ class _TxNumberFormFieldState extends TxCommonTextFormFieldState<num> {
         if (widget.minValue != null && number < widget.minValue!) {
           number += step;
         }
+        // 应用精度格式化
         didChange(number);
       }
     }
@@ -334,10 +338,14 @@ class NumberInputFormatter extends TextInputFormatter {
 
     if (precision != null && text.contains('.')) {
       final list = text.split('.');
-      final int decimalLength = list.last.length;
-      final int integerLength = list.first.length;
-      if (decimalLength > precision!) {
-        text = text.substring(0, integerLength + 1 + precision!);
+      if (precision == 0) {
+        text = list.first;
+      } else {
+        final int decimalLength = list.last.length;
+        final int integerLength = list.first.length;
+        if (decimalLength > precision!) {
+          text = text.substring(0, integerLength + 1 + precision!);
+        }
       }
     }
 
