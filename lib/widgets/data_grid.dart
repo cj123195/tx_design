@@ -186,7 +186,8 @@ class TxDataRow extends StatelessWidget {
       horizontalGap: horizontalGap,
       labelTextStyle: labelTextStyle,
       contentTextStyle: contentTextStyle,
-      contentTextAlign: contentTextAlign,
+      contentTextAlign:
+          contentTextAlign ?? (columnNum > 1 ? TextAlign.start : null),
       padding: EdgeInsets.zero,
       contentMaxLines: contentMaxLines,
     );
