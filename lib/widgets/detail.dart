@@ -12,6 +12,7 @@ class TxDetailView extends StatelessWidget {
     this.decoration,
     this.padding,
     this.separator,
+    this.cellTheme,
   });
 
   /// 创建由[data]参数派生出的描述数据表的小组件。
@@ -24,6 +25,7 @@ class TxDetailView extends StatelessWidget {
     this.padding,
     this.decoration,
     this.separator,
+    this.cellTheme,
     Map<int, Widget>? slots,
     bool? dense,
     VisualDensity? visualDensity,
@@ -70,15 +72,28 @@ class TxDetailView extends StatelessWidget {
   /// 必须为非null，但可以为空。
   final List<Widget> children;
 
+  /// [TxCell] 的主题样式
+  final TxCellThemeData? cellTheme;
+
   @override
   Widget build(BuildContext context) {
     final TxDetailThemeData detailTheme = TxDetailTheme.of(context);
+    final TxDetailThemeData defaults = _DetailThemeMaterial3(context);
 
-    final Widget effectiveSeparator =
-        separator ?? detailTheme.separator ?? const SizedBox(height: 8.0);
-    final EdgeInsetsGeometry? effectivePadding = padding ?? detailTheme.padding;
+    final EdgeInsetsGeometry? effectivePadding =
+        padding ?? detailTheme.padding ?? defaults.padding;
     final Decoration? effectiveDecoration =
-        decoration ?? detailTheme.decoration;
+        decoration ?? detailTheme.decoration ?? defaults.decoration;
+    final TxCellThemeData effectiveCellTheme =
+        cellTheme ?? detailTheme.cellTheme ?? defaults.cellTheme!;
+
+    final dense = effectiveCellTheme.dense ?? defaults.cellTheme!.dense!;
+    final visualDensity =
+        effectiveCellTheme.visualDensity ?? defaults.cellTheme!.visualDensity!;
+    final Widget effectiveSeparator = separator ??
+        detailTheme.separator ??
+        defaults.separator ??
+        SizedBox(height: (dense ? 6 : 8) + visualDensity.vertical);
 
     final List<Widget> effectiveChildren = [
       for (int i = 0; i < children.length; i++) ...[
@@ -91,14 +106,7 @@ class TxDetailView extends StatelessWidget {
       decoration: effectiveDecoration,
       padding: effectivePadding,
       child: TxCellTheme(
-        data: TxCellTheme.of(context).copyWith(
-          dense: detailTheme.dense,
-          visualDensity: detailTheme.visualDensity,
-          minLabelWidth: detailTheme.minLabelWidth,
-          labelTextStyle: detailTheme.labelTextStyle,
-          contentTextStyle: detailTheme.contentTextStyle,
-          contentTextAlign: detailTheme.contentTextAlign,
-        ),
+        data: effectiveCellTheme,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -107,4 +115,31 @@ class TxDetailView extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DetailThemeMaterial3 extends TxDetailThemeData {
+  const _DetailThemeMaterial3(this.context);
+
+  final BuildContext context;
+
+  ColorScheme get colors => Theme.of(context).colorScheme;
+
+  TextTheme get textTheme => Theme.of(context).textTheme;
+
+  @override
+  TxCellThemeData? get cellTheme => TxCellThemeData(
+        dense: false,
+        contentTextAlign: TextAlign.left,
+        padding: EdgeInsets.zero,
+        minVerticalPadding: 4.0,
+        minLeadingWidth: 24.0,
+        minLabelWidth: 84,
+        labelTextStyle: textTheme.labelLarge!.copyWith(
+          color: colors.onSurfaceVariant,
+          fontWeight: FontWeight.w500,
+        ),
+        contentTextStyle:
+            textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w500),
+        visualDensity: Theme.of(context).visualDensity,
+      );
 }

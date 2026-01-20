@@ -12,30 +12,20 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
   const TxDataGridThemeData({
     this.decoration,
     this.padding,
-    this.minLabelWidth,
-    this.contentTextAlign,
     this.rowDecoration,
     this.rowPadding,
-    this.contentTextStyle,
-    this.labelTextStyle,
     this.spacing,
     this.runSpacing,
-    this.dense,
-    this.visualDensity,
+    this.cellTheme,
   });
 
   final Decoration? decoration;
   final EdgeInsetsGeometry? padding;
   final Decoration? rowDecoration;
   final EdgeInsetsGeometry? rowPadding;
-  final TextStyle? contentTextStyle;
-  final TextStyle? labelTextStyle;
   final double? spacing;
   final double? runSpacing;
-  final double? minLabelWidth;
-  final TextAlign? contentTextAlign;
-  final bool? dense;
-  final VisualDensity? visualDensity;
+  final TxCellThemeData? cellTheme;
 
   @override
   ThemeExtension<TxDataGridThemeData> copyWith({
@@ -43,28 +33,18 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
     EdgeInsetsGeometry? padding,
     Decoration? rowDecoration,
     EdgeInsetsGeometry? rowPadding,
-    TextStyle? contentTextStyle,
-    TextStyle? labelTextStyle,
     double? spacing,
     double? runSpacing,
-    double? minLabelWidth,
-    bool? dense,
-    VisualDensity? visualDensity,
-    TextAlign? contentTextAlign,
+    TxCellThemeData? cellTheme,
   }) {
     return TxDataGridThemeData(
       decoration: decoration ?? this.decoration,
       padding: padding ?? this.padding,
       rowDecoration: rowDecoration ?? this.rowDecoration,
       rowPadding: rowPadding ?? this.rowPadding,
-      contentTextStyle: contentTextStyle ?? this.contentTextStyle,
-      labelTextStyle: labelTextStyle ?? this.labelTextStyle,
       spacing: spacing ?? this.spacing,
       runSpacing: runSpacing ?? this.runSpacing,
-      minLabelWidth: minLabelWidth ?? this.minLabelWidth,
-      dense: dense ?? this.dense,
-      visualDensity: visualDensity ?? this.visualDensity,
-      contentTextAlign: contentTextAlign ?? this.contentTextAlign,
+      cellTheme: cellTheme ?? this.cellTheme,
     );
   }
 
@@ -77,14 +57,13 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
       return this;
     }
 
-    VisualDensity? effectiveVisualDensity;
-    if (visualDensity == null) {
-      effectiveVisualDensity = other.visualDensity;
-    } else if (other.visualDensity == null) {
-      effectiveVisualDensity = visualDensity;
+    TxCellThemeData? effectiveCellTheme;
+    if (cellTheme == null) {
+      effectiveCellTheme = other.cellTheme;
+    } else if (other.cellTheme == null) {
+      effectiveCellTheme = cellTheme;
     } else {
-      effectiveVisualDensity =
-          VisualDensity.lerp(visualDensity!, other.visualDensity!, t);
+      effectiveCellTheme = cellTheme!.lerp(other.cellTheme, t);
     }
 
     return TxDataGridThemeData(
@@ -92,15 +71,9 @@ class TxDataGridThemeData extends ThemeExtension<TxDataGridThemeData> {
       padding: EdgeInsetsGeometry.lerp(padding, other.padding, t),
       rowDecoration: Decoration.lerp(rowDecoration, other.rowDecoration, t),
       rowPadding: EdgeInsetsGeometry.lerp(rowPadding, other.rowPadding, t),
-      contentTextStyle:
-          TextStyle.lerp(contentTextStyle, other.contentTextStyle, t),
-      labelTextStyle: TextStyle.lerp(labelTextStyle, other.labelTextStyle, t),
-      dense: t < 0.5 ? dense : other.dense,
+      cellTheme: effectiveCellTheme,
       spacing: lerpDouble(spacing, other.spacing, t),
       runSpacing: lerpDouble(runSpacing, other.runSpacing, t),
-      minLabelWidth: lerpDouble(minLabelWidth, minLabelWidth, t),
-      visualDensity: effectiveVisualDensity,
-      contentTextAlign: t < 0.5 ? contentTextAlign : other.contentTextAlign,
     );
   }
 }

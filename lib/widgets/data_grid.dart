@@ -4,6 +4,8 @@ import 'cell.dart';
 import 'cell_theme.dart';
 import 'data_grid_theme.dart';
 
+export 'cell_theme.dart';
+
 /// 数据展示栅格组件
 class TxDataGrid extends StatelessWidget {
   /// 创建描述数据表的小组件。
@@ -15,6 +17,7 @@ class TxDataGrid extends StatelessWidget {
     this.decoration,
     this.padding,
     this.spacing,
+    this.cellTheme,
   });
 
   /// 创建由[data]参数派生出的描述数据表的小组件。
@@ -28,50 +31,15 @@ class TxDataGrid extends StatelessWidget {
     this.decoration,
     this.spacing,
     Map<int, Widget>? slots,
-    bool? dense,
-    VisualDensity? visualDensity,
-    double? minLabelWidth,
-    double? minLeadingWidth,
-    double? horizontalGap,
-    TextStyle? contentTextStyle,
-    TextStyle? labelTextStyle,
-    TextAlign? contentTextAlign,
-    EdgeInsetsGeometry? rowPadding,
-    Decoration? rowDecoration,
-    double? columnSpacing,
-    int? contentMaxLines,
+    TxCellThemeData? cellTheme,
   })  : assert(columnNum > 0),
+        cellTheme = (cellTheme ?? const TxCellThemeData()).copyWith(
+          contentTextAlign: cellTheme?.contentTextAlign ??
+              (columnNum >= 1 ? TextAlign.start : null),
+        ),
         rows = columnNum == 1
-            ? TxCell.fromMap(
-                data,
-                padding: rowPadding,
-                slots: slots,
-                dense: dense,
-                visualDensity: visualDensity,
-                minLeadingWidth: minLeadingWidth,
-                minLabelWidth: minLabelWidth,
-                horizontalGap: horizontalGap,
-                labelTextStyle: labelTextStyle,
-                contentTextStyle: contentTextStyle,
-                contentTextAlign: contentTextAlign,
-                contentMaxLines: contentMaxLines,
-              )
-            : TxDataRow.fromMap(
-                data,
-                spacing: columnSpacing,
-                decoration: rowDecoration,
-                padding: rowPadding,
-                slots: slots,
-                dense: dense,
-                visualDensity: visualDensity,
-                minLeadingWidth: minLeadingWidth,
-                minLabelWidth: minLabelWidth,
-                horizontalGap: horizontalGap,
-                labelTextStyle: labelTextStyle,
-                contentTextStyle: contentTextStyle,
-                contentTextAlign: contentTextAlign,
-                contentMaxLines: contentMaxLines,
-              );
+            ? TxCell.fromMap(data, slots: slots)
+            : TxDataRow.fromMap(data, slots: slots);
 
   /// 栅格的背景和边框装饰
   ///
@@ -94,13 +62,22 @@ class TxDataGrid extends StatelessWidget {
   /// 必须为非null，但可以为空。
   final List<Widget> rows;
 
+  /// [TxCell] 主题样式
+  final TxCellThemeData? cellTheme;
+
   @override
   Widget build(BuildContext context) {
     final TxDataGridThemeData gridTheme = TxDataGridTheme.of(context);
     const TxDataGridThemeData defaults = _DefaultDataGridTheme();
 
-    final double effectiveSpacing =
-        spacing ?? gridTheme.runSpacing ?? defaults.runSpacing!;
+    final TxCellThemeData effectiveCellTheme =
+        defaults.cellTheme!.merge(cellTheme ?? gridTheme.cellTheme);
+
+    final bool dense = effectiveCellTheme.dense ?? defaults.cellTheme!.dense!;
+    final double effectiveSpacing = spacing ??
+        gridTheme.runSpacing ??
+        defaults.runSpacing ??
+        (dense ? 6 : 8);
     final EdgeInsetsGeometry? effectivePadding =
         padding ?? gridTheme.padding ?? defaults.padding;
     final Decoration? effectiveDecoration =
@@ -117,16 +94,7 @@ class TxDataGrid extends StatelessWidget {
       decoration: effectiveDecoration,
       padding: effectivePadding,
       child: TxCellTheme(
-        data: TxCellTheme.of(context).copyWith(
-          dense: gridTheme.dense,
-          visualDensity: gridTheme.visualDensity,
-          minLabelWidth: gridTheme.minLabelWidth,
-          labelTextStyle: gridTheme.labelTextStyle,
-          contentTextStyle: gridTheme.contentTextStyle,
-          contentTextAlign: gridTheme.contentTextAlign,
-          minVerticalPadding: 0,
-          padding: EdgeInsets.zero,
-        ),
+        data: effectiveCellTheme,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -152,6 +120,7 @@ class TxDataRow extends StatelessWidget {
     this.decoration,
     this.spacing,
     this.padding,
+    this.cellTheme,
     super.key,
   });
 
@@ -162,34 +131,14 @@ class TxDataRow extends StatelessWidget {
     Map<String, dynamic> data, {
     final int columnNum = 2,
     Map<int, Widget>? slots,
-    bool? dense,
-    VisualDensity? visualDensity,
-    double? minLabelWidth,
-    double? minLeadingWidth,
-    double? horizontalGap,
-    TextStyle? contentTextStyle,
-    TextStyle? labelTextStyle,
-    TextAlign? contentTextAlign,
     EdgeInsetsGeometry? padding,
     Decoration? decoration,
     double? spacing,
-    int? contentMaxLines,
+    TxCellThemeData? cellTheme,
   }) {
     final List<Widget> cells = TxCell.fromMap(
       data,
       slots: slots,
-      dense: dense,
-      visualDensity: visualDensity,
-      minLeadingWidth: minLeadingWidth,
-      minLabelWidth: minLabelWidth,
-      minVerticalPadding: 0,
-      horizontalGap: horizontalGap,
-      labelTextStyle: labelTextStyle,
-      contentTextStyle: contentTextStyle,
-      contentTextAlign:
-          contentTextAlign ?? (columnNum > 1 ? TextAlign.start : null),
-      padding: EdgeInsets.zero,
-      contentMaxLines: contentMaxLines,
     );
 
     final int last = cells.length;
@@ -201,6 +150,9 @@ class TxDataRow extends StatelessWidget {
           decoration: decoration,
           padding: padding,
           spacing: spacing,
+          cellTheme: TxCellThemeData(
+            contentTextAlign: columnNum > 1 ? TextAlign.start : null,
+          ).merge(cellTheme),
         ),
     ];
   }
@@ -219,10 +171,16 @@ class TxDataRow extends StatelessWidget {
   /// 内边距
   final EdgeInsetsGeometry? padding;
 
+  /// [TxCell] 的主题样式
+  final TxCellThemeData? cellTheme;
+
   @override
   Widget build(BuildContext context) {
     final TxDataGridThemeData gridTheme = TxDataGridTheme.of(context);
     const TxDataGridThemeData defaults = _DefaultDataGridTheme();
+
+    final TxCellThemeData effectiveCellTheme =
+        defaults.cellTheme!.merge(cellTheme ?? gridTheme.cellTheme);
 
     final Decoration? effectiveDecoration =
         decoration ?? gridTheme.rowDecoration ?? defaults.decoration;
@@ -234,15 +192,18 @@ class TxDataRow extends StatelessWidget {
     return Container(
       padding: effectivePadding,
       decoration: effectiveDecoration,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          for (int i = 0; i < cells.length; i++) ...[
-            Expanded(child: cells[i]),
-            if (i != cells.length - 1) SizedBox(width: effectiveSpacing)
+      child: TxCellTheme(
+        data: effectiveCellTheme,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            for (int i = 0; i < cells.length; i++) ...[
+              Expanded(child: cells[i]),
+              if (i != cells.length - 1) SizedBox(width: effectiveSpacing)
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -250,4 +211,11 @@ class TxDataRow extends StatelessWidget {
 
 class _DefaultDataGridTheme extends TxDataGridThemeData {
   const _DefaultDataGridTheme() : super(spacing: 8.0, runSpacing: 6);
+
+  @override
+  TxCellThemeData? get cellTheme => const TxCellThemeData(
+        minVerticalPadding: 0,
+        padding: EdgeInsets.zero,
+        dense: false,
+      );
 }
