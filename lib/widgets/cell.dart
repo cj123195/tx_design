@@ -264,7 +264,14 @@ class TxCell extends StatelessWidget {
         overflow: contentMaxLines == null
             ? TextOverflow.visible
             : TextOverflow.ellipsis,
-        child: content ?? Text(contentText!),
+        child: content == null
+            ? Text(contentText!)
+            : Align(
+                alignment: textAlign == TextAlign.start
+                    ? Alignment.centerLeft
+                    : Alignment.centerRight,
+                child: content,
+              ),
       );
     }
 

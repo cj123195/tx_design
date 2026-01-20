@@ -69,9 +69,29 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
     );
   }
 
+  TxCellThemeData merge(TxCellThemeData? other) {
+    if(other == null) {
+      return this;
+    }
+
+    return copyWith(
+      dense: other.dense,
+      iconColor: other.iconColor,
+      minVerticalPadding: other.minVerticalPadding,
+      padding: other.padding,
+      gap: other.gap,
+      minLeadingWidth: other.minLeadingWidth,
+      minLabelWidth: other.minLabelWidth,
+      visualDensity: other.visualDensity,
+      labelTextStyle: other.labelTextStyle,
+      contentTextStyle: other.contentTextStyle,
+      contentTextAlign: other.contentTextAlign,
+      leadingTextStyle: other.leadingTextStyle,
+    );
+  }
+
   @override
-  ThemeExtension<TxCellThemeData> lerp(
-      ThemeExtension<TxCellThemeData>? other, double t) {
+  TxCellThemeData lerp(ThemeExtension<TxCellThemeData>? other, double t) {
     if (other is! TxCellThemeData) {
       return this;
     }
