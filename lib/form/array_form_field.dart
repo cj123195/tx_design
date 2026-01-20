@@ -50,6 +50,7 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
     int? limit,
     bool? sortable,
     bool? insertable,
+    bool? deletable,
     ArrayAddCallback<T>? onAddTap,
     super.key,
     super.onSaved,
@@ -81,6 +82,7 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
             limit,
             sortable,
             insertable,
+            deletable,
             onAddTap,
           ),
           validator: (val) => _validator(val, required, limit, validator),
@@ -95,6 +97,7 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
     int? limit,
     bool? sortable,
     bool? insertable,
+    bool? deletable,
     ArrayAddCallback<T>? onAddTap,
     FocusNode? focusNode,
     String? hintText,
@@ -126,6 +129,7 @@ class TxArrayFormField<T> extends TxFormField<List<T>> {
             limit,
             sortable,
             insertable,
+            deletable,
             onAddTap,
           ),
           validator: (val) => _validator(val, required, limit, validator),
@@ -142,6 +146,7 @@ Widget _buildFormField<T>(
   int? limit,
   bool? sortable,
   bool? insertable,
+  bool? deletable,
   ArrayAddCallback<T>? onAddTap,
 ) {
   final bool enabled = field.isEnabled;
@@ -206,7 +211,7 @@ Widget _buildFormField<T>(
 
     return [
       if (insertable != false) insertButton,
-      removeButton,
+      if (deletable != false) removeButton,
       if (sortable != false) ...[
         if (index != 0) moveUpButton,
         if (index != field.value!.length - 1) moveDownButton,
@@ -221,7 +226,7 @@ Widget _buildFormField<T>(
     mainAxisSize: MainAxisSize.min,
     children: [
       if (content != null) content,
-      if (enabled && (limit == null || count < limit))
+      if (insertable != false && enabled && (limit == null || count < limit))
         OutlinedButton.icon(
           icon: const Icon(Icons.add),
           onPressed: () async {
@@ -248,6 +253,7 @@ Widget _buildFormFieldByItem<T>(
   int? limit,
   bool? sortable,
   bool? insertable,
+  bool? deletable,
   ArrayAddCallback<T>? onAddTap,
 ) {
   return _buildFormField(
@@ -274,6 +280,7 @@ Widget _buildFormFieldByItem<T>(
     limit,
     sortable,
     insertable,
+    deletable,
     onAddTap,
   );
 }
