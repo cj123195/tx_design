@@ -267,9 +267,10 @@ class TxCell extends StatelessWidget {
         child: content == null
             ? Text(contentText!)
             : Align(
-                alignment: textAlign == TextAlign.start
-                    ? Alignment.centerLeft
-                    : Alignment.centerRight,
+                alignment:
+                    textAlign == TextAlign.start || textAlign == TextAlign.left
+                        ? Alignment.centerLeft
+                        : Alignment.centerRight,
                 child: content,
               ),
       );

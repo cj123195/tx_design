@@ -1,3 +1,9 @@
+# 0.2.27
+* TxArrayFormField 新增 deletable 参数用来控制是否显示删除按钮
+* 优化 TxCell、TxDataGrid、TxDetailView 样式和主题配置
+* TxDataRow.fromMap columnNum 大于1时默认文字对其方式为靠左对齐
+* 增加 TxNumberFormField int 类型数据初始值处理
+
 # 0.2.26
 * Update TxArrayFormField.
 * Fix the issue where negative numbers cannot be entered into TxNumberFormField.
