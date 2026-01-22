@@ -22,6 +22,7 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
     this.leadingTextStyle,
     this.minVerticalPadding,
     this.contentTextAlign,
+    this.contentMaxLines,
   });
 
   final bool? dense;
@@ -36,6 +37,7 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
   final TextStyle? leadingTextStyle;
   final double? minVerticalPadding;
   final TextAlign? contentTextAlign;
+  final int? contentMaxLines;
 
   @override
   TxCellThemeData copyWith({
@@ -66,6 +68,7 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
       contentTextStyle: contentTextStyle ?? this.contentTextStyle,
       contentTextAlign: contentTextAlign ?? this.contentTextAlign,
       leadingTextStyle: leadingTextStyle ?? this.leadingTextStyle,
+      contentMaxLines: contentMaxLines ?? this.contentMaxLines,
     );
   }
 
@@ -87,6 +90,7 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
       contentTextStyle: other.contentTextStyle,
       contentTextAlign: other.contentTextAlign,
       leadingTextStyle: other.leadingTextStyle,
+      contentMaxLines: other.contentMaxLines,
     );
   }
 
@@ -112,6 +116,7 @@ class TxCellThemeData extends ThemeExtension<TxCellThemeData> {
           lerpDouble(minVerticalPadding, other.minVerticalPadding, t),
       leadingTextStyle:
           TextStyle.lerp(leadingTextStyle, other.leadingTextStyle, t),
+      contentMaxLines: t < 0.5 ? contentMaxLines : other.contentMaxLines,
     );
   }
 }
