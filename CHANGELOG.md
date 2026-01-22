@@ -1,3 +1,7 @@
+# 0.2.27+1
+* TxCellThemeData 增加 contentMaxLines配置
+* TxSquareAvatar 默认字体样式修改为 titleSmall
+
 # 0.2.27
 * TxArrayFormField 新增 deletable 参数用来控制是否显示删除按钮
 * 优化 TxCell、TxDataGrid、TxDetailView 样式和主题配置
