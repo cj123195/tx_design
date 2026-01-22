@@ -31,12 +31,8 @@ class TxDataGrid extends StatelessWidget {
     this.decoration,
     this.spacing,
     Map<int, Widget>? slots,
-    TxCellThemeData? cellTheme,
+    this.cellTheme,
   })  : assert(columnNum > 0),
-        cellTheme = (cellTheme ?? const TxCellThemeData()).copyWith(
-          contentTextAlign: cellTheme?.contentTextAlign ??
-              (columnNum >= 1 ? TextAlign.start : null),
-        ),
         rows = columnNum == 1
             ? TxCell.fromMap(data, slots: slots)
             : TxDataRow.fromMap(data, slots: slots);
@@ -150,9 +146,7 @@ class TxDataRow extends StatelessWidget {
           decoration: decoration,
           padding: padding,
           spacing: spacing,
-          cellTheme: TxCellThemeData(
-            contentTextAlign: columnNum > 1 ? TextAlign.start : null,
-          ).merge(cellTheme),
+          cellTheme: cellTheme,
         ),
     ];
   }

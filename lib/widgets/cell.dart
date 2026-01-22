@@ -31,7 +31,7 @@ class TxCell extends StatelessWidget {
     this.minLeadingWidth,
     this.minVerticalPadding,
     this.contentTextAlign,
-    this.contentMaxLines = 1,
+    this.contentMaxLines,
   }) : assert(label != null || labelText != null);
 
   static List<Widget> fromMap(
@@ -47,7 +47,7 @@ class TxCell extends StatelessWidget {
     TextStyle? labelTextStyle,
     TextAlign? contentTextAlign,
     EdgeInsetsGeometry? padding,
-    int? contentMaxLines = 1,
+    int? contentMaxLines,
   }) {
     final List<Widget> cells = List.generate(
       data.length,
@@ -257,11 +257,14 @@ class TxCell extends StatelessWidget {
           cellTheme.contentTextAlign ??
           defaults.contentTextAlign!;
 
+      final int? effectiveContentMaxLines =
+          contentMaxLines ?? cellTheme.contentMaxLines;
+
       contentWidget = DefaultTextStyle(
         style: contentStyle,
         textAlign: textAlign,
-        maxLines: contentMaxLines,
-        overflow: contentMaxLines == null
+        maxLines: effectiveContentMaxLines,
+        overflow: effectiveContentMaxLines == null
             ? TextOverflow.visible
             : TextOverflow.ellipsis,
         child: content == null
@@ -1324,7 +1327,7 @@ class _DefaultCellTheme extends TxCellThemeData {
   _DefaultCellTheme(this.context)
       : super(
           dense: false,
-          contentTextAlign: TextAlign.right,
+          contentTextAlign: TextAlign.start,
           padding: EdgeInsets.zero,
           minVerticalPadding: 4.0,
           minLeadingWidth: 24.0,
