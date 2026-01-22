@@ -147,8 +147,8 @@ class TxSquareAvatar extends StatelessWidget {
     final Color? effectiveForegroundColor = foregroundColor ??
         (theme.useMaterial3 ? theme.colorScheme.onPrimaryContainer : null);
     final TextStyle effectiveTextStyle = theme.useMaterial3
-        ? theme.textTheme.titleMedium!
-        : theme.primaryTextTheme.titleMedium!;
+        ? theme.textTheme.titleSmall!
+        : theme.primaryTextTheme.titleSmall!;
     TextStyle textStyle =
         effectiveTextStyle.copyWith(color: effectiveForegroundColor);
     Color? effectiveBackgroundColor = backgroundColor ??
