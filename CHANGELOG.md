@@ -1,3 +1,6 @@
+# 0.2.27+2
+* 优化 TxSegmentFormField 禁用状态下已选中项的样式
+
 # 0.2.27+1
 * TxCellThemeData 增加 contentMaxLines配置
 * TxSquareAvatar 默认字体样式修改为 titleSmall

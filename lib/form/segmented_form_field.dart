@@ -67,10 +67,9 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
                         ? null
                         : iconBuilder(field.context, index, data),
                     tooltip: tooltipMapper == null ? null : tooltipMapper(data),
-                    enabled: disabledWhen == null ? true : !disabledWhen(data),
+                    // enabled: disabledWhen == null ? true : !disabledWhen(data),
                   );
                 }),
-                style: buttonStyle,
                 showSelectedIcon: showSelectedIcon ?? false,
                 selectedIcon: selectedIcon,
                 multiSelectionEnabled: false,
@@ -80,6 +79,23 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
                     ? (data) =>
                         field.didChange(data.isEmpty ? null : data.first)
                     : null,
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.resolveWith((states) {
+                    final theme = Theme.of(field.context);
+                    // 同时处理 disabled 和 selected 状态
+                    if (states.contains(WidgetState.disabled)) {
+                      if (states.contains(WidgetState.selected)) {
+                        return theme.disabledColor.withValues(alpha: 0.1);
+                        // 禁用时选中的背景色
+                      }
+                      return null; // 禁用时未选中的背景色
+                    }
+                    if (states.contains(WidgetState.selected)) {
+                      return theme.colorScheme.primary; // 启用时选中的背景色
+                    }
+                    return null;
+                  }),
+                ).merge(buttonStyle),
               ),
             );
           },
