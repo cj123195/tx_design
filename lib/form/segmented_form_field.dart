@@ -79,7 +79,7 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
                     ? (data) =>
                         field.didChange(data.isEmpty ? null : data.first)
                     : null,
-                style: ButtonStyle(
+                style: (buttonStyle ??= const ButtonStyle()).merge(ButtonStyle(
                   backgroundColor: WidgetStateProperty.resolveWith((states) {
                     final theme = Theme.of(field.context);
                     // 同时处理 disabled 和 selected 状态
@@ -95,7 +95,7 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
                     }
                     return null;
                   }),
-                ).merge(buttonStyle),
+                )),
               ),
             );
           },
