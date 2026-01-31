@@ -1,3 +1,6 @@
+# 0.2.27+3
+* 修复 TxSegmentFormField style 样式合并错误问题
+
 # 0.2.27+2
 * 优化 TxSegmentFormField 禁用状态下已选中项的样式
 
