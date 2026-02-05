@@ -1,3 +1,6 @@
+# 0.2.27+4
+* 修复 TxDropdownFormField readOnly 设置未生效问题
+
 # 0.2.27+3
 * 修复 TxSegmentFormField style 样式合并错误问题
 
