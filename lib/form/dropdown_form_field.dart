@@ -128,7 +128,7 @@ class TxDropdownFormField<T, V> extends TxFormField<T> {
                   ? null
                   : dropdownConfig?.hint ?? Text(hintText ?? '请选择'),
               disabledHint: dropdownConfig?.disabledHint ?? const Text('无'),
-              onChanged: readOnly == false ? null : field.didChange,
+              onChanged: readOnly == true ? null : field.didChange,
               onTap: dropdownConfig?.onTap,
               elevation: dropdownConfig?.elevation ?? 4,
               style: dropdownConfig?.style ??
