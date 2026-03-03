@@ -619,6 +619,11 @@ class TxCommonTextFormFieldState<T> extends TxFormFieldState<T> {
   bool get clearable =>
       !widget.readOnly && isEnabled && widget.clearable != false && !isEmpty;
 
+  // TxCommonTextFormFieldState 里新增
+  // 是否在 didChange 后将值同步回 controller
+  // 选择类组件返回 true，输入类组件返回 false
+  bool get syncControllerOnChange => true;
+
   @override
   TxCommonTextFormField<T> get widget =>
       super.widget as TxCommonTextFormField<T>;
@@ -641,9 +646,11 @@ class TxCommonTextFormFieldState<T> extends TxFormFieldState<T> {
   void didChange(T? value) {
     super.didChange(value);
 
-    final String text = _displayText;
-    if (text != controller?.text) {
-      controller?.text = text;
+    if (syncControllerOnChange) {
+      final String text = _displayText;
+      if (text != controller?.text) {
+        controller?.text = text;
+      }
     }
   }
 
