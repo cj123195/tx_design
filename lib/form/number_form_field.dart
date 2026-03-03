@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../extensions/num_extension.dart';
 import 'common_text_form_field.dart';
 
 // InputDecoration _decoration(
@@ -49,114 +50,26 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
     this.precision,
     bool? stepStrictly,
     super.controller,
-    super.undoController,
-    super.textInputAction,
-    super.textCapitalization,
-    super.style,
-    super.strutStyle,
-    TextAlign? textAlign,
-    super.textAlignVertical,
-    super.textDirection,
     super.readOnly,
-    super.showCursor,
-    super.autofocus,
-    super.statesController,
-    super.obscuringCharacter,
-    super.obscureText,
-    super.autocorrect,
-    super.smartDashesType,
-    super.smartQuotesType,
-    super.enableSuggestions,
-    super.maxLines,
-    super.minLines,
-    super.expands,
-    super.maxLength,
-    super.maxLengthEnforcement,
-    super.onEditingComplete,
-    super.onFieldSubmitted,
-    super.onAppPrivateCommand,
-    List<TextInputFormatter>? inputFormatters,
-    super.cursorWidth,
-    super.cursorHeight,
-    super.cursorRadius,
-    super.cursorOpacityAnimates,
-    super.cursorColor,
-    super.cursorErrorColor,
-    super.selectionHeightStyle,
-    super.selectionWidthStyle,
-    super.keyboardAppearance,
-    super.scrollPadding,
-    super.dragStartBehavior,
-    super.enableInteractiveSelection,
-    super.selectionControls,
     super.onTap,
-    super.onTapAlwaysCalled,
-    super.onTapOutside,
-    super.mouseCursor,
-    super.buildCounter,
-    super.scrollController,
-    super.scrollPhysics,
-    super.autofillHints,
-    super.contentInsertionConfiguration,
-    super.clipBehavior,
-    super.scribbleEnabled,
-    super.enableIMEPersonalizedLearning,
-    super.contextMenuBuilder,
-    super.canRequestFocus,
-    super.spellCheckConfiguration,
-    super.magnifierConfiguration,
+    EditConfig? editConfig,
     super.label,
     super.labelText,
-    super.labelTextAlign,
-    super.labelOverflow,
-    super.padding,
     super.actionsBuilder,
-    super.labelStyle,
-    super.horizontalGap,
-    super.tileColor,
-    super.layoutDirection,
     super.trailingBuilder,
     super.leading,
-    super.visualDensity,
-    super.shape,
-    super.iconColor,
-    super.textColor,
-    super.leadingAndTrailingTextStyle,
-    super.minLeadingWidth,
-    super.minLabelWidth,
-    super.minVerticalPadding,
-    super.dense,
-    super.onFieldTap,
-    super.colon,
-    super.focusColor,
     super.focusNode,
+    super.tileTheme,
   })  : stepped = stepped ?? false,
         stepStrictly = stepStrictly ?? false,
         super(
-          hintText: hintText ?? '请输入',
+          hintText: hintText ?? (readOnly == true ? null : '请输入'),
           initialValue: initialValue is double && precision == 0
               ? initialValue.toInt()
               : initialValue,
           clearable: clearable ?? false,
-          displayTextMapper: (context, val) => val.toString(),
-          keyboardType: TextInputType.number,
-          textAlign: textAlign ?? (stepped == true ? TextAlign.center : null),
-          onInputChanged: (field, val) {
-            final num? number = num.tryParse(val);
-            if (number != field.value) {
-              (field as TxCommonTextFormFieldState).didChange(number);
-            }
-          },
-          inputFormatters: [
-            ...?inputFormatters,
-            NumberInputFormatter(
-              min: minValue,
-              max: maxValue,
-              precision: precision,
-              step: step,
-              stepStrictly: stepStrictly,
-            ),
-          ],
+          displayTextMapper: (context, val) => val.toCompactFixed(),
+          valueMapper: num.tryParse,
           validator: (value) {
             if (required == true && value == null) {
               return '请输入';
@@ -181,6 +94,21 @@ class TxNumberFormField extends TxCommonTextFormField<num> {
 
             return null;
           },
+          editConfig: (editConfig ?? const EditConfig()).copyWith(
+            keyboardType: TextInputType.number,
+            textAlign: editConfig?.textAlign ??
+                (stepped == true ? TextAlign.center : null),
+            inputFormatters: [
+              ...?editConfig?.inputFormatters,
+              NumberInputFormatter(
+                min: minValue,
+                max: maxValue,
+                precision: precision,
+                step: step,
+                stepStrictly: stepStrictly,
+              ),
+            ],
+          ),
         );
 
   /// 可输入的最大值
@@ -216,6 +144,9 @@ class _TxNumberFormFieldState extends TxCommonTextFormFieldState<num> {
 
   @override
   FocusNode? get focusNode => widget.focusNode ?? _focusNode;
+
+  @override
+  bool get syncControllerOnChange => false;
 
   void _formatText() {
     if (!focusNode!.hasFocus) {
@@ -390,6 +321,21 @@ class NumberInputFormatter extends TextInputFormatter {
         return oldValue; // 不允许负数
       }
       return newValue;
+    }
+
+    // ✅ 允许末尾小数点的中间状态（如 "17."），precision == 0 时不允许
+    if (text.endsWith('.') && (precision == null || precision! > 0)) {
+      final withoutDot = text.substring(0, text.length - 1);
+      final num? partialValue = num.tryParse(withoutDot);
+      if (partialValue != null) {
+        if (min != null && partialValue < min!) {
+          return oldValue;
+        }
+        if (max != null && partialValue > max!) {
+          return oldValue;
+        }
+        return newValue;
+      }
     }
 
     final num? value = num.tryParse(text);

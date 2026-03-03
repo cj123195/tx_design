@@ -1,3 +1,7 @@
+# 0.2.27+5
+* 新增 num 类型拓展的 toCompactFixed 方法
+* 修复 TxNumberInputFormField 部分情况下无法正常删除的问题
+
 # 0.2.27+4
 * 修复 TxDropdownFormField readOnly 设置未生效问题
 
