@@ -180,8 +180,8 @@ linter:
 
     # 无用代码清理
     unnecessary_statements: true
-    # 控制流语句分散到不同层
-    always_put_control_body_on_new_line: true
+#    # 控制流语句分散到不同层
+#    always_put_control_body_on_new_line: true
     # required修饰变量排到变量列表前面
     always_put_required_named_parameters_first: true
     # dart.async.StreamSubscription需要在恰当实际嗲用cancel方法

@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import '../utils/basic_types.dart';
 import 'form_field.dart';
 
+export 'form_field.dart' show FormFieldTapCallback;
+
 typedef InputValueChanged<T> = void Function(
   TxCommonTextFormFieldState<T> field,
   String value,
@@ -68,6 +70,11 @@ class EditConfig {
     this.contentInsertionConfiguration,
     this.statesController,
     this.clipBehavior,
+    this.stylusHandwritingEnabled,
+    @Deprecated(
+      'Use `stylusHandwritingEnabled` instead. '
+      'This feature was deprecated after v3.27.0-0.2.pre.',
+    )
     this.scribbleEnabled,
     this.canRequestFocus,
   });
@@ -123,6 +130,11 @@ class EditConfig {
   final ContentInsertionConfiguration? contentInsertionConfiguration;
   final WidgetStatesController? statesController;
   final Clip? clipBehavior;
+  final bool? stylusHandwritingEnabled;
+  @Deprecated(
+    'Use `stylusHandwritingEnabled` instead. '
+    'This feature was deprecated after v3.27.0-0.2.pre.',
+  )
   final bool? scribbleEnabled;
   final bool? canRequestFocus;
 
@@ -178,7 +190,7 @@ class EditConfig {
     ContentInsertionConfiguration? contentInsertionConfiguration,
     WidgetStatesController? statesController,
     Clip? clipBehavior,
-    bool? scribbleEnabled,
+    bool? stylusHandwritingEnabled,
     bool? canRequestFocus,
   }) {
     return EditConfig(
@@ -239,7 +251,8 @@ class EditConfig {
           contentInsertionConfiguration ?? this.contentInsertionConfiguration,
       statesController: statesController ?? this.statesController,
       clipBehavior: clipBehavior ?? this.clipBehavior,
-      scribbleEnabled: scribbleEnabled ?? this.scribbleEnabled,
+      stylusHandwritingEnabled:
+          stylusHandwritingEnabled ?? this.stylusHandwritingEnabled,
       canRequestFocus: canRequestFocus ?? this.canRequestFocus,
     );
   }
@@ -303,7 +316,8 @@ class EditConfig {
           other.contentInsertionConfiguration ?? contentInsertionConfiguration,
       statesController: other.statesController ?? statesController,
       clipBehavior: other.clipBehavior ?? clipBehavior,
-      scribbleEnabled: other.scribbleEnabled ?? scribbleEnabled,
+      stylusHandwritingEnabled:
+          other.stylusHandwritingEnabled ?? stylusHandwritingEnabled,
       canRequestFocus: other.canRequestFocus ?? canRequestFocus,
     );
   }
@@ -481,7 +495,9 @@ class TxCommonTextFormField<T> extends TxFormField<T> {
                     editConfig?.contentInsertionConfiguration,
                 clipBehavior: editConfig?.clipBehavior ?? Clip.hardEdge,
                 restorationId: restorationId,
-                scribbleEnabled: editConfig?.scribbleEnabled ?? true,
+                // stylusHandwritingEnabled:
+                //     editConfig?.stylusHandwritingEnabled ??
+                //         EditableText.defaultStylusHandwritingEnabled,
                 enableIMEPersonalizedLearning:
                     editConfig?.enableIMEPersonalizedLearning ?? true,
                 contextMenuBuilder: editConfig?.contextMenuBuilder ??

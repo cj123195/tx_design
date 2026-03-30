@@ -2,15 +2,14 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-// import '../form/multi_picker_form_field.dart';
-import '../form/multi_picker_form_field.dart';
 import '../localizations.dart';
 import 'bottom_sheet.dart';
 import 'checkbox_list_tile.dart';
 import 'matching_text.dart';
 import 'picker.dart';
 
-export 'picker.dart' show ValueMapper, DataWidgetBuilder;
+export 'picker.dart'
+    show ValueMapper, DataWidgetBuilder, EqualityMatcher, FilterMatcher;
 
 /// 多选项构造方法
 typedef MultiPickerItemBuilder<T> = Widget Function(
@@ -20,7 +19,7 @@ typedef MultiPickerItemBuilder<T> = Widget Function(
   void Function(bool? val)? onChanged,
 );
 
-/// 多选组件操作栏构造放
+/// 多选组件操作栏构造方法
 typedef MultiPickerActionBarBuilder<T> = Widget Function(
   BuildContext context,
   List<T> selectedItems,
@@ -54,9 +53,9 @@ class MultiPickerSelectedSheet<T> extends StatefulWidget {
       _MultiPickerSelectedSheetState<T>();
 }
 
-class _MultiPickerSelectedSheetState<D>
-    extends State<MultiPickerSelectedSheet<D>> {
-  late final List<D> _selectedData;
+class _MultiPickerSelectedSheetState<T>
+    extends State<MultiPickerSelectedSheet<T>> {
+  late final List<T> _selectedData;
 
   void _removeSelectedItem(int index) {
     setState(() {
@@ -66,19 +65,20 @@ class _MultiPickerSelectedSheetState<D>
 
   @override
   void initState() {
-    _selectedData = widget.selectedData;
     super.initState();
+    _selectedData = List<T>.from(widget.selectedData);
   }
 
   @override
   Widget build(BuildContext context) {
-    // 顶部操作栏
+    final theme = Theme.of(context);
+
     final Widget topBar = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           '已选择：${_selectedData.length}',
-          style: Theme.of(context).textTheme.titleMedium,
+          style: theme.textTheme.titleMedium,
         ),
         const CloseButton(),
       ],
@@ -88,14 +88,12 @@ class _MultiPickerSelectedSheetState<D>
         ? Center(
             child: Text(
               '暂无选择项',
-              style: Theme.of(context).textTheme.labelMedium,
+              style: theme.textTheme.labelMedium,
             ),
           )
         : Wrap(
             spacing: 8.0,
             runSpacing: 8.0,
-            alignment: WrapAlignment.start,
-            runAlignment: WrapAlignment.start,
             children: widget.itemBuilder != null
                 ? List.generate(
                     _selectedData.length,
@@ -115,23 +113,17 @@ class _MultiPickerSelectedSheetState<D>
                       onDeleted: () => _removeSelectedItem(index),
                       deleteIcon: const Icon(Icons.close, size: 18),
                       side: const BorderSide(color: Colors.transparent),
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor: theme.colorScheme.primaryContainer,
                     ),
                   ),
           );
 
-    /// 底部操作栏
     final Widget bottomBar = Row(
       children: [
         TextButton(
           onPressed: _selectedData.isEmpty
               ? null
-              : () {
-                  setState(() {
-                    _selectedData.clear();
-                  });
-                },
+              : () => setState(() => _selectedData.clear()),
           child: const Text('清空'),
         ),
         Expanded(
@@ -209,27 +201,32 @@ class MultiPickerActionBar extends StatelessWidget {
 }
 
 /// 多选组件基础封装
-abstract class TxMultiPickerBase<T, V> extends TxPickerBase<T, List<T>, V> {
-  TxMultiPickerBase({
+abstract class TxMultiPickerBase<T> extends TxPickerBase<T, List<T>> {
+  const TxMultiPickerBase({
     required super.source,
     required super.labelMapper,
     this.itemBuilder,
+    this.subtitleBuilder,
     this.maxCount,
     this.actionBarBuilder,
     this.selectedItemBuilder,
+    this.secondaryBuilder,
     super.onChanged,
     super.disabledWhen,
-    super.subtitleBuilder,
-    super.valueMapper,
     super.initialData,
     super.placeholder,
     super.showSearchField,
+    super.filterMatcher,
     super.listTileTheme,
+    super.equalityMatcher,
     super.key,
   });
 
   /// 选择项构造器
   final MultiPickerItemBuilder<T>? itemBuilder;
+
+  /// 副标题
+  final DataWidgetBuilder<T>? subtitleBuilder;
 
   /// 最大选择个数
   final int? maxCount;
@@ -240,91 +237,100 @@ abstract class TxMultiPickerBase<T, V> extends TxPickerBase<T, List<T>, V> {
   /// 已选择项构造器
   final MultiPickerSelectedItemBuilder<T>? selectedItemBuilder;
 
+  /// [CheckboxListTile.secondary] 构造方法
+  final DataWidgetBuilder<T>? secondaryBuilder;
+
   @override
-  TxMultiPickerBaseState<T, V> createState();
+  TxMultiPickerBaseState<T> createState();
 }
 
-abstract class TxMultiPickerBaseState<T, V>
-    extends TxPickerBaseState<T, List<T>, V> {
+abstract class TxMultiPickerBaseState<T> extends TxPickerBaseState<T, List<T>> {
   late List<T> selectedData;
 
   @override
-  TxMultiPickerBase<T, V> get widget => super.widget as TxMultiPickerBase<T, V>;
+  TxMultiPickerBase<T> get widget => super.widget as TxMultiPickerBase<T>;
 
-  /// 全选
+  /// 全选（由子类实现以支持不同的数据结构）
   void onSelectAll(List<T> data);
 
   /// 选项变更回调
-  void onChanged(bool? value, T data) {
-    if (value == true) {
-      selectedData.add(data);
-    } else {
-      selectedData.remove(data);
-    }
+  void onItemChanged(bool? value, T data) {
+    setState(() {
+      if (value == true) {
+        if (!selectedData.any((e) => isEquals(e, data))) {
+          selectedData.add(data);
+        }
+      } else {
+        selectedData.removeWhere((e) => isEquals(e, data));
+      }
+    });
     widget.onChanged?.call(selectedData);
-    setState(() {});
   }
 
   /// 展示已选择的数据
   Future<void> _showSelectedData() async {
-    final res = await showTxModalBottomSheet(
+    final res = await showTxModalBottomSheet<List<T>>(
       context,
       builder: (context) => MultiPickerSelectedSheet<T>(
         selectedData: selectedData,
         labelMapper: widget.labelMapper,
+        itemBuilder: widget.selectedItemBuilder,
       ),
       isScrollControlled: true,
     );
     if (res != null) {
-      setState(() {
-        selectedData = res;
-      });
+      setState(() => selectedData = res);
+      widget.onChanged?.call(selectedData);
     }
-  }
-
-  /// 两个数据是否相等
-  bool isEquals(T data1, T data2) {
-    return widget.valueMapper(data1) == widget.valueMapper(data2);
   }
 
   /// 判断传入数据是否可操作
   bool isEnabled(T data, bool selected) {
-    bool enabled = true;
-    if (widget.disabledWhen != null) {
-      enabled = !widget.disabledWhen!(data);
+    if (widget.disabledWhen != null && widget.disabledWhen!(data)) {
+      return false;
     }
     if (widget.maxCount != null) {
-      enabled = enabled && (selectedData.length < widget.maxCount! || selected);
+      return selectedData.length < widget.maxCount! || selected;
     }
-    return enabled;
+    return true;
   }
 
-  /// 构建选择项
+  /// 构建默认多选列表项
   Widget buildPickerItem(T data) {
-    final int i = selectedData.indexWhere((e) => isEquals(e, data));
-    final bool value = i != -1;
+    final bool checked = selectedData.any((e) => isEquals(e, data));
+    final bool enabled = isEnabled(data, checked);
 
-    final bool enabled = isEnabled(data, value);
+    if (widget.itemBuilder != null) {
+      return widget.itemBuilder!(
+        context,
+        data,
+        checked,
+        enabled ? (val) => onItemChanged(val, data) : null,
+      );
+    }
+
+    final Widget? subtitle = widget.subtitleBuilder != null
+        ? widget.subtitleBuilder!(context, data)
+        : null;
+
+    final Widget? secondary = widget.secondaryBuilder != null
+        ? widget.secondaryBuilder!(context, data)
+        : null;
 
     return TxCheckboxListTile(
-      title: TxMatchingText(
-        widget.labelMapper(data) ?? '',
-        query: controller?.text,
-      ),
-      value: value,
-      subtitle: widget.subtitleBuilder == null
-          ? null
-          : widget.subtitleBuilder!(context, data),
-      controlAffinity: ListTileControlAffinity.leading,
+      title: TxMatchingText(widget.labelMapper(data) ?? '', query: query),
+      value: checked,
+      subtitle: subtitle,
+      secondary: secondary,
       enabled: enabled,
-      onChanged: (val) => onChanged(val, data),
+      onChanged: (val) => onItemChanged(val, data),
       dense: true,
     );
   }
 
   @override
   void initState() {
-    selectedData = [...?widget.initialData];
+    selectedData = List<T>.from(widget.initialData ?? []);
     super.initState();
   }
 
@@ -333,13 +339,9 @@ abstract class TxMultiPickerBaseState<T, V>
     if (widget.actionBarBuilder != null) {
       return widget.actionBarBuilder!(
         context,
-        data,
+        selectedData,
         () => onSelectAll(data),
-        (data) {
-          setState(() {
-            selectedData = data;
-          });
-        },
+        (updated) => setState(() => selectedData = updated),
       );
     }
 
@@ -348,9 +350,7 @@ abstract class TxMultiPickerBaseState<T, V>
       selectedCount: selectedData.length,
       onSelectAll: () => onSelectAll(data),
       onClearAll: () {
-        setState(() {
-          selectedData.clear();
-        });
+        setState(() => selectedData.clear());
         widget.onChanged?.call(null);
       },
       onShowSelectedData: _showSelectedData,
@@ -359,88 +359,70 @@ abstract class TxMultiPickerBaseState<T, V>
 }
 
 /// 多选选择器
-class TxMultiPicker<T, V> extends TxMultiPickerBase<T, V> {
-  TxMultiPicker({
+class TxMultiPicker<T> extends TxMultiPickerBase<T> {
+  const TxMultiPicker({
     required super.labelMapper,
     required super.source,
     super.onChanged,
     super.disabledWhen,
     super.subtitleBuilder,
-    super.valueMapper,
     super.initialData,
     super.placeholder,
     super.showSearchField,
+    super.filterMatcher,
     super.itemBuilder,
+    super.secondaryBuilder,
     super.maxCount,
     super.actionBarBuilder,
     super.selectedItemBuilder,
+    super.equalityMatcher,
     super.listTileTheme,
     super.key,
   });
 
   @override
-  TxMultiPickerBaseState<T, V> createState() => _TxMultiPickerState<T, V>();
+  TxMultiPickerBaseState<T> createState() => _TxMultiPickerState<T>();
 }
 
-class _TxMultiPickerState<T, V> extends TxMultiPickerBaseState<T, V> {
+class _TxMultiPickerState<T> extends TxMultiPickerBaseState<T> {
   @override
-  TxMultiPicker<T, V> get widget => super.widget as TxMultiPicker<T, V>;
+  TxMultiPicker<T> get widget => super.widget as TxMultiPicker<T>;
 
   @override
   Widget buildPickerContent(List<T> data) {
     return ListView.builder(
-      itemBuilder: (context, index) {
-        final T d = data[index];
-        final bool selected = selectedData.any((e) => isEquals(e, d));
-
-        return widget.itemBuilder == null
-            ? buildPickerItem(d)
-            : widget.itemBuilder!(
-                context,
-                d,
-                selected,
-                (val) => onChanged(val, d),
-              );
-      },
       itemCount: data.length,
+      itemBuilder: (context, index) => buildPickerItem(data[index]),
     );
   }
 
   @override
-  List<T> filterData(String query) => widget.source
-      .where((data) => widget.labelMapper(data)?.contains(query) == true)
-      .toList();
-
-  @override
   void onSelectAll(List<T> data) {
-    selectedData.clear();
-
-    final maxCount = widget.maxCount ?? data.length;
-    final countToAdd = math.min(maxCount, data.length);
-
-    selectedData.addAll(data.take(countToAdd));
-
+    setState(() {
+      selectedData.clear();
+      final maxCount = widget.maxCount ?? data.length;
+      selectedData.addAll(data.take(math.min(maxCount, data.length)));
+    });
     widget.onChanged?.call(selectedData);
-
-    setState(() {});
   }
 }
 
-/// 多选选择
+/// 多选 BottomSheet
 ///
-/// 点击取消将返回 null，开发者可根据返回值是否为 null 判断用户是否取消选择。
-Future<List<T>?> showMultiPickerBottomSheet<T, V>(
+/// 点击取消将返回 null，可据此判断用户是否取消选择。
+Future<List<T>?> showMultiPickerBottomSheet<T>(
   BuildContext context, {
   required List<T> source,
   required ValueMapper<T, String?> labelMapper,
   String? title,
   List<T>? initialData,
-  List<V>? initialValue,
-  ValueMapper<T, V?>? valueMapper,
   DataWidgetBuilder<T>? subtitleBuilder,
   MultiPickerItemBuilder<T>? itemBuilder,
+  DataWidgetBuilder<T>? secondaryBuilder,
   MultiPickerActionBarBuilder<T>? actionBarBuilder,
   MultiPickerSelectedItemBuilder<T>? selectedItemBuilder,
+  EqualityMatcher<T>? equalityMatcher,
+  bool Function(T data, String query)? filterMatcher,
   bool? isScrollControlled,
   int? maxCount,
   ValueMapper<T, bool>? disabledWhen,
@@ -448,32 +430,29 @@ Future<List<T>?> showMultiPickerBottomSheet<T, V>(
   Widget? placeholder,
   ListTileThemeData? listTileTheme,
 }) async {
-  valueMapper ??= (T data) => data as V;
   isScrollControlled ??= true;
-  List<T> data = TxMultiPickerFormField.initData(
-        source,
-        initialData,
-        initialValue,
-        valueMapper,
-      ) ??
-      [];
-  final Widget content = TxMultiPicker<T, V>(
-    valueMapper: valueMapper,
+  List<T> data = List<T>.from(initialData ?? []);
+
+  final Widget content = TxMultiPicker<T>(
     labelMapper: labelMapper,
     source: source,
     onChanged: (val) => data = val ?? [],
     subtitleBuilder: subtitleBuilder,
     itemBuilder: itemBuilder,
+    secondaryBuilder: secondaryBuilder,
     initialData: data,
     maxCount: maxCount,
     disabledWhen: disabledWhen,
     showSearchField: showSearchField,
+    filterMatcher: filterMatcher,
     placeholder: placeholder,
     actionBarBuilder: actionBarBuilder,
     selectedItemBuilder: selectedItemBuilder,
+    equalityMatcher: equalityMatcher,
     listTileTheme: listTileTheme,
   );
-  return await showDefaultBottomSheet<List<T>>(
+
+  return showDefaultBottomSheet<List<T>>(
     context,
     title: title ?? TxLocalizations.of(context).pickerTitle,
     contentBuilder: (context) => content,

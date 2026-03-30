@@ -3,17 +3,50 @@ import 'package:flutter/material.dart';
 import '../widgets/multi_picker.dart';
 import 'form_field.dart';
 
-export '../utils/basic_types.dart' show ValueMapper;
 export '../widgets/multi_picker.dart'
     show
         MultiPickerItemBuilder,
         MultiPickerActionBarBuilder,
-        MultiPickerSelectedItemBuilder;
+        MultiPickerSelectedItemBuilder,
+        ValueMapper,
+        EqualityMatcher,
+        FilterMatcher,
+        DataWidgetBuilder;
+export 'form_field.dart' show FormFieldTapCallback;
 
 typedef MultiPickVoidCallback<T> = Future<List<T>?> Function(
   BuildContext context,
   List<T>? initialValue,
 );
+
+/// 多项选择器配置
+class TxMultiPickerConfig<T> {
+  const TxMultiPickerConfig({
+    this.subtitleBuilder,
+    this.itemBuilder,
+    this.disabledWhen,
+    this.showSearchField,
+    this.placeholder,
+    this.listTileTheme,
+    this.filterMatcher,
+    this.equalityMatcher,
+    this.secondaryBuilder,
+    this.actionBarBuilder,
+    this.selectedItemBuilder,
+  });
+
+  final DataWidgetBuilder<T>? subtitleBuilder;
+  final MultiPickerItemBuilder<T>? itemBuilder;
+  final ValueMapper<T, bool>? disabledWhen;
+  final bool? showSearchField;
+  final Widget? placeholder;
+  final ListTileThemeData? listTileTheme;
+  final FilterMatcher<T>? filterMatcher;
+  final EqualityMatcher<T>? equalityMatcher;
+  final DataWidgetBuilder<T>? secondaryBuilder;
+  final MultiPickerActionBarBuilder<T>? actionBarBuilder;
+  final MultiPickerSelectedItemBuilder<T>? selectedItemBuilder;
+}
 
 /// 多项选择框表单
 class TxMultiPickerFormField<T, V> extends TxFormField<List<T>> {
@@ -34,15 +67,9 @@ class TxMultiPickerFormField<T, V> extends TxFormField<List<T>> {
     ValueMapper<T, bool>? disabledWhen,
     List<T>? initialData,
     List<V>? initialValue,
+    TxMultiPickerConfig<T>? pickerConfig,
     int? minCount,
     int? maxCount,
-    DataWidgetBuilder<T>? subtitleBuilder,
-    MultiPickerItemBuilder<T>? itemBuilder,
-    MultiPickerActionBarBuilder<T>? actionBarBuilder,
-    MultiPickerSelectedItemBuilder<T>? selectedItemBuilder,
-    bool? showSearchField,
-    Widget? placeholder,
-    ListTileThemeData? listTileTheme,
     super.focusNode,
     String? hintText,
     bool? readOnly,
@@ -104,21 +131,23 @@ class TxMultiPickerFormField<T, V> extends TxFormField<List<T>> {
             }
 
             // 默认行为：打开多选弹窗
-            onPickTap ??= (context, value) => showMultiPickerBottomSheet<T, V>(
+            onPickTap ??= (context, value) => showMultiPickerBottomSheet<T>(
                   context,
                   source: source ?? [],
                   labelMapper: labelMapper,
                   initialData: value,
                   disabledWhen: disabledWhen,
-                  valueMapper: valueMapper,
-                  itemBuilder: itemBuilder,
-                  subtitleBuilder: subtitleBuilder,
-                  selectedItemBuilder: selectedItemBuilder,
-                  actionBarBuilder: actionBarBuilder,
+                  itemBuilder: pickerConfig?.itemBuilder,
+                  subtitleBuilder: pickerConfig?.subtitleBuilder,
+                  selectedItemBuilder: pickerConfig?.selectedItemBuilder,
+                  actionBarBuilder: pickerConfig?.actionBarBuilder,
                   maxCount: maxCount,
-                  showSearchField: showSearchField,
-                  placeholder: placeholder,
-                  listTileTheme: listTileTheme,
+                  showSearchField: pickerConfig?.showSearchField,
+                  placeholder: pickerConfig?.placeholder,
+                  listTileTheme: pickerConfig?.listTileTheme,
+                  filterMatcher: pickerConfig?.filterMatcher,
+                  equalityMatcher: pickerConfig?.equalityMatcher,
+                  secondaryBuilder: pickerConfig?.secondaryBuilder,
                   title: labelText,
                 );
 

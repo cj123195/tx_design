@@ -4,7 +4,26 @@ import '../extensions/iterable_extension.dart';
 import '../widgets/cascade_picker.dart';
 import 'picker_form_field.dart';
 
-export '../widgets/cascade_picker.dart' show ValueMapper, DataWidgetBuilder;
+export '../widgets/cascade_picker.dart'
+    show ValueMapper, DataWidgetBuilder, EqualityMatcher, FilterMatcher;
+
+/// 级联选择配置
+class TxCascadePickerConfig<T> extends TxPickerConfig<T> {
+  const TxCascadePickerConfig({
+    super.subtitleBuilder,
+    super.itemBuilder,
+    super.disabledWhen,
+    super.showSearchField,
+    super.placeholder,
+    super.listTileTheme,
+    super.filterMatcher,
+    super.equalityMatcher,
+    super.secondaryBuilder,
+    this.parentCheckable,
+  });
+
+  final bool? parentCheckable;
+}
 
 /// 级联选择框表单
 class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
@@ -15,13 +34,7 @@ class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
     V? initialValue,
     T? initialData,
     super.valueMapper,
-    super.subtitleBuilder,
-    super.disabledWhen,
-    super.itemBuilder,
-    super.showSearchField,
-    super.placeholder,
-    super.listTileTheme,
-    bool? parentCheckable,
+    TxCascadePickerConfig<T>? super.pickerConfig,
     super.clearable,
     super.key,
     super.onSaved,
@@ -53,21 +66,23 @@ class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
             valueMapper: valueMapper,
             childrenMapper: childrenMapper,
           ),
-          onPickTap: (context, initialData) => showCascadePicker<T, V>(
+          onPickTap: (context, initialData) => showCascadePicker<T>(
             context: context,
             source: source,
             labelMapper: labelMapper,
-            valueMapper: valueMapper,
             childrenMapper: childrenMapper,
-            disabledWhen: disabledWhen,
+            disabledWhen: pickerConfig?.disabledWhen,
             initialData: initialData,
-            parentCheckable: parentCheckable,
-            subtitleBuilder: subtitleBuilder,
-            itemBuilder: itemBuilder,
-            listTileTheme: listTileTheme,
-            placeholder: placeholder,
+            parentCheckable: pickerConfig?.parentCheckable,
+            subtitleBuilder: pickerConfig?.subtitleBuilder,
+            itemBuilder: pickerConfig?.itemBuilder,
+            listTileTheme: pickerConfig?.listTileTheme,
+            placeholder: pickerConfig?.placeholder,
             title: labelText,
-            showSearchField: showSearchField,
+            showSearchField: pickerConfig?.showSearchField,
+            filterMatcher: pickerConfig?.filterMatcher,
+            equalityMatcher: pickerConfig?.equalityMatcher,
+            secondaryBuilder: pickerConfig?.secondaryBuilder,
           ),
         );
 
@@ -80,13 +95,7 @@ class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
     String? rootId,
     Map? initialData,
     super.initialValue,
-    DataWidgetBuilder<Map>? subtitleBuilder,
-    ValueMapper<Map, bool>? disabledWhen,
-    PickerItemBuilder<Map>? itemBuilder,
-    super.showSearchField,
-    super.placeholder,
-    super.listTileTheme,
-    bool? parentCheckable,
+    TxCascadePickerConfig<Map>? pickerConfig,
     super.readOnly,
     super.clearable,
     super.key,
@@ -119,9 +128,6 @@ class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
             initialValue,
             (data) => data[valueKey ?? idKey ?? labelKey ?? kLabelKey],
           ) as T?,
-          subtitleBuilder: subtitleBuilder as DataWidgetBuilder<T>?,
-          disabledWhen: disabledWhen as ValueMapper<T, bool>?,
-          itemBuilder: itemBuilder as PickerItemBuilder<T>?,
           labelMapper: (data) => (data as Map)[labelKey ?? kLabelKey],
           valueMapper: (data) =>
               (data as Map)[valueKey ?? labelKey ?? kLabelKey],
@@ -129,18 +135,20 @@ class TxCascadePickerFormField<T, V> extends TxPickerFormField<T, V> {
                 context: context,
                 source: source,
                 labelKey: labelKey,
-                valueKey: valueKey,
                 rootId: rootId,
                 idKey: idKey,
                 pidKey: pidKey,
                 initialData: initialData as Map?,
-                parentCheckable: parentCheckable,
-                disabledWhen: disabledWhen,
-                itemBuilder: itemBuilder,
-                listTileTheme: listTileTheme,
-                placeholder: placeholder,
-                subtitleBuilder: subtitleBuilder,
-                showSearchField: showSearchField,
+                parentCheckable: pickerConfig?.parentCheckable,
+                disabledWhen: pickerConfig?.disabledWhen,
+                itemBuilder: pickerConfig?.itemBuilder,
+                listTileTheme: pickerConfig?.listTileTheme,
+                placeholder: pickerConfig?.placeholder,
+                subtitleBuilder: pickerConfig?.subtitleBuilder,
+                showSearchField: pickerConfig?.showSearchField,
+                filterMatcher: pickerConfig?.filterMatcher,
+                equalityMatcher: pickerConfig?.equalityMatcher,
+                secondaryBuilder: pickerConfig?.secondaryBuilder,
                 title: labelText,
               )) as PickVoidCallback<T>?,
           validator: validator as FormFieldValidator<T>?,

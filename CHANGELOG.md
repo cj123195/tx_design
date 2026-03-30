@@ -1,3 +1,6 @@
+# 0.2.27+6
+* 优化选择组件和选择表单的参数配置
+
 # 0.2.27+5
 * 新增 num 类型拓展的 toCompactFixed 方法
 * 修复 TxNumberInputFormField 部分情况下无法正常删除的问题

@@ -205,8 +205,10 @@ class _FormViewState extends State<FormView> {
             initialData: form['cascadeMultiValue'],
             required: true,
             disabledWhen: (data) => data['id'] == '111',
-            parentCheckable: false,
-            linkage: false,
+            pickerConfig: const TxMultiCascadePickerConfig(
+              parentCheckable: false,
+              linkage: false,
+            ),
             minCount: 1,
             maxCount: 3,
             // bordered: true,
@@ -219,7 +221,7 @@ class _FormViewState extends State<FormView> {
             onChanged: (val) => form['text'] = val,
             required: true,
           ),
-          TxPickerFormField(
+          TxPickerFormField<String, String>(
             labelText: '单项选择',
             source: FormView.sources,
             labelMapper: (val) => val,
@@ -228,10 +230,13 @@ class _FormViewState extends State<FormView> {
             initialValue: form['pickerValue'],
             required: true,
             clearable: true,
-            subtitleBuilder: (context, data) => Text(data),
-            disabledWhen: (data) => data == '选项1',
-            showSearchField: true,
-            placeholder: const Center(child: Text('暂无数据')),
+            pickerConfig: TxPickerConfig(
+              subtitleBuilder: (context, data) => Text(data),
+              disabledWhen: (data) => data == '选项1',
+              showSearchField: true,
+              placeholder: const Center(child: Text('暂无数据')),
+            ),
+
             // itemBuilder: (context, data, selected, onChanged) {
             //   return RadioListTile(
             //     value: data,

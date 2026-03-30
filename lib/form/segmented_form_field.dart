@@ -67,7 +67,8 @@ class TxSegmentedFormField<T, V> extends TxFormField<T> {
                         ? null
                         : iconBuilder(field.context, index, data),
                     tooltip: tooltipMapper == null ? null : tooltipMapper(data),
-                    // enabled: disabledWhen == null ? true : !disabledWhen(data),
+                    // enabled: disabledWhen == null ? true :
+                    // !disabledWhen(data),
                   );
                 }),
                 showSelectedIcon: showSelectedIcon ?? false,

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../widgets/picker.dart';
 import 'common_text_form_field.dart';
-import 'form_field.dart';
 
-export '../utils/basic_types.dart' show ValueMapper;
-export '../widgets/picker.dart' show PickerItemBuilder;
+export '../widgets/picker.dart'
+    show PickerItemBuilder, EqualityMatcher, FilterMatcher, ValueMapper;
+export 'common_text_form_field.dart' show FormFieldTapCallback;
 
 typedef PickVoidCallback<T> = Future<T?> Function(
   BuildContext context,
@@ -24,6 +24,31 @@ Future<void> _onTap<T>(
   if (res != null && res != field.value) {
     field.didChange(res);
   }
+}
+
+/// 选择器配置
+class TxPickerConfig<T> {
+  const TxPickerConfig({
+    this.subtitleBuilder,
+    this.itemBuilder,
+    this.disabledWhen,
+    this.showSearchField,
+    this.placeholder,
+    this.listTileTheme,
+    this.filterMatcher,
+    this.equalityMatcher,
+    this.secondaryBuilder,
+  });
+
+  final DataWidgetBuilder<T>? subtitleBuilder;
+  final PickerItemBuilder<T>? itemBuilder;
+  final ValueMapper<T, bool>? disabledWhen;
+  final bool? showSearchField;
+  final Widget? placeholder;
+  final ListTileThemeData? listTileTheme;
+  final FilterMatcher<T>? filterMatcher;
+  final EqualityMatcher<T>? equalityMatcher;
+  final DataWidgetBuilder<T>? secondaryBuilder;
 }
 
 /// 单项选择框表单
@@ -45,15 +70,10 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
     super.decoration,
     super.onChanged,
     super.required,
-    ValueMapper<T, V?>? valueMapper,
-    DataWidgetBuilder<T>? subtitleBuilder,
-    PickerItemBuilder<T>? itemBuilder,
-    ValueMapper<T, bool>? disabledWhen,
     T? initialData,
     V? initialValue,
-    bool? showSearchField,
-    Widget? placeholder,
-    ListTileThemeData? listTileTheme,
+    ValueMapper<T, V?>? valueMapper,
+    TxPickerConfig<T>? pickerConfig,
     PickVoidCallback<T>? onPickTap,
     FormFieldTapCallback<T>? onTap,
     super.focusNode,
@@ -86,22 +106,24 @@ class TxPickerFormField<T, V> extends TxCommonTextFormField<T> {
 
             FocusScope.of(field.context).requestFocus(FocusNode());
 
-            onPickTap ??= (context, value) => showPickerBottomSheet<T, V>(
+            onPickTap ??= (context, value) => showPickerBottomSheet<T>(
                   context,
                   source: readOnly == true
                       ? source
                       : <T>{...source, if (field.value != null) field.value!}
                           .toList(),
                   labelMapper: labelMapper,
-                  valueMapper: valueMapper,
                   initialData: value,
-                  disabledWhen: disabledWhen,
+                  disabledWhen: pickerConfig?.disabledWhen,
                   title: labelText,
-                  subtitleBuilder: subtitleBuilder,
-                  itemBuilder: itemBuilder,
-                  showSearchField: showSearchField,
-                  placeholder: placeholder,
-                  listTileTheme: listTileTheme,
+                  subtitleBuilder: pickerConfig?.subtitleBuilder,
+                  itemBuilder: pickerConfig?.itemBuilder,
+                  showSearchField: pickerConfig?.showSearchField,
+                  placeholder: pickerConfig?.placeholder,
+                  listTileTheme: pickerConfig?.listTileTheme,
+                  filterMatcher: pickerConfig?.filterMatcher,
+                  equalityMatcher: pickerConfig?.equalityMatcher,
+                  secondaryBuilder: pickerConfig?.secondaryBuilder,
                 );
 
             _onTap(field, onPickTap!);
